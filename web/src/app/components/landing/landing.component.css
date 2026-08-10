@@ -1286,53 +1286,84 @@ a {
   overflow: hidden;
 }
 
-/* Infinite Train Track Wrapper */
-.marquee-train-wrapper {
+/* Cosmic Wave Floating Glide Track Wrapper */
+.cosmic-wave-wrapper {
   width: 100%;
   overflow: hidden;
   position: relative;
-  padding: 1.5rem 0;
+  padding: 2.5rem 0;
 }
 
-/* Fade gradients at left & right edges for ultra-luxury depth */
-.marquee-train-wrapper::before,
-.marquee-train-wrapper::after {
+.cosmic-wave-wrapper::before,
+.cosmic-wave-wrapper::after {
   content: '';
   position: absolute;
   top: 0;
-  width: 120px;
+  width: 140px;
   height: 100%;
   z-index: 10;
   pointer-events: none;
 }
 
-.marquee-train-wrapper::before {
+.cosmic-wave-wrapper::before {
   left: 0;
   background: linear-gradient(to right, var(--bg-testimonials) 0%, transparent 100%);
 }
 
-.marquee-train-wrapper::after {
+.cosmic-wave-wrapper::after {
   right: 0;
   background: linear-gradient(to left, var(--bg-testimonials) 0%, transparent 100%);
 }
 
-.marquee-train-track {
+.cosmic-wave-track {
   display: flex;
-  gap: 2rem;
+  gap: 2.25rem;
   width: max-content;
-  animation: marqueeTrain 35s linear infinite;
+  animation: cosmicHorizontalTrack 40s linear infinite;
 }
 
-.marquee-train-track:hover {
+.cosmic-wave-track:hover {
   animation-play-state: paused;
 }
 
-@keyframes marqueeTrain {
+@keyframes cosmicHorizontalTrack {
   0% {
     transform: translateX(0);
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+.cosmic-wave-card {
+  width: 380px;
+  flex-shrink: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-gold-violet);
+  border-radius: 24px;
+  padding: 2rem 1.75rem;
+  box-shadow: var(--shadow-cosmic);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  animation: floatWaveBob 5s ease-in-out infinite alternate;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.cosmic-wave-card:hover {
+  border-color: var(--color-gold-bright);
+  box-shadow: var(--shadow-gold-glow);
+}
+
+@keyframes floatWaveBob {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+  100% {
+    transform: translateY(6px);
   }
 }
 
@@ -1762,6 +1793,363 @@ a {
 
 .bullet-dot {
   color: rgba(212, 168, 79, 0.4);
+}
+
+/* --------------------------------------------------
+   17. DIVINE ACADEMY SECTION (#0B0820 - MODULE 4)
+   -------------------------------------------------- */
+.academy-section {
+  background-color: var(--bg-hero);
+  border-top: 1px solid var(--border-gold-violet);
+  border-bottom: 1px solid var(--border-gold-violet);
+  padding: 3rem 0;
+}
+
+.academy-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.academy-course-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-gold-violet);
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
+  box-shadow: var(--shadow-cosmic);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.academy-course-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--color-gold-bright);
+  box-shadow: var(--shadow-gold-glow);
+}
+
+.course-header-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.course-badge-tag {
+  background-color: rgba(212, 168, 79, 0.12);
+  border: 1px solid var(--border-gold-violet);
+  color: var(--color-gold-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+}
+
+.course-rating {
+  font-size: 0.85rem;
+  color: var(--color-text-ivory);
+  font-weight: 700;
+}
+
+.course-icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
+  color: #0B0820;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.academy-course-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.2rem;
+}
+
+.course-english-sub {
+  font-size: 0.75rem;
+  color: var(--color-gold-bright);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.course-meta-row {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--color-text-lavender);
+  margin-bottom: 1.5rem;
+}
+
+.course-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-gold-violet);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.students-tag {
+  font-size: 0.82rem;
+  color: var(--color-text-lavender);
+  white-space: nowrap;
+}
+
+.btn-course-enroll {
+  color: var(--color-gold-bright);
+  border: 1px solid var(--border-gold-violet);
+  padding: 0.45rem 1.15rem;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.btn-course-enroll:hover {
+  background-color: var(--color-gold-bright);
+  color: #0B0820;
+}
+
+/* --------------------------------------------------
+   18. 10-PORUTHAM CHECKER WIDGET (#17102F - MODULE 7)
+   -------------------------------------------------- */
+.porutham-section {
+  background-color: var(--bg-zodiac);
+  padding: 3rem 0;
+}
+
+.porutham-checker-box {
+  max-width: 850px;
+  margin: 0 auto;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-gold-violet);
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: var(--shadow-cosmic);
+}
+
+.porutham-selectors-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.selector-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.column-title-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-ivory);
+}
+
+.luxury-select-input {
+  background-color: #070512;
+  border: 1px solid var(--border-gold-violet);
+  color: var(--color-text-ivory);
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.luxury-select-input:focus {
+  border-color: var(--color-gold-bright);
+}
+
+.vs-heart-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(212, 168, 79, 0.12);
+  border: 1px solid var(--border-gold-violet);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  align-self: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+.btn-calc-porutham {
+  border: none;
+  cursor: pointer;
+}
+
+.porutham-result-card {
+  background: linear-gradient(135deg, rgba(23, 16, 47, 0.9) 0%, rgba(33, 23, 71, 0.9) 100%);
+  border: 1px solid var(--color-gold-bright);
+  border-radius: 16px;
+  padding: 1.75rem;
+  text-align: center;
+  box-shadow: var(--shadow-gold-glow);
+}
+
+.result-score-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.big-score-num {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-gold-bright);
+}
+
+.score-label-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-lavender);
+  text-transform: uppercase;
+}
+
+.result-status-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.result-summary-para {
+  font-size: 0.9rem;
+  color: var(--color-text-lavender);
+  max-width: 600px;
+  margin: 0 auto 1rem auto;
+}
+
+/* Astrologer Availability Slot Badge */
+.astro-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.availability-slot-badge {
+  background-color: rgba(212, 168, 79, 0.12);
+  border: 1px solid var(--border-gold-violet);
+  color: var(--color-gold-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+}
+
+/* --------------------------------------------------
+   19. LUXURY POPUP MODALS
+   -------------------------------------------------- */
+.luxury-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(7, 5, 18, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.luxury-modal-content {
+  background-color: var(--bg-card);
+  border: 1px solid var(--color-gold-bright);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-lavender);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--color-gold-bright);
+}
+
+.modal-header-title {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.modal-header-title h3 {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.modal-header-title p {
+  font-size: 0.85rem;
+  color: var(--color-text-lavender);
+}
+
+.form-label-gold {
+  font-size: 0.82rem;
+  color: var(--color-gold-bright);
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.luxury-modal-input {
+  width: 100%;
+  background-color: #070512;
+  border: 1px solid var(--border-gold-violet);
+  color: var(--color-text-ivory);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.luxury-modal-input:focus {
+  border-color: var(--color-gold-bright);
+}
+
+.jathagam-result-card {
+  background-color: #070512;
+  border: 1px solid var(--border-gold-violet);
+  border-radius: 14px;
+}
+
+.jath-label {
+  font-size: 0.75rem;
+  color: var(--color-text-lavender);
+  display: block;
+}
+
+.jath-val {
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 0.2rem;
 }
 
 /* --------------------------------------------------

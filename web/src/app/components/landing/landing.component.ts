@@ -71,7 +71,41 @@ export class LandingComponent implements AfterViewInit {
     yamagandam: 'காலை 10:30 AM - 12:00 PM'
   };
 
-  // Key astrology services offered
+  // Divine Academy Courses (Module 4 - Learn Astrology)
+  academyCourses = [
+    {
+      title: 'வேத ஜோதிட அடிப்படை பயிற்சி',
+      englishTitle: 'Vedic Astrology Fundamentals',
+      duration: '12 வாரங்கள்',
+      lessons: '24 பாடங்கள்',
+      rating: 4.9,
+      students: '1,200+ மாணவர்கள்',
+      iconClass: 'bi bi-journal-text',
+      badge: 'சான்றிதழ் படிப்பு'
+    },
+    {
+      title: 'வாஸ்து சாஸ்திர ரகசியங்கள்',
+      englishTitle: 'Vastu Shastra Consultancy Course',
+      duration: '8 வாரங்கள்',
+      lessons: '16 பாடங்கள்',
+      rating: 4.8,
+      students: '850+ மாணவர்கள்',
+      iconClass: 'bi bi-compass',
+      badge: 'பிரபலமான கோர்ஸ்'
+    },
+    {
+      title: 'எண்கணிதம் & பெயர் தேர்வு கலை',
+      englishTitle: 'Numerology & Naming Science',
+      duration: '6 வாரங்கள்',
+      lessons: '12 பாடங்கள்',
+      rating: 4.9,
+      students: '950+ மாணவர்கள்',
+      iconClass: 'bi bi-calculator',
+      badge: 'பிரத்தியேக பாடம்'
+    }
+  ];
+
+  // Core Paid Astrology Services
   services = [
     {
       title: 'துல்லிய ஜாதகக் கணிப்பு',
@@ -81,8 +115,8 @@ export class LandingComponent implements AfterViewInit {
       iconClass: 'bi bi-stars'
     },
     {
-      title: 'திருமணப் பொருத்தம்',
-      englishTitle: 'Marriage Matching',
+      title: 'திருமணப் பொருத்தம் கணித்தல்',
+      englishTitle: 'Marriage Matchmaking',
       description: '10 பொருத்தங்கள், செவ்வாய் தோஷம், ராகு-கேது தோஷங்கள் மற்றும் தசாபுத்தி பொருத்தங்கள் துல்லியமாக ஆராயப்படும்.',
       price: '₹500',
       iconClass: 'bi bi-heart-fill'
@@ -123,7 +157,7 @@ export class LandingComponent implements AfterViewInit {
     }
   ];
 
-  // Customer Testimonials (6 Verified Reviews)
+  // Verified Customer Reviews
   testimonials = [
     {
       name: 'கார்த்திக் ராஜா',
@@ -169,14 +203,28 @@ export class LandingComponent implements AfterViewInit {
     }
   ];
 
-  activeTestimonialIndex = 0;
+  activeReviewSet = 0;
 
-  nextTestimonial() {
-    this.activeTestimonialIndex = (this.activeTestimonialIndex + 1) % this.testimonials.length;
+  get currentReviews() {
+    return this.activeReviewSet === 0 ? this.testimonials.slice(0, 3) : this.testimonials.slice(3, 6);
   }
 
-  prevTestimonial() {
-    this.activeTestimonialIndex = (this.activeTestimonialIndex - 1 + this.testimonials.length) % this.testimonials.length;
+  setReviewSet(index: number) {
+    this.activeReviewSet = index;
+  }
+
+  activeReviewIndex = 0;
+
+  setActiveReview(index: number) {
+    this.activeReviewIndex = index;
+  }
+
+  nextReview() {
+    this.activeReviewIndex = (this.activeReviewIndex + 1) % this.testimonials.length;
+  }
+
+  prevReview() {
+    this.activeReviewIndex = (this.activeReviewIndex - 1 + this.testimonials.length) % this.testimonials.length;
   }
 
   // FAQs

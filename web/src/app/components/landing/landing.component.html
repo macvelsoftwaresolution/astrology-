@@ -1,4 +1,4 @@
-<!-- Translucent Dark Glass Navigation Bar -->
+<!-- Translucent Dark Glass Navigation Bar (Fixed Sticky) -->
 <header class="app-header">
   <div class="nav-container">
     <div class="logo">
@@ -11,11 +11,12 @@
 
     <nav class="nav-links">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">முகப்பு</a>
-      <a routerLink="/panchangam">பஞ்சாங்கம்</a>
-      <a routerLink="/zodiac">ராசி பலன்</a>
-      <a routerLink="/services">சேவைகள்</a>
-      <a routerLink="/astrologers">ஜோதிடர்கள்</a>
-      <a routerLink="/faq">FAQ</a>
+      <a href="#panchangam">பஞ்சாங்கம்</a>
+      <a href="#zodiac">ராசி பலன்</a>
+      <a href="#services">சேவைகள்</a>
+      <a href="#academy">பயிலகம்</a>
+      <a href="#astrologers">ஜோதிடர்கள்</a>
+      <a href="#faq">FAQ</a>
     </nav>
 
     <div class="header-actions">
@@ -29,12 +30,12 @@
   <!-- Mobile Drawer Overlay -->
   <div class="mobile-nav-panel" [class.open]="isMobileMenuOpen">
     <div class="mobile-nav-links">
-      <a href="#hero" (click)="toggleMobileMenu()">முகப்பு</a>
+      <a routerLink="/" (click)="toggleMobileMenu()">முகப்பு</a>
       <a href="#panchangam" (click)="toggleMobileMenu()">பஞ்சாங்கம்</a>
       <a href="#zodiac" (click)="toggleMobileMenu()">ராசி பலன்</a>
       <a href="#services" (click)="toggleMobileMenu()">சேவைகள்</a>
+      <a href="#academy" (click)="toggleMobileMenu()">பயிலகம்</a>
       <a href="#astrologers" (click)="toggleMobileMenu()">ஜோதிடர்கள்</a>
-      <a href="#testimonials" (click)="toggleMobileMenu()">மதிப்புரைகள்</a>
       <a href="#faq" (click)="toggleMobileMenu()">FAQ</a>
       <a href="#download" class="btn-cta-gold text-center mt-3" (click)="toggleMobileMenu()">Get App</a>
     </div>
@@ -45,19 +46,17 @@
 <section id="hero" class="hero-section">
   <div class="hero-bg-decoration"></div>
   <div class="hero-center-container">
-
+    
     <!-- Centered Header Content -->
     <div class="hero-center-header" data-aos="fade-down" data-aos-duration="400">
-
       <h1>உங்கள் வாழ்வின் துல்லியமான வழிகாட்டி <br><span class="title-highlight">ஆருத்ரா ஜோதிடம்</span></h1>
       <p class="hero-desc-para-center">
-        பாரம்பரிய வேத கணித முறைப்படி ஜாதகக் கணிப்புகள், துல்லியமான திருமணப் பொருத்தம் மற்றும் முதன்மை ஜோதிடர்களின் நேரடி
-        ஆலோசனைகளை உங்கள் மொபைல் மூலமாகவே பெறுங்கள்.
+        பாரம்பரிய தென் இந்திய வேத கணித முறைப்படி கணிக்கப்படும் ஜாதகக் கணிப்புகள், 10-பொருத்த திருமணப் பொருத்தம் மற்றும் முதன்மை ஜோதிடர்களின் நேரடி ஆலோசனைகளை உங்கள் மொபைல் மூலமாகவே பெறுங்கள்.
       </p>
 
       <div class="hero-actions-center">
         <a href="#download" class="btn-cta-gold" data-aos="zoom-in" data-aos-delay="100">
-          <span><i class="bi bi-download me-2"></i> Get Your Horoscope</span>
+          <span><i class="bi bi-download me-2"></i> Get Your Horoscope App</span>
         </a>
         <a href="#services" class="btn-cta-outline" data-aos="zoom-in" data-aos-delay="150">
           எங்கள் சேவைகள் <i class="bi bi-arrow-right-short ms-1"></i>
@@ -67,27 +66,27 @@
 
     <!-- Quick Feature Highlight Strip -->
     <div class="hero-features-highlight-strip" data-aos="fade-up" data-aos-delay="200">
-      <div class="highlight-card">
+      <a href="#services" class="highlight-card" style="text-decoration: none;">
         <i class="bi bi-journal-bookmark-fill highlight-icon"></i>
         <div class="highlight-text">
           <strong>துல்லியமான ஜாதகம்</strong>
           <span>பாரம்பரிய கணிதம்</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="#services" class="highlight-card" style="text-decoration: none;">
         <i class="bi bi-heart-pulse-fill highlight-icon"></i>
         <div class="highlight-text">
           <strong>திருமண பொருத்தம்</strong>
           <span>10 பொருத்தம் கணிப்பு</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="#astrologers" class="highlight-card" style="text-decoration: none;">
         <i class="bi bi-person-lines-fill highlight-icon"></i>
         <div class="highlight-text">
           <strong>நேரடி ஆலோசனை</strong>
           <span>முதன்மை ஜோதிடர்கள்</span>
         </div>
-      </div>
+      </a>
     </div>
 
     <!-- Trust Badges Bar Centered -->
@@ -222,8 +221,11 @@
     <div class="celestial-zodiac-selector">
       <!-- 12 Zodiac Wheel Buttons -->
       <div class="zodiac-btns-layout" data-aos="fade-right" data-aos-duration="400">
-        <button *ngFor="let zodiac of zodiacSigns; let i = index" class="zodiac-luxury-btn"
-          [class.active]="selectedZodiac.name === zodiac.name" (click)="selectZodiac(zodiac)"
+        <button 
+          *ngFor="let zodiac of zodiacSigns; let i = index" 
+          class="zodiac-luxury-btn"
+          [class.active]="selectedZodiac.name === zodiac.name"
+          (click)="selectZodiac(zodiac)"
           [attr.aria-label]="zodiac.name">
           <span class="sign-glyph">{{ zodiac.symbol }}</span>
           <span class="sign-tamil-name">{{ zodiac.name }}</span>
@@ -257,8 +259,7 @@
     </div>
 
     <div class="services-cards-grid">
-      <div class="service-light-card" *ngFor="let service of services; let i = index" data-aos="fade-up"
-        [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
+      <div class="service-light-card" *ngFor="let service of services; let i = index" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
         <div class="service-icon-badge">
           <i [class]="service.iconClass"></i>
         </div>
@@ -267,7 +268,40 @@
         <p>{{ service.description }}</p>
         <div class="service-card-footer">
           <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
-          <a href="#download" class="btn-service-action"><i class="bi bi-arrow-right-circle-fill"></i></a>
+          <a href="#download" class="btn-service-action" aria-label="Order Service"><i class="bi bi-arrow-right-circle-fill"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVINE ACADEMY / ஆன்மீகப் பயிலகம் (#0B0820 - Module 4) -->
+<section id="academy" class="academy-section">
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-journal-text me-1"></i> DIVINE ACADEMY</span>
+      <h2>ஆருத்ரா ஆன்மீகப் பயிலகம் (Learn Astrology)</h2>
+      <p class="section-desc">LEARN TRADITIONAL VEDIC ASTROLOGY &bull; ONLINE COURSES & CERTIFICATES</p>
+    </div>
+
+    <div class="academy-courses-grid">
+      <div class="academy-course-card" *ngFor="let course of academyCourses" data-aos="fade-up">
+        <div class="course-header-badge">
+          <span class="course-badge-tag">{{ course.badge }}</span>
+          <span class="course-rating"><i class="bi bi-star-fill text-gold me-1"></i> {{ course.rating }}</span>
+        </div>
+        <div class="course-icon-circle">
+          <i [class]="course.iconClass"></i>
+        </div>
+        <h3>{{ course.title }}</h3>
+        <span class="course-english-sub">{{ course.englishTitle }}</span>
+        <div class="course-meta-row">
+          <span><i class="bi bi-clock me-1 text-gold"></i> {{ course.duration }}</span>
+          <span><i class="bi bi-play-circle me-1 text-gold"></i> {{ course.lessons }}</span>
+        </div>
+        <div class="course-card-footer">
+          <span class="students-tag"><i class="bi bi-people-fill me-1 text-gold"></i> {{ course.students }}</span>
+          <a href="#download" class="btn-course-enroll">கற்கத் துவங்க <i class="bi bi-arrow-right-short ms-1"></i></a>
         </div>
       </div>
     </div>
@@ -323,39 +357,34 @@
   </div>
 </section>
 
-<!-- Mobile App Showcase (#0B0820) -->
+<!-- Mobile App Showcase (#0B0820) - Distinct Feature Overview -->
 <section id="about" class="app-showcase-section">
   <div class="section-container">
     <div class="showcase-layout-grid">
-
+      
       <div class="showcase-content-left" data-aos="fade-right" data-aos-duration="400">
-        <span class="section-eyebrow"><i class="bi bi-phone me-1"></i> MOBILE APPLICATION</span>
-        <h2>முழுக்க முழுக்க மொபைல் மூலமாகவே ஆலோசனை!</h2>
+        <span class="section-eyebrow"><i class="bi bi-shield-lock me-1"></i> EXCLUSIVITY & CONVENIENCE</span>
+        <h2>ஏன் ஆருத்ரா ஜோதிடம் செயலியைத் தேர்ந்தெடுக்க வேண்டும்?</h2>
         <p class="showcase-desc-para">
-          எங்கள் ஆருத்ரா ஜோதிடம் மொபைல் செயலியைப் பயன்படுத்தி உங்களது அனைத்து ஜோதிடத் தேவைகளையும் மிக எளிய முறையில்
-          நிறைவேற்றிக் கொள்ளலாம்.
+          பாரம்பரிய தென் இந்திய வேத ஜோதிடத்தை நவீன பாதுகாப்புடன் உங்கள் கைபேசியிலேயே எளிதாகப் பெற உதவும் பிரத்யேகத் தளம்.
         </p>
 
         <ul class="luxury-feature-list">
           <li data-aos="fade-up" data-aos-delay="50">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து
-              சமர்ப்பிக்கலாம்.</div>
+            <div><strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து சமர்ப்பிக்கலாம்.</div>
           </li>
           <li data-aos="fade-up" data-aos-delay="100">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மூலம் 100% பாதுகாப்பான பரிவர்த்தனைகள்.
-            </div>
+            <div><strong>100% பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மூலம் பாதுகாப்பான பரிவர்த்தனைகள்.</div>
           </li>
           <li data-aos="fade-up" data-aos-delay="150">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து
-              கொள்ளலாம்.</div>
+            <div><strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து கொள்ளலாம்.</div>
           </li>
           <li data-aos="fade-up" data-aos-delay="200">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>நேரடி தொடர்பு:</strong> குரு ஸ்ரீநிவாசன் மற்றும் குரு ராமஜெயம் ஆகியோரின் பிரத்யேக ஆலோசனைகள்.
-            </div>
+            <div><strong>நேரடி தொடர்பு:</strong> தலைமை ஜோதிடர்களின் பிரத்யேக ஆலோசனைகள் மற்றும் வழிகாட்டல்கள்.</div>
           </li>
         </ul>
       </div>
@@ -407,8 +436,7 @@
     </div>
 
     <div class="editorial-astrologers-grid">
-      <div class="astro-editorial-card" *ngFor="let astro of astrologers; let i = index" data-aos="fade-up"
-        [attr.data-aos-delay]="(i + 1) * 100" data-aos-duration="400">
+      <div class="astro-editorial-card" *ngFor="let astro of astrologers; let i = index" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 100" data-aos-duration="400">
         <div class="astro-card-left">
           <div class="astro-portrait-placeholder">
             <i [class]="astro.iconClass"></i>
@@ -423,15 +451,14 @@
             <strong>நிபுணத்துவம்:</strong>
             <span>{{ astro.specialty }}</span>
           </div>
-          <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i
-              class="bi bi-arrow-right-short ms-2"></i></a>
+          <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i class="bi bi-arrow-right-short ms-2"></i></a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Testimonials Section (#0B0820) - Continuous Marquee Train Animation -->
+<!-- Testimonials Section (#0B0820) - Cosmic Wave Floating Glide Animation -->
 <section id="testimonials" class="testimonials-section">
   <div class="section-container">
     <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
@@ -441,11 +468,11 @@
     </div>
   </div>
 
-  <!-- Infinite Train Track Carousel Container -->
-  <div class="marquee-train-wrapper">
-    <div class="marquee-train-track">
+  <!-- Cosmic Wave Glide Track Wrapper -->
+  <div class="cosmic-wave-wrapper">
+    <div class="cosmic-wave-track">
       <!-- First set of review cards -->
-      <div class="review-grid-card" *ngFor="let item of testimonials">
+      <div class="cosmic-wave-card" *ngFor="let item of testimonials; let i = index" [style.animation-delay]="(i * 0.4) + 's'">
         <div class="card-quote-header">
           <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
           <div class="review-stars-badge">
@@ -457,13 +484,13 @@
           <div class="author-avatar-circle">{{ item.name[0] }}</div>
           <div class="author-details">
             <strong class="author-name-text">{{ item.name }}</strong>
-            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1"></i>சரிபார்க்கப்பட்டது</span></span>
+            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
           </div>
         </div>
       </div>
 
-      <!-- Duplicated set of review cards for seamless 100% infinite loop -->
-      <div class="review-grid-card" *ngFor="let item of testimonials">
+      <!-- Duplicated set of review cards for seamless cosmic wave -->
+      <div class="cosmic-wave-card" *ngFor="let item of testimonials; let i = index" [style.animation-delay]="(i * 0.4) + 's'">
         <div class="card-quote-header">
           <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
           <div class="review-stars-badge">
@@ -475,7 +502,7 @@
           <div class="author-avatar-circle">{{ item.name[0] }}</div>
           <div class="author-details">
             <strong class="author-name-text">{{ item.name }}</strong>
-            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1"></i>சரிபார்க்கப்பட்டது</span></span>
+            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
           </div>
         </div>
       </div>
@@ -566,10 +593,10 @@
       <div class="footer-links-column">
         <h4>எங்களது சேவைகள்</h4>
         <div class="footer-links-list">
-          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
-          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
-          <a routerLink="/astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
-          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> நியூமராலஜி</a>
+          <a href="#services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
+          <a href="#services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
+          <a href="#astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
+          <a href="#academy"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஆன்மீகப் பயிலகம்</a>
         </div>
       </div>
 
@@ -578,9 +605,9 @@
         <h4>விரைவு இணைப்புகள்</h4>
         <div class="footer-links-list">
           <a routerLink="/"><i class="bi bi-chevron-right me-1 fs-xs"></i> முகப்பு</a>
-          <a routerLink="/panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
-          <a routerLink="/zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
-          <a routerLink="/faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
+          <a href="#panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
+          <a href="#zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
+          <a href="#faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
           <a routerLink="/admin"><i class="bi bi-chevron-right me-1 fs-xs"></i> Admin Portal</a>
         </div>
       </div>
