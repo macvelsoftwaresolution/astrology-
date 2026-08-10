@@ -1,185 +1,481 @@
-<!-- Navigation Bar -->
+<!-- Translucent Dark Glass Navigation Bar -->
 <header class="app-header">
   <div class="nav-container">
     <div class="logo">
-      <span class="logo-symbol">🔱</span>
+      <span class="logo-symbol"><i class="bi bi-moon-stars-fill"></i></span>
       <div class="logo-text">
         <span class="tamil-title">ஆருத்ரா ஜோதிடம்</span>
-        <span class="english-subtitle">Aruthra Astrology</span>
+        <span class="english-subtitle">ARUTHRA ASTROLOGY</span>
       </div>
     </div>
+
     <nav class="nav-links">
-      <a href="#hero">முகப்பு</a>
-      <a href="#services">சேவைகள்</a>
-      <a href="#about">விளக்கம்</a>
-      <a href="#astrologers">ஜோதிடர்கள்</a>
-      <a href="#testimonials">மதிப்புரைகள்</a>
-      <a href="#faq">FAQ</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">முகப்பு</a>
+      <a routerLink="/panchangam">பஞ்சாங்கம்</a>
+      <a routerLink="/zodiac">ராசி பலன்</a>
+      <a routerLink="/services">சேவைகள்</a>
+      <a routerLink="/astrologers">ஜோதிடர்கள்</a>
+      <a routerLink="/faq">FAQ</a>
     </nav>
+
     <div class="header-actions">
-      <a routerLink="/admin" class="btn-admin" title="Admin Portal">
-        <span>⚙️ Admin</span>
-      </a>
       <a href="#download" class="btn-primary">Get App</a>
+      <button class="btn-hamburger" (click)="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
+        <i [class]="isMobileMenuOpen ? 'bi bi-x-lg' : 'bi bi-list'"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Overlay -->
+  <div class="mobile-nav-panel" [class.open]="isMobileMenuOpen">
+    <div class="mobile-nav-links">
+      <a href="#hero" (click)="toggleMobileMenu()">முகப்பு</a>
+      <a href="#panchangam" (click)="toggleMobileMenu()">பஞ்சாங்கம்</a>
+      <a href="#zodiac" (click)="toggleMobileMenu()">ராசி பலன்</a>
+      <a href="#services" (click)="toggleMobileMenu()">சேவைகள்</a>
+      <a href="#astrologers" (click)="toggleMobileMenu()">ஜோதிடர்கள்</a>
+      <a href="#testimonials" (click)="toggleMobileMenu()">மதிப்புரைகள்</a>
+      <a href="#faq" (click)="toggleMobileMenu()">FAQ</a>
+      <a href="#download" class="btn-cta-gold text-center mt-3" (click)="toggleMobileMenu()">Get App</a>
     </div>
   </div>
 </header>
 
-<!-- Hero Section -->
+<!-- Deep Cosmic Navy Hero Section (#0B0820) -->
 <section id="hero" class="hero-section">
-  <div class="stars-overlay"></div>
-  <div class="hero-ornament"></div>
-  <div class="hero-content">
-    <span class="hero-badge">✨ ஆன்லைன் ஜோதிட ஆலோசனைகள் ✨</span>
-    <h1>உங்கள் வாழ்வின் வழிகாட்டி <br><span class="highlight-text">ஆருத்ரா ஜோதிடம்</span></h1>
-    <p class="hero-description">
-      துல்லியமான ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், வாஸ்து ஆலோசனைகள் மற்றும் எண்கணித முறைகளை உங்கள் மொபைல் மூலமாகவே பெற்று ஜோதிடர்களின் நேரடி ஆலோசனைகளைப் பெறுங்கள்.
-    </p>
-    <div class="hero-buttons">
-      <a href="#download" class="btn-cta-gold">
-        <span>📲 டவுன்லோட் மொபைல் ஆப்</span>
-      </a>
-      <a href="#services" class="btn-cta-outline">எங்கள் சேவைகள்</a>
-    </div>
-  </div>
-</section>
+  <div class="hero-bg-decoration"></div>
+  <div class="hero-center-container">
 
-<!-- Live Panchangam Banner -->
-<section class="live-panchangam-section">
-  <div class="panchangam-banner-card">
-    <div class="panch-left">
-      <span class="panch-badge">✨ இன்றைய நாள் ✨</span>
-      <h3>தினசரி பஞ்சாங்கக் குறிப்பு</h3>
-      <p class="panch-date">தேதி: {{ panchangam.date }}</p>
-    </div>
-    <div class="panch-right-grid">
-      <div class="panch-cell">
-        <span class="cell-label">திதி</span>
-        <strong class="cell-val">{{ panchangam.thithi }}</strong>
-      </div>
-      <div class="panch-cell">
-        <span class="cell-label">நட்சத்திரம்</span>
-        <strong class="cell-val">{{ panchangam.star }}</strong>
-      </div>
-      <div class="panch-cell">
-        <span class="cell-label">நல்ல நேரம்</span>
-        <strong class="cell-val text-green">{{ panchangam.nallaNeram }}</strong>
-      </div>
-      <div class="panch-cell">
-        <span class="cell-label">இராகு காலம்</span>
-        <strong class="cell-val text-red">{{ panchangam.rahukalam }}</strong>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- Centered Header Content -->
+    <div class="hero-center-header" data-aos="fade-down" data-aos-duration="400">
 
-<!-- Stats Section -->
-<section class="stats-section">
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">50K+</span>
-      <span class="stat-label">பதிவிறக்கங்கள்</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">15+</span>
-      <span class="stat-label">தலைமை ஜோதிடர்கள்</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">4.9 ★</span>
-      <span class="stat-label">ஆப் ஸ்டோர் ரேட்டிங்</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">99.9%</span>
-      <span class="stat-label">திருப்திகரமான கணிப்புகள்</span>
-    </div>
-  </div>
-</section>
-
-<!-- Services Section -->
-<section id="services" class="services-section">
-  <div class="section-header">
-    <h2>நாங்கள் வழங்கும் ஜோதிட சேவைகள்</h2>
-    <p>மொபைல் செயலி மூலம் நீங்கள் பெறக்கூடிய முதன்மையான நான்கு ஜோதிட ஆலோசனைகள்</p>
-  </div>
-  <div class="services-grid">
-    <div class="service-card" *ngFor="let service of services">
-      <div class="service-icon">{{ service.icon }}</div>
-      <h3>{{ service.title }}</h3>
-      <span class="service-subtitle">{{ service.englishTitle }}</span>
-      <p>{{ service.description }}</p>
-      <div class="service-footer">
-        <span class="service-price">கட்டணம்: <strong>{{ service.price }}</strong></span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Mobile App Features Showcase -->
-<section id="about" class="app-showcase-section">
-  <div class="showcase-container">
-    <div class="showcase-text">
-      <h2>முழுக்க முழுக்க மொபைல் மூலமாகவே ஆலோசனை!</h2>
-      <p>
-        எங்கள் ஆருத்ரா ஜோதிடம் மொபைல் செயலியைப் பயன்படுத்தி உங்களது அனைத்து ஜோதிடத் தேவைகளையும் மிக எளிய முறையில் நிறைவேற்றிக் கொள்ளலாம். உங்கள் மொபைல் மூலமாகவே:
+      <h1>உங்கள் வாழ்வின் துல்லியமான வழிகாட்டி <br><span class="title-highlight">ஆருத்ரா ஜோதிடம்</span></h1>
+      <p class="hero-desc-para-center">
+        பாரம்பரிய வேத கணித முறைப்படி ஜாதகக் கணிப்புகள், துல்லியமான திருமணப் பொருத்தம் மற்றும் முதன்மை ஜோதிடர்களின் நேரடி
+        ஆலோசனைகளை உங்கள் மொபைல் மூலமாகவே பெறுங்கள்.
       </p>
-      <ul class="feature-list">
-        <li>
-          <span class="feat-icon">✅</span>
-          <div>
-            <strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து சமர்ப்பிக்கலாம்.
-          </div>
-        </li>
-        <li>
-          <span class="feat-icon">✅</span>
-          <div>
-            <strong>பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மற்றும் நெட் பேங்கிங் மூலம் 100% பாதுகாப்பான பரிவர்த்தனைகள்.
-          </div>
-        </li>
-        <li>
-          <span class="feat-icon">✅</span>
-          <div>
-            <strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ மற்றும் வீடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து கொள்ளலாம்.
-          </div>
-        </li>
-        <li>
-          <span class="feat-icon">✅</span>
-          <div>
-            <strong>ஜோதிடர்களுடன் நேரடி தொடர்பு:</strong> குரு ஸ்ரீநிவாசன் மற்றும் குரு ராமஜெயம் ஆகியோரின் பிரத்யேக ஆலோசனைகள்.
-          </div>
-        </li>
-      </ul>
-      <a href="#download" class="btn-primary" style="margin-top: 1.5rem; display: inline-block;">இப்போதே தொடங்குங்கள்</a>
+
+      <div class="hero-actions-center">
+        <a href="#download" class="btn-cta-gold" data-aos="zoom-in" data-aos-delay="100">
+          <span><i class="bi bi-download me-2"></i> Get Your Horoscope</span>
+        </a>
+        <a href="#services" class="btn-cta-outline" data-aos="zoom-in" data-aos-delay="150">
+          எங்கள் சேவைகள் <i class="bi bi-arrow-right-short ms-1"></i>
+        </a>
+      </div>
     </div>
-    
-    <div class="showcase-visual">
-      <!-- Mockup representing app screen preview -->
-      <div class="phone-frame">
-        <div class="phone-screen">
-          <div class="app-bar">
-            <span>ஆருத்ரா ஜோதிடம்</span>
-            <span>🔔</span>
+
+    <!-- Quick Feature Highlight Strip -->
+    <div class="hero-features-highlight-strip" data-aos="fade-up" data-aos-delay="200">
+      <div class="highlight-card">
+        <i class="bi bi-journal-bookmark-fill highlight-icon"></i>
+        <div class="highlight-text">
+          <strong>துல்லியமான ஜாதகம்</strong>
+          <span>பாரம்பரிய கணிதம்</span>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <i class="bi bi-heart-pulse-fill highlight-icon"></i>
+        <div class="highlight-text">
+          <strong>திருமண பொருத்தம்</strong>
+          <span>10 பொருத்தம் கணிப்பு</span>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <i class="bi bi-person-lines-fill highlight-icon"></i>
+        <div class="highlight-text">
+          <strong>நேரடி ஆலோசனை</strong>
+          <span>முதன்மை ஜோதிடர்கள்</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust Badges Bar Centered -->
+    <div class="trust-badges-center-row" data-aos="fade-up" data-aos-delay="250">
+      <div class="trust-item">
+        <i class="bi bi-patch-check-fill text-gold"></i>
+        <span>100% பாதுகாப்பானது</span>
+      </div>
+      <div class="trust-item">
+        <i class="bi bi-award-fill text-gold"></i>
+        <span>பாரம்பரிய வேத முறை</span>
+      </div>
+      <div class="trust-item">
+        <i class="bi bi-star-fill text-gold"></i>
+        <span>4.9 / 5 ரேட்டிங்</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Live Astrology Strip (#110B27) -->
+<div class="daily-astrology-strip" data-aos="fade-up" data-aos-duration="300">
+  <div class="strip-container">
+    <span class="strip-eyebrow"><i class="bi bi-broadcast me-1"></i> LIVE ASTRO DATA</span>
+    <div class="strip-items-grid">
+      <div class="strip-item">
+        <span class="strip-label">சந்திர ராசி:</span>
+        <strong class="strip-val">ரிஷபம் (Taurus)</strong>
+      </div>
+      <div class="strip-item">
+        <span class="strip-label">இன்றைய நட்சத்திரம்:</span>
+        <strong class="strip-val">ரோகிணி (Rohini)</strong>
+      </div>
+      <div class="strip-item">
+        <span class="strip-label">சூரிய உதயம்:</span>
+        <strong class="strip-val">06:05 AM</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Almanac Panchangam Section (#110B27) -->
+<section id="panchangam" class="live-panchangam-section">
+  <div class="section-container">
+    <div class="panch-editorial-header text-center" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-calendar3 me-1"></i> ALMANAC DASHBOARD</span>
+      <h2>இன்றைய பஞ்சாங்கம்</h2>
+      <p class="section-desc">TODAY'S PANCHANGAM &bull; ACCURATE VEDIC TIMINGS</p>
+    </div>
+
+    <div class="panchangam-dashboard" data-aos="fade-up" data-aos-duration="400">
+      <div class="panch-left-hero">
+        <span class="panch-large-label">இன்றைய தேதி</span>
+        <h3 class="panch-large-date">{{ panchangam.date }}</h3>
+        <div class="panch-sun-grid">
+          <div class="sun-item">
+            <span class="sun-label"><i class="bi bi-sunrise-fill text-gold me-1"></i> சூரிய உதயம்</span>
+            <strong class="sun-val">{{ panchangam.sunrise }}</strong>
           </div>
-          <div class="screen-body">
-            <div class="mock-banner">இன்றைய ராசி பலன் 🌌</div>
-            <div class="mock-grid">
-              <div class="mock-item">✨ ராசி பலன்</div>
-              <div class="mock-item">💍 பொருத்தம்</div>
-              <div class="mock-item">🏡 வாஸ்து</div>
-              <div class="mock-item">🕉️ பஞ்சாங்கம்</div>
+          <div class="sun-item">
+            <span class="sun-label"><i class="bi bi-sunset-fill text-gold me-1"></i> சூரிய அஸ்தமனம்</span>
+            <strong class="sun-val">{{ panchangam.sunset }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="panch-right-slots">
+        <div class="panch-slot-row">
+          <span class="slot-title">திதி</span>
+          <div class="slot-divider"></div>
+          <span class="slot-value">{{ panchangam.thithi }}</span>
+        </div>
+        <div class="panch-slot-row">
+          <span class="slot-title">நட்சத்திரம்</span>
+          <div class="slot-divider"></div>
+          <span class="slot-value">{{ panchangam.star }}</span>
+        </div>
+        <div class="panch-slot-row">
+          <span class="slot-title">நல்ல நேரம்</span>
+          <div class="slot-divider"></div>
+          <span class="slot-value text-green">{{ panchangam.nallaNeram }}</span>
+        </div>
+        <div class="panch-slot-row">
+          <span class="slot-title">இராகு காலம்</span>
+          <div class="slot-divider"></div>
+          <span class="slot-value text-red">{{ panchangam.rahukalam }}</span>
+        </div>
+        <div class="panch-slot-row">
+          <span class="slot-title">எமகண்டம்</span>
+          <div class="slot-divider"></div>
+          <span class="slot-value text-orange">{{ panchangam.yamagandam }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Metrics Section (#0B0820) -->
+<section class="stats-section">
+  <div class="section-container">
+    <div class="editorial-stats-grid">
+      <div class="editorial-stat-item" data-aos="fade-up" data-aos-delay="50">
+        <div class="stat-big-num">50K+</div>
+        <div class="stat-small-label">ஆப் பதிவிறக்கங்கள்</div>
+      </div>
+      <div class="editorial-stat-item" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-big-num">25+</div>
+        <div class="stat-small-label">ஆண்டுகள் அனுபவம்</div>
+      </div>
+      <div class="editorial-stat-item" data-aos="fade-up" data-aos-delay="150">
+        <div class="stat-big-num">4.9 <i class="bi bi-star-fill text-gold fs-5"></i></div>
+        <div class="stat-small-label">ஆப் ஸ்டோர் ரேட்டிங்</div>
+      </div>
+      <div class="editorial-stat-item" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-big-num">99.9%</div>
+        <div class="stat-small-label">திருப்திகரமான கணிப்புகள்</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Zodiac Selector (#17102F) -->
+<section id="zodiac" class="zodiac-section">
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-stars me-1"></i> DAILY HOROSCOPE</span>
+      <h2>12 ராசிகளுக்கான தினசரி பலன்கள்</h2>
+      <p class="section-desc">SELECT YOUR ZODIAC SIGN &bull; DAILY COSMIC PREDICTIONS</p>
+    </div>
+
+    <div class="celestial-zodiac-selector">
+      <!-- 12 Zodiac Wheel Buttons -->
+      <div class="zodiac-btns-layout" data-aos="fade-right" data-aos-duration="400">
+        <button *ngFor="let zodiac of zodiacSigns; let i = index" class="zodiac-luxury-btn"
+          [class.active]="selectedZodiac.name === zodiac.name" (click)="selectZodiac(zodiac)"
+          [attr.aria-label]="zodiac.name">
+          <span class="sign-glyph">{{ zodiac.symbol }}</span>
+          <span class="sign-tamil-name">{{ zodiac.name }}</span>
+        </button>
+      </div>
+
+      <!-- Active Zodiac Display Card -->
+      <div class="zodiac-display-card" data-aos="fade-left" data-aos-duration="400">
+        <div class="card-inner-halo"></div>
+        <div class="zodiac-display-header">
+          <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
+          <h3>{{ selectedZodiac.name }}</h3>
+          <span class="display-label-sub">{{ selectedZodiac.englishName }} &bull; {{ selectedZodiac.dates }}</span>
+        </div>
+        <p class="zodiac-display-prediction">
+          "{{ selectedZodiac.prediction }}"
+        </p>
+        <a href="#download" class="btn-card-luxury">முழுமையான ஜாதக பலன்கள் <i class="bi bi-chevron-right ms-2"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Cards Section (#0B0820) -->
+<section id="services" class="services-section">
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-gem me-1"></i> OUR SERVICES</span>
+      <h2>நாங்கள் வழங்கும் ஜோதிட சேவைகள்</h2>
+      <p class="section-desc">TRADITIONAL GUIDANCE &bull; MODERN EXPERIENCE</p>
+    </div>
+
+    <div class="services-cards-grid">
+      <div class="service-light-card" *ngFor="let service of services; let i = index" data-aos="fade-up"
+        [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
+        <div class="service-icon-badge">
+          <i [class]="service.iconClass"></i>
+        </div>
+        <h3>{{ service.title }}</h3>
+        <span class="service-subtitle">{{ service.englishTitle }}</span>
+        <p>{{ service.description }}</p>
+        <div class="service-card-footer">
+          <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
+          <a href="#download" class="btn-service-action"><i class="bi bi-arrow-right-circle-fill"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Flow (#0B0820) -->
+<section class="how-it-works-section">
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-signpost-split me-1"></i> EASY PROCESS</span>
+      <h2>செயலியைப் பயன்படுத்தும் 4 எளிய படிகள்</h2>
+      <p class="section-desc">SIMPLE 4-STEP PROCESS TO GET YOUR HOROSCOPE</p>
+    </div>
+
+    <div class="horizontal-steps-timeline">
+      <div class="timeline-step" data-aos="fade-up" data-aos-delay="50" data-aos-duration="400">
+        <div class="step-badge-circle">01</div>
+        <div class="step-content-box">
+          <span class="step-icon-label"><i class="bi bi-download text-gold"></i></span>
+          <h4>ஆப் பதிவிறக்கம்</h4>
+          <p>கூகிள் பிளே ஸ்டோர் அல்லது ஆப் ஸ்டோரில் இருந்து செயலியைப் பதிவிறக்குங்கள்.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step" data-aos="fade-up" data-aos-delay="100" data-aos-duration="400">
+        <div class="step-badge-circle">02</div>
+        <div class="step-content-box">
+          <span class="step-icon-label"><i class="bi bi-person-badge text-gold"></i></span>
+          <h4>விவரங்களை பூர்த்தி செய்தல்</h4>
+          <p>உங்கள் பிறந்த தேதி, நேரம் மற்றும் இடத்தை எளிய படிவத்தில் சமர்ப்பியுங்கள்.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step" data-aos="fade-up" data-aos-delay="150" data-aos-duration="400">
+        <div class="step-badge-circle">03</div>
+        <div class="step-content-box">
+          <span class="step-icon-label"><i class="bi bi-shield-check text-gold"></i></span>
+          <h4>பாதுகாப்பான கட்டணம்</h4>
+          <p>UPI, நெட் பேங்கிங் மூலம் பாதுகாப்பாக கட்டணத்தைச் செலுத்துங்கள்.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step" data-aos="fade-up" data-aos-delay="200" data-aos-duration="400">
+        <div class="step-badge-circle">04</div>
+        <div class="step-content-box">
+          <span class="step-icon-label"><i class="bi bi-file-earmark-pdf text-gold"></i></span>
+          <h4>ஜாதகக் கணிப்பு பெறுதல்</h4>
+          <p>24-48 மணி நேரத்திற்குள் பி.டி.எப் வடிவில் உங்கள் கணிப்புகள் ஆப்பில் பதிவேற்றப்படும்.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile App Showcase (#0B0820) -->
+<section id="about" class="app-showcase-section">
+  <div class="section-container">
+    <div class="showcase-layout-grid">
+
+      <div class="showcase-content-left" data-aos="fade-right" data-aos-duration="400">
+        <span class="section-eyebrow"><i class="bi bi-phone me-1"></i> MOBILE APPLICATION</span>
+        <h2>முழுக்க முழுக்க மொபைல் மூலமாகவே ஆலோசனை!</h2>
+        <p class="showcase-desc-para">
+          எங்கள் ஆருத்ரா ஜோதிடம் மொபைல் செயலியைப் பயன்படுத்தி உங்களது அனைத்து ஜோதிடத் தேவைகளையும் மிக எளிய முறையில்
+          நிறைவேற்றிக் கொள்ளலாம்.
+        </p>
+
+        <ul class="luxury-feature-list">
+          <li data-aos="fade-up" data-aos-delay="50">
+            <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
+            <div><strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து
+              சமர்ப்பிக்கலாம்.</div>
+          </li>
+          <li data-aos="fade-up" data-aos-delay="100">
+            <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
+            <div><strong>பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மூலம் 100% பாதுகாப்பான பரிவர்த்தனைகள்.
             </div>
-            <div class="mock-panchangam">
-              <strong>இன்றைய பஞ்சாங்கம்</strong>
-              <div class="panch-details">
-                <span>ஏகாதசி</span>
-                <span>ரோகிணி</span>
+          </li>
+          <li data-aos="fade-up" data-aos-delay="150">
+            <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
+            <div><strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து
+              கொள்ளலாம்.</div>
+          </li>
+          <li data-aos="fade-up" data-aos-delay="200">
+            <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
+            <div><strong>நேரடி தொடர்பு:</strong> குரு ஸ்ரீநிவாசன் மற்றும் குரு ராமஜெயம் ஆகியோரின் பிரத்யேக ஆலோசனைகள்.
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Phone Mockup -->
+      <div class="showcase-mockup-right" data-aos="fade-left" data-aos-duration="400">
+        <div class="phone-frame-wrapper">
+          <div class="phone-glow-aura"></div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="app-bar">
+                <span>ஆருத்ரா ஜோதிடம்</span>
+                <i class="bi bi-bell-fill"></i>
+              </div>
+              <div class="screen-body">
+                <div class="mock-banner">இன்றைய ராசி பலன் <i class="bi bi-stars"></i></div>
+                <div class="mock-screen-content">
+                  <pre>ரிஷப ராசி:
+இன்று சுப செய்திகள் வந்து சேரும். தனலாபம் உண்டு.</pre>
+                </div>
+                <div class="mock-indicator-dots">
+                  <span class="dot active"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </div>
+              <div class="app-tabs">
+                <span class="active-tab"><i class="bi bi-house-fill"></i></span>
+                <span><i class="bi bi-moon-stars-fill"></i></span>
+                <span><i class="bi bi-heart-fill"></i></span>
+                <span><i class="bi bi-person-fill"></i></span>
               </div>
             </div>
           </div>
-          <div class="app-tabs">
-            <span>🏠</span>
-            <span>🔮</span>
-            <span>❤️</span>
-            <span>👤</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Chief Astrologers Section (#17102F) -->
+<section id="astrologers" class="astrologers-section">
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-people me-1"></i> CHIEF ASTROLOGERS</span>
+      <h2>எங்கள் தலைமை ஜோதிடர்கள்</h2>
+      <p class="section-desc">DEEP VEDIC KNOWLEDGE &bull; YEARS OF TRADITIONAL EXPERIENCE</p>
+    </div>
+
+    <div class="editorial-astrologers-grid">
+      <div class="astro-editorial-card" *ngFor="let astro of astrologers; let i = index" data-aos="fade-up"
+        [attr.data-aos-delay]="(i + 1) * 100" data-aos-duration="400">
+        <div class="astro-card-left">
+          <div class="astro-portrait-placeholder">
+            <i [class]="astro.iconClass"></i>
+            <span class="astro-exp-label">{{ astro.experience }}</span>
+          </div>
+        </div>
+        <div class="astro-card-right">
+          <h3>{{ astro.name }}</h3>
+          <span class="astro-editorial-role">{{ astro.role }}</span>
+          <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
+          <div class="astro-editorial-tags">
+            <strong>நிபுணத்துவம்:</strong>
+            <span>{{ astro.specialty }}</span>
+          </div>
+          <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i
+              class="bi bi-arrow-right-short ms-2"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section (#0B0820) - Continuous Marquee Train Animation -->
+<section id="testimonials" class="testimonials-section">
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-chat-heart me-1"></i> VERIFIED USER REVIEWS</span>
+      <h2>வாடிக்கையாளர்களின் அனுபவங்கள்</h2>
+      <p class="section-desc">TESTIMONIALS FROM OUR VALUED CLIENTS &bull; REAL EXPERIENCE</p>
+    </div>
+  </div>
+
+  <!-- Infinite Train Track Carousel Container -->
+  <div class="marquee-train-wrapper">
+    <div class="marquee-train-track">
+      <!-- First set of review cards -->
+      <div class="review-grid-card" *ngFor="let item of testimonials">
+        <div class="card-quote-header">
+          <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
+          <div class="review-stars-badge">
+            <i class="bi bi-star-fill text-gold" *ngFor="let s of [1,2,3,4,5]"></i>
+          </div>
+        </div>
+        <p class="review-comment-text">"{{ item.comment }}"</p>
+        <div class="review-author-row">
+          <div class="author-avatar-circle">{{ item.name[0] }}</div>
+          <div class="author-details">
+            <strong class="author-name-text">{{ item.name }}</strong>
+            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1"></i>சரிபார்க்கப்பட்டது</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duplicated set of review cards for seamless 100% infinite loop -->
+      <div class="review-grid-card" *ngFor="let item of testimonials">
+        <div class="card-quote-header">
+          <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
+          <div class="review-stars-badge">
+            <i class="bi bi-star-fill text-gold" *ngFor="let s of [1,2,3,4,5]"></i>
+          </div>
+        </div>
+        <p class="review-comment-text">"{{ item.comment }}"</p>
+        <div class="review-author-row">
+          <div class="author-avatar-circle">{{ item.name[0] }}</div>
+          <div class="author-details">
+            <strong class="author-name-text">{{ item.name }}</strong>
+            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1"></i>சரிபார்க்கப்பட்டது</span></span>
           </div>
         </div>
       </div>
@@ -187,121 +483,135 @@
   </div>
 </section>
 
-<!-- Chief Astrologers Section -->
-<section id="astrologers" class="astrologers-section">
-  <div class="section-header">
-    <h2>எங்கள் தலைமை ஜோதிடர்கள்</h2>
-    <p>ஆண்டுகளின் பாரம்பரிய ஜோதிட ஞானம் மற்றும் ஆழ்ந்த அனுபவம் வாய்ந்த எங்களின் முதன்மை ஜோதிடர்கள்</p>
-  </div>
-  <div class="astrologers-grid">
-    <div class="astrologer-card" *ngFor="let astro of astrologers">
-      <div class="astro-profile">
-        <div class="astro-avatar-box">
-          <span class="astro-icon-large">{{ astro.icon }}</span>
-          <span class="astro-exp-badge">{{ astro.experience }}</span>
-        </div>
-        <div class="astro-info-header">
-          <h3>{{ astro.name }}</h3>
-          <span class="astro-role">{{ astro.role }}</span>
-        </div>
-      </div>
-      <div class="astro-details-body">
-        <p class="astro-bio">"{{ astro.bio }}"</p>
-        <div class="astro-specialty-tags">
-          <strong>நிபுணத்துவம்:</strong>
-          <span>{{ astro.specialty }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Testimonials Section -->
-<section id="testimonials" class="testimonials-section">
-  <div class="section-header">
-    <h2>வாடிக்கையாளர்களின் அனுபவங்கள்</h2>
-    <p>ஆருத்ரா ஜோதிடம் மூலம் பயனடைந்த எங்களின் சில வாடிக்கையாளர்கள்</p>
-  </div>
-  <div class="testimonials-grid">
-    <div class="testimonial-card" *ngFor="let t of testimonials">
-      <div class="stars">⭐️⭐️⭐️⭐️⭐️</div>
-      <p class="comment">"{{ t.comment }}"</p>
-      <div class="user-info">
-        <div class="avatar">{{ t.name[0] }}</div>
-        <div>
-          <h4>{{ t.name }}</h4>
-          <span>{{ t.location }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ Section -->
+<!-- FAQ Accordion Section (#110B27) -->
 <section id="faq" class="faq-section">
-  <div class="section-header">
-    <h2>அடிக்கடி கேட்கப்படும் கேள்விகள் (FAQ)</h2>
-    <p>உங்களுக்கு ஏதேனும் சந்தேகம் உள்ளதா? இங்கே சில முக்கிய விடைகள் உள்ளன.</p>
-  </div>
-  <div class="faq-list">
-    <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.active]="faq.open">
-      <div class="faq-question" (click)="toggleFaq(i)">
-        <h3>{{ faq.question }}</h3>
-        <span class="faq-toggle-icon">{{ faq.open ? '−' : '+' }}</span>
-      </div>
-      <div class="faq-answer" *ngIf="faq.open">
-        <p>{{ faq.answer }}</p>
+  <div class="section-container">
+    <div class="center-editorial-header" data-aos="fade-up" data-aos-duration="400">
+      <span class="section-eyebrow"><i class="bi bi-question-circle me-1"></i> FREQUENTLY ASKED QUESTIONS</span>
+      <h2>அடிக்கடி கேட்கப்படும் கேள்விகள்</h2>
+      <p class="section-desc">EVERYTHING YOU NEED TO KNOW ABOUT ARUTHRA ASTROLOGY</p>
+    </div>
+
+    <div class="faq-accordion-rows">
+      <div class="faq-accordion-row" *ngFor="let faq of faqs; let idx = index" [class.active]="faq.open"
+        data-aos="fade-up" [attr.data-aos-delay]="(idx + 1) * 50" data-aos-duration="400">
+        <div class="faq-row-header" (click)="toggleFaq(idx)">
+          <h3>{{ faq.question }}</h3>
+          <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
+        </div>
+        <div class="faq-row-body" *ngIf="faq.open">
+          <p>{{ faq.answer }}</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Download / App CTA Section -->
+<!-- Download / App CTA Section (#0B0820) -->
 <section id="download" class="download-section">
-  <div class="download-container">
-    <h2>இன்றே மொபைல் செயலியைப் பதிவிறக்குங்கள்!</h2>
-    <p>உங்கள் ஆண்ட்ராய்டு அல்லது ஐபோனில் ஆருத்ரா ஜோதிடம் செயலியைப் பதிவிறக்கி, உங்கள் முதல் ஜாதகக் கணிப்பு அல்லது திருமணப் பொருத்தத்தை உடனடியாகப் பெறுங்கள்.</p>
-    <div class="app-buttons">
-      <a href="#" class="store-button google-play" (click)="$event.preventDefault()">
-        <span class="store-icon">🤖</span>
-        <div class="store-text">
-          <span class="btn-sub">GET IT ON</span>
-          <span class="btn-main">Google Play</span>
-        </div>
-      </a>
-      <a href="#" class="store-button app-store" (click)="$event.preventDefault()">
-        <span class="store-icon">🍎</span>
-        <div class="store-text">
-          <span class="btn-sub">Download on the</span>
-          <span class="btn-main">App Store</span>
-        </div>
-      </a>
+  <div class="section-container">
+    <div class="download-editorial-box" data-aos="fade-up" data-aos-duration="400">
+      <span class="cta-eyebrow">DOWNLOAD ARUTHRA ASTROLOGY APP</span>
+      <h2>இன்றே ஆருத்ரா ஜோதிடம் செயலியைப் பதிவிறக்கம் செய்யுங்கள்!</h2>
+      <p class="cta-desc-para">
+        உங்கள் மொபைலிலேயே துல்லியமான வேத ஜாதகக் கணிப்புகள் மற்றும் முதன்மை ஜோதிடர்களின் நேரடி ஆலோசனைகளைப் பெறுங்கள்.
+      </p>
+
+      <div class="app-buttons-row">
+        <a href="#" class="luxury-store-btn" (click)="$event.preventDefault()">
+          <span class="store-logo-icon"><i class="bi bi-google-play"></i></span>
+          <div class="store-btn-labels">
+            <span class="sub-label">GET IT ON</span>
+            <span class="main-label">Google Play</span>
+          </div>
+        </a>
+        <a href="#" class="luxury-store-btn" (click)="$event.preventDefault()">
+          <span class="store-logo-icon"><i class="bi bi-apple"></i></span>
+          <div class="store-btn-labels">
+            <span class="sub-label">Download on the</span>
+            <span class="main-label">App Store</span>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Footer -->
+<!-- Luxury South Indian Astrology Theme Footer (#070512) -->
 <footer class="app-footer">
-  <div class="footer-container">
-    <div class="footer-brand">
-      <span class="footer-logo">🔱 ஆருத்ரா ஜோதிடம்</span>
-      <p>உங்களுக்கு நல்வழிகாட்டும் ஆன்லைன் ஜோதிட தளம்.</p>
+  <div class="section-container">
+    <div class="footer-grid-layout">
+      
+      <!-- Column 1: Brand & Social Media -->
+      <div class="footer-brand-column">
+        <div class="footer-brand-title">
+          <span class="brand-icon-halo"><i class="bi bi-moon-stars-fill text-gold"></i></span>
+          <div class="brand-text-stack">
+            <span class="tamil-brand">ஆருத்ரா ஜோதிடம்</span>
+            <span class="english-brand">ARUTHRA ASTROLOGY</span>
+          </div>
+        </div>
+        <p class="footer-brand-desc">
+          பாரம்பரிய தென் இந்திய வேத கணித முறைப்படி கணிக்கப்படும் 100% துல்லியமான ஆன்லைன் ஜோதிடச் சேவைத் தளம்.
+        </p>
+        <div class="footer-social-row">
+          <a href="#" (click)="$event.preventDefault()" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          <a href="#" (click)="$event.preventDefault()" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+          <a href="#" (click)="$event.preventDefault()" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" (click)="$event.preventDefault()" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+        </div>
+      </div>
+
+      <!-- Column 2: Services -->
+      <div class="footer-links-column">
+        <h4>எங்களது சேவைகள்</h4>
+        <div class="footer-links-list">
+          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
+          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
+          <a routerLink="/astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
+          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> நியூமராலஜி</a>
+        </div>
+      </div>
+
+      <!-- Column 3: Quick Navigation -->
+      <div class="footer-links-column">
+        <h4>விரைவு இணைப்புகள்</h4>
+        <div class="footer-links-list">
+          <a routerLink="/"><i class="bi bi-chevron-right me-1 fs-xs"></i> முகப்பு</a>
+          <a routerLink="/panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
+          <a routerLink="/zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
+          <a routerLink="/faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
+          <a routerLink="/admin"><i class="bi bi-chevron-right me-1 fs-xs"></i> Admin Portal</a>
+        </div>
+      </div>
+
+      <!-- Column 4: Contact & App Badge -->
+      <div class="footer-contact-column">
+        <h4>தொடர்புகொள்ள</h4>
+        <div class="contact-info-list">
+          <p><i class="bi bi-telephone-fill text-gold me-2"></i> +91 98765 43210</p>
+          <p><i class="bi bi-envelope-fill text-gold me-2"></i> support&#64;aruthraastrology.com</p>
+          <p><i class="bi bi-geo-alt-fill text-gold me-2"></i> சென்னை, தமிழ்நாடு.</p>
+        </div>
+      </div>
+
     </div>
-    <div class="footer-links">
-      <h4>லிங்குகள்</h4>
-      <a href="#hero">முகப்பு</a>
-      <a href="#services">சேவைகள்</a>
-      <a href="#faq">FAQ</a>
-      <a routerLink="/admin">Admin Portal</a>
+
+    <!-- Bottom Bar with Copyright, Macvel Software Solutions Credit & Legal Links -->
+    <div class="footer-bottom-bar">
+      <div class="footer-bottom-left">
+        <p class="copyright-text">&copy; 2026 Aruthra Astrology. All Rights Reserved.</p>
+        <span class="developer-credit">
+          Designed & Developed by <strong class="macvel-brand-highlight">Macvel Software Solutions</strong>
+        </span>
+      </div>
+      <div class="footer-legal-links">
+        <a href="#" (click)="$event.preventDefault()">தனியுரிமைக் கொள்கை (Privacy Policy)</a>
+        <span class="bullet-dot">&bull;</span>
+        <a href="#" (click)="$event.preventDefault()">விதிமுறைகள் (Terms)</a>
+        <span class="bullet-dot">&bull;</span>
+        <a href="#" (click)="$event.preventDefault()">உதவி மையம் (Support)</a>
+      </div>
     </div>
-    <div class="footer-contact">
-      <h4>தொடர்புக்கு</h4>
-      <p>📞 +91 98765 43210</p>
-      <p>✉️ support&#64;aruthraastrology.com</p>
-      <p>📍 சென்னை, தமிழ்நாடு.</p>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; 2026 Aruthra Astrology. All Rights Reserved. Designed for premium UI & UX.</p>
   </div>
 </footer>
