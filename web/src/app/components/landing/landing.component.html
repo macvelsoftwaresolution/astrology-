@@ -1,0 +1,307 @@
+<!-- Navigation Bar -->
+<header class="app-header">
+  <div class="nav-container">
+    <div class="logo">
+      <span class="logo-symbol">🔱</span>
+      <div class="logo-text">
+        <span class="tamil-title">ஆருத்ரா ஜோதிடம்</span>
+        <span class="english-subtitle">Aruthra Astrology</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="#hero">முகப்பு</a>
+      <a href="#services">சேவைகள்</a>
+      <a href="#about">விளக்கம்</a>
+      <a href="#astrologers">ஜோதிடர்கள்</a>
+      <a href="#testimonials">மதிப்புரைகள்</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="header-actions">
+      <a routerLink="/admin" class="btn-admin" title="Admin Portal">
+        <span>⚙️ Admin</span>
+      </a>
+      <a href="#download" class="btn-primary">Get App</a>
+    </div>
+  </div>
+</header>
+
+<!-- Hero Section -->
+<section id="hero" class="hero-section">
+  <div class="stars-overlay"></div>
+  <div class="hero-ornament"></div>
+  <div class="hero-content">
+    <span class="hero-badge">✨ ஆன்லைன் ஜோதிட ஆலோசனைகள் ✨</span>
+    <h1>உங்கள் வாழ்வின் வழிகாட்டி <br><span class="highlight-text">ஆருத்ரா ஜோதிடம்</span></h1>
+    <p class="hero-description">
+      துல்லியமான ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், வாஸ்து ஆலோசனைகள் மற்றும் எண்கணித முறைகளை உங்கள் மொபைல் மூலமாகவே பெற்று ஜோதிடர்களின் நேரடி ஆலோசனைகளைப் பெறுங்கள்.
+    </p>
+    <div class="hero-buttons">
+      <a href="#download" class="btn-cta-gold">
+        <span>📲 டவுன்லோட் மொபைல் ஆப்</span>
+      </a>
+      <a href="#services" class="btn-cta-outline">எங்கள் சேவைகள்</a>
+    </div>
+  </div>
+</section>
+
+<!-- Live Panchangam Banner -->
+<section class="live-panchangam-section">
+  <div class="panchangam-banner-card">
+    <div class="panch-left">
+      <span class="panch-badge">✨ இன்றைய நாள் ✨</span>
+      <h3>தினசரி பஞ்சாங்கக் குறிப்பு</h3>
+      <p class="panch-date">தேதி: {{ panchangam.date }}</p>
+    </div>
+    <div class="panch-right-grid">
+      <div class="panch-cell">
+        <span class="cell-label">திதி</span>
+        <strong class="cell-val">{{ panchangam.thithi }}</strong>
+      </div>
+      <div class="panch-cell">
+        <span class="cell-label">நட்சத்திரம்</span>
+        <strong class="cell-val">{{ panchangam.star }}</strong>
+      </div>
+      <div class="panch-cell">
+        <span class="cell-label">நல்ல நேரம்</span>
+        <strong class="cell-val text-green">{{ panchangam.nallaNeram }}</strong>
+      </div>
+      <div class="panch-cell">
+        <span class="cell-label">இராகு காலம்</span>
+        <strong class="cell-val text-red">{{ panchangam.rahukalam }}</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">50K+</span>
+      <span class="stat-label">பதிவிறக்கங்கள்</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">15+</span>
+      <span class="stat-label">தலைமை ஜோதிடர்கள்</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">4.9 ★</span>
+      <span class="stat-label">ஆப் ஸ்டோர் ரேட்டிங்</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">99.9%</span>
+      <span class="stat-label">திருப்திகரமான கணிப்புகள்</span>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="services-section">
+  <div class="section-header">
+    <h2>நாங்கள் வழங்கும் ஜோதிட சேவைகள்</h2>
+    <p>மொபைல் செயலி மூலம் நீங்கள் பெறக்கூடிய முதன்மையான நான்கு ஜோதிட ஆலோசனைகள்</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card" *ngFor="let service of services">
+      <div class="service-icon">{{ service.icon }}</div>
+      <h3>{{ service.title }}</h3>
+      <span class="service-subtitle">{{ service.englishTitle }}</span>
+      <p>{{ service.description }}</p>
+      <div class="service-footer">
+        <span class="service-price">கட்டணம்: <strong>{{ service.price }}</strong></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile App Features Showcase -->
+<section id="about" class="app-showcase-section">
+  <div class="showcase-container">
+    <div class="showcase-text">
+      <h2>முழுக்க முழுக்க மொபைல் மூலமாகவே ஆலோசனை!</h2>
+      <p>
+        எங்கள் ஆருத்ரா ஜோதிடம் மொபைல் செயலியைப் பயன்படுத்தி உங்களது அனைத்து ஜோதிடத் தேவைகளையும் மிக எளிய முறையில் நிறைவேற்றிக் கொள்ளலாம். உங்கள் மொபைல் மூலமாகவே:
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="feat-icon">✅</span>
+          <div>
+            <strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து சமர்ப்பிக்கலாம்.
+          </div>
+        </li>
+        <li>
+          <span class="feat-icon">✅</span>
+          <div>
+            <strong>பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மற்றும் நெட் பேங்கிங் மூலம் 100% பாதுகாப்பான பரிவர்த்தனைகள்.
+          </div>
+        </li>
+        <li>
+          <span class="feat-icon">✅</span>
+          <div>
+            <strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ மற்றும் வீடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து கொள்ளலாம்.
+          </div>
+        </li>
+        <li>
+          <span class="feat-icon">✅</span>
+          <div>
+            <strong>ஜோதிடர்களுடன் நேரடி தொடர்பு:</strong> குரு ஸ்ரீநிவாசன் மற்றும் குரு ராமஜெயம் ஆகியோரின் பிரத்யேக ஆலோசனைகள்.
+          </div>
+        </li>
+      </ul>
+      <a href="#download" class="btn-primary" style="margin-top: 1.5rem; display: inline-block;">இப்போதே தொடங்குங்கள்</a>
+    </div>
+    
+    <div class="showcase-visual">
+      <!-- Mockup representing app screen preview -->
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="app-bar">
+            <span>ஆருத்ரா ஜோதிடம்</span>
+            <span>🔔</span>
+          </div>
+          <div class="screen-body">
+            <div class="mock-banner">இன்றைய ராசி பலன் 🌌</div>
+            <div class="mock-grid">
+              <div class="mock-item">✨ ராசி பலன்</div>
+              <div class="mock-item">💍 பொருத்தம்</div>
+              <div class="mock-item">🏡 வாஸ்து</div>
+              <div class="mock-item">🕉️ பஞ்சாங்கம்</div>
+            </div>
+            <div class="mock-panchangam">
+              <strong>இன்றைய பஞ்சாங்கம்</strong>
+              <div class="panch-details">
+                <span>ஏகாதசி</span>
+                <span>ரோகிணி</span>
+              </div>
+            </div>
+          </div>
+          <div class="app-tabs">
+            <span>🏠</span>
+            <span>🔮</span>
+            <span>❤️</span>
+            <span>👤</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Chief Astrologers Section -->
+<section id="astrologers" class="astrologers-section">
+  <div class="section-header">
+    <h2>எங்கள் தலைமை ஜோதிடர்கள்</h2>
+    <p>ஆண்டுகளின் பாரம்பரிய ஜோதிட ஞானம் மற்றும் ஆழ்ந்த அனுபவம் வாய்ந்த எங்களின் முதன்மை ஜோதிடர்கள்</p>
+  </div>
+  <div class="astrologers-grid">
+    <div class="astrologer-card" *ngFor="let astro of astrologers">
+      <div class="astro-profile">
+        <div class="astro-avatar-box">
+          <span class="astro-icon-large">{{ astro.icon }}</span>
+          <span class="astro-exp-badge">{{ astro.experience }}</span>
+        </div>
+        <div class="astro-info-header">
+          <h3>{{ astro.name }}</h3>
+          <span class="astro-role">{{ astro.role }}</span>
+        </div>
+      </div>
+      <div class="astro-details-body">
+        <p class="astro-bio">"{{ astro.bio }}"</p>
+        <div class="astro-specialty-tags">
+          <strong>நிபுணத்துவம்:</strong>
+          <span>{{ astro.specialty }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials-section">
+  <div class="section-header">
+    <h2>வாடிக்கையாளர்களின் அனுபவங்கள்</h2>
+    <p>ஆருத்ரா ஜோதிடம் மூலம் பயனடைந்த எங்களின் சில வாடிக்கையாளர்கள்</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card" *ngFor="let t of testimonials">
+      <div class="stars">⭐️⭐️⭐️⭐️⭐️</div>
+      <p class="comment">"{{ t.comment }}"</p>
+      <div class="user-info">
+        <div class="avatar">{{ t.name[0] }}</div>
+        <div>
+          <h4>{{ t.name }}</h4>
+          <span>{{ t.location }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="faq-section">
+  <div class="section-header">
+    <h2>அடிக்கடி கேட்கப்படும் கேள்விகள் (FAQ)</h2>
+    <p>உங்களுக்கு ஏதேனும் சந்தேகம் உள்ளதா? இங்கே சில முக்கிய விடைகள் உள்ளன.</p>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.active]="faq.open">
+      <div class="faq-question" (click)="toggleFaq(i)">
+        <h3>{{ faq.question }}</h3>
+        <span class="faq-toggle-icon">{{ faq.open ? '−' : '+' }}</span>
+      </div>
+      <div class="faq-answer" *ngIf="faq.open">
+        <p>{{ faq.answer }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Download / App CTA Section -->
+<section id="download" class="download-section">
+  <div class="download-container">
+    <h2>இன்றே மொபைல் செயலியைப் பதிவிறக்குங்கள்!</h2>
+    <p>உங்கள் ஆண்ட்ராய்டு அல்லது ஐபோனில் ஆருத்ரா ஜோதிடம் செயலியைப் பதிவிறக்கி, உங்கள் முதல் ஜாதகக் கணிப்பு அல்லது திருமணப் பொருத்தத்தை உடனடியாகப் பெறுங்கள்.</p>
+    <div class="app-buttons">
+      <a href="#" class="store-button google-play" (click)="$event.preventDefault()">
+        <span class="store-icon">🤖</span>
+        <div class="store-text">
+          <span class="btn-sub">GET IT ON</span>
+          <span class="btn-main">Google Play</span>
+        </div>
+      </a>
+      <a href="#" class="store-button app-store" (click)="$event.preventDefault()">
+        <span class="store-icon">🍎</span>
+        <div class="store-text">
+          <span class="btn-sub">Download on the</span>
+          <span class="btn-main">App Store</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="app-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <span class="footer-logo">🔱 ஆருத்ரா ஜோதிடம்</span>
+      <p>உங்களுக்கு நல்வழிகாட்டும் ஆன்லைன் ஜோதிட தளம்.</p>
+    </div>
+    <div class="footer-links">
+      <h4>லிங்குகள்</h4>
+      <a href="#hero">முகப்பு</a>
+      <a href="#services">சேவைகள்</a>
+      <a href="#faq">FAQ</a>
+      <a routerLink="/admin">Admin Portal</a>
+    </div>
+    <div class="footer-contact">
+      <h4>தொடர்புக்கு</h4>
+      <p>📞 +91 98765 43210</p>
+      <p>✉️ support&#64;aruthraastrology.com</p>
+      <p>📍 சென்னை, தமிழ்நாடு.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Aruthra Astrology. All Rights Reserved. Designed for premium UI & UX.</p>
+  </div>
+</footer>

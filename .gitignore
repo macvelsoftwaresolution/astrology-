@@ -1,15 +1,30 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+**/dist/
+**/tmp/
+**/out-tsc/
+**/bazel-out/
+**/www/
+**/platforms/
+**/plugins/
+**/android/
+**/ios/
 
-# Node
-/node_modules
+# Node & Package Managers
+**/node_modules/
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
+
+# Composer & Laravel
+**/vendor/
+**/bootstrap/cache/
+**/.phpunit.result.cache
+**/storage/*.key
+**/.env
+**/.env.*
+!**/.env.example
 
 # IDEs and editors
 .idea/
@@ -30,7 +45,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+**/.angular/
 .sass-cache/
 /connect.lock
 /coverage
@@ -42,3 +57,4 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+

@@ -1,0 +1,83 @@
+<!-- Step 1: Input Form -->
+<div class="matching-form-card" *ngIf="serviceStep === 1">
+  <div class="form-banner">ஜாதக பொருத்தம் அறிய இருபாலரின் விவரங்களை உள்ளிடவும்</div>
+  
+  <!-- Boy Inputs -->
+  <div class="form-section-title">ஆண் விவரங்கள் (Boy Details)</div>
+  <div class="input-row">
+    <label>பெயர் (Name)</label>
+    <input type="text" [(ngModel)]="matchingForm.boyName" placeholder="ஆணின் பெயர்">
+  </div>
+  <div class="input-row">
+    <label>பிறந்த தேதி (DOB)</label>
+    <input type="date" [(ngModel)]="matchingForm.boyDob">
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>ராசி</label>
+      <select [(ngModel)]="matchingForm.boyRasi">
+        <option *ngFor="let r of rasis" [value]="r.name">{{ r.name }}</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>நட்சத்திரம்</label>
+      <input type="text" [(ngModel)]="matchingForm.boyStar" placeholder="நட்சத்திரம்">
+    </div>
+  </div>
+
+  <div class="form-divider"></div>
+
+  <!-- Girl Inputs -->
+  <div class="form-section-title">பெண் விவரங்கள் (Girl Details)</div>
+  <div class="input-row">
+    <label>பெயர் (Name)</label>
+    <input type="text" [(ngModel)]="matchingForm.girlName" placeholder="பெண்ணின் பெயர்">
+  </div>
+  <div class="input-row">
+    <label>பிறந்த தேதி (DOB)</label>
+    <input type="date" [(ngModel)]="matchingForm.girlDob">
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>ராசி</label>
+      <select [(ngModel)]="matchingForm.girlRasi">
+        <option *ngFor="let r of rasis" [value]="r.name">{{ r.name }}</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>நட்சத்திரம்</label>
+      <input type="text" [(ngModel)]="matchingForm.girlStar" placeholder="நட்சத்திரம்">
+    </div>
+  </div>
+
+  <button (click)="calculateMatching()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">பொருத்தம் பார்க்க (₹500)</button>
+</div>
+
+<!-- Step 2: Matchmaking results scorecard -->
+<div class="match-result-container" *ngIf="serviceStep === 2 && matchingResult">
+  <div class="match-result-card">
+    <h3>பொருத்த விவரங்கள்</h3>
+    <div class="score-badge">{{ matchingResult.score }}</div>
+    <p class="score-status">{{ matchingResult.status }}</p>
+
+    <div class="match-summary-grid">
+      <div>
+        <strong>ஆண்:</strong>
+        <p>{{ matchingResult.boy.name }} ({{ matchingResult.boy.rasi }} - {{ matchingResult.boy.star }})</p>
+      </div>
+      <div>
+        <strong>பெண்:</strong>
+        <p>{{ matchingResult.girl.name }} ({{ matchingResult.girl.rasi }} - {{ matchingResult.girl.star }})</p>
+      </div>
+    </div>
+
+    <div class="match-list">
+      <div class="match-list-item" *ngFor="let m of matchingResult.matchesDetails">
+        <span>{{ m.name }}</span>
+        <strong>{{ m.status }}</strong>
+      </div>
+    </div>
+
+    <button class="btn-app-gold" (click)="resetForm()" style="margin-top: 1.5rem; width: 100%;">புதிய பொருத்தம் பார்க்க</button>
+  </div>
+</div>

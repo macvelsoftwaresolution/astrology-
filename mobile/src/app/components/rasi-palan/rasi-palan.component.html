@@ -1,0 +1,61 @@
+<!-- Rasi Grid View (rendered when no specific rasi is being detailed, or grid-only is requested) -->
+<div class="rasi-selection-container" *ngIf="!selectedRasi">
+  <div class="rasi-grid">
+    <div class="rasi-box" *ngFor="let r of rasis" (click)="selectRasi(r)">
+      <span class="rasi-glyph">{{ r.image }}</span>
+      <strong>{{ r.name }}</strong>
+      <span>{{ r.english }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed Rasi Palan Screen (Overlay slide-up style) -->
+<div class="overlay-panel" *ngIf="selectedRasi && !showGridOnly">
+  <div class="overlay-header">
+    <button class="btn-back" (click)="closeDetail()">◀</button>
+    <h2>ராசி பலன்</h2>
+    <div style="width: 24px;"></div>
+  </div>
+
+  <div class="rasi-detail-container">
+    <div class="rasi-detail-header-card">
+      <span class="detail-zodiac-icon">{{ selectedRasi.image }}</span>
+      <h3>{{ selectedRasi.name }} ({{ selectedRasi.english }})</h3>
+      <button class="btn-change-rasi" (click)="closeDetail()">ராசி மாற்றுக</button>
+    </div>
+
+    <!-- Tabs selector -->
+    <div class="rasi-tab-header">
+      <button [class.active]="selectedRasiTab === 'daily'" (click)="selectedRasiTab = 'daily'">தினசரி</button>
+      <button [class.active]="selectedRasiTab === 'weekly'" (click)="selectedRasiTab = 'weekly'">வாராந்திர</button>
+      <button [class.active]="selectedRasiTab === 'monthly'" (click)="selectedRasiTab = 'monthly'">மாதாந்திர</button>
+      <button [class.active]="selectedRasiTab === 'yearly'" (click)="selectedRasiTab = 'yearly'">வருடாந்திர</button>
+    </div>
+
+    <!-- Predictions content -->
+    <div class="rasi-prediction-box">
+      <h4>இன்றைய கணிப்பு</h4>
+      <p>
+        இன்று உங்களுக்கு மிகவும் உற்சாகமான நாளாக இருக்கும். உங்கள் உழைப்பிற்கு ஏற்ற பலன் கிடைக்கும். குடும்பத்தில் மகிழ்ச்சியும் நிம்மதியும் நிலவும். வியாபாரத்தில் புதிய வாய்ப்புகள் தேடி வரும். உத்தியோகத்தில் சக ஊழியர்களின் ஒத்துழைப்பு கிடைக்கும். வெளிநாட்டு பயணங்கள் சாதகமாக அமையும்.
+      </p>
+
+      <!-- Audio Player widget -->
+      <div class="audio-player-card">
+        <div class="player-icon">🎙️</div>
+        <div class="player-controls">
+          <strong>தினசரி மந்திரம் & பலன்கள்</strong>
+          <div class="progress-bar-container">
+            <div class="progress-fill" [style.width.%]="audioProgress"></div>
+          </div>
+          <div class="time-row">
+            <span>{{ audioCurrentTime }}</span>
+            <span>{{ audioDuration }}</span>
+          </div>
+        </div>
+        <button class="btn-play-pause" (click)="toggleAudio()">
+          {{ audioPlaying ? '⏸️' : '▶️' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

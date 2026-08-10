@@ -1,0 +1,1225 @@
+/* Root/Host styling variables for landing */
+:host {
+  --color-beige: #FBF9E7;
+  --color-maroon-dark: #2A080C;
+  --color-maroon: #4A0E17;
+  --color-gold: #A27B38;
+  --color-gold-light: #C5A059;
+  --color-text-dark: #2C2520;
+  --color-text-muted: #6B5B52;
+  --color-card-bg: #FFFFFF;
+  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  background-color: var(--color-beige);
+  color: var(--color-text-dark);
+  scroll-behavior: smooth;
+}
+
+/* Common Layout Containers */
+.nav-container, .stats-grid, .services-grid, .showcase-container, .testimonials-grid, .faq-list, .download-container, .footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Header & Navigation */
+.app-header {
+  position: sticky;
+  top: 0;
+  background-color: rgba(251, 249, 231, 0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(162, 123, 56, 0.15);
+  z-index: 1000;
+  padding: 1rem 0;
+  box-shadow: 0 4px 30px rgba(74, 14, 23, 0.03);
+  transition: var(--transition-smooth);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.logo-symbol {
+  font-size: 2.4rem;
+  color: var(--color-gold);
+  filter: drop-shadow(0 2px 8px rgba(74, 14, 23, 0.25));
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.tamil-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--color-maroon);
+  line-height: 1.1;
+  font-family: 'Noto Serif Tamil', serif;
+}
+
+.english-subtitle {
+  font-size: 0.75rem;
+  color: var(--color-gold);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--color-text-dark);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+  position: relative;
+  padding: 0.25rem 0;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light));
+  transition: var(--transition-smooth);
+}
+
+.nav-links a:hover {
+  color: var(--color-gold);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Button UI */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+  color: #FFFFFF;
+  text-decoration: none;
+  padding: 0.75rem 1.6rem;
+  border-radius: 50px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(162, 123, 56, 0.25);
+  transition: var(--transition-smooth);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(162, 123, 56, 0.35);
+}
+
+.btn-admin {
+  text-decoration: none;
+  color: var(--color-maroon);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--color-maroon);
+  padding: 0.6rem 1.25rem;
+  border-radius: 50px;
+  transition: var(--transition-smooth);
+}
+
+.btn-admin:hover {
+  background-color: var(--color-maroon);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(74, 14, 23, 0.15);
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, var(--color-maroon) 20%, var(--color-maroon-dark) 100%);
+  color: #FFFFFF;
+  text-align: center;
+  padding: 8rem 1rem 6rem 1rem;
+  overflow: hidden;
+}
+
+.stars-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+  background-size: 550px 550px, 350px 350px, 250px 250px;
+  background-position: 0 0, 40px 60px, 130px 270px;
+  opacity: 0.3;
+  animation: starRotate 280s linear infinite;
+}
+
+.hero-ornament {
+  position: absolute;
+  right: -50px;
+  bottom: -50px;
+  width: 500px;
+  height: 500px;
+  border: 2px dashed rgba(236, 200, 118, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: rotateZodiac 80s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+  z-index: 1;
+}
+
+.hero-ornament::before {
+  content: '♈ ♉ ♊ ♋ ♌ ♍ ♎ ♏ ♐ ♑ ♒ ♓';
+  color: rgba(236, 200, 118, 0.12);
+  font-size: 1.5rem;
+  letter-spacing: 2.2rem;
+  position: absolute;
+  white-space: nowrap;
+}
+
+@keyframes starRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotateZodiac {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 850px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(162, 123, 56, 0.18);
+  border: 1px solid rgba(236, 200, 118, 0.4);
+  color: #ECC876;
+  padding: 0.5rem 1.75rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 2.25rem;
+  letter-spacing: 1.5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.hero-section h1 {
+  font-size: 3.8rem;
+  line-height: 1.25;
+  margin-bottom: 1.75rem;
+  font-weight: 800;
+  font-family: 'Noto Serif Tamil', serif;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+}
+
+.highlight-text {
+  background: linear-gradient(120deg, #ECC876 0%, #F5B041 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+
+.hero-description {
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: rgba(251, 249, 231, 0.9);
+  margin-bottom: 3.5rem;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-cta-gold {
+  background: linear-gradient(135deg, #ECC876, #A27B38);
+  color: var(--color-maroon-dark);
+  text-decoration: none;
+  padding: 1.1rem 2.4rem;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 6px 25px rgba(162, 123, 56, 0.4);
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+}
+
+.btn-cta-gold:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(162, 123, 56, 0.6);
+}
+
+.btn-cta-outline {
+  background-color: transparent;
+  color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  padding: 1.1rem 2.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: var(--transition-smooth);
+}
+
+.btn-cta-outline:hover {
+  border-color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Stats Section */
+.stats-section {
+  background-color: #FFFFFF;
+  padding: 3.5rem 0;
+  border-bottom: 1px solid rgba(162, 123, 56, 0.1);
+  box-shadow: inset 0 10px 30px rgba(74, 14, 23, 0.01);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5rem;
+  text-align: center;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-number {
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--color-maroon);
+  background: linear-gradient(135deg, var(--color-maroon), var(--color-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* Services Section */
+.services-section {
+  padding: 7rem 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.section-header h2 {
+  font-size: 2.75rem;
+  color: var(--color-maroon);
+  font-family: 'Noto Serif Tamil', serif;
+  margin-bottom: 1.25rem;
+  font-weight: 800;
+}
+
+.section-header p {
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
+  max-width: 650px;
+  margin: 0 auto;
+  font-weight: 500;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 2.5rem;
+}
+
+.service-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid rgba(162, 123, 56, 0.15);
+  border-radius: 24px;
+  padding: 3rem 2.2rem;
+  box-shadow: 0 10px 30px rgba(74, 14, 23, 0.015);
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light));
+  opacity: 0;
+  transition: var(--transition-smooth);
+}
+
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 45px rgba(74, 14, 23, 0.08);
+  border-color: rgba(162, 123, 56, 0.35);
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.service-icon {
+  font-size: 2.8rem;
+  margin-bottom: 1.75rem;
+  transition: var(--transition-smooth);
+  display: inline-block;
+}
+
+.service-card h3 {
+  font-size: 1.45rem;
+  color: var(--color-maroon);
+  margin-bottom: 0.35rem;
+  font-family: 'Noto Serif Tamil', serif;
+  font-weight: 700;
+}
+
+.service-subtitle {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.service-card p {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 1.75rem;
+  flex-grow: 1;
+}
+
+.service-footer {
+  border-top: 1px dashed rgba(162, 123, 56, 0.15);
+  padding-top: 1.5rem;
+}
+
+.service-price {
+  font-size: 0.9rem;
+  color: var(--color-text-dark);
+  font-weight: 600;
+}
+
+.service-price strong {
+  font-size: 1.25rem;
+  color: var(--color-maroon);
+  font-weight: 800;
+}
+
+/* Showcase Section */
+.app-showcase-section {
+  background-color: #FFFFFF;
+  padding: 7rem 0;
+  border-top: 1px solid rgba(162, 123, 56, 0.12);
+  border-bottom: 1px solid rgba(162, 123, 56, 0.12);
+}
+
+.showcase-container {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
+  flex-wrap: wrap;
+}
+
+.showcase-text {
+  flex: 1.1;
+  min-width: 320px;
+}
+
+.showcase-text h2 {
+  font-size: 2.75rem;
+  color: var(--color-maroon);
+  font-family: 'Noto Serif Tamil', serif;
+  margin-bottom: 1.75rem;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.showcase-text p {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--color-text-muted);
+  margin-bottom: 2.25rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.feature-list li {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.feat-icon {
+  font-size: 1.3rem;
+  color: var(--color-gold);
+  background-color: rgba(162, 123, 56, 0.08);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-list li strong {
+  color: var(--color-maroon);
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 1.05rem;
+}
+
+.feature-list li div {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.showcase-visual {
+  flex: 0.9;
+  min-width: 320px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.showcase-visual::before {
+  content: '';
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(162, 123, 56, 0.15) 0%, transparent 70%);
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Phone Mockup */
+.phone-frame {
+  width: 290px;
+  height: 580px;
+  background-color: #1a1a1a;
+  border: 10px solid #2d2d2d;
+  border-radius: 40px;
+  box-shadow: 0 25px 60px rgba(74, 14, 23, 0.12), 0 0 35px rgba(162, 123, 56, 0.2);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  border-color: #1e1e1e;
+}
+
+.phone-screen {
+  background-color: var(--color-beige);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+}
+
+.app-bar {
+  background-color: var(--color-maroon);
+  color: #FFFFFF;
+  padding: 1.2rem 1rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.screen-body {
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mock-banner {
+  background: linear-gradient(135deg, var(--color-maroon), var(--color-maroon-dark));
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(74, 14, 23, 0.15);
+}
+
+.mock-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.mock-item {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(162, 123, 56, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--color-maroon);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.mock-panchangam {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 0.9rem;
+  border: 1px solid rgba(162, 123, 56, 0.2);
+  margin-top: 0.25rem;
+}
+
+.mock-panchangam strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-maroon);
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(162, 123, 56, 0.1);
+  padding-bottom: 0.25rem;
+}
+
+.panch-details {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.app-tabs {
+  background-color: #FFFFFF;
+  border-top: 1px solid rgba(162, 123, 56, 0.1);
+  padding: 0.75rem 0;
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.2rem;
+  color: var(--color-text-muted);
+}
+
+/* Testimonials */
+.testimonials-section {
+  padding: 7rem 0;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.testimonial-card {
+  background-color: #FFFFFF;
+  border-radius: 24px;
+  padding: 2.5rem;
+  border: 1px solid rgba(162, 123, 56, 0.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.01);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: var(--transition-smooth);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(74, 14, 23, 0.04);
+}
+
+.testimonial-card .stars {
+  color: #FFD700;
+  font-size: 1rem;
+}
+
+.testimonial-card .comment {
+  font-style: italic;
+  line-height: 1.65;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(162, 123, 56, 0.08);
+  padding-top: 1.25rem;
+}
+
+.user-info .avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-maroon), var(--color-gold));
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 10px rgba(74, 14, 23, 0.1);
+}
+
+.user-info h4 {
+  margin: 0;
+  color: var(--color-maroon);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.user-info span {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* FAQ Section */
+.faq-section {
+  padding: 7rem 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid rgba(162, 123, 56, 0.12);
+}
+
+.faq-list {
+  max-width: 850px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.faq-item {
+  border: 1px solid rgba(162, 123, 56, 0.18);
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: var(--color-beige);
+  transition: var(--transition-smooth);
+}
+
+.faq-item.active {
+  border-color: var(--color-gold);
+  box-shadow: 0 4px 20px rgba(162, 123, 56, 0.08);
+}
+
+.faq-question {
+  padding: 1.4rem 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.faq-question h3 {
+  font-size: 1.15rem;
+  color: var(--color-maroon);
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Noto Serif Tamil', serif;
+}
+
+.faq-toggle-icon {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--color-gold);
+  transition: var(--transition-smooth);
+}
+
+.faq-answer {
+  padding: 0 1.75rem 1.6rem;
+  border-top: 1px solid rgba(162, 123, 56, 0.08);
+  background-color: #FFFFFF;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.faq-answer p {
+  margin: 1rem 0 0 0;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* Download CTA Section */
+.download-section {
+  background: radial-gradient(circle at center, var(--color-maroon) 30%, var(--color-maroon-dark) 100%);
+  color: #FFFFFF;
+  padding: 8rem 1rem;
+  text-align: center;
+}
+
+.download-container h2 {
+  font-size: 3rem;
+  font-family: 'Noto Serif Tamil', serif;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+}
+
+.download-container p {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  max-width: 700px;
+  margin: 0 auto 3rem auto;
+  color: rgba(251, 249, 231, 0.9);
+}
+
+.app-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.store-button {
+  background-color: #151515;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  color: #FFFFFF;
+  text-decoration: none;
+  padding: 0.85rem 1.75rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: var(--transition-smooth);
+  width: 190px;
+  box-sizing: border-box;
+}
+
+.store-button:hover {
+  background-color: #222222;
+  border-color: var(--color-gold);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.store-icon {
+  font-size: 2.1rem;
+}
+
+.store-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.25;
+}
+
+.btn-sub {
+  font-size: 0.65rem;
+  color: #b0b0b0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-main {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* Footer Section */
+.app-footer {
+  background-color: var(--color-maroon-dark);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 5rem 0 2rem 0;
+  border-top: 2px solid var(--color-gold);
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.footer-logo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-gold-light);
+  font-family: 'Noto Serif Tamil', serif;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-brand p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 350px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-links, .footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-links h4, .footer-contact h4 {
+  color: #FFFFFF;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  font-family: 'Noto Serif Tamil', serif;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+}
+
+.footer-links a:hover {
+  color: var(--color-gold-light);
+  padding-left: 6px;
+}
+
+.footer-contact p {
+  font-size: 0.95rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.45);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .app-header {
+    padding: 0.75rem 0;
+  }
+  .nav-links {
+    display: none; /* Can implement mobile drawer later */
+  }
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .hero-section h1 {
+    font-size: 2.8rem;
+  }
+  .download-container h2 {
+    font-size: 2.3rem;
+  }
+  .showcase-container {
+    gap: 3rem;
+  }
+}
+
+/* Live Panchangam Banner */
+.live-panchangam-section {
+  padding: 0;
+  margin-top: -3.5rem; /* Pulled up overlapping the hero section for a premium 3D look! */
+  position: relative;
+  z-index: 10;
+}
+
+.panchangam-banner-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(162, 123, 56, 0.25);
+  box-shadow: 0 15px 35px rgba(74, 14, 23, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.panch-left {
+  flex: 1;
+  min-width: 250px;
+}
+
+.panch-badge {
+  display: inline-block;
+  background-color: var(--color-maroon);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.panch-left h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.4rem;
+  color: var(--color-maroon);
+  font-family: 'Noto Serif Tamil', serif;
+  font-weight: 800;
+}
+
+.panch-date {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.panch-right-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  flex: 2;
+  min-width: 320px;
+}
+
+.panch-cell {
+  background-color: rgba(251, 249, 231, 0.4);
+  border: 1px solid rgba(162, 123, 56, 0.12);
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cell-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.cell-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-maroon);
+}
+
+.text-green {
+  color: #2E7D32 !important;
+}
+
+.text-red {
+  color: #C62828 !important;
+}
+
+/* Astrologers Section */
+.astrologers-section {
+  padding: 7rem 0;
+  background-color: rgba(162, 123, 56, 0.03);
+  border-top: 1px solid rgba(162, 123, 56, 0.12);
+  border-bottom: 1px solid rgba(162, 123, 56, 0.12);
+}
+
+.astrologers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2.5rem;
+}
+
+.astrologer-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(162, 123, 56, 0.18);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(74, 14, 23, 0.02);
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.astrologer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(74, 14, 23, 0.08);
+  border-color: rgba(162, 123, 56, 0.4);
+}
+
+.astro-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.astro-avatar-box {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, var(--color-maroon), var(--color-maroon-dark));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(74, 14, 23, 0.15);
+  flex-shrink: 0;
+}
+
+.astro-icon-large {
+  font-size: 2.2rem;
+  color: #FFFFFF;
+}
+
+.astro-exp-badge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background-color: var(--color-gold);
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 50px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.astro-info-header h3 {
+  margin: 0 0 0.25rem 0;
+  font-family: 'Noto Serif Tamil', serif;
+  color: var(--color-maroon);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.astro-role {
+  font-size: 0.8rem;
+  color: var(--color-gold);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.astro-details-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.astro-bio {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.astro-specialty-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  border-top: 1px dashed rgba(162, 123, 56, 0.2);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.astro-specialty-tags strong {
+  color: var(--color-maroon);
+}
+
+.astro-specialty-tags span {
+  color: var(--color-text-dark);
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .panchangam-banner-card {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  .panch-right-grid {
+    grid-template-columns: 1fr;
+  }
+  .astrologers-grid {
+    grid-template-columns: 1fr;
+  }
+  .astrologer-card {
+    padding: 1.5rem;
+  }
+}

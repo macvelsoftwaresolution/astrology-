@@ -1,0 +1,76 @@
+$color-beige: #FBF9E7;
+$color-maroon: #4A0E17;
+$color-gold: #A27B38;
+$color-text-muted: #7E716A;
+$color-white: #FFFFFF;
+
+.panchangam-widget {
+  background-color: $color-white;
+  border-radius: 16px;
+  border: 1px solid rgba($color-gold, 0.2);
+  padding: 1.25rem;
+  box-shadow: 0 4px 15px rgba($color-maroon, 0.03);
+
+  .widget-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba($color-gold, 0.12);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.85rem;
+
+    .widget-icon {
+      font-size: 1.3rem;
+      color: $color-gold;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: $color-maroon;
+      flex-grow: 1;
+    }
+
+    .widget-date {
+      font-size: 0.75rem;
+      color: $color-gold;
+      font-weight: bold;
+    }
+  }
+}
+
+.panch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.panch-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background-color: rgba($color-beige, 0.3);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba($color-gold, 0.08);
+
+  .panch-label {
+    font-size: 0.7rem;
+    color: $color-text-muted;
+  }
+
+  .panch-value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $color-maroon;
+  }
+
+  .value-highlight {
+    color: $color-maroon;
+  }
+
+  .value-time {
+    color: #5D4037;
+  }
+}
