@@ -1,0 +1,196 @@
+$color-beige: #FBF9E7;
+$color-maroon: #4A0E17;
+$color-gold: #A27B38;
+$color-gold-light: #ECC876;
+$color-text-muted: #7E716A;
+$color-text-dark: #2A2421;
+$color-purple: #3A0D5C;
+$color-purple-dark: #200438;
+
+.wizard-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  gap: 1.5rem;
+  padding-bottom: 3.5rem;
+}
+
+.action-submit-btn {
+  background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 1.05rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba($color-purple, 0.25);
+  transition: transform 0.1s ease;
+  width: 100%;
+  text-align: center;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.payment-intro-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid rgba($color-gold-light, 0.4);
+  border-radius: 16px;
+  padding: 1.1rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+
+  .course-name-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $color-maroon;
+    margin: 0;
+  }
+
+  .course-subtitle-ta {
+    font-size: 0.85rem;
+    color: $color-gold;
+    margin: 0.2rem 0 0.85rem 0;
+    font-weight: 600;
+  }
+
+  .instructor-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba($color-gold-light, 0.2);
+    margin-bottom: 0.85rem;
+
+    .inst-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 1.5px solid $color-gold;
+      object-fit: cover;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.8rem;
+      color: $color-text-dark;
+    }
+
+    span {
+      font-size: 0.7rem;
+      color: $color-text-muted;
+    }
+  }
+}
+
+.course-benefits-include {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  .benefits-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $color-maroon;
+    margin: 0 0 0.2rem 0;
+  }
+
+  .benefit-bullet {
+    font-size: 0.75rem;
+    color: $color-text-muted;
+  }
+}
+
+.invoice-box {
+  background-color: #FFFFFF;
+  border-radius: 14px;
+  padding: 1.1rem;
+  border: 1.5px solid rgba($color-gold-light, 0.3);
+
+  h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    color: $color-maroon;
+    font-weight: 700;
+  }
+
+  .invoice-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: $color-text-muted;
+    margin: 0.4rem 0;
+
+    strong {
+      color: $color-text-dark;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid rgba($color-gold-light, 0.3);
+    margin: 0.75rem 0;
+  }
+
+  .total-row {
+    font-size: 1.05rem;
+    color: $color-maroon;
+
+    strong {
+      color: $color-maroon;
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+  }
+}
+
+.pay-method-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  h3 {
+    font-size: 0.95rem;
+    color: $color-maroon;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.pay-method-label {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid rgba($color-gold-light, 0.3);
+  border-radius: 12px;
+  padding: 0.85rem;
+  cursor: pointer;
+
+  input[type="radio"] {
+    accent-color: $color-purple;
+  }
+
+  .pay-icon {
+    font-size: 1.3rem;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.85rem;
+    color: $color-text-dark;
+  }
+
+  span {
+    font-size: 0.7rem;
+    color: $color-text-muted;
+  }
+}
+
+.secure-checkout-note {
+  text-align: center;
+  font-size: 0.75rem;
+  color: $color-text-muted;
+}

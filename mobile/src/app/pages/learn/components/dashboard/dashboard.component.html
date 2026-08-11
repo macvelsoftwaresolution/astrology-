@@ -1,0 +1,339 @@
+<!-- ================= SUB-TAB 1: HOME ================= -->
+<div class="dashboard-tab-content" *ngIf="dashboardTab === 'home'">
+  <!-- Live class banner -->
+  <div class="live-class-card" (click)="playLiveClass()">
+    <div class="lc-img-overlay"></div>
+    <img src="assets/images/astro_service_bg.png" alt="Live Class" class="lc-img">
+    <div class="lc-info">
+      <div class="live-badge">🔴 LIVE CLASS</div>
+      <h3>நேரடி வகுப்பு - கிரக மாற்றங்கள்</h3>
+      <p>இன்றைய கிரக பெயர்ச்சி மற்றும் அதன் பலன்கள் குறித்த விவாதம்.</p>
+      <button class="lc-btn" (click)="playLiveClass(); $event.stopPropagation()">தொடர்ந்து கற்க</button>
+    </div>
+  </div>
+
+  <!-- Syllabus Section Quick Link -->
+  <div class="db-section-header">
+    <h3>பாடத்திட்டம்</h3>
+    <a (click)="dashboardTab = 'lessons'">அனைத்தும் ➔</a>
+  </div>
+  <div class="quick-syllabus-card" (click)="dashboardTab = 'lessons'">
+    <div class="qs-icon">📖</div>
+    <div class="qs-details">
+      <strong>அடிப்படை ஜோதிடம்</strong>
+      <span>கிரகங்கள் மற்றும் ராசிகளின் அறிமுகம்</span>
+    </div>
+    <span class="qs-arrow">▶</span>
+  </div>
+
+  <!-- Exams Section Quick Link -->
+  <div class="db-section-header" style="margin-top: 1.5rem;">
+    <h3>தேர்வுகள்</h3>
+    <span class="subheader-badge">அனைத்தும்</span>
+  </div>
+  <div class="quick-exam-card" (click)="goToExams()">
+    <div class="qe-icon">📝</div>
+    <div class="qe-details">
+      <strong>அடிப்படைகள் தேர்வு 1</strong>
+      <span>20 கேள்விகள் • 30 நிமிடங்கள்</span>
+    </div>
+    <span class="qe-arrow">▶</span>
+  </div>
+
+  <!-- Audio Lessons -->
+  <div class="db-section-header" style="margin-top: 1.5rem;">
+    <h3>ஒலி பாடங்கள்</h3>
+  </div>
+  <div class="audio-lesson-bar" (click)="goToAudio()">
+    <span class="audio-play-icon">▶</span>
+    <div class="audio-details">
+      <strong>நட்சத்திர பலன்கள் - அறிமுகம்</strong>
+      <span>15 நிமிடங்கள்</span>
+    </div>
+  </div>
+
+  <!-- Webinars -->
+  <div class="db-section-header" style="margin-top: 1.5rem;">
+    <h3>கருத்தரங்க வைப்புகள்</h3>
+  </div>
+  <div class="webinar-scroller">
+    <div class="webinar-card" *ngFor="let s of seminars" [class.live]="s.status === 'live'" (click)="s.status === 'live' ? openMockGoogleMeet() : null">
+      <span class="web-status-badge" *ngIf="s.status === 'live'">நேரலை</span>
+      <h4>{{ s.title }}</h4>
+      <span class="web-speaker">👤 {{ s.speaker }}</span>
+      <span class="web-date">📅 {{ s.date }} • {{ s.time }}</span>
+      <button class="web-btn" *ngIf="s.status === 'live'" (click)="openMockGoogleMeet(); $event.stopPropagation()">சேர்</button>
+      <button class="web-btn past" *ngIf="s.status === 'past'" (click)="$event.stopPropagation()">மீண்டும் பார்க்க</button>
+    </div>
+  </div>
+
+  <!-- PDF Notes -->
+  <div class="db-section-header" style="margin-top: 1.5rem;">
+    <h3>PDF குறிப்புகள்</h3>
+  </div>
+  <div class="pdf-notes-grid">
+    <div class="pdf-note-card" *ngFor="let p of pdfNotes" (click)="downloadPDF(p.title)">
+      <span class="pdf-icon">📄</span>
+      <h4>{{ p.title }}</h4>
+      <span>{{ p.pages }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SUB-TAB 2: LESSONS ================= -->
+<div class="dashboard-tab-content" *ngIf="dashboardTab === 'lessons'">
+  <!-- Video Player -->
+  <div class="lesson-video-player-container">
+    <div class="video-placeholder" (click)="playVideo()">
+      <span class="play-btn-large">▶</span>
+      <img src="assets/images/user_avatar.png" alt="Teacher" class="teacher-bg-img">
+    </div>
+    <div class="video-info">
+      <h2>{{ selectedLesson.title }}</h2>
+      <span class="v-stats">👤 {{ selectedLesson.instructor }} • {{ selectedLesson.views }} பார்வைகள்</span>
+    </div>
+  </div>
+
+  <!-- Audio Player Row -->
+  <div class="audio-player-box">
+    <h3>🎧 ஒலி பாடங்கள் (Audio)</h3>
+    <div class="audio-control-row">
+      <button class="audio-play-btn" (click)="playVideo()">▶</button>
+      <div class="audio-progress">
+        <span class="time-elapsed">12:05</span>
+        <div class="progress-bar-bg"><div class="progress-fill" style="width: 45%;"></div></div>
+        <span class="time-total">26:00</span>
+      </div>
+    </div>
+    <div class="audio-track-item" (click)="playVideo()">
+      <span>✓</span>
+      <strong>மூச்சுப் பயிற்சி</strong>
+      <span>15 நிமிடங்கள்</span>
+    </div>
+  </div>
+
+  <!-- Download Notes -->
+  <div class="study-documents-box">
+    <h3>📁 படிப்பு ஆவணங்கள்</h3>
+    <div class="doc-download-item" (click)="downloadPDF('பாடக்குறிப்புகள்')">
+      <div class="doc-left">
+        <span class="doc-icon">📄</span>
+        <div>
+          <strong>பாடக்குறிப்புகள்</strong>
+          <span>PDF • 2.6 MB</span>
+        </div>
+      </div>
+      <button class="download-btn">📥</button>
+    </div>
+    <div class="doc-download-item" (click)="downloadPDF('மந்திரங்கள்')">
+      <div class="doc-left">
+        <span class="doc-icon">📄</span>
+        <div>
+          <strong>மந்திரங்கள்</strong>
+          <span>TXT • 150 KB</span>
+        </div>
+      </div>
+      <button class="download-btn">📥</button>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="lesson-desc-box">
+    <h3>💡 விளக்கவுரை</h3>
+    <p>{{ selectedLesson.description }}</p>
+    <button class="view-full-desc-btn">முழு உரையையும் காண்க</button>
+  </div>
+
+  <!-- Syllabus Accordion -->
+  <div class="syllabus-box">
+    <div class="syllabus-header-row">
+      <h3>பாடத்திட்டம் (Syllabus)</h3>
+      <span>12 அத்தியாயங்கள்</span>
+    </div>
+    <div class="syllabus-accordion">
+      <div class="chapter-item" *ngFor="let c of chapters">
+        <div class="chapter-title-row" (click)="toggleChapter(c)">
+          <div>
+            <strong>{{ c.title }}</strong>
+            <div class="chapter-prog-bar">
+              <div class="prog-fill" [style.width.%]="c.progress"></div>
+            </div>
+          </div>
+          <span class="accordion-arrow">{{ c.isOpen ? '▼' : '▲' }}</span>
+        </div>
+        <div class="lessons-sub-list" *ngIf="c.isOpen">
+          <div class="lesson-sub-item" *ngFor="let l of c.lessons" [class.completed]="l.completed">
+            <span class="status-circle">{{ l.completed ? '✓' : '○' }}</span>
+            <div class="l-details">
+              <h4>{{ l.title }}</h4>
+              <span>{{ l.duration }}</span>
+            </div>
+            <span class="lock-icon" *ngIf="!l.completed">🔒</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam and Certificate Access Buttons -->
+  <div class="lessons-actions-block" style="margin-top: 1.5rem;">
+    <button class="action-submit-btn" (click)="startQuiz.emit()">தேர்வெழுத தொடங்கு ➔</button>
+    <button class="action-submit-btn alt" (click)="viewCertificate.emit()" style="margin-top: 0.75rem;">சான்றிதழ் காண்க 🏆</button>
+  </div>
+</div>
+
+<!-- ================= SUB-TAB 3: LIBRARY ================= -->
+<div class="dashboard-tab-content" *ngIf="dashboardTab === 'library'">
+  <!-- Search -->
+  <div class="lib-search-bar">
+    <input type="text" placeholder="புத்தகங்கள், ஆசிரியர்கள் அல்லது தலைப்புகள்...">
+    <span class="search-btn-icon">🔍</span>
+  </div>
+
+  <!-- Categories -->
+  <div class="lib-categories-row">
+    <span class="cat-pill active">அனைத்தும்</span>
+    <span class="cat-pill">வேதங்கள்</span>
+    <span class="cat-pill">ஜோதிடம்</span>
+    <span class="cat-pill">வாஸ்து</span>
+  </div>
+
+  <!-- Book Lists -->
+  <div class="books-grid">
+    <div class="book-card" *ngFor="let b of books">
+      <div class="book-cover-wrapper">
+        <img [src]="b.coverImage" alt="Book Cover" class="book-cover">
+      </div>
+      <div class="book-info">
+        <span class="best-seller-badge" *ngIf="b.price === 499">BESTSELLER</span>
+        <h3>{{ b.title }}</h3>
+        <span class="author-name">ஆசிரியர்: {{ b.author }}</span>
+        <span class="book-price">₹{{ b.price }}</span>
+        
+        <button class="buy-book-btn" (click)="initiateBuyBook(b)" *ngIf="!b.bought">இப்போதே வாங்கு</button>
+        <button class="buy-book-btn bought" *ngIf="b.bought" disabled>வாங்கியது ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SUB-TAB 4: PROFILE ================= -->
+<div class="dashboard-tab-content" *ngIf="dashboardTab === 'profile'">
+  <!-- Profile Card -->
+  <div class="student-profile-card">
+    <div class="sp-meta">
+      <div class="sp-avatar">👤</div>
+      <div>
+        <h3>{{ enrollForm?.fullName || 'குமார்' }}</h3>
+        <span class="sp-badge">Premium Member</span>
+        <button class="upgrade-btn">மேம்படுத்தவும்</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Section -->
+  <div class="progress-section-card">
+    <h3>கற்றல் முன்னேற்றம் (Learning Progress)</h3>
+    <div class="prog-item">
+      <div class="prog-label">
+        <span>ஜோதிட அடிப்படைகள்</span>
+        <strong>65%</strong>
+      </div>
+      <div class="prog-bar-wrapper"><div class="prog-bar-fill" style="width: 65%;"></div></div>
+    </div>
+    <div class="prog-item" style="margin-top: 1rem;">
+      <div class="prog-label">
+        <span>பஞ்சாங்க கணிதம்</span>
+        <strong>22%</strong>
+      </div>
+      <div class="prog-bar-wrapper"><div class="prog-bar-fill" style="width: 22%;"></div></div>
+    </div>
+  </div>
+
+  <!-- Accomplishments -->
+  <div class="accomplishment-card">
+    <h3>சாதனைகள் (Achievements)</h3>
+    <div class="ach-grid">
+      <div class="ach-box">
+        <span class="ach-icon">🏆</span>
+        <strong>7 நாட்கள்</strong>
+        <span>தொடர் கற்றல்</span>
+      </div>
+      <div class="ach-box">
+        <span class="ach-icon">📖</span>
+        <strong>முதல் பாடம்</strong>
+        <span>முடிக்கப்பட்டது</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options List -->
+  <div class="profile-options-list">
+    <div class="opt-list-item" (click)="dashboardTab = 'lessons'">
+      <span>எனது பாடங்கள்</span>
+      <span>➔</span>
+    </div>
+    <div class="opt-list-item" (click)="viewCertificate.emit()">
+      <span>எனது சான்றிதழ்கள்</span>
+      <span>➔</span>
+    </div>
+    <div class="opt-list-item" (click)="dashboardTab = 'library'">
+      <span>சேமித்த நூல்கள்</span>
+      <span>➔</span>
+    </div>
+    <div class="opt-list-item" (click)="openDiary()">
+      <span>ஆன்மீக நாட்குறிப்பு</span>
+      <span>➔</span>
+    </div>
+    <div class="opt-list-item" (click)="logout.emit()">
+      <span style="color: #c62828;">வெளியேறு (Logout Course)</span>
+      <span>➔</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= BOTTOM NAVIGATION TABS ================= -->
+<div class="db-footer-nav">
+  <div class="db-nav-item" [class.active]="dashboardTab === 'home'" (click)="dashboardTab = 'home'">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">முகப்பு</span>
+  </div>
+  <div class="db-nav-item" [class.active]="dashboardTab === 'lessons'" (click)="dashboardTab = 'lessons'">
+    <span class="nav-icon">📚</span>
+    <span class="nav-label">பாடங்கள்</span>
+  </div>
+  <div class="db-nav-item" [class.active]="dashboardTab === 'library'" (click)="dashboardTab = 'library'">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">நூலகம்</span>
+  </div>
+  <div class="db-nav-item" [class.active]="dashboardTab === 'profile'" (click)="dashboardTab = 'profile'">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">சுயவிவரம்</span>
+  </div>
+</div>
+
+<!-- Book Checkout Modal Overlay -->
+<div class="checkout-modal-overlay" *ngIf="activeBookCheckout && selectedCheckoutBook">
+  <div class="checkout-modal-card">
+    <div class="checkout-modal-header">
+      <h3>கட்டணம் செலுத்துதல்</h3>
+      <button class="close-checkout-btn" (click)="closeCheckout()">×</button>
+    </div>
+    <div class="checkout-modal-body">
+      <div class="checkout-book-summary">
+        <strong>{{ selectedCheckoutBook.title }}</strong>
+        <span>ஆசிரியர்: {{ selectedCheckoutBook.author }}</span>
+        <span class="checkout-price">தொகை: ₹{{ selectedCheckoutBook.price }}</span>
+      </div>
+      
+      <div class="payment-methods-box">
+        <p>பணம் செலுத்தும் முறை தேர்வு செய்யவும்:</p>
+        <div class="pay-method-option active">
+          <span>💳 GPay / PhonePe / Card / NetBanking</span>
+        </div>
+      </div>
+      
+      <button class="confirm-pay-btn" (click)="confirmCheckoutPayment()">கட்டணத்தை உறுதி செய்க</button>
+    </div>
+  </div>
+</div>

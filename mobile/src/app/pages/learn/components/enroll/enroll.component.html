@@ -1,0 +1,46 @@
+<div class="wizard-container">
+  <div class="form-intro-header">
+    <h3>மாணவர் சேர்க்கை படிவம்</h3>
+    <p>தெய்வீக துல்லியத்துடன் உங்கள் பயணத்தைத் தொடங்குங்கள்</p>
+  </div>
+
+  <div class="enroll-form">
+    <div class="form-group">
+      <label>முழு பெயர் (Full Name) *</label>
+      <input type="text" [(ngModel)]="localForm.fullName" placeholder="உங்கள் பெயரை உள்ளிடவும்">
+    </div>
+
+    <div class="form-group">
+      <label>பிறந்த தேதி (Date of Birth) *</label>
+      <input type="date" [(ngModel)]="localForm.dob">
+    </div>
+
+    <div class="form-group">
+      <label>பிறந்த நேரம் (Time of Birth) *</label>
+      <input type="time" [(ngModel)]="localForm.tob">
+    </div>
+
+    <div class="form-group">
+      <label>பிறந்த இடம் (Place of Birth) *</label>
+      <input type="text" [(ngModel)]="localForm.pob" placeholder="பிறந்த இடம்/ஊர்">
+    </div>
+
+    <div class="form-group">
+      <label>கல்வித் தகுதி (Educational Qualification) *</label>
+      <select [(ngModel)]="localForm.qualification">
+        <option value="">தேர்ந்தெடுக்கவும்...</option>
+        <option value="diploma">டிப்ளமோ (Diploma)</option>
+        <option value="degree">பட்டப்படிப்பு (Degree)</option>
+        <option value="postgraduate">முதுகலை (PG)</option>
+        <option value="other">இதர (Other)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>இடற்பாடில் சேருவதற்கான காரணம் (Reason for joining this course) *</label>
+      <textarea [(ngModel)]="localForm.reason" rows="3" placeholder="உங்கள் பதிலை உள்ளிடவும்"></textarea>
+    </div>
+
+    <button class="action-submit-btn" (click)="onSubmit()">கட்டணம் செலுத்த தொடரவும் ➔</button>
+  </div>
+</div>

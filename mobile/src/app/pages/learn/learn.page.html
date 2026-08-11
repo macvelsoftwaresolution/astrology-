@@ -1,0 +1,26 @@
+<ion-content [fullscreen]="true" class="edu-content">
+  <!-- Nav header for wizard steps -->
+  <div class="nav-header" *ngIf="currentScreen !== 'dashboard' && !activeQuiz && !showCertificate">
+    <button class="back-btn" (click)="handleBack()">
+      <span class="back-arrow">←</span>
+    </button>
+    <h1 class="brand-title">ஆருத்ரா</h1>
+    <div style="width: 40px;"></div>
+  </div>
+
+  <app-learn-intro *ngIf="currentScreen === 'intro'" (next)="goToRules()"></app-learn-intro>
+  <app-learn-rules *ngIf="currentScreen === 'rules'" (next)="agreeAndContinue()"></app-learn-rules>
+  <app-learn-enroll *ngIf="currentScreen === 'enroll'" [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
+  <app-learn-payment *ngIf="currentScreen === 'payment'" (next)="payAndStart()"></app-learn-payment>
+  
+  <app-learn-dashboard *ngIf="currentScreen === 'dashboard' && !activeQuiz && !showCertificate" 
+                       [enrollForm]="enrollForm" 
+                       (logout)="logoutCourse()"
+                       (startQuiz)="activeQuiz = true"
+                       (viewCertificate)="showCertificate = true">
+  </app-learn-dashboard>
+
+  <!-- Overlays -->
+  <app-learn-quiz *ngIf="activeQuiz" (close)="activeQuiz = false"></app-learn-quiz>
+  <app-learn-certificate *ngIf="showCertificate" [enrollForm]="enrollForm" (close)="showCertificate = false"></app-learn-certificate>
+</ion-content>

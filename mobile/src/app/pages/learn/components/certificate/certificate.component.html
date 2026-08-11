@@ -1,0 +1,39 @@
+<div class="certificate-overlay">
+  <div class="cert-header">
+    <button class="cert-back-btn" (click)="close.emit()">← Back</button>
+    <h2>சாதனைச் சான்றிதழ்</h2>
+    <div style="width: 40px;"></div>
+  </div>
+
+  <div class="cert-body-scroll">
+    <div class="cert-message-banner">
+      <h3>உங்கள் சாதனை சான்றிதழ்</h3>
+      <p>வாழ்த்துக்கள்! நீங்கள் வெற்றிகரமாக படிப்பை முடித்துள்ளீர்கள்.</p>
+    </div>
+
+    <!-- Certificate Card -->
+    <div class="cert-gold-card">
+      <div class="cert-border-outer">
+        <div class="cert-border-inner">
+          <h1 class="cert-academy-title">ஆருத்ரா அகாடமி</h1>
+          <p class="cert-cert-title">சாதனைச் சான்றிதழ் (Certificate of Achievement)</p>
+          <p class="cert-given-to">வழங்கப்படும் நபர்:</p>
+          <h2 class="cert-student-name">{{ enrollForm?.fullName || 'குமார்' }}</h2>
+          <p class="cert-accomplishment">
+            <strong>வேத ஜோதிட அடிப்படைகள்</strong> என்ற பாடநெறியை வெற்றிகரமாக நிறைவு செய்ததற்காக இச்சான்றிதழ் வழங்கப்படுகிறது.
+          </p>
+          <div class="cert-details-footer">
+            <div>
+              <span>நாள்: அக்டோபர் 12, 2023</span>
+              <span>பாட நேரம்: 48 மணிநேரம்</span>
+            </div>
+            <div class="cert-seal">🏆 SEAL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="cert-action-btn pdf">📥 PDF தரவிறக்கம்</button>
+    <button class="cert-action-btn share">🔗 பகிர்</button>
+  </div>
+</div>

@@ -1,4 +1,6 @@
-import { Component, NgZone, ViewChild } from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
 
@@ -19,7 +21,7 @@ declare var Razorpay: any;
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage {
+export class HomePage implements OnInit {
   @ViewChild(RasiPalanComponent) rasiComponent?: RasiPalanComponent;
 
   // Navigation Tabs State
@@ -124,9 +126,17 @@ export class HomePage {
     { title: 'சுப முகூர்த்தம்', sub: 'திருமணம் மற்றும் கிரகப்பிரவேசத்திற்கு உகந்த நேரம் தேர்வு.', price: 1000 }
   ];
 
-  constructor(private ngZone: NgZone) {
+  constructor(
+    private ngZone: NgZone,
+    private router: Router,
+    private authService: AuthService
+  ) {
     App.addListener('backButton', () => {
       this.ngZone.run(() => {
+        // Only run back button handler if we are active on the home page route
+        if (this.router.url !== '/home') {
+          return;
+        }
         this.handleHardwareBack();
       });
     });
@@ -171,6 +181,20 @@ export class HomePage {
       this.prevStep();
     } else {
       this.closeServiceFlow();
+    }
+  }
+
+  ngOnInit() {
+    this.checkAuth();
+  }
+
+  ionViewWillEnter() {
+    this.checkAuth();
+  }
+
+  private checkAuth() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/welcome']);
     }
   }
 
@@ -240,7 +264,7 @@ export class HomePage {
       handler: (response: any) => {
         // Payment success callback from Razorpay
         console.log('Payment successful: ', response);
-        
+
         this.userOrders.unshift({
           id: localOrderId,
           service: serviceName,
@@ -249,7 +273,7 @@ export class HomePage {
           status: 'Pending',
           details: `${details} (Razorpay ID: ${response.razorpay_payment_id})`
         });
-        
+
         this.serviceStep = 4;
       },
       prefill: {

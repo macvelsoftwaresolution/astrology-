@@ -1,0 +1,78 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-container">
+    <!-- Back arrow & Header -->
+    <div class="nav-header">
+      <button class="back-btn" (click)="goBack()">
+        <span class="back-arrow">←</span>
+      </button>
+      <h1 class="brand-title">ஆருத்ரா</h1>
+      <div style="width: 40px;"></div>
+    </div>
+
+    <!-- Gopuram Icon -->
+    <div class="gopuram-icon-wrapper">
+      <div class="gopuram-icon">
+        <svg viewBox="0 0 100 100" class="gopuram-svg">
+          <path d="M50 15 L53 22 H47 Z" fill="#A27B38" />
+          <path d="M44 22 H56 L55 35 H45 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M41 35 H59 L58 48 H42 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M37 48 H63 L61 65 H39 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M32 65 H68 L66 85 H34 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M46 85 V75 C46 72 54 72 54 75 V85 Z" fill="#4A0E17" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Header Titles -->
+    <div class="form-header">
+      <h2 class="form-title">Welcome Back</h2>
+      <p class="form-subtitle">உள்நுழைவு</p>
+    </div>
+
+    <!-- Info Box for default credentials -->
+    <div class="credentials-info-box">
+      <p class="info-title">💡 மாதிரி உள்நுழைவு விவரங்கள்:</p>
+      <p><strong>Username/Mobile:</strong> 9876543210</p>
+      <p><strong>Password:</strong> 123456</p>
+    </div>
+
+    <!-- Form -->
+    <div class="login-form">
+      <div class="input-group">
+        <label>Mobile Number / Username</label>
+        <div class="input-wrapper">
+          <input type="tel" [(ngModel)]="mobileNumber" placeholder="அலைபேசி எண்">
+          <span class="input-icon">📱</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <input type="password" [(ngModel)]="password" placeholder="கடவுச்சொல்">
+          <span class="input-icon">🔑</span>
+        </div>
+      </div>
+
+      <div class="forgot-pwd-link">
+        <a (click)="goToForgotPassword()">கடவுச்சொல்லை மறந்துவிட்டீர்களா?</a>
+      </div>
+
+      <button class="submit-btn" (click)="onLogin()">
+        <span class="btn-primary-text">Login and Continue</span>
+        <span class="btn-secondary-text">உள்நுழைந்து தொடரவும்</span>
+      </button>
+    </div>
+
+    <!-- Switch to register -->
+    <div class="switch-auth-mode">
+      <span>புதிய கணக்கு வேண்டுமா? </span>
+      <a (click)="goToRegister()">பதிவு செய்க</a>
+    </div>
+
+    <!-- Privacy Note -->
+    <div class="privacy-note">
+      <span>🔒 Your information is secure and private.</span>
+    </div>
+  </div>
+</ion-content>

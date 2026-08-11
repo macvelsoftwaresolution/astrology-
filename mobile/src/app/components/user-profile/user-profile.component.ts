@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -58,6 +60,8 @@ export class UserProfileComponent implements OnInit {
     }
   ];
 
+  currentUser: User | null = null;
+
   personDetails = {
     name: 'ராஜேஷ் குமார்',
     email: 'rajesh.kumar@email.com',
@@ -75,7 +79,18 @@ export class UserProfileComponent implements OnInit {
   showEditModal: boolean = false;
   isSavedNotification: boolean = false;
 
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
   ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser) {
+      if (this.currentUser.fullName) this.personDetails.name = this.currentUser.fullName;
+      if (this.currentUser.emailAddress) this.personDetails.email = this.currentUser.emailAddress;
+      if (this.currentUser.mobileNumber) this.personDetails.phone = this.currentUser.mobileNumber;
+    }
     this.editForm = { ...this.personDetails };
   }
 
@@ -107,5 +122,10 @@ export class UserProfileComponent implements OnInit {
       return this.orders;
     }
     return this.orders.filter(o => o.type === this.selectedOption || this.selectedOption === 'services');
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/welcome']);
   }
 }
