@@ -15,12 +15,10 @@ $color-white: #FFFFFF;
   height: 100%;
   background-color: $color-bg;
   z-index: 1200;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   animation: slideInUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 30px));
-  padding-bottom: var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px));
+  overflow: hidden;
 }
 
 @keyframes slideInUp {
@@ -29,15 +27,19 @@ $color-white: #FFFFFF;
 }
 
 .overlay-header.rasi-header {
-  padding: 1rem 1.25rem;
+  padding-top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 24px)) + 0.6rem);
+  padding-bottom: 0.85rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: relative;
+  z-index: 20;
   background-color: $color-bg;
-  border-bottom: 1px solid rgba($color-gold, 0.1);
+  border-bottom: 1px solid rgba($color-gold, 0.25);
+  box-shadow: 0 4px 15px rgba($color-maroon-dark, 0.08);
+  flex-shrink: 0;
 
   .header-left {
     display: flex;
@@ -45,17 +47,20 @@ $color-white: #FFFFFF;
     gap: 0.75rem;
 
     .header-back-btn {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background-color: $color-maroon;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
 
     .app-brand-name {
       font-family: 'Noto Serif Tamil', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.3rem;
+      font-weight: 800;
       color: $color-maroon;
       margin: 0;
     }
@@ -63,7 +68,7 @@ $color-white: #FFFFFF;
 
   .header-right {
     .bell-icon {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       color: $color-maroon;
       cursor: pointer;
     }
@@ -71,7 +76,9 @@ $color-white: #FFFFFF;
 }
 
 .rasi-content-scroll {
-  padding: 1rem 1.25rem;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 7.5rem) 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

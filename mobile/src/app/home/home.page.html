@@ -1,25 +1,43 @@
+<!-- ================= FIXED STICKY TOP HEADER NAVBAR ================= -->
+<ion-header class="mobile-sticky-header ion-no-border" *ngIf="!activeServiceFlow">
+  <!-- 1. Home Header -->
+  <div class="app-header-bar" *ngIf="currentTab === 'home'">
+    <div class="profile-header">
+      <img class="avatar-small-img" src="assets/images/user_avatar.png" alt="Avatar">
+      <div class="header-titles">
+        <span class="welcome-txt">வணக்கம்,</span>
+        <h2 class="app-brand-name">ஆருத்ரா ஜோதிடம்</h2>
+      </div>
+    </div>
+    <div class="bell-icon"><i class="bi bi-bell-fill"></i></div>
+  </div>
+
+  <!-- 2. Services Header -->
+  <div class="app-header-bar" *ngIf="currentTab === 'services'">
+    <h2>ஜோதிட சேவைகள்</h2>
+  </div>
+
+  <!-- 3. Matching Header -->
+  <div class="app-header-bar" *ngIf="currentTab === 'matching'">
+    <h2>திருமண பொருத்தம்</h2>
+  </div>
+
+  <!-- 4. Profile Header -->
+  <div class="app-header-bar" *ngIf="currentTab === 'profile'">
+    <h2>சுயவிவரம்</h2>
+  </div>
+</ion-header>
+
 <ion-content [fullscreen]="true" class="astrology-app-content">
 
   <!-- ================= TABS CONTROLLER ================= -->
 
   <!-- 1. HOME TAB -->
   <div class="tab-content" *ngIf="currentTab === 'home' && !activeServiceFlow">
-    <!-- Header banner -->
-    <div class="app-header-bar">
-      <div class="profile-header">
-        <img class="avatar-small-img" src="assets/images/user_avatar.png" alt="Avatar">
-        <div class="header-titles">
-          <span class="welcome-txt">வணக்கம்,</span>
-          <h2 class="app-brand-name">ஆருத்ரா ஜோதிடம்</h2>
-        </div>
-      </div>
-      <div class="bell-icon">🔔</div>
-    </div>
-
     <!-- Search Bar -->
     <div class="search-bar-container">
       <div class="search-bar">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><i class="bi bi-search"></i></span>
         <input type="text" placeholder="சேவைகளைத் தேடுங்கள்...">
       </div>
     </div>
@@ -39,26 +57,26 @@
 
     <!-- Quick Services Grid -->
     <div class="section-title-row">
-      <h3><span class="title-icon">✪</span> முக்கிய சேவைகள்</h3>
+      <h3><span class="title-icon"><i class="bi bi-star-fill text-gold me-1"></i></span> முக்கிய சேவைகள்</h3>
     </div>
     <div class="quick-services-grid">
       <div class="quick-service-box" (click)="startServiceFlow('rasi-palan')">
-        <div class="box-icon-wrapper"><span class="box-icon">☀️</span></div>
+        <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-brightness-high-fill text-warning"></i></span></div>
         <strong>ராசி பலன்</strong>
         <span>தினசரி கணக்கீடு</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('matching')">
-        <div class="box-icon-wrapper"><span class="box-icon">❤️</span></div>
+        <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-heart-fill text-danger"></i></span></div>
         <strong>திருமண பொருத்தம்</strong>
         <span>ஜாதக இணைப்பு</span>
       </div>
       <div class="quick-service-box" (click)="startServiceFlow('horoscope')">
-        <div class="box-icon-wrapper"><span class="box-icon">📝</span></div>
+        <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-journal-bookmark-fill text-primary"></i></span></div>
         <strong>ஜாதகம் எழுத</strong>
         <span>புதிய ஜாதகம்</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('services')">
-        <div class="box-icon-wrapper"><span class="box-icon">🔲</span></div>
+        <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-grid-3x3-gap-fill text-info"></i></span></div>
         <strong>சேவைகள்</strong>
         <span>அனைத்தும்</span>
       </div>
@@ -70,87 +88,100 @@
 
   <!-- 2. SERVICES TAB -->
   <div class="tab-content" *ngIf="currentTab === 'services' && !activeServiceFlow">
-    <div class="app-header-bar">
-      <h2>ஜோதிட சேவைகள்</h2>
+    <div class="section-title-row">
+      <h3>ஜோதிட சேவைகள்</h3>
+      <p class="section-subtitle">உங்களின் தேவைக்கேற்ற சிறந்த ஜோதிட ஆலோசனைகளைத் தேர்ந்தெடுக்கவும்</p>
     </div>
 
-    <!-- Astro Service List -->
+    <!-- Main Service List Cards (Left Image + Right Content) -->
     <div class="services-list-container">
+      
       <!-- 1. Jathagam -->
-      <div class="service-list-card" (click)="startServiceFlow('horoscope')">
-        <div class="card-left">
-          <span class="service-badge-icon">✨</span>
-          <div class="service-card-info">
-            <h3>ஜாதகம் எழுதுதல்</h3>
-            <p>முழுமையான ஜாதகக் கணிப்பு மற்றும் எதிர்கால விளக்கங்கள்</p>
-          </div>
+      <div class="service-rich-card" (click)="startServiceFlow('horoscope')">
+        <div class="src-thumb">
+          <img src="assets/images/temple_sunrise.png" alt="Jathagam">
+          <div class="thumb-badge">ஜாதகம்</div>
         </div>
-        <div class="card-right">
-          <span class="card-price">₹2,000</span>
-          <span class="arrow-icon">▶</span>
+        <div class="src-content">
+          <div class="src-header">
+            <h3>ஜாதகம் எழுதுதல்</h3>
+            <span class="src-price">₹2,000</span>
+          </div>
+          <p class="src-desc">முழுமையான ஜாதகக் கணிப்பு, திசா புத்தி பலன்கள் மற்றும் பரிகார ஆலோசனைகள்</p>
+          <div class="src-footer">
+            <span class="src-badge-tag"><i class="bi bi-patch-check-fill me-1"></i> துல்லிய கணிப்பு</span>
+            <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
+          </div>
         </div>
       </div>
 
       <!-- 2. Vastu -->
-      <div class="service-list-card" (click)="startServiceFlow('vastu')">
-        <div class="card-left">
-          <span class="service-badge-icon">🏡</span>
-          <div class="service-card-info">
-            <h3>வாஸ்து ஆலோசனைகள்</h3>
-            <p>வீடு மற்றும் அலுவலக வாஸ்து வரைபட ஆய்வுகள்</p>
-          </div>
+      <div class="service-rich-card" (click)="startServiceFlow('vastu')">
+        <div class="src-thumb">
+          <img src="assets/images/temple_sunrise.png" alt="Vastu">
+          <div class="thumb-badge">வாஸ்து</div>
         </div>
-        <div class="card-right">
-          <span class="card-price">₹2,500+</span>
-          <span class="arrow-icon">▶</span>
+        <div class="src-content">
+          <div class="src-header">
+            <h3>வாஸ்து ஆலோசனைகள்</h3>
+            <span class="src-price">₹2,500+</span>
+          </div>
+          <p class="src-desc">வீடு, அலுவலகம் மற்றும் மனை வாஸ்து வரைபட ஆய்வுகள்</p>
+          <div class="src-footer">
+            <span class="src-badge-tag"><i class="bi bi-house-heart-fill me-1"></i> நேரடி ஆய்வு</span>
+            <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
+          </div>
         </div>
       </div>
 
       <!-- 3. Guru Ramajayam -->
-      <div class="service-list-card" (click)="startServiceFlow('ramajayam')">
-        <div class="card-left">
-          <span class="service-badge-icon">🔢</span>
-          <div class="service-card-info">
-            <h3>குரு ராமஜெயம் (எண்கணிதம்)</h3>
-            <p>அதிர்ஷ்ட பெயர்கள் மற்றும் தொழில் எண்கணித தேர்வுகள்</p>
-          </div>
+      <div class="service-rich-card" (click)="startServiceFlow('ramajayam')">
+        <div class="src-thumb">
+          <img src="assets/images/user_avatar.png" alt="Ramajayam">
+          <div class="thumb-badge">எண்கணிதம்</div>
         </div>
-        <div class="card-right">
-          <span class="card-price">₹750</span>
-          <span class="arrow-icon">▶</span>
+        <div class="src-content">
+          <div class="src-header">
+            <h3>குரு ராமஜெயம் (எண்கணிதம்)</h3>
+            <span class="src-price">₹750</span>
+          </div>
+          <p class="src-desc">அதிர்ஷ்ட பெயர்கள், தொழில் எண்கணிதம் மற்றும் பிறந்த குழந்தை பெயர் தேர்வு</p>
+          <div class="src-footer">
+            <span class="src-badge-tag"><i class="bi bi-123 me-1"></i> எண்கணித நிபுணர்</span>
+            <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
+          </div>
         </div>
       </div>
 
       <!-- 4. Guru Srinivasan -->
-      <div class="service-list-card" (click)="startServiceFlow('srinivasan')">
-        <div class="card-left">
-          <span class="service-badge-icon">🕉️</span>
-          <div class="service-card-info">
-            <h3>குரு ஸ்ரீநிவாசன் (ஆலோசனை)</h3>
-            <p>நேரடி தொலைபேசி ஜாதக பலன் மற்றும் சுப முகூர்த்த நேரம்</p>
+      <div class="service-rich-card" (click)="startServiceFlow('srinivasan')">
+        <div class="src-thumb">
+          <img src="assets/images/user_avatar.png" alt="Srinivasan">
+          <div class="thumb-badge">ஆலோசனை</div>
+        </div>
+        <div class="src-content">
+          <div class="src-header">
+            <h3>குரு ஸ்ரீநிவாசன்</h3>
+            <span class="src-price">₹1,000+</span>
+          </div>
+          <p class="src-desc">நேரடி தொலைபேசி ஜாதக பலன் மற்றும் சுப முகூர்த்த நேரத் தேர்வுகள்</p>
+          <div class="src-footer">
+            <span class="src-badge-tag"><i class="bi bi-telephone-fill me-1"></i> நேரடி அழைப்பு</span>
+            <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
           </div>
         </div>
-        <div class="card-right">
-          <span class="card-price">₹1,000+</span>
-          <span class="arrow-icon">▶</span>
-        </div>
       </div>
+
     </div>
   </div>
 
   <!-- 3. MATCHMAKING TAB COMPONENT -->
   <div class="tab-content" *ngIf="currentTab === 'matching' && !activeServiceFlow">
-    <div class="app-header-bar">
-      <h2>திருமண பொருத்தம்</h2>
-    </div>
     <app-marriage-matching [rasis]="rasis"></app-marriage-matching>
   </div>
 
   <!-- 4. PROFILE TAB COMPONENT -->
   <div class="tab-content" *ngIf="currentTab === 'profile' && !activeServiceFlow">
-    <div class="app-header-bar">
-      <h2>சுயவிவரம்</h2>
-    </div>
     <app-user-profile [orders]="userOrders"></app-user-profile>
   </div>
 
@@ -166,29 +197,60 @@
   <!-- B. JATHAGAM / HOROSCOPE FLOW -->
   <div class="overlay-panel" *ngIf="activeServiceFlow === 'horoscope'">
     <div class="overlay-header">
-      <button class="btn-back" (click)="prevStep(); (serviceStep === 0 ? closeServiceFlow() : null)">◀</button>
+      <button class="btn-back" (click)="handleOverlayBack()">◀</button>
       <h2>ஜாதகம் எழுதுதல்</h2>
-      <button class="btn-close" (click)="closeServiceFlow()">×</button>
+
     </div>
 
     <!-- Step 1: Info -->
     <div class="step-content" *ngIf="serviceStep === 1">
-      <div class="info-hero-img">✨</div>
-      <div class="service-detail-body">
-        <h3>ஜாதகம் எழுத</h3>
-        <p>
-          நம்பிக்கைகளின் அடிப்படையில் கணிக்கும் எங்களின் ஜோதிட சாஸ்திரங்கள் மூலம் உங்கள் வாழ்க்கையின் கிரக நிலைகள் மற்றும் எதிர்கால நிகழ்வுகளை முழுமையாக தெரிந்து கொள்ளுங்கள்.
-        </p>
-        <ul class="benefits-bullet">
-          <li>முழுமையான ஜாதக கணிப்பு</li>
-          <li>திசா புத்தி பலன்கள்</li>
-          <li>பரிகாரங்கள் மற்றும் வழிகாட்டுதல்</li>
-        </ul>
-        <div class="price-strip">
-          <span>கட்டணம்:</span>
-          <strong>₹2,000</strong>
+      <!-- Top Guru Hero Banner -->
+      <div class="guru-hero-card">
+        <div class="guru-hero-overlay"></div>
+        <img src="assets/images/temple_sunrise.png" class="guru-hero-bg" alt="Astrologer">
+        <div class="guru-hero-content">
+          <span class="guru-exp-badge"><i class="bi bi-patch-check-fill me-1"></i> 25+ ஆண்டுகள் அனுபவம்</span>
+          <h2 class="guru-name">முதன்மை ஜோதிடர்</h2>
+          <p class="guru-title">வேத ஜோதிட சாஸ்திர நிபுணர்</p>
         </div>
-        <button class="btn-app-gold" (click)="nextStep()">தொடரவும் ▶</button>
+      </div>
+
+      <!-- Category Heading -->
+      <div class="category-heading-row">
+        <h3>ஜாதக சேவைகள் (Horoscope Services)</h3>
+        <div class="title-accent-bar"></div>
+      </div>
+
+      <div class="sub-services-grid">
+        <div class="sub-service-rich-card">
+          <div class="ssrc-top">
+            <div class="ssrc-icon"><i class="bi bi-journal-bookmark-fill text-gold"></i></div>
+            <div class="ssrc-price">
+              <strong>₹2,000</strong>
+              <span>தொடக்க விலை</span>
+            </div>
+          </div>
+          <h3 class="ssrc-title">முழுமையான ஜாதகக் கணிப்பு</h3>
+          <p class="ssrc-desc">உங்கள் பிறப்பு ராசி, நட்சத்திரம், கிரக நிலைகள் மற்றும் எதிர்கால பலன்கள் அறிந்து கொள்ள ஆலோசனை.</p>
+          <button class="btn-book-maroon-pill" (click)="nextStep()">
+            முன்பதிவு செய்க <i class="bi bi-calendar-check ms-1"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Trust Banner -->
+      <div class="trust-banner-card">
+        <h4>எங்களை ஏன் தேர்வு செய்ய வேண்டும்?</h4>
+        <div class="trust-badges-grid">
+          <div class="trust-badge-item">
+            <i class="bi bi-award-fill text-gold"></i>
+            <span>துல்லியமான கணக்கீடு</span>
+          </div>
+          <div class="trust-badge-item">
+            <i class="bi bi-headset text-gold"></i>
+            <span>முழுமையான ஆதரவு</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -268,28 +330,67 @@
     </div>
   </div>
 
-  <!-- C. VASTU FLOW -->
+  <!-- C. VASTU FLOW (Matching Screenshot Layout) -->
   <div class="overlay-panel" *ngIf="activeServiceFlow === 'vastu'">
     <div class="overlay-header">
-      <button class="btn-back" (click)="prevStep(); (serviceStep === 0 ? closeServiceFlow() : null)">◀</button>
-      <h2>வாஸ்து சேவைகள்</h2>
-      <button class="btn-close" (click)="closeServiceFlow()">×</button>
+      <button class="btn-back" (click)="handleOverlayBack()">◀</button>
+      <h2>வாஸ்து ஆலோசனைகள்</h2>
+
     </div>
 
-    <!-- Step 1: Vastu Services List -->
-    <div class="step-content" *ngIf="serviceStep === 1">
-      <div class="sub-services-list">
-        <div class="sub-service-card" *ngFor="let s of vastuServices" (click)="selectVastu(s)">
-          <div class="ssc-text">
-            <h3>{{ s.title }}</h3>
-            <p>{{ s.sub }}</p>
+    <!-- Step 1: Vastu Sub-Category Cards (Exact Screenshot Design) -->
+    <div class="step-content category-detail-flow" *ngIf="serviceStep === 1">
+      
+      <!-- Top Guru Hero Banner -->
+      <div class="guru-hero-card">
+        <div class="guru-hero-overlay"></div>
+        <img src="assets/images/temple_sunrise.png" class="guru-hero-bg" alt="Guru Ramakrishnan">
+        <div class="guru-hero-content">
+          <span class="guru-exp-badge"><i class="bi bi-patch-check-fill me-1"></i> 20+ ஆண்டுகள் அனுபவம்</span>
+          <h2 class="guru-name">குரு ராமகிருஷ்ணன்</h2>
+          <p class="guru-title">வாஸ்து சாஸ்திர நிபுணர் மற்றும் ஆலோசகர்</p>
+        </div>
+      </div>
+
+      <!-- Category Heading -->
+      <div class="category-heading-row">
+        <h3>வாஸ்து சேவைகள் (Vastu Services)</h3>
+        <div class="title-accent-bar"></div>
+      </div>
+
+      <!-- Sub-Services Cards List -->
+      <div class="sub-services-grid">
+        <div class="sub-service-rich-card" *ngFor="let s of vastuServices">
+          <div class="ssrc-top">
+            <div class="ssrc-icon"><i class="bi bi-house-door-fill text-gold"></i></div>
+            <div class="ssrc-price">
+              <strong>₹{{ s.price }}</strong>
+              <span>தொடக்க விலை</span>
+            </div>
           </div>
-          <div class="ssc-price">
-            <strong>₹{{ s.price }}</strong>
-            <span class="btn-action-next">▶</span>
+          <h3 class="ssrc-title">{{ s.title }}</h3>
+          <p class="ssrc-desc">{{ s.sub }}</p>
+          <button class="btn-book-maroon-pill" (click)="selectVastu(s)">
+            முன்பதிவு செய்க <i class="bi bi-calendar-check ms-1"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Trust Banner -->
+      <div class="trust-banner-card">
+        <h4>எங்களை ஏன் தேர்வு செய்ய வேண்டும்?</h4>
+        <div class="trust-badges-grid">
+          <div class="trust-badge-item">
+            <i class="bi bi-award-fill text-gold"></i>
+            <span>துல்லியமான கணக்கீடு</span>
+          </div>
+          <div class="trust-badge-item">
+            <i class="bi bi-headset text-gold"></i>
+            <span>முழுமையான ஆதரவு</span>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- Step 2: Vastu Booking Form -->
@@ -406,9 +507,9 @@
   <!-- D. GURU RAMAJAYAM FLOW -->
   <div class="overlay-panel" *ngIf="activeServiceFlow === 'ramajayam'">
     <div class="overlay-header">
-      <button class="btn-back" (click)="prevStep(); (serviceStep === 0 ? closeServiceFlow() : null)">◀</button>
+      <button class="btn-back" (click)="handleOverlayBack()">◀</button>
       <h2>எண்கணித ஆலோசனைகள்</h2>
-      <button class="btn-close" (click)="closeServiceFlow()">×</button>
+
     </div>
 
     <!-- Step 1: List -->
@@ -477,9 +578,9 @@
   <!-- E. GURU SRINIVASAN FLOW -->
   <div class="overlay-panel" *ngIf="activeServiceFlow === 'srinivasan'">
     <div class="overlay-header">
-      <button class="btn-back" (click)="prevStep(); (serviceStep === 0 ? closeServiceFlow() : null)">◀</button>
+      <button class="btn-back" (click)="handleOverlayBack()">◀</button>
       <h2>ஆலோசனைகள்</h2>
-      <button class="btn-close" (click)="closeServiceFlow()">×</button>
+
     </div>
 
     <!-- Step 1: Srinivasan Services List -->
@@ -559,19 +660,19 @@
 <ion-footer class="app-footer-tabs">
   <div class="tabs-row">
     <div class="tab-button" [class.active]="currentTab === 'home'" (click)="selectTab('home')">
-      <span class="tab-icon">🏠</span>
+      <span class="tab-icon"><i class="bi bi-house-door-fill"></i></span>
       <span class="tab-label">முகப்பு</span>
     </div>
     <div class="tab-button" [class.active]="currentTab === 'services'" (click)="selectTab('services')">
-      <span class="tab-icon">🔮</span>
+      <span class="tab-icon"><i class="bi bi-moon-stars-fill"></i></span>
       <span class="tab-label">சேவைகள்</span>
     </div>
     <div class="tab-button" [class.active]="currentTab === 'matching'" (click)="selectTab('matching')">
-      <span class="tab-icon">❤️</span>
+      <span class="tab-icon"><i class="bi bi-heart-fill"></i></span>
       <span class="tab-label">பொருத்தம்</span>
     </div>
     <div class="tab-button" [class.active]="currentTab === 'profile'" (click)="selectTab('profile')">
-      <span class="tab-icon">👤</span>
+      <span class="tab-icon"><i class="bi bi-person-fill"></i></span>
       <span class="tab-label">சுயவிவரம்</span>
     </div>
   </div>

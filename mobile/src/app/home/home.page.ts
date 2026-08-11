@@ -1,5 +1,6 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ViewChild } from '@angular/core';
 import { App } from '@capacitor/app';
+import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
 
 interface Order {
   id: string;
@@ -19,6 +20,8 @@ declare var Razorpay: any;
   standalone: false,
 })
 export class HomePage {
+  @ViewChild(RasiPalanComponent) rasiComponent?: RasiPalanComponent;
+
   // Navigation Tabs State
   currentTab: 'home' | 'services' | 'matching' | 'profile' = 'home';
 
@@ -124,19 +127,51 @@ export class HomePage {
   constructor(private ngZone: NgZone) {
     App.addListener('backButton', () => {
       this.ngZone.run(() => {
-        if (this.activeServiceFlow) {
-          if (this.serviceStep > 1 && this.serviceStep !== 4) {
-            this.prevStep();
-          } else {
-            this.closeServiceFlow();
-          }
-        } else if (this.currentTab !== 'home') {
-          this.selectTab('home');
-        } else {
-          App.exitApp();
-        }
+        this.handleHardwareBack();
       });
     });
+  }
+
+  handleHardwareBack() {
+    if (this.activeServiceFlow === 'rasi-palan') {
+      if (this.rasiComponent && this.rasiComponent.handleBack()) {
+        return;
+      }
+      this.closeServiceFlow();
+      return;
+    }
+
+    if (this.activeServiceFlow) {
+      if (this.serviceStep > 1 && this.serviceStep !== 4) {
+        this.prevStep();
+      } else {
+        this.closeServiceFlow();
+      }
+      return;
+    }
+
+    if (this.currentTab !== 'home') {
+      this.selectTab('home');
+      return;
+    }
+
+    App.exitApp();
+  }
+
+  handleOverlayBack() {
+    if (this.activeServiceFlow === 'rasi-palan') {
+      if (this.rasiComponent && this.rasiComponent.handleBack()) {
+        return;
+      }
+      this.closeServiceFlow();
+      return;
+    }
+
+    if (this.serviceStep > 1) {
+      this.prevStep();
+    } else {
+      this.closeServiceFlow();
+    }
   }
 
   // Change Navigation tabs

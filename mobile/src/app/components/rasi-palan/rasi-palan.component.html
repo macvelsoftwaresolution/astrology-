@@ -3,12 +3,12 @@
   <div class="overlay-header rasi-header">
     <div class="header-left">
       <div class="header-back-btn" (click)="selectedRasi ? closeDetail() : closeFlow.emit()">
-        <span *ngIf="selectedRasi" style="color: white; margin-left: 6px; line-height: 24px;">&lt;</span>
+        <i class="bi bi-chevron-left text-white fs-5" style="margin-left: 6px; line-height: 24px;"></i>
       </div>
       <h2 class="app-brand-name">ஆருத்ரா</h2>
     </div>
     <div class="header-right">
-      <span class="bell-icon">🔔</span>
+      <span class="bell-icon"><i class="bi bi-bell-fill"></i></span>
     </div>
   </div>
 
@@ -25,20 +25,20 @@
       <!-- Tabs Section -->
       <div class="period-tabs-grid">
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'daily'" (click)="selectedRasiTab = 'daily'">
-          <span class="tab-icon">☀️</span>
+          <span class="tab-icon"><i class="bi bi-brightness-high-fill"></i></span>
           <div class="tab-badge" *ngIf="selectedRasiTab === 'daily'">இன்று</div>
           <span class="tab-label">தினசரி</span>
         </div>
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'weekly'" (click)="selectedRasiTab = 'weekly'">
-          <span class="tab-icon">📅</span>
+          <span class="tab-icon"><i class="bi bi-calendar-event-fill"></i></span>
           <span class="tab-label">வாராந்திர</span>
         </div>
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'monthly'" (click)="selectedRasiTab = 'monthly'">
-          <span class="tab-icon">📆</span>
+          <span class="tab-icon"><i class="bi bi-calendar-month-fill"></i></span>
           <span class="tab-label">மாதாந்திர</span>
         </div>
         <div class="period-tab dark-tab" [class.active-tab-dark]="selectedRasiTab === 'yearly'" (click)="selectedRasiTab = 'yearly'">
-          <span class="tab-icon">⭐</span>
+          <span class="tab-icon"><i class="bi bi-star-fill"></i></span>
           <span class="tab-label">வருடாந்திர</span>
         </div>
       </div>
@@ -46,7 +46,7 @@
       <!-- Zodiac Grid Section -->
       <div class="zodiac-section-header">
         <h3>உங்கள் ராசியைத்<br>தேர்ந்தெடுக்கவும்</h3>
-        <span class="filter-icon">⚙️</span>
+        <span class="filter-icon"><i class="bi bi-sliders"></i></span>
       </div>
 
       <div class="zodiac-grid">
@@ -61,7 +61,7 @@
       <!-- Bottom Prediction Card -->
       <div class="prediction-card">
         <div class="prediction-header">
-          <span class="sparkle-icon">✨</span>
+          <span class="sparkle-icon"><i class="bi bi-sparkles text-gold"></i></span>
           <h3>இன்றைய சிறப்பு பலன்</h3>
         </div>
         <p class="prediction-text">
@@ -84,22 +84,22 @@
             <h2 class="zodiac-main-title">{{ selectedRasi.name }} ({{ selectedRasi.english }})</h2>
           </div>
           <div class="hero-actions">
-            <button class="action-btn">❤️</button>
-            <button class="action-btn">🔗</button>
+            <button class="action-btn"><i class="bi bi-heart-fill text-danger"></i></button>
+            <button class="action-btn"><i class="bi bi-share-fill"></i></button>
           </div>
         </div>
       </div>
 
       <div class="detail-info-row">
         <div class="info-box">
-          <span class="info-icon">📅</span>
+          <span class="info-icon"><i class="bi bi-calendar-check-fill text-gold"></i></span>
           <div class="info-text">
             <span>இன்றைய தேதி</span>
             <strong>அக்டோபர் 24, 2023</strong>
           </div>
         </div>
         <div class="info-box">
-          <span class="info-icon">🏵️</span>
+          <span class="info-icon"><i class="bi bi-person-fill text-gold"></i></span>
           <div class="info-text">
             <span>குரு பெயர்</span>
             <strong>ஸ்ரீ ராகவேந்திரர்</strong>
@@ -129,7 +129,7 @@
       <!-- Video Player Placeholder -->
       <div class="video-player-card">
         <img src="assets/images/temple_sunrise.jpg" class="video-thumbnail">
-        <div class="play-button-overlay">▶</div>
+        <div class="play-button-overlay"><i class="bi bi-play-fill"></i></div>
         <div class="video-info-overlay">
           <span>{{ selectedRasi.name }} ராசி பலன்கள் - நேரலை</span>
           <span>12:45 / 30:00</span>
@@ -138,7 +138,7 @@
 
       <!-- Audio Player Placeholder -->
       <div class="audio-player-detailed">
-        <div class="audio-icon-box">🎙️</div>
+        <div class="audio-icon-box"><i class="bi bi-mic-fill"></i></div>
         <div class="audio-info">
           <strong>தினசரி மந்திரம்</strong>
           <span>ஓம் ஐம் ஹ்ரீம் க்லீம்...</span>
@@ -149,16 +149,16 @@
           <span>04:00</span>
         </div>
         <div class="audio-controls-row">
-          <button class="btn-seek">↺</button>
-          <button class="btn-play-large">▶</button>
-          <button class="btn-seek">↻</button>
+          <button class="btn-seek"><i class="bi bi-arrow-counterclockwise"></i></button>
+          <button class="btn-play-large"><i class="bi bi-play-fill"></i></button>
+          <button class="btn-seek"><i class="bi bi-arrow-clockwise"></i></button>
         </div>
       </div>
 
       <!-- Bottom Action Buttons -->
       <div class="detail-action-buttons">
-        <button class="btn-save">💾 சேமிக்க</button>
-        <button class="btn-share">🔗 பகிர்க</button>
+        <button class="btn-save"><i class="bi bi-bookmark-fill me-1"></i> சேமிக்க</button>
+        <button class="btn-share"><i class="bi bi-share-fill me-1"></i> பகிர்க</button>
       </div>
       <!-- Empty space to fix scrolling issue -->
       <div style="height: 90px;"></div>

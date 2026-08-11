@@ -31,6 +31,14 @@ export class RasiPalanComponent implements OnDestroy {
     this.stopAudio();
   }
 
+  handleBack(): boolean {
+    if (this.selectedRasi) {
+      this.closeDetail();
+      return true;
+    }
+    return false;
+  }
+
   toggleAudio() {
     if (this.audioPlaying) {
       this.stopAudio();

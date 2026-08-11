@@ -1,28 +1,276 @@
-<!-- Profile Card Details -->
-<div class="profile-card">
-  <div class="profile-meta">
-    <div class="avatar-large">👤</div>
-    <div>
-      <h3>ராஜேஷ் குமார்</h3>
-      <p>rajesh.kumar&#64;email.com</p>
-    </div>
-  </div>
-</div>
+<div class="user-profile-wrapper">
 
-<!-- Booking History -->
-<div class="section-title-row" style="margin-top: 1.5rem; margin-bottom: 0.85rem;">
-  <h3>பணம் செலுத்திய வரலாறு</h3>
-</div>
-<div class="orders-list">
-  <div class="order-history-card" *ngFor="let order of orders">
-    <div class="oh-header">
-      <strong>{{ order.service }}</strong>
-      <span class="status-dot" [class.dot-pending]="order.status === 'Pending'">{{ order.status === 'Pending' ? 'நிலுவையில்' : 'முடிந்தது' }}</span>
+  <!-- Success Notification Toast -->
+  <div class="save-toast-banner" *ngIf="isSavedNotification">
+    <i class="bi bi-check-circle-fill me-2"></i> சுயவிவர விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!
+  </div>
+
+  <!-- 1. Top Profile Center Card -->
+  <div class="profile-center-card">
+    <div class="avatar-container">
+      <img src="assets/images/user_avatar.png" alt="User Avatar" class="profile-avatar-img" (error)="$event.target.src='https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'">
+      <div class="edit-badge-btn" (click)="openEditModal()">
+        <i class="bi bi-pencil-fill"></i>
+      </div>
     </div>
-    <p class="oh-desc">{{ order.details }}</p>
-    <div class="oh-footer">
-      <span>தேதி: {{ order.date }}</span>
-      <strong>₹{{ order.price }}</strong>
+    
+    <h2 class="user-name">{{ personDetails.name }}</h2>
+    <p class="user-email">{{ personDetails.email }}</p>
+
+    <button class="btn-edit-profile-pill" (click)="openEditModal()">
+      சுயவிவரத்தைத் திருத்து
+    </button>
+  </div>
+
+  <!-- 2. Section 1: எனது செயல்பாடுகள் (My Activities) -->
+  <div class="profile-section">
+    <h3 class="section-heading">எனது செயல்பாடுகள்</h3>
+    
+    <div class="options-list">
+
+      <!-- Option 1: Payment History -->
+      <div class="option-item-card" (click)="openOptionDetail('payments')">
+        <div class="option-left">
+          <div class="option-icon-box box-gold">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </div>
+          <div class="option-text">
+            <h4>பணம் செலுத்திய வரலாறு</h4>
+            <p>கடந்த கால பரிவர்த்தனைகள்</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
+      <!-- Option 2: Booked Services -->
+      <div class="option-item-card" (click)="openOptionDetail('services')">
+        <div class="option-left">
+          <div class="option-icon-box box-peach">
+            <i class="bi bi-calendar-check-fill"></i>
+          </div>
+          <div class="option-text">
+            <h4>பதிவு செய்யப்பட்ட சேவைகள்</h4>
+            <p>உங்கள் முன்பதிவுகள்</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
+      <!-- Option 3: Horoscope Requests -->
+      <div class="option-item-card" (click)="openOptionDetail('horoscope')">
+        <div class="option-left">
+          <div class="option-icon-box box-ivory">
+            <i class="bi bi-file-earmark-text-fill"></i>
+          </div>
+          <div class="option-text">
+            <h4>ஜாதக கோரிக்கைகள்</h4>
+            <p>உங்கள் ஜாதக நிலவரம்</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
+      <!-- Option 4: Marriage Matching Requests -->
+      <div class="option-item-card" (click)="openOptionDetail('marriage')">
+        <div class="option-left">
+          <div class="option-icon-box box-red">
+            <i class="bi bi-heart-fill"></i>
+          </div>
+          <div class="option-text">
+            <h4>திருமண கோரிக்கைகள்</h4>
+            <p>பொருத்தமான வரன்கள்</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
     </div>
   </div>
+
+  <!-- 3. Section 2: அமைப்புகள் (Settings) -->
+  <div class="profile-section">
+    <h3 class="section-heading">அமைப்புகள்</h3>
+
+    <div class="options-list">
+
+      <!-- Option 5: Settings -->
+      <div class="option-item-card" (click)="openOptionDetail('settings')">
+        <div class="option-left">
+          <div class="option-icon-box box-muted">
+            <i class="bi bi-gear-fill"></i>
+          </div>
+          <div class="option-text">
+            <h4 class="simple-title">அமைப்புகள்</h4>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
+      <!-- Option 6: Privacy Policy -->
+      <div class="option-item-card" (click)="openOptionDetail('privacy')">
+        <div class="option-left">
+          <div class="option-icon-box box-muted">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="option-text">
+            <h4 class="simple-title">தனியுரிமைக் கொள்கை</h4>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
+      <!-- Option 7: Terms & Conditions -->
+      <div class="option-item-card" (click)="openOptionDetail('terms')">
+        <div class="option-left">
+          <div class="option-icon-box box-muted">
+            <i class="bi bi-file-text-fill"></i>
+          </div>
+          <div class="option-text">
+            <h4 class="simple-title">விதிமுறைகள் மற்றும் நிபந்தனைகள்</h4>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right chevron-icon"></i>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4. Bottom Logout Button -->
+  <div class="logout-container">
+    <button class="btn-logout-maroon" (click)="closeOptionDetail()">
+      <i class="bi bi-box-arrow-right me-2"></i> வெளியேறு
+    </button>
+  </div>
+
+  <!-- ================= DYNAMIC MODALS ================= -->
+
+  <!-- A. DYNAMIC EDIT PROFILE MODAL -->
+  <div class="modal-overlay" *ngIf="showEditModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>சுயவிவரத்தைத் திருத்து</h3>
+        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-input-group">
+          <label>முழு பெயர்</label>
+          <input type="text" [(ngModel)]="editForm.name" placeholder="உங்கள் பெயர்">
+        </div>
+
+        <div class="form-input-group">
+          <label>மின்னஞ்சல் முகவரி</label>
+          <input type="email" [(ngModel)]="editForm.email" placeholder="மின்னஞ்சல்">
+        </div>
+
+        <div class="form-input-group">
+          <label>தொலைபேசி எண்</label>
+          <input type="text" [(ngModel)]="editForm.phone" placeholder="தொலைபேசி எண்">
+        </div>
+
+        <div class="form-input-group">
+          <label>பிறந்த தேதி</label>
+          <input type="date" [(ngModel)]="editForm.dob">
+        </div>
+
+        <div class="form-input-group">
+          <label>பிறந்த நேரம்</label>
+          <input type="text" [(ngModel)]="editForm.tob" placeholder="எ.கா: 06:30 AM">
+        </div>
+
+        <div class="form-input-group">
+          <label>பிறந்த இடம்</label>
+          <input type="text" [(ngModel)]="editForm.pob" placeholder="பிறந்த இடம்">
+        </div>
+
+        <div class="form-input-group">
+          <label>ராசி</label>
+          <input type="text" [(ngModel)]="editForm.rasi" placeholder="உங்கள் ராசி">
+        </div>
+
+        <div class="form-input-group">
+          <label>நட்சத்திரம்</label>
+          <input type="text" [(ngModel)]="editForm.star" placeholder="உங்கள் நட்சத்திரம்">
+        </div>
+
+      </div>
+
+      <div class="modal-footer-row">
+        <button class="btn-cancel" (click)="closeOptionDetail()">ரத்து செய்க</button>
+        <button class="btn-save-gold" (click)="saveProfile()">சேமிக்கவும்</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. PAYMENTS & ACTIVITIES DETAIL MODAL -->
+  <div class="modal-overlay" *ngIf="selectedOption === 'payments' || selectedOption === 'services' || selectedOption === 'horoscope' || selectedOption === 'marriage'">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 *ngIf="selectedOption === 'payments'">பணம் செலுத்திய வரலாறு</h3>
+        <h3 *ngIf="selectedOption === 'services'">பதிவு செய்யப்பட்ட சேவைகள்</h3>
+        <h3 *ngIf="selectedOption === 'horoscope'">ஜாதக கோரிக்கைகள்</h3>
+        <h3 *ngIf="selectedOption === 'marriage'">திருமண கோரிக்கைகள்</h3>
+        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="person-summary-box">
+          <i class="bi bi-person-fill text-gold me-2"></i>
+          <strong>{{ personDetails.name }}</strong> ({{ personDetails.rasi }} - {{ personDetails.star }})
+          <div class="sub-contact">{{ personDetails.phone }} | {{ personDetails.email }}</div>
+        </div>
+
+        <div class="orders-list" *ngIf="getFilteredOrders().length > 0">
+          <div class="order-history-card" *ngFor="let order of getFilteredOrders()">
+            <div class="oh-header">
+              <strong>{{ order.service }}</strong>
+              <span class="status-dot" [class.dot-pending]="order.status === 'Pending'">{{ order.status === 'Pending' ? 'நிலுவையில்' : 'முடிந்தது' }}</span>
+            </div>
+            <p class="oh-desc"><strong>விவரங்கள்:</strong> {{ order.details }}</p>
+            <p class="oh-desc"><strong>நபர்:</strong> {{ order.person.name }} (DOB: {{ order.person.dob }})</p>
+            <div class="oh-footer">
+              <span>தேதி: {{ order.date }}</span>
+              <strong>₹{{ order.price }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="getFilteredOrders().length === 0">
+          <p>தகவல்கள் ஏதும் இல்லை.</p>
+        </div>
+      </div>
+      <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+    </div>
+  </div>
+
+  <!-- C. SETTINGS / POLICY MODAL -->
+  <div class="modal-overlay" *ngIf="selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms'">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 *ngIf="selectedOption === 'settings'">அமைப்புகள்</h3>
+        <h3 *ngIf="selectedOption === 'privacy'">தனியுரிமைக் கொள்கை</h3>
+        <h3 *ngIf="selectedOption === 'terms'">விதிமுறைகள் மற்றும் நிபந்தனைகள்</h3>
+        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted fs-sm">
+          ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
+        </p>
+        <div class="person-detail-row mt-2">
+          <span class="p-label">கணக்கு உரியவர்:</span>
+          <strong class="p-val">{{ personDetails.name }}</strong>
+        </div>
+        <div class="person-detail-row">
+          <span class="p-label">மின்னஞ்சல்:</span>
+          <strong class="p-val">{{ personDetails.email }}</strong>
+        </div>
+        <div class="person-detail-row">
+          <span class="p-label">தொலைபேசி:</span>
+          <strong class="p-val">{{ personDetails.phone }}</strong>
+        </div>
+      </div>
+      <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+    </div>
+  </div>
+
 </div>
