@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -6,6 +8,21 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./user-profile.component.scss'],
   standalone: false
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
   @Input() orders: any[] = [];
+  currentUser: User | null = null;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/welcome']);
+  }
 }

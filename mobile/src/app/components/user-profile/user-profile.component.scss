@@ -113,3 +113,28 @@ $color-white: #FFFFFF;
     }
   }
 }
+
+.logout-btn-container {
+  display: flex;
+  width: 100%;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  color: #c62828;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+
+  &:active {
+    background-color: #ffcdd2;
+  }
+}

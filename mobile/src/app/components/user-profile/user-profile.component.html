@@ -3,10 +3,17 @@
   <div class="profile-meta">
     <div class="avatar-large">👤</div>
     <div>
-      <h3>ராஜேஷ் குமார்</h3>
-      <p>rajesh.kumar&#64;email.com</p>
+      <h3>{{ currentUser?.fullName || 'ராஜேஷ் குமார்' }}</h3>
+      <p>{{ currentUser?.emailAddress || 'rajesh.kumar@email.com' }}</p>
+      <p style="font-size: 0.8rem; opacity: 0.8;">அலைபேசி: {{ currentUser?.mobileNumber }}</p>
     </div>
   </div>
+</div>
+
+<div class="logout-btn-container" style="margin-top: 1rem;">
+  <button class="logout-btn" (click)="logout()">
+    🚪 வெளியேறு (Logout)
+  </button>
 </div>
 
 <!-- Booking History -->

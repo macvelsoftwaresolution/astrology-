@@ -1,0 +1,106 @@
+$color-beige: #FBF9E7;
+$color-maroon: #4A0E17;
+$color-gold: #A27B38;
+$color-gold-light: #ECC876;
+
+.splash-content {
+  --background: #{$color-beige};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.splash-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 3rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.logo-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  .nataraja-img {
+    max-width: 80%;
+    max-height: 50vh;
+    object-fit: contain;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba($color-maroon, 0.25);
+    border: 3px solid #{$color-gold-light};
+    animation: fadeInScale 1.8s ease-out;
+  }
+}
+
+.app-title-container {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: slideUp 1.2s ease-out;
+
+  .app-main-title {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .app-subtitle {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-gold;
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0 0;
+    letter-spacing: 2px;
+  }
+}
+
+.footer-note {
+  font-size: 0.9rem;
+  color: rgba($color-maroon, 0.75);
+  animation: pulse 2s infinite;
+  text-align: center;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}

@@ -1,0 +1,200 @@
+$color-beige: #FBF9E7;
+$color-maroon: #4A0E17;
+$color-gold: #A27B38;
+$color-gold-light: #ECC876;
+$color-text-dark: #2A2421;
+$color-text-muted: #7E716A;
+$color-purple: #3A0D5C;
+$color-purple-dark: #200438;
+
+.certificate-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #{$color-beige};
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.cert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background-color: #FFFFFF;
+  border-bottom: 1.5px solid rgba($color-gold-light, 0.3);
+
+  .cert-back-btn {
+    background: transparent;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: $color-maroon;
+    cursor: pointer;
+  }
+
+  h2 {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0;
+  }
+}
+
+.cert-body-scroll {
+  padding: 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex-grow: 1;
+  overflow-y: auto;
+  align-items: center;
+}
+
+.cert-message-banner {
+  text-align: center;
+
+  h3 {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: $color-text-muted;
+    margin: 0.25rem 0 0 0;
+  }
+}
+
+.cert-gold-card {
+  width: 100%;
+  max-width: 340px;
+  background-color: #FFFDF0;
+  padding: 0.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+
+  .cert-border-outer {
+    border: 3px double $color-gold;
+    border-radius: 8px;
+    padding: 0.25rem;
+  }
+
+  .cert-border-inner {
+    border: 1px solid rgba($color-gold, 0.5);
+    border-radius: 4px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    background-color: #FFFFFF;
+    background-image: radial-gradient(rgba($color-gold-light, 0.05) 1px, transparent 0);
+    background-size: 8px 8px;
+  }
+
+  .cert-academy-title {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .cert-cert-title {
+    font-size: 0.65rem;
+    color: $color-gold;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 1rem 0;
+  }
+
+  .cert-given-to {
+    font-size: 0.75rem;
+    color: $color-text-muted;
+    margin: 0;
+  }
+
+  .cert-student-name {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0.4rem 0 1rem 0;
+    border-bottom: 1.5px solid rgba($color-gold, 0.3);
+    padding-bottom: 0.25rem;
+    display: inline-block;
+  }
+
+  .cert-accomplishment {
+    font-size: 0.75rem;
+    color: $color-text-dark;
+    line-height: 1.4;
+    margin: 0 0 1.5rem 0;
+
+    strong {
+      color: $color-maroon;
+    }
+  }
+
+  .cert-details-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 0.6rem;
+    color: $color-text-muted;
+    text-align: left;
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .cert-seal {
+      width: 40px;
+      height: 40px;
+      background-color: $color-gold-light;
+      border: 2px dashed $color-gold;
+      border-radius: 50%;
+      color: $color-maroon;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+    }
+  }
+}
+
+.cert-action-btn {
+  width: 100%;
+  max-width: 340px;
+  padding: 0.85rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+
+  &.pdf {
+    background-color: $color-purple;
+    color: white;
+    box-shadow: 0 6px 15px rgba($color-purple, 0.25);
+  }
+
+  &.share {
+    background-color: transparent;
+    border: 1.5px solid $color-gold;
+    color: $color-gold;
+    margin-top: 0.25rem;
+  }
+}

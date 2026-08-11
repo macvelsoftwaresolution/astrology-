@@ -1,0 +1,54 @@
+<div class="quiz-overlay">
+  <div class="quiz-header">
+    <span class="quiz-title-txt">தேர்வு</span>
+    <button class="close-quiz-btn" (click)="close.emit()">×</button>
+  </div>
+
+  <div class="quiz-content-body" *ngIf="!quizSubmitted">
+    <div class="question-tracker-row">
+      <span>கேள்வி {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}</span>
+      <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
+    </div>
+
+    <div class="question-box">
+      <span class="q-badge">கேள்வி {{ currentQuestionIndex + 1 }}</span>
+      <p class="q-text">{{ quizQuestions[currentQuestionIndex].question }}</p>
+    </div>
+
+    <div class="quiz-options-list">
+      <div class="quiz-option-card" 
+           *ngFor="let opt of quizQuestions[currentQuestionIndex].options" 
+           [class.selected]="selectedOption === opt.code"
+           (click)="selectOption(opt.code)">
+        <span class="opt-code">{{ opt.code }}</span>
+        <p class="opt-text">{{ opt.text }}</p>
+      </div>
+    </div>
+
+    <button class="submit-quiz-btn" [disabled]="!selectedOption" (click)="submitAnswer()">
+      {{ currentQuestionIndex < quizQuestions.length - 1 ? 'அடுத்த கேள்வி' : 'தேர்வைச் சமர்ப்பி' }}
+    </button>
+  </div>
+
+  <!-- Quiz Results Screen -->
+  <div class="quiz-results-body" *ngIf="quizSubmitted">
+    <span class="result-badge-icon" [class.passed]="quizPassed">{{ quizPassed ? '🎉' : '❌' }}</span>
+    <h3 class="result-title">{{ quizPassed ? 'தேர்வில் வெற்றி பெற்றுள்ளீர்கள்!' : 'மீண்டும் முயற்சிக்கவும்!' }}</h3>
+    <p class="result-desc">
+      {{ quizPassed ? 'வாழ்த்துகள்! நீங்கள் இந்த தேர்வை வெற்றிகரமாக கடந்துள்ளீர்கள்.' : 'தேர்ச்சி பெற 100% மதிப்பெண்கள் தேவை.' }}
+    </p>
+
+    <div class="score-card-row">
+      <div class="score-box">
+        <span>மதிப்பெண்</span>
+        <strong>{{ quizScore }}%</strong>
+      </div>
+      <div class="score-box">
+        <span>தேர்ச்சி நிலை</span>
+        <strong [style.color]="quizPassed ? '#2E7D32' : '#c62828'">{{ quizPassed ? 'தேர்ச்சி' : 'தோல்வி' }}</strong>
+      </div>
+    </div>
+
+    <button class="submit-quiz-btn" (click)="close.emit()">வகுப்பிற்கு திரும்பவும்</button>
+  </div>
+</div>

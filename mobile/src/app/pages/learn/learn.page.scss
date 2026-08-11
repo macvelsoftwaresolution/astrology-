@@ -1,0 +1,79 @@
+$color-beige: #FBF9E7;
+$color-maroon: #4A0E17;
+$color-maroon-dark: #2A080C;
+$color-gold: #A27B38;
+$color-gold-light: #ECC876;
+$color-text-dark: #2A2421;
+$color-text-muted: #7E716A;
+$color-purple: #3A0D5C;
+$color-purple-dark: #200438;
+
+.edu-content {
+  --background: #{$color-beige};
+  --color: #{$color-text-dark};
+}
+
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top, 24px) + 1.25rem) 1.5rem 1rem 1.5rem;
+
+  .back-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: $color-maroon;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-title {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+  }
+}
+
+.course-db-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top, 24px) + 1.25rem) 1.25rem 1rem 1.25rem;
+  background-color: #FFFFFF;
+  border-bottom: 1.5px solid rgba($color-gold-light, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+
+    .menu-icon {
+      font-size: 1.3rem;
+      color: $color-maroon;
+    }
+
+    .db-title {
+      font-family: 'Noto Serif Tamil', serif;
+      color: $color-maroon;
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin: 0;
+    }
+  }
+
+  .header-right {
+    .help-circle-icon {
+      font-size: 1.2rem;
+      color: $color-text-muted;
+    }
+  }
+}

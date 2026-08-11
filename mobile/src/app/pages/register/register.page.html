@@ -1,0 +1,77 @@
+<ion-content [fullscreen]="true" class="register-content">
+  <div class="register-container">
+    <!-- Back arrow & Header -->
+    <div class="nav-header">
+      <button class="back-btn" (click)="goBack()">
+        <span class="back-arrow">←</span>
+      </button>
+      <h1 class="brand-title">ஆருத்ரா</h1>
+      <div style="width: 40px;"></div> <!-- placeholder to balance back button -->
+    </div>
+
+    <!-- Gopuram Icon -->
+    <div class="gopuram-icon-wrapper">
+      <div class="gopuram-icon">
+        <svg viewBox="0 0 100 100" class="gopuram-svg">
+          <!-- Stylized Indian Temple/Gopuram -->
+          <path d="M50 15 L53 22 H47 Z" fill="#A27B38" />
+          <path d="M44 22 H56 L55 35 H45 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M41 35 H59 L58 48 H42 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M37 48 H63 L61 65 H39 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <path d="M32 65 H68 L66 85 H34 Z" fill="#ECC876" stroke="#A27B38" stroke-width="1.5" />
+          <!-- Temple Door -->
+          <path d="M46 85 V75 C46 72 54 72 54 75 V85 Z" fill="#4A0E17" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Header Titles -->
+    <div class="form-header">
+      <h2 class="form-title">Begin Your Journey</h2>
+      <p class="form-subtitle">பதிவு செய்தல்</p>
+    </div>
+
+    <!-- Form -->
+    <div class="register-form">
+      <div class="input-group">
+        <label>Full Name</label>
+        <div class="input-wrapper">
+          <input type="text" [(ngModel)]="fullName" placeholder="உள்நுழைய பெயர்">
+          <span class="input-icon">👤</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Mobile Number</label>
+        <div class="input-wrapper">
+          <input type="tel" [(ngModel)]="mobileNumber" placeholder="அலைபேசி எண்">
+          <span class="input-icon">📱</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Email Address</label>
+        <div class="input-wrapper">
+          <input type="email" [(ngModel)]="emailAddress" placeholder="மின்னஞ்சல் முகவரி">
+          <span class="input-icon">✉️</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" (click)="onRegister()">
+        <span class="btn-primary-text">Register and Continue</span>
+        <span class="btn-secondary-text">பதிவு செய்து தொடரவும்</span>
+      </button>
+    </div>
+
+    <!-- Switch to login -->
+    <div class="switch-auth-mode">
+      <span>ஏற்கனவே கணக்கு உள்ளதா? </span>
+      <a (click)="goToLogin()">உள்நுழைய</a>
+    </div>
+
+    <!-- Privacy Note -->
+    <div class="privacy-note">
+      <span>🔒 Your information is secure and private.</span>
+    </div>
+  </div>
+</ion-content>
