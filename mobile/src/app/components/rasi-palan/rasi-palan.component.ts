@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-rasi-palan',
@@ -9,6 +9,7 @@ import { Component, Input, OnDestroy } from '@angular/core';
 export class RasiPalanComponent implements OnDestroy {
   @Input() rasis: any[] = [];
   @Input() showGridOnly: boolean = false;
+  @Output() closeFlow = new EventEmitter<void>();
 
   selectedRasi: any = null;
   selectedRasiTab: 'daily' | 'weekly' | 'monthly' | 'yearly' = 'daily';

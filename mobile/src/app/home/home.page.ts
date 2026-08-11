@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
+import { App } from '@capacitor/app';
 
 interface Order {
   id: string;
@@ -120,7 +121,23 @@ export class HomePage {
     { title: 'சுப முகூர்த்தம்', sub: 'திருமணம் மற்றும் கிரகப்பிரவேசத்திற்கு உகந்த நேரம் தேர்வு.', price: 1000 }
   ];
 
-  constructor() {}
+  constructor(private ngZone: NgZone) {
+    App.addListener('backButton', () => {
+      this.ngZone.run(() => {
+        if (this.activeServiceFlow) {
+          if (this.serviceStep > 1 && this.serviceStep !== 4) {
+            this.prevStep();
+          } else {
+            this.closeServiceFlow();
+          }
+        } else if (this.currentTab !== 'home') {
+          this.selectTab('home');
+        } else {
+          App.exitApp();
+        }
+      });
+    });
+  }
 
   // Change Navigation tabs
   selectTab(tab: 'home' | 'services' | 'matching' | 'profile') {

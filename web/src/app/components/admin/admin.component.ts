@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 interface Booking {
   id: string;
@@ -22,12 +23,59 @@ interface Booking {
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
-export class AdminComponent {
+export class AdminComponent implements OnInit {
+  private apiUrl = 'http://localhost:8000/api';
+
   // Login Gate State
   isLoggedIn = false;
   username = '';
   password = '';
   loginError = '';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.loadBookings();
+    this.loadPanchangam();
+  }
+
+  loadBookings() {
+    this.http.get<any[]>(`${this.apiUrl}/admin/bookings`).subscribe({
+      next: (data) => {
+        this.bookings = data.map(b => ({
+          id: b.id,
+          user: b.user_name,
+          phone: b.user_phone,
+          service: b.service_type,
+          price: b.price,
+          date: b.created_at ? b.created_at.substring(0, 10) : '',
+          status: b.status,
+          details: typeof b.details === 'string' ? JSON.parse(b.details) : b.details,
+          chartUrl: b.chart_url
+        }));
+        this.totalRevenue = this.bookings.reduce((sum, b) => sum + Number(b.price), 0);
+        this.totalBookingsCount = this.bookings.length;
+        this.pendingHoroscopesCount = this.bookings.filter(b => b.status === 'Pending' && b.service === 'ஜாதகம் எழுதுதல்').length;
+      },
+      error: (err) => console.error('Failed to load bookings', err)
+    });
+  }
+
+  loadPanchangam() {
+    this.http.get<any>(`${this.apiUrl}/panchangam/today`).subscribe({
+      next: (data) => {
+        this.panchangam = {
+          date: data.date,
+          thithi: data.thithi,
+          nakshathiram: data.star,
+          rahukalam: data.rahukalam,
+          yamagandam: data.yamagandam,
+          nallaNeram: data.nalla_neram
+        };
+      },
+      error: (err) => console.error('Failed to load panchangam', err)
+    });
+  }
 
   // Tab State
   activeTab: 'dashboard' | 'bookings' | 'horoscope-editor' | 'astrologers' = 'dashboard';
@@ -176,26 +224,49 @@ export class AdminComponent {
 
   fulfillBooking() {
     if (this.selectedBooking) {
-      this.selectedBooking.status = 'Completed';
-      if (this.selectedBooking.service === 'ஜாதகம் எழுதுதல்') {
-        this.selectedBooking.chartUrl = this.uploadedFileName || 'generated_horoscope_' + Date.now() + '.pdf';
-      }
-      
-      // Recalculate metrics
-      this.pendingHoroscopesCount = this.bookings.filter(b => b.status === 'Pending' && b.service === 'ஜாதகம் எழுதுதல்').length;
-      
-      this.closeModal();
+      const payload = {
+        chart_url: this.uploadedFileName || 'generated_horoscope_' + Date.now() + '.pdf'
+      };
+      this.http.put(`${this.apiUrl}/admin/bookings/${this.selectedBooking.id}/fulfill`, payload).subscribe({
+        next: () => {
+          this.loadBookings();
+          this.closeModal();
+        },
+        error: (err) => alert('Fulfillment failed!')
+      });
     }
   }
 
   // Edit Panchangam Handler
   savePanchangam() {
-    alert('பஞ்சாங்கம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!');
+    const payload = {
+      date: this.panchangam.date,
+      thithi: this.panchangam.thithi,
+      star: this.panchangam.nakshathiram,
+      rahukalam: this.panchangam.rahukalam,
+      yamagandam: this.panchangam.yamagandam,
+      nalla_neram: this.panchangam.nallaNeram
+    };
+    this.http.put(`${this.apiUrl}/admin/panchangam`, payload).subscribe({
+      next: () => alert('பஞ்சாங்கம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!'),
+      error: (err) => alert('பஞ்சாங்கம் புதுப்பிப்பதில் தோல்வி!')
+    });
   }
 
   // Edit Rasi Palan Handler
   saveRasiPalan() {
-    alert('ராசி பலன் கணிப்புகள் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!');
+    const payload = {
+      date: this.panchangam.date,
+      type: 'daily',
+      predictions: this.rasiPalanList.map(r => ({
+        rasi_name: r.rasi,
+        prediction_text: r.prediction
+      }))
+    };
+    this.http.put(`${this.apiUrl}/admin/rasi-palan`, payload).subscribe({
+      next: () => alert('ராசி பலன் கணிப்புகள் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!'),
+      error: (err) => alert('ராசி பலன் புதுப்பிப்பதில் தோல்வி!')
+    });
   }
 
   // Add Astrologer Slot

@@ -7,47 +7,60 @@
     <!-- Header banner -->
     <div class="app-header-bar">
       <div class="profile-header">
-        <div class="avatar-small">🔱</div>
+        <img class="avatar-small-img" src="assets/images/user_avatar.png" alt="Avatar">
         <div class="header-titles">
-          <span class="welcome-txt">வணக்கம்!</span>
+          <span class="welcome-txt">வணக்கம்,</span>
           <h2 class="app-brand-name">ஆருத்ரா ஜோதிடம்</h2>
         </div>
       </div>
       <div class="bell-icon">🔔</div>
     </div>
 
+    <!-- Search Bar -->
+    <div class="search-bar-container">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="சேவைகளைத் தேடுங்கள்...">
+      </div>
+    </div>
+
     <!-- Hero Banner Slider -->
     <div class="home-hero-card" (click)="currentTab = 'services'">
-      <div class="hero-badge">இன்றைய சிறப்பு</div>
-      <h2 class="hero-title">இன்றைய ராசி பலன்</h2>
-      <p class="hero-subtitle">உங்கள் ராசியின் இன்றைய கணிப்புகளைக் கண்டறியுங்கள்</p>
-      <div class="hero-cosmic-bg">🌌</div>
+      <div class="hero-bg-image"></div>
+      <div class="hero-content">
+        <div class="hero-badge">இன்றைய சிறப்பு</div>
+        <h2 class="hero-title">இன்றைய ராசி பலன்</h2>
+        <p class="hero-subtitle">உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்</p>
+        <div class="hero-dots">
+          <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
     </div>
 
     <!-- Quick Services Grid -->
     <div class="section-title-row">
-      <h3>முக்கிய சேவைகள்</h3>
+      <h3><span class="title-icon">✪</span> முக்கிய சேவைகள்</h3>
     </div>
     <div class="quick-services-grid">
       <div class="quick-service-box" (click)="startServiceFlow('rasi-palan')">
-        <span class="box-icon">🔮</span>
+        <div class="box-icon-wrapper"><span class="box-icon">☀️</span></div>
         <strong>ராசி பலன்</strong>
-        <span>தினசரி பலன்கள்</span>
+        <span>தினசரி கணக்கீடு</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('matching')">
-        <span class="box-icon">💍</span>
+        <div class="box-icon-wrapper"><span class="box-icon">❤️</span></div>
         <strong>திருமண பொருத்தம்</strong>
         <span>ஜாதக இணைப்பு</span>
       </div>
       <div class="quick-service-box" (click)="startServiceFlow('horoscope')">
-        <span class="box-icon">✨</span>
+        <div class="box-icon-wrapper"><span class="box-icon">📝</span></div>
         <strong>ஜாதகம் எழுத</strong>
-        <span>முழு பலன்கள்</span>
+        <span>புதிய ஜாதகம்</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('services')">
-        <span class="box-icon">🏡</span>
+        <div class="box-icon-wrapper"><span class="box-icon">🔲</span></div>
         <strong>சேவைகள்</strong>
-        <span>அனைத்து வாஸ்து</span>
+        <span>அனைத்தும்</span>
       </div>
     </div>
 
@@ -280,30 +293,86 @@
     </div>
 
     <!-- Step 2: Vastu Booking Form -->
-    <div class="step-content" *ngIf="serviceStep === 2 && selectedVastuService">
-      <div class="form-banner">வாஸ்து ஆலோசனைக்கான விவரங்களை உள்ளிடவும்</div>
-      <div class="form-body">
-        <div class="input-row">
-          <label>பெயர் (Name)</label>
-          <input type="text" [(ngModel)]="vastuForm.name" placeholder="உங்கள் பெயர்">
+    <div class="step-content styled-booking-step" *ngIf="serviceStep === 2 && selectedVastuService">
+      <!-- Title & Subtitle -->
+      <div class="booking-intro-header">
+        <h3>தகவல்களை உள்ளிடவும்</h3>
+        <p>வாஸ்து ஆலோசனைக்கான அடிப்படை விவரங்களை வழங்கவும்</p>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="booking-step-indicator">
+        <div class="step-badge active">
+          <span class="badge-num">1</span>
+          <span class="badge-label">விவரங்கள்</span>
         </div>
-        <div class="input-row">
+        <div class="step-line-divider"></div>
+        <div class="step-badge disabled">
+          <span class="badge-num">2</span>
+          <span class="badge-label">பணம் செலுத்துதல்</span>
+        </div>
+      </div>
+
+      <div class="styled-booking-form">
+        <!-- Name input with Icon -->
+        <div class="form-input-group">
+          <label>பெயர்</label>
+          <div class="input-with-icon">
+            <input type="text" [(ngModel)]="vastuForm.name" placeholder="உங்கள் முழு பெயர்">
+            <span class="input-icon">👤</span>
+          </div>
+        </div>
+
+        <!-- Phone input with Icon -->
+        <div class="form-input-group">
           <label>தொலைபேசி எண்</label>
-          <input type="text" [(ngModel)]="vastuForm.phone" placeholder="மொபைல் எண்">
+          <div class="input-with-icon">
+            <input type="tel" [(ngModel)]="vastuForm.phone" placeholder="+91 00000 00000">
+            <span class="input-icon">📞</span>
+          </div>
         </div>
-        <div class="input-row">
-          <label>ஆலோசனை பெற விரும்பும் முகவரி</label>
-          <textarea [(ngModel)]="vastuForm.address" placeholder="கட்டிட முகவரி" rows="2"></textarea>
+
+        <!-- Address input with Icon -->
+        <div class="form-input-group">
+          <label>முகவரி</label>
+          <div class="input-with-icon text-area-icon">
+            <textarea [(ngModel)]="vastuForm.address" placeholder="சொத்து அமைந்துள்ள இடம் மற்றும் நகரின் பெயர்" rows="3"></textarea>
+            <span class="input-icon">📍</span>
+          </div>
         </div>
-        <div class="input-row">
-          <label>தேதி</label>
-          <input type="date" [(ngModel)]="vastuForm.date">
+
+        <!-- Date Input -->
+        <div class="form-input-group">
+          <label>ஆலோசனை தேதியைத் தேர்ந்தெடுக்கவும்</label>
+          <div class="input-with-icon">
+            <input type="date" [(ngModel)]="vastuForm.date">
+            <span class="input-icon">📅</span>
+          </div>
         </div>
-        <div class="input-row" *ngIf="selectedVastuService.title === 'வரைபட ஆய்வு'">
-          <label>கட்டிட வரைபடம் பதிவேற்றவும் (Sketch/Plan)</label>
-          <input type="file" (change)="onFileChange($event)" class="file-input">
+
+        <!-- Postpone Layout Checkbox Card -->
+        <div class="styled-checkbox-card">
+          <label class="checkbox-container">
+            <input type="checkbox" [(ngModel)]="vastuForm.planUploaded">
+            <span class="checkmark"></span>
+            <div class="checkbox-text-content">
+              <strong>வரைபடத்தை பின்னர் பதிவேற்றவும்</strong>
+              <span>உங்களிடம் தற்போது பிளான் இல்லை என்றால் இதைத் தேர்ந்தெடுக்கலாம்.</span>
+            </div>
+          </label>
         </div>
-        <button class="btn-app-gold" (click)="nextStep()">கட்டணத்திற்கு செல்லவும்</button>
+
+        <!-- Submit Button -->
+        <button class="btn-maroon-submit" (click)="nextStep()">
+          <span>கட்டணத்திற்குச் செல்லவும்</span>
+          <span class="arrow-icon">➔</span>
+        </button>
+
+        <!-- Footer Shield Badge -->
+        <div class="footer-safety-badge">
+          <span class="shield-icon">🛡️</span>
+          <span class="safety-text">உறுதிப்படுத்தப்பட்ட ஆலோசனை</span>
+        </div>
       </div>
     </div>
 

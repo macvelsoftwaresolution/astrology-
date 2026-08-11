@@ -3,33 +3,24 @@ $color-maroon: #4A0E17;
 $color-gold: #A27B38;
 $color-text-muted: #7E716A;
 $color-white: #FFFFFF;
+$color-red-light: #FDF1F1;
+$color-gold-light: #FDF9E9;
+$color-red-text: #B43838;
 
 .panchangam-widget {
-  background-color: $color-white;
-  border-radius: 16px;
-  border: 1px solid rgba($color-gold, 0.2);
-  padding: 1.25rem;
-  box-shadow: 0 4px 15px rgba($color-maroon, 0.03);
+  padding: 0.5rem 0;
 
   .widget-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    border-bottom: 1px solid rgba($color-gold, 0.12);
-    padding-bottom: 0.75rem;
-    margin-bottom: 0.85rem;
-
-    .widget-icon {
-      font-size: 1.3rem;
-      color: $color-gold;
-    }
+    margin-bottom: 0.75rem;
 
     h3 {
       margin: 0;
       font-size: 0.95rem;
       font-weight: 700;
       color: $color-maroon;
-      flex-grow: 1;
     }
 
     .widget-date {
@@ -38,39 +29,67 @@ $color-white: #FFFFFF;
       font-weight: bold;
     }
   }
+
+  .panch-footer-icon {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    color: rgba($color-gold, 0.4);
+    font-size: 2rem;
+  }
 }
 
 .panch-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba($color-gold, 0.2);
+  overflow: hidden;
+  background-color: transparent;
 }
 
 .panch-item {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  background-color: rgba($color-beige, 0.3);
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid rgba($color-gold, 0.08);
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1rem 0.5rem;
 
   .panch-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: $color-text-muted;
   }
 
   .panch-value {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: $color-maroon;
+  }
+
+  &.top-left {
+    border-bottom: 1px solid rgba($color-gold, 0.15);
+    border-right: 1px solid rgba($color-gold, 0.15);
+  }
+
+  &.top-right {
+    border-bottom: 1px solid rgba($color-gold, 0.15);
+  }
+
+  &.bottom-left {
+    border-right: 1px solid rgba($color-gold, 0.15);
+    background-color: $color-red-light;
+  }
+
+  &.bottom-right {
+    background-color: $color-gold-light;
   }
 
   .value-highlight {
     color: $color-maroon;
   }
 
-  .value-time {
-    color: #5D4037;
-  }
+  .label-red { color: rgba($color-red-text, 0.8); }
+  .value-red { color: $color-red-text; }
+
+  .label-gold { color: rgba(#8C6A5A, 0.8); }
+  .value-gold { color: #8C6A5A; }
 }
