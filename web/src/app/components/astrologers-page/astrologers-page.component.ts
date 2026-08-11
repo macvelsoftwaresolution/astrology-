@@ -23,7 +23,7 @@ import { RouterModule } from '@angular/router';
             <a routerLink="/zodiac">ராசி பலன்</a>
             <a routerLink="/services">சேவைகள்</a>
             <a routerLink="/astrologers" routerLinkActive="active">ஜோதிடர்கள்</a>
-            <a routerLink="/testimonials">மதிப்புரைகள்</a>
+            
             <a routerLink="/faq">FAQ</a>
           </nav>
           <div class="header-actions">

@@ -11,16 +11,15 @@
 
     <nav class="nav-links">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">முகப்பு</a>
-      <a href="#panchangam">பஞ்சாங்கம்</a>
-      <a href="#zodiac">ராசி பலன்</a>
-      <a href="#services">சேவைகள்</a>
-      <a href="#academy">பயிலகம்</a>
-      <a href="#astrologers">ஜோதிடர்கள்</a>
-      <a href="#faq">FAQ</a>
+      <a routerLink="/panchangam" routerLinkActive="active">பஞ்சாங்கம்</a>
+      <a routerLink="/zodiac" routerLinkActive="active">ராசி பலன்</a>
+      <a routerLink="/services" routerLinkActive="active">சேவைகள்</a>
+      <a routerLink="/astrologers" routerLinkActive="active">ஜோதிடர்கள்</a>
+      <a routerLink="/faq" routerLinkActive="active">FAQ</a>
     </nav>
 
     <div class="header-actions">
-      <a href="#download" class="btn-primary">Get App</a>
+      <a routerLink="/services" class="btn-primary">Get App</a>
       <button class="btn-hamburger" (click)="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
         <i [class]="isMobileMenuOpen ? 'bi bi-x-lg' : 'bi bi-list'"></i>
       </button>
@@ -31,13 +30,12 @@
   <div class="mobile-nav-panel" [class.open]="isMobileMenuOpen">
     <div class="mobile-nav-links">
       <a routerLink="/" (click)="toggleMobileMenu()">முகப்பு</a>
-      <a href="#panchangam" (click)="toggleMobileMenu()">பஞ்சாங்கம்</a>
-      <a href="#zodiac" (click)="toggleMobileMenu()">ராசி பலன்</a>
-      <a href="#services" (click)="toggleMobileMenu()">சேவைகள்</a>
-      <a href="#academy" (click)="toggleMobileMenu()">பயிலகம்</a>
-      <a href="#astrologers" (click)="toggleMobileMenu()">ஜோதிடர்கள்</a>
-      <a href="#faq" (click)="toggleMobileMenu()">FAQ</a>
-      <a href="#download" class="btn-cta-gold text-center mt-3" (click)="toggleMobileMenu()">Get App</a>
+      <a routerLink="/panchangam" (click)="toggleMobileMenu()">பஞ்சாங்கம்</a>
+      <a routerLink="/zodiac" (click)="toggleMobileMenu()">ராசி பலன்</a>
+      <a routerLink="/services" (click)="toggleMobileMenu()">சேவைகள்</a>
+      <a routerLink="/astrologers" (click)="toggleMobileMenu()">ஜோதிடர்கள்</a>
+      <a routerLink="/faq" (click)="toggleMobileMenu()">FAQ</a>
+      <a routerLink="/services" class="btn-cta-gold text-center mt-3" (click)="toggleMobileMenu()">Get App</a>
     </div>
   </div>
 </header>
@@ -593,10 +591,9 @@
       <div class="footer-links-column">
         <h4>எங்களது சேவைகள்</h4>
         <div class="footer-links-list">
-          <a href="#services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
-          <a href="#services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
-          <a href="#astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
-          <a href="#academy"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஆன்மீகப் பயிலகம்</a>
+          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
+          <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
+          <a routerLink="/astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
         </div>
       </div>
 
@@ -605,9 +602,9 @@
         <h4>விரைவு இணைப்புகள்</h4>
         <div class="footer-links-list">
           <a routerLink="/"><i class="bi bi-chevron-right me-1 fs-xs"></i> முகப்பு</a>
-          <a href="#panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
-          <a href="#zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
-          <a href="#faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
+          <a routerLink="/panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
+          <a routerLink="/zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
+          <a routerLink="/faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
           <a routerLink="/admin"><i class="bi bi-chevron-right me-1 fs-xs"></i> Admin Portal</a>
         </div>
       </div>

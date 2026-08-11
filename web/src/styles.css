@@ -6,7 +6,8 @@ html, body {
   width: 100%;
   min-height: 100%;
   box-sizing: border-box;
-  background-color: #FBF9E7;
+  background-color: #1D0630;
+  color: #FAF5EC;
 }
 
 *, *:before, *:after {

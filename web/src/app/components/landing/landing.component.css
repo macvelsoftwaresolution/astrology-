@@ -2,33 +2,43 @@
    1. LUXURY SOUTH INDIAN ASTROLOGY DESIGN SYSTEM
    -------------------------------------------------- */
 :host {
-  /* Core Palette Tokens */
-  --bg-body: #0B0820;          /* Deep Cosmic Navy */
-  --bg-hero: #0B0820;          /* Deep Cosmic Navy */
-  --bg-panchangam: #110B27;    /* Deep Cosmic Violet */
-  --bg-zodiac: #17102F;        /* Royal Plum */
-  --bg-services: #0B0820;      /* Deep Cosmic Navy */
-  --bg-astrologers: #17102F;   /* Royal Plum */
-  --bg-testimonials: #0B0820;  /* Deep Cosmic Navy */
-  --bg-faq: #110B27;           /* Deep Cosmic Violet */
-  --bg-footer: #070512;        /* Midnight Black-Navy */
-  
-  --bg-card: #211747;          /* Deep Violet Card Surface */
-  --bg-card-light: #F8F3E7;    /* Warm Ivory High-Contrast Card Option */
-  
-  --color-gold-antique: #D4A84F; /* Antique Gold Primary Accent */
-  --color-gold-bright: #F3D58A;  /* Soft Champagne Gold */
-  --color-text-ivory: #F8F3E7;   /* Main Warm Ivory Text */
-  --color-text-lavender: #B9B0D0;/* Secondary Muted Lavender Text */
-  --color-sage-gold: #A8B879;    /* Success / Positive Accent */
-  
-  --border-gold-violet: rgba(212, 168, 79, 0.25);
-  --border-gold-hover: rgba(243, 213, 138, 0.55);
-  --shadow-cosmic: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-gold-glow: 0 0 25px rgba(212, 168, 79, 0.2);
-  
+  /* --------------------------------------------------
+     WARM IVORY + ROYAL PLUM + ANTIQUE GOLD DESIGN SYSTEM
+     -------------------------------------------------- */
+
+  /* Deep Velvet Royal Plum Backgrounds */
+  --bg-body: #1D0630;         /* Deep Rich Royal Plum Body */
+  --bg-hero: #23083A;         /* Royal Plum Hero Surface */
+  --bg-panchangam: #2B0A47;   /* Luminous Dark Plum Section */
+  --bg-zodiac: #330C54;       /* Royal Plum Section */
+  --bg-services: #23083A;     /* Deep Royal Plum Section */
+  --bg-astrologers: #330C54;   /* Royal Plum Section */
+  --bg-testimonials: #23083A; /* Deep Royal Plum Section */
+  --bg-faq: #2B0A47;          /* Luminous Dark Plum Section */
+  --bg-footer: #140322;       /* Midnight Deepest Plum */
+
+  /* Surface / Card Components */
+  --bg-card: #3D0E63;         /* Vibrant Royal Plum Card Surface */
+  --bg-card-hover: #481275;   /* Highlighting Royal Plum Surface */
+  --bg-card-light: #FAF5EC;   /* Warm Ivory High-Contrast Surface */
+
+  /* Antique Gold Primary Accents */
+  --color-gold-antique: #C5A059;  /* Genuine Vintage Antique Gold */
+  --color-gold-bright: #E6C687;   /* Warm Antique Champagne Gold */
+  --color-gold-deep: #A37F38;     /* Rich Deep Gold Accent */
+
+  /* Warm Ivory & Lavender Typography */
+  --color-text-ivory: #FAF5EC;    /* Warm Ivory Main Heading & Body Text */
+  --color-text-lavender: #D9C5E6; /* Muted Soft Lavender Ivory Subtitle */
+
+  /* Borders & Shadows */
+  --border-gold-violet: rgba(197, 160, 89, 0.35);
+  --border-gold-hover: rgba(230, 198, 135, 0.7);
+  --shadow-cosmic: 0 16px 45px rgba(0, 0, 0, 0.65);
+  --shadow-gold-glow: 0 0 30px rgba(197, 160, 89, 0.3);
+
   --transition-fast: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  
+
   display: block;
   background-color: var(--bg-body);
   color: var(--color-text-ivory);
@@ -59,9 +69,9 @@ a {
 }
 
 /* Tamil Typography Hierarchy Override */
-.tamil-title, 
+.tamil-title,
 .hero-center-header h1,
-.panch-editorial-header h2, 
+.panch-editorial-header h2,
 .center-editorial-header h2,
 .panch-large-date,
 .zodiac-display-card h3,
@@ -111,7 +121,8 @@ a {
   text-transform: uppercase;
 }
 
-.panch-editorial-header, .center-editorial-header {
+.panch-editorial-header,
+.center-editorial-header {
   margin-bottom: 2rem;
 }
 
@@ -119,7 +130,8 @@ a {
   text-align: center;
 }
 
-.panch-editorial-header h2, .center-editorial-header h2 {
+.panch-editorial-header h2,
+.center-editorial-header h2 {
   font-size: 2rem;
   line-height: 1.25;
 }
@@ -133,7 +145,7 @@ a {
 /* Buttons */
 .btn-primary {
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   padding: 0.75rem 1.75rem;
   border-radius: 50px;
   font-weight: 700;
@@ -220,7 +232,8 @@ a {
   align-items: center;
 }
 
-.nav-links a:hover, .nav-links a.active {
+.nav-links a:hover,
+.nav-links a.active {
   color: var(--color-gold-bright) !important;
   background-color: rgba(212, 168, 79, 0.12);
   border-color: rgba(243, 213, 138, 0.35);
@@ -370,7 +383,7 @@ a {
 
 .btn-cta-gold {
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   font-weight: 700;
   padding: 0.9rem 2.2rem;
   border-radius: 50px;
@@ -482,7 +495,9 @@ a {
   font-weight: 600;
 }
 
-.text-gold { color: var(--color-gold-bright) !important; }
+.text-gold {
+  color: var(--color-gold-bright) !important;
+}
 
 /* --------------------------------------------------
    5. DAILY ASTROLOGY STRIP
@@ -632,9 +647,17 @@ a {
   text-align: right;
 }
 
-.text-green { color: var(--color-sage-gold) !important; }
-.text-red { color: #F87171 !important; }
-.text-orange { color: #FB923C !important; }
+.text-green {
+  color: var(--color-sage-gold) !important;
+}
+
+.text-red {
+  color: #F87171 !important;
+}
+
+.text-orange {
+  color: #FB923C !important;
+}
 
 /* --------------------------------------------------
    7. STATS METRICS SECTION (#0B0820)
@@ -721,12 +744,12 @@ a {
 .zodiac-luxury-btn.active {
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
   border-color: var(--color-gold-bright);
-  color: #0B0820;
-  box-shadow: 0 8px 25px rgba(212, 168, 79, 0.4);
+  color: #1D0630;
+  box-shadow: 0 8px 25px rgba(197, 160, 89, 0.4);
 }
 
 .zodiac-luxury-btn.active .sign-tamil-name {
-  color: #0B0820 !important;
+  color: #1D0630 !important;
 }
 
 .sign-glyph {
@@ -806,7 +829,7 @@ a {
 
 .btn-card-luxury:hover {
   background-color: var(--color-gold-bright);
-  color: #0B0820;
+  color: #1D0630;
 }
 
 /* --------------------------------------------------
@@ -847,7 +870,7 @@ a {
   height: 54px;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -932,7 +955,7 @@ a {
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1064,8 +1087,8 @@ a {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #070512;
-  border: 12px solid #1c1538;
+  background-color: #140322;
+  border: 12px solid #3D0E63;
   border-radius: 40px;
   overflow: hidden;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
@@ -1086,7 +1109,7 @@ a {
 }
 
 .app-bar {
-  background-color: #17102F;
+  background-color: #330C54;
   color: var(--color-gold-bright);
   padding: 1.25rem 1rem 0.75rem 1rem;
   display: flex;
@@ -1107,7 +1130,7 @@ a {
 
 .mock-banner {
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   border-radius: 10px;
   padding: 0.75rem;
   font-size: 0.85rem;
@@ -1155,7 +1178,7 @@ a {
 }
 
 .app-tabs {
-  background-color: #17102F;
+  background-color: #330C54;
   padding: 0.75rem 1rem;
   display: flex;
   justify-content: space-around;
@@ -1218,7 +1241,7 @@ a {
   position: absolute;
   bottom: 0.75rem;
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.35rem 0.75rem;
@@ -1272,7 +1295,7 @@ a {
 
 .btn-astro-consult:hover {
   background-color: var(--color-gold-bright);
-  color: #0B0820;
+  color: #1D0630;
 }
 
 /* --------------------------------------------------
@@ -1330,6 +1353,7 @@ a {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -1359,9 +1383,11 @@ a {
   0% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-14px);
   }
+
   100% {
     transform: translateY(6px);
   }
@@ -1427,7 +1453,7 @@ a {
   height: 42px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1529,7 +1555,7 @@ a {
   max-width: 900px;
   margin: 0 auto;
   text-align: center;
-  background: linear-gradient(135deg, #17102F 0%, #211747 100%);
+  background: linear-gradient(135deg, #330C54 0%, #3D0E63 100%);
   border: 1px solid var(--border-gold-violet);
   color: var(--color-text-ivory);
   padding: 2.75rem 2rem;
@@ -1568,7 +1594,7 @@ a {
 }
 
 .luxury-store-btn {
-  background-color: #070512;
+  background-color: #140322;
   border: 1px solid var(--border-gold-violet);
   padding: 0.75rem 2rem;
   border-radius: 12px;
@@ -1696,12 +1722,13 @@ a {
 
 .footer-social-row a:hover {
   background-color: var(--color-gold-bright);
-  color: #0B0820;
+  color: #1D0630;
   transform: translateY(-3px);
   box-shadow: 0 0 15px rgba(212, 168, 79, 0.4);
 }
 
-.footer-links-column h4, .footer-contact-column h4 {
+.footer-links-column h4,
+.footer-contact-column h4 {
   font-size: 0.9rem;
   color: var(--color-gold-bright);
   font-weight: 700;
@@ -1856,7 +1883,7 @@ a {
   height: 50px;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--color-gold-antique), var(--color-gold-bright));
-  color: #0B0820;
+  color: #1D0630;
   font-size: 1.5rem;
   display: flex;
   justify-content: center;
@@ -1917,7 +1944,7 @@ a {
 
 .btn-course-enroll:hover {
   background-color: var(--color-gold-bright);
-  color: #0B0820;
+  color: #1D0630;
 }
 
 /* --------------------------------------------------
@@ -1958,7 +1985,7 @@ a {
 }
 
 .luxury-select-input {
-  background-color: #070512;
+  background-color: #140322;
   border: 1px solid var(--border-gold-violet);
   color: var(--color-text-ivory);
   padding: 0.85rem 1rem;
@@ -1992,7 +2019,7 @@ a {
 }
 
 .porutham-result-card {
-  background: linear-gradient(135deg, rgba(23, 16, 47, 0.9) 0%, rgba(33, 23, 71, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(51, 12, 84, 0.9) 0%, rgba(61, 14, 99, 0.9) 100%);
   border: 1px solid var(--color-gold-bright);
   border-radius: 16px;
   padding: 1.75rem;
@@ -2121,7 +2148,7 @@ a {
 
 .luxury-modal-input {
   width: 100%;
-  background-color: #070512;
+  background-color: #140322;
   border: 1px solid var(--border-gold-violet);
   color: var(--color-text-ivory);
   padding: 0.75rem 1rem;
@@ -2135,7 +2162,7 @@ a {
 }
 
 .jathagam-result-card {
-  background-color: #070512;
+  background-color: #140322;
   border: 1px solid var(--border-gold-violet);
   border-radius: 14px;
 }
@@ -2160,22 +2187,22 @@ a {
     grid-template-columns: 1fr;
     gap: 3rem;
   }
-  
+
   .showcase-layout-grid {
     grid-template-columns: 1fr;
     gap: 4rem;
   }
-  
+
   .showcase-mockup-right {
     order: -1;
   }
-  
+
   .astro-editorial-card {
     grid-template-columns: 1fr;
     gap: 2rem;
     text-align: center;
   }
-  
+
   .horizontal-steps-timeline {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
@@ -2191,36 +2218,37 @@ a {
   .nav-container {
     padding: 1rem 2rem;
   }
-  
-  .nav-links, .header-actions .btn-primary {
+
+  .nav-links,
+  .header-actions .btn-primary {
     display: none;
   }
-  
+
   .btn-hamburger {
     display: block;
   }
-  
+
   .hero-center-header h1 {
     font-size: 2.25rem;
   }
-  
+
   .panchangam-dashboard {
     grid-template-columns: 1fr;
   }
-  
+
   .editorial-stats-grid {
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
   }
-  
+
   .zodiac-btns-layout {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .horizontal-steps-timeline {
     grid-template-columns: 1fr;
   }
-  
+
   .footer-grid-layout {
     grid-template-columns: 1fr;
     gap: 2.5rem;
