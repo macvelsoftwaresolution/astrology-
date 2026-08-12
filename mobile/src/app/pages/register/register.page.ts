@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { ToastController } from '@ionic/angular';
 
@@ -13,14 +13,21 @@ export class RegisterPage implements OnInit {
   fullName: string = '';
   mobileNumber: string = '';
   emailAddress: string = '';
+  serviceType: 'astrology' | 'education' = 'astrology';
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private toastController: ToastController
   ) { }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['service']) {
+        this.serviceType = params['service'];
+      }
+    });
   }
 
   async onRegister() {
@@ -29,17 +36,22 @@ export class RegisterPage implements OnInit {
       return;
     }
 
+    const defaultPwd = this.serviceType === 'education' ? '654321' : '123456';
     const user: User = {
       fullName: this.fullName,
       mobileNumber: this.mobileNumber,
       emailAddress: this.emailAddress,
-      password: '123456' // set default password
+      password: defaultPwd // set default password based on service type
     };
 
-    const success = this.authService.register(user);
+    const success = this.authService.register(user, this.serviceType);
     if (success) {
       await this.showToast('பதிவு வெற்றிகரமாக முடிந்தது!', 'success');
-      this.router.navigate(['/home']);
+      if (this.serviceType === 'education') {
+        this.router.navigate(['/learn']);
+      } else {
+        this.router.navigate(['/home']);
+      }
     } else {
       await this.showToast('இந்த அலைபேசி எண் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.', 'danger');
     }
@@ -50,7 +62,7 @@ export class RegisterPage implements OnInit {
   }
 
   goToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { queryParams: { service: this.serviceType } });
   }
 
   private async showToast(message: string, color: string) {

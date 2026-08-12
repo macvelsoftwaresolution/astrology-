@@ -16,12 +16,35 @@ export class LearnEnrollComponent implements OnInit {
     tob: '',
     pob: '',
     qualification: '',
-    reason: ''
+    reason: '',
+    courseLevel: 'ilanilai',
+    prevCertificate: '',
+    completionYear: '',
+    prevMarks: ''
   };
 
   ngOnInit() {
     if (this.form) {
-      this.localForm = { ...this.form };
+      this.localForm = {
+        fullName: '',
+        dob: '',
+        tob: '',
+        pob: '',
+        qualification: '',
+        reason: '',
+        courseLevel: 'ilanilai',
+        prevCertificate: '',
+        completionYear: '',
+        prevMarks: '',
+        ...this.form
+      };
+    }
+  }
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.localForm.prevCertificate = file.name;
     }
   }
 

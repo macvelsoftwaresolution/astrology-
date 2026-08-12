@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastController } from '@ionic/angular';
 
@@ -12,14 +12,21 @@ import { ToastController } from '@ionic/angular';
 export class LoginPage implements OnInit {
   mobileNumber: string = '';
   password: string = '';
+  serviceType: 'astrology' | 'education' = 'astrology';
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private toastController: ToastController
   ) { }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['service']) {
+        this.serviceType = params['service'];
+      }
+    });
   }
 
   async onLogin() {
@@ -28,10 +35,14 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    const success = this.authService.login(this.mobileNumber, this.password);
+    const success = this.authService.login(this.mobileNumber, this.password, this.serviceType);
     if (success) {
       await this.showToast('வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
-      this.router.navigate(['/home']);
+      if (this.serviceType === 'education') {
+        this.router.navigate(['/learn']);
+      } else {
+        this.router.navigate(['/home']);
+      }
     } else {
       await this.showToast('தவறான அலைபேசி எண் அல்லது கடவுச்சொல்', 'danger');
     }
@@ -42,11 +53,11 @@ export class LoginPage implements OnInit {
   }
 
   goToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/register'], { queryParams: { service: this.serviceType } });
   }
 
   goToForgotPassword() {
-    this.router.navigate(['/forgot-password']);
+    this.router.navigate(['/forgot-password'], { queryParams: { service: this.serviceType } });
   }
 
   private async showToast(message: string, color: string) {

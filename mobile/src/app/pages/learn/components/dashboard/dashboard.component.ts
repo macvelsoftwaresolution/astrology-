@@ -14,8 +14,11 @@ export class LearnDashboardComponent implements OnInit {
   @Output() startQuiz = new EventEmitter<void>();
   @Output() viewCertificate = new EventEmitter<void>();
 
-  // Dashboard Tab: 'home' | 'lessons' | 'library' | 'profile'
-  dashboardTab: 'home' | 'lessons' | 'library' | 'profile' = 'home';
+  @Input() dashboardTab: 'home' | 'lessons' | 'library' | 'profile' = 'home';
+  @Output() dashboardTabChange = new EventEmitter<'home' | 'lessons' | 'library' | 'profile'>();
+
+  @Input() currentLessonView: 'list' | 'detail' = 'list';
+  @Output() currentLessonViewChange = new EventEmitter<'list' | 'detail'>();
 
   // Syllabus details
   chapters: Chapter[] = [
@@ -181,15 +184,55 @@ export class LearnDashboardComponent implements OnInit {
     link.click();
   }
 
+  setTab(tab: 'home' | 'lessons' | 'library' | 'profile') {
+    this.dashboardTab = tab;
+    this.dashboardTabChange.emit(tab);
+  }
+
+  handleBackClick() {
+    if (this.currentLessonView === 'detail') {
+      this.currentLessonView = 'list';
+      this.currentLessonViewChange.emit('list');
+    } else if (this.dashboardTab !== 'home') {
+      this.setTab('home');
+    } else {
+      this.logout.emit();
+    }
+  }
+
   goToExams() {
-    this.dashboardTab = 'lessons';
+    this.setTab('lessons');
+    this.currentLessonView = 'list';
+    this.currentLessonViewChange.emit('list');
     // Auto-open syllabus or scroll to exam
     this.chapters.forEach(c => c.isOpen = true);
     this.showToast('தேர்வுகள் பிரிவிற்கு நகர்த்தப்பட்டது. பாடத்தைத் தேர்வுசெய்து தேர்வினை எழுதலாம்.', 'secondary');
   }
 
+  goToSyllabus() {
+    this.setTab('lessons');
+    this.currentLessonView = 'list';
+    this.currentLessonViewChange.emit('list');
+    this.chapters.forEach(c => c.isOpen = true);
+  }
+
+  selectCourseLesson(lesson: any) {
+    this.selectedLesson = {
+      title: lesson.title,
+      instructor: 'ஜெக சீனிவாசன்',
+      views: '12.8k',
+      duration: lesson.duration,
+      description: `இப்பாடம் ${lesson.title} பற்றிய விரிவான விளக்கங்களை வழங்குகிறது. ஜோதிடத்தின் நுணுக்கங்களை எளிய முறையில் கற்றுக்கொள்ள இந்த வகுப்பு உதவும்.`
+    };
+    this.currentLessonView = 'detail';
+    this.currentLessonViewChange.emit('detail');
+    this.playVideo();
+  }
+
   goToAudio() {
-    this.dashboardTab = 'lessons';
+    this.setTab('lessons');
+    this.currentLessonView = 'detail';
+    this.currentLessonViewChange.emit('detail');
     this.playVideo();
   }
 
@@ -209,6 +252,7 @@ export class LearnDashboardComponent implements OnInit {
     await toast.present();
   }
 
+<<<<<<< Updated upstream
   async playLiveClass() {
     this.dashboardTab = 'lessons';
     const toast = await this.toastController.create({
@@ -218,6 +262,10 @@ export class LearnDashboardComponent implements OnInit {
       position: 'bottom'
     });
     await toast.present();
+=======
+  playLiveClass() {
+    this.openMockGoogleMeet();
+>>>>>>> Stashed changes
   }
 
   async playVideo() {

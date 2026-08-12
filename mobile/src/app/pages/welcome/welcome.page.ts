@@ -19,18 +19,14 @@ export class WelcomePage implements OnInit {
   }
 
   selectAstrologyServices() {
-    if (this.authService.isLoggedIn()) {
+    if (this.authService.isLoggedIn('astrology')) {
       this.router.navigate(['/home']);
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { queryParams: { service: 'astrology' } });
     }
   }
 
   selectSpiritualEducation() {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/learn']);
-    } else {
-      this.router.navigate(['/login']);
-    }
+    this.router.navigate(['/learn']);
   }
 }

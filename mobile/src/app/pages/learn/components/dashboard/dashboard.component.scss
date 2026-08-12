@@ -8,6 +8,41 @@ $color-text-dark: #3A2B23;
 $color-text-muted: #7E716A;
 $color-orange: #F49320;
 
+.db-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top, 24px) + 0.75rem) 1.25rem 0.75rem 1.25rem;
+  background-color: #FFFFFF;
+  border-bottom: 1.5px solid rgba($color-gold-light, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .db-back-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: $color-maroon;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+  }
+}
+
+.db-brand-title {
+  font-family: 'Noto Serif Tamil', serif;
+  color: $color-maroon;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  text-align: center;
+}
+
 .dashboard-tab-content {
   overflow-y: auto;
   padding: 1.25rem;
@@ -1209,5 +1244,283 @@ $color-orange: #F49320;
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+.back-to-syllabus-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $color-maroon;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+}
+
+/* MODERN PROFILE TAB */
+.modern-profile-header-card {
+  background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba($color-maroon, 0.15);
+  border: 1.5px solid rgba($color-gold-light, 0.3);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(236, 200, 118, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .mp-avatar-glow {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba($color-gold-light, 0.4) 0%, transparent 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+
+    .mp-avatar-inner {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+      .mp-avatar-emoji {
+        font-size: 1.8rem;
+      }
+    }
+  }
+
+  .mp-info {
+    h3 {
+      color: #FFFFFF;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 0.35rem 0;
+      font-family: 'Noto Serif Tamil', serif;
+    }
+
+    .mp-badge-premium {
+      background-color: rgba($color-gold-light, 0.2);
+      color: $color-gold-light;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      border: 1px solid rgba($color-gold-light, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      .badge-dot {
+        font-size: 0.5rem;
+        color: #ECC876;
+      }
+    }
+  }
+
+  .mp-upgrade-btn {
+    margin-top: 1.25rem;
+    background: linear-gradient(135deg, $color-gold-light 0%, $color-gold 100%);
+    color: $color-maroon;
+    border: none;
+    border-radius: 25px;
+    padding: 0.55rem 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba($color-gold, 0.35);
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+}
+
+.modern-progress-card {
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid rgba($color-gold-light, 0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+
+  .modern-prog-item {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .modern-prog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: $color-text-dark;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+
+      strong {
+        color: $color-gold;
+      }
+    }
+
+    .modern-prog-track {
+      height: 6px;
+      background-color: rgba($color-gold-light, 0.15);
+      border-radius: 3px;
+      overflow: hidden;
+
+      .modern-prog-thumb {
+        height: 100%;
+        background: linear-gradient(90deg, $color-gold-light 0%, $color-gold 100%);
+        border-radius: 3px;
+      }
+    }
+  }
+}
+
+.modern-achievements-container {
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.85rem 0;
+  }
+
+  .modern-ach-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+  }
+
+  .modern-ach-box {
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    padding: 1rem;
+    border: 1px solid rgba($color-gold-light, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .modern-ach-icon-bg {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background-color: rgba($color-gold-light, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .modern-ach-details {
+      display: flex;
+      flex-direction: column;
+
+      strong {
+        font-size: 0.85rem;
+        color: $color-text-dark;
+        font-weight: 700;
+      }
+
+      span {
+        font-size: 0.65rem;
+        color: $color-text-muted;
+      }
+    }
+  }
+}
+
+.modern-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+
+  .modern-option-tile {
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba($color-gold-light, 0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      background-color: rgba($color-gold-light, 0.05);
+      transform: scale(0.99);
+    }
+
+    .tile-icon {
+      font-size: 1.25rem;
+      margin-right: 0.85rem;
+    }
+
+    .tile-text {
+      font-size: 0.85rem;
+      color: $color-text-dark;
+      font-weight: 600;
+      flex-grow: 1;
+
+      &.red {
+        color: #c62828;
+      }
+    }
+
+    .tile-arrow {
+      font-size: 0.8rem;
+      color: $color-gold;
+
+      &.red {
+        color: #c62828;
+      }
+    }
+
+    &.logout-tile {
+      border-color: rgba(#c62828, 0.2);
+      background-color: rgba(#c62828, 0.01);
+
+      &:active {
+        background-color: rgba(#c62828, 0.04);
+      }
+    }
   }
 }

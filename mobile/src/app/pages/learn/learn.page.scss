@@ -13,46 +13,35 @@ $color-purple-dark: #200438;
   --color: #{$color-text-dark};
 }
 
-.overlay-header {
-  background-color: $color-maroon;
-  color: #FFFFFF;
-  padding-top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 24px)) + 0.6rem);
-  padding-bottom: 0.85rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+.nav-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  padding: calc(env(safe-area-inset-top, 24px) + 1.25rem) 1.5rem 1rem 1.5rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 15px rgba($color-maroon-dark, 0.3);
+  background-color: #{$color-beige};
+  border-bottom: 1px solid rgba($color-gold-light, 0.3);
 
-  h2 {
-    font-family: 'Noto Serif Tamil', serif;
-    font-size: 1.2rem;
-    font-weight: 800;
-    margin: 0;
-    text-align: center;
-    flex-grow: 1;
-    color: #FFFDF5;
-  }
-
-  .btn-back {
-    background: none;
+  .back-btn {
+    background: transparent;
     border: none;
-    color: #FFFFFF;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
+    color: $color-maroon;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+  }
 
-    &:active {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
+  .brand-title {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
   }
 }
 
@@ -90,6 +79,145 @@ $color-purple-dark: #200438;
     .help-circle-icon {
       font-size: 1.2rem;
       color: $color-text-muted;
+    }
+  }
+}
+
+.post-payment-login-container {
+  padding: 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+  max-width: 480px;
+  margin: 0 auto;
+
+  .success-card {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    border: 1.5px solid rgba($color-gold-light, 0.4);
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+
+    .success-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-family: 'Noto Serif Tamil', serif;
+      color: $color-maroon;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .success-info-text {
+      font-size: 0.8rem;
+      color: $color-text-muted;
+      line-height: 1.4;
+      margin: 0 0 1rem 0;
+    }
+
+    .details-alert-box {
+      background-color: rgba($color-gold-light, 0.15);
+      border: 1px dashed $color-gold;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: left;
+
+      p {
+        font-size: 0.85rem;
+        color: $color-text-dark;
+        margin: 0 0 0.35rem 0;
+        
+        strong {
+          color: $color-maroon;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .test-notice-label {
+        font-size: 0.65rem;
+        color: $color-text-muted;
+        display: block;
+        margin-top: 0.25rem;
+        font-style: italic;
+      }
+    }
+  }
+
+  .login-form-box {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    border: 1.5px solid rgba($color-gold-light, 0.4);
+    padding: 1.5rem 1.25rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    h3 {
+      font-family: 'Noto Serif Tamil', serif;
+      color: $color-maroon;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .input-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $color-text-dark;
+      }
+
+      input {
+        background-color: rgba($color-gold-light, 0.08);
+        border: 1.5px solid rgba($color-gold-light, 0.4);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        font-size: 0.9rem;
+        color: $color-text-dark;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &:focus {
+          border-color: $color-purple;
+          background-color: #FFFFFF;
+        }
+      }
+    }
+
+    .error-msg-txt {
+      font-size: 0.75rem;
+      color: #c62828;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .action-login-btn {
+      background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 0.95rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba($color-purple, 0.2);
+      width: 100%;
+      margin-top: 0.5rem;
     }
   }
 }

@@ -13,8 +13,43 @@
   <app-learn-enroll *ngIf="currentScreen === 'enroll'" [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
   <app-learn-payment *ngIf="currentScreen === 'payment'" (next)="payAndStart()"></app-learn-payment>
   
+  <!-- Post Payment Login Screen -->
+  <div class="post-payment-login-container" *ngIf="currentScreen === 'post-payment-login'">
+    <div class="success-card">
+      <span class="success-icon">🎉</span>
+      <h2>கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!</h2>
+      <p class="success-info-text">
+        வகுப்பின் உள்நுழைவு விவரங்கள் உங்களது மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.
+      </p>
+      
+      <div class="details-alert-box">
+        <p><strong>உள்நுழைவு பயனர் ஐடி:</strong> {{ generatedLoginId }}</p>
+        <p><strong>கடவுச்சொல்:</strong> {{ generatedPassword }}</p>
+        <span class="test-notice-label">* (சோதனை நோக்கத்திற்காக இது திரையில் காட்டப்படுகிறது)</span>
+      </div>
+    </div>
+
+    <div class="login-form-box">
+      <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
+      <div class="input-field-group">
+        <label>பயனர் ஐடி (User ID) *</label>
+        <input type="text" [(ngModel)]="loginIdInput" placeholder="EDU-XXXX">
+      </div>
+      <div class="input-field-group">
+        <label>கடவுச்சொல் (Password) *</label>
+        <input type="password" [(ngModel)]="loginPasswordInput" placeholder="கடவுச்சொல் உள்ளிடவும்">
+      </div>
+      
+      <p class="error-msg-txt" *ngIf="loginErrorMessage">{{ loginErrorMessage }}</p>
+
+      <button class="action-login-btn" (click)="loginToCourse()">உள்நுழைக ➔</button>
+    </div>
+  </div>
+
   <app-learn-dashboard *ngIf="currentScreen === 'dashboard' && !activeQuiz && !showCertificate" 
                        [enrollForm]="enrollForm" 
+                       [(dashboardTab)]="dashboardTab"
+                       [(currentLessonView)]="currentLessonView"
                        (logout)="logoutCourse()"
                        (startQuiz)="activeQuiz = true"
                        (viewCertificate)="showCertificate = true">
