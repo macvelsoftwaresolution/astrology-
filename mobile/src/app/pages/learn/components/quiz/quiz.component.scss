@@ -13,7 +13,7 @@ $color-purple-dark: #200438;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #{$color-beige};
+  background-color: #FAF6E8;
   z-index: 2000;
   display: flex;
   flex-direction: column;
@@ -24,28 +24,32 @@ $color-purple-dark: #200438;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  background-color: #FFFFFF;
-  border-bottom: 1.5px solid rgba($color-gold-light, 0.3);
+  padding: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 24px)) + 0.6rem) 1.25rem 0.85rem 1.25rem;
+  background-color: $color-maroon;
+  color: white;
+  box-shadow: 0 4px 15px rgba($color-maroon, 0.3);
 
   .quiz-title-txt {
     font-family: 'Noto Serif Tamil', serif;
-    color: $color-maroon;
-    font-size: 1.3rem;
+    color: #FFFDF5;
+    font-size: 1.2rem;
     font-weight: 800;
   }
 
   .close-quiz-btn {
     background: transparent;
     border: none;
-    font-size: 1.8rem;
-    color: $color-text-muted;
+    font-size: 1.3rem;
+    color: white;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 .quiz-content-body, .quiz-results-body {
-  padding: 1.5rem 1.5rem calc(env(safe-area-inset-bottom, 16px) + 1.5rem) 1.5rem;
+  padding: 1.25rem 1.25rem calc(env(safe-area-inset-bottom, 16px) + 1.5rem) 1.25rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -58,32 +62,33 @@ $color-purple-dark: #200438;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  font-size: 0.8rem;
-  color: $color-text-muted;
+  font-size: 0.82rem;
+  color: $color-maroon;
+  font-weight: 700;
 
   .q-progress-bar {
-    height: 4px;
-    background-color: rgba($color-gold-light, 0.25);
-    border-radius: 2px;
+    height: 6px;
+    background-color: rgba($color-gold, 0.25);
+    border-radius: 3px;
     overflow: hidden;
 
     .q-progress-fill {
       height: 100%;
-      background-color: $color-purple;
+      background-color: $color-maroon;
     }
   }
 }
 
 .question-box {
-  background-color: #FFFFFF;
-  border-radius: 14px;
+  background-color: #FAF0D6;
+  border-radius: 16px;
   padding: 1.25rem;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  border: 1px solid rgba($color-gold, 0.22);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
 
   .q-badge {
     color: $color-gold;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 700;
     text-transform: uppercase;
     display: block;
@@ -91,11 +96,11 @@ $color-purple-dark: #200438;
   }
 
   .q-text {
-    font-size: 0.95rem;
-    color: $color-text-dark;
+    font-size: 0.98rem;
+    color: $color-maroon;
     line-height: 1.5;
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
   }
 }
 
@@ -107,64 +112,64 @@ $color-purple-dark: #200438;
 
 .quiz-option-card {
   display: flex;
-  background-color: #FFFFFF;
-  border-radius: 12px;
-  padding: 0.95rem;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+  background-color: #FAF0D6;
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba($color-gold, 0.22);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
   gap: 0.85rem;
   align-items: center;
   cursor: pointer;
   transition: all 0.2s ease;
 
   .opt-code {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    background-color: rgba($color-gold-light, 0.15);
-    border: 1px solid $color-gold-light;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background-color: #F3E4C2;
+    border: 1px solid rgba($color-gold, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.82rem;
     font-weight: bold;
     color: $color-maroon;
   }
 
   .opt-text {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: $color-text-dark;
     margin: 0;
     line-height: 1.4;
   }
 
   &.selected {
-    border-color: $color-purple;
-    background-color: rgba($color-purple, 0.05);
+    border-color: $color-maroon;
+    background-color: #FAF0D6;
 
     .opt-code {
-      background-color: $color-purple;
-      border-color: $color-purple;
+      background-color: $color-maroon;
+      border-color: $color-maroon;
       color: white;
     }
 
     .opt-text {
-      color: $color-purple;
+      color: $color-maroon;
       font-weight: 700;
     }
   }
 }
 
 .submit-quiz-btn {
-  background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+  background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
   color: #FFFFFF;
   border: none;
-  border-radius: 12px;
-  padding: 1rem;
-  font-size: 0.95rem;
+  border-radius: 14px;
+  padding: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba($color-purple, 0.25);
+  box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
   margin-top: auto;
   width: 100%;
 
@@ -181,10 +186,11 @@ $color-purple-dark: #200438;
   text-align: center;
 
   .result-badge-icon {
-    font-size: 3.5rem;
-    background-color: #ffebee;
-    width: 90px;
-    height: 90px;
+    font-size: 2.8rem;
+    background-color: #FAF0D6;
+    border: 1px solid rgba($color-gold, 0.3);
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -214,26 +220,26 @@ $color-purple-dark: #200438;
 
   .score-card-row {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
     width: 100%;
     margin-bottom: 2rem;
 
     .score-box {
       flex: 1;
-      background-color: #FFFFFF;
-      border-radius: 14px;
-      border: 1.5px solid rgba($color-gold-light, 0.3);
+      background-color: #FAF0D6;
+      border-radius: 16px;
+      border: 1px solid rgba($color-gold, 0.22);
       padding: 1rem;
 
       span {
         display: block;
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         color: $color-text-muted;
         margin-bottom: 0.25rem;
       }
 
       strong {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         color: $color-maroon;
         font-weight: 800;
       }

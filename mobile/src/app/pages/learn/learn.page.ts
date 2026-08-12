@@ -83,8 +83,35 @@ export class LearnPage implements OnInit {
     });
   }
 
+  getHeaderTitle(): string {
+    if (this.activeQuiz) {
+      return 'பயிற்சித் தேர்வு';
+    }
+    if (this.showCertificate) {
+      return 'சாதனைச் சான்றிதழ்';
+    }
+    switch (this.currentScreen) {
+      case 'intro':
+        return 'வேத ஜோதிடக் கல்வி';
+      case 'rules':
+        return 'விதிமுறைகள்';
+      case 'enroll':
+        return 'மாணவர் சேர்க்கை';
+      case 'payment':
+        return 'கட்டணம் செலுத்துதல்';
+      case 'dashboard':
+        return 'வேத ஜோதிடக் கல்வி';
+      default:
+        return 'வேத ஜோதிடக் கல்வி';
+    }
+  }
+
   handleBack() {
-    if (this.currentScreen === 'intro') {
+    if (this.activeQuiz) {
+      this.activeQuiz = false;
+    } else if (this.showCertificate) {
+      this.showCertificate = false;
+    } else if (this.currentScreen === 'intro') {
       this.router.navigate(['/welcome']);
     } else if (this.currentScreen === 'rules') {
       this.currentScreen = 'intro';
@@ -93,7 +120,7 @@ export class LearnPage implements OnInit {
     } else if (this.currentScreen === 'payment') {
       this.currentScreen = 'enroll';
     } else if (this.currentScreen === 'dashboard') {
-      this.currentScreen = 'intro';
+      this.router.navigate(['/welcome']);
     }
   }
 

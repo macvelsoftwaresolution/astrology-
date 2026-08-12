@@ -7,40 +7,61 @@
   <div class="enroll-form">
     <div class="form-group">
       <label>முழு பெயர் (Full Name) *</label>
-      <input type="text" [(ngModel)]="localForm.fullName" placeholder="உங்கள் பெயரை உள்ளிடவும்">
+      <div class="input-with-icon">
+        <input type="text" [(ngModel)]="localForm.fullName" placeholder="உங்கள் பெயரை உள்ளிடவும்">
+        <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+      </div>
     </div>
 
     <div class="form-group">
       <label>பிறந்த தேதி (Date of Birth) *</label>
-      <input type="date" [(ngModel)]="localForm.dob">
+      <div class="input-with-icon">
+        <input type="date" [(ngModel)]="localForm.dob">
+        <span class="input-icon"><i class="bi bi-calendar-event-fill"></i></span>
+      </div>
     </div>
 
     <div class="form-group">
       <label>பிறந்த நேரம் (Time of Birth) *</label>
-      <input type="time" [(ngModel)]="localForm.tob">
+      <div class="input-with-icon">
+        <input type="time" [(ngModel)]="localForm.tob">
+        <span class="input-icon"><i class="bi bi-clock-fill"></i></span>
+      </div>
     </div>
 
     <div class="form-group">
       <label>பிறந்த இடம் (Place of Birth) *</label>
-      <input type="text" [(ngModel)]="localForm.pob" placeholder="பிறந்த இடம்/ஊர்">
+      <div class="input-with-icon">
+        <input type="text" [(ngModel)]="localForm.pob" placeholder="பிறந்த இடம்/ஊர்">
+        <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+      </div>
     </div>
 
     <div class="form-group">
       <label>கல்வித் தகுதி (Educational Qualification) *</label>
-      <select [(ngModel)]="localForm.qualification">
-        <option value="">தேர்ந்தெடுக்கவும்...</option>
-        <option value="diploma">டிப்ளமோ (Diploma)</option>
-        <option value="degree">பட்டப்படிப்பு (Degree)</option>
-        <option value="postgraduate">முதுகலை (PG)</option>
-        <option value="other">இதர (Other)</option>
-      </select>
+      <div class="input-with-icon">
+        <select [(ngModel)]="localForm.qualification">
+          <option value="">தேர்ந்தெடுக்கவும்...</option>
+          <option value="diploma">டிப்ளமோ (Diploma)</option>
+          <option value="degree">பட்டப்படிப்பு (Degree)</option>
+          <option value="postgraduate">முதுகலை (PG)</option>
+          <option value="other">இதர (Other)</option>
+        </select>
+        <span class="input-icon"><i class="bi bi-mortarboard-fill"></i></span>
+      </div>
     </div>
 
     <div class="form-group">
       <label>இடற்பாடில் சேருவதற்கான காரணம் (Reason for joining this course) *</label>
-      <textarea [(ngModel)]="localForm.reason" rows="3" placeholder="உங்கள் பதிலை உள்ளிடவும்"></textarea>
+      <div class="input-with-icon text-area-icon">
+        <textarea [(ngModel)]="localForm.reason" rows="3" placeholder="உங்கள் பதிலை உள்ளிடவும்"></textarea>
+        <span class="input-icon"><i class="bi bi-chat-left-text-fill"></i></span>
+      </div>
     </div>
 
-    <button class="action-submit-btn" (click)="onSubmit()">கட்டணம் செலுத்த தொடரவும் ➔</button>
+    <button class="action-submit-btn" (click)="onSubmit()">
+      <span>கட்டணம் செலுத்த தொடரவும்</span>
+      <i class="bi bi-arrow-right ms-2"></i>
+    </button>
   </div>
 </div>

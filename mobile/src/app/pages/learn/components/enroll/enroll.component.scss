@@ -16,18 +16,21 @@ $color-purple-dark: #200438;
 }
 
 .action-submit-btn {
-  background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+  background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
   color: #FFFFFF;
   border: none;
-  border-radius: 12px;
-  padding: 1.05rem;
+  border-radius: 14px;
+  padding: 0.95rem 1.2rem;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba($color-purple, 0.25);
-  transition: transform 0.1s ease;
+  box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
+  transition: all 0.2s ease;
   width: 100%;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
 
   &:active {
     transform: scale(0.98);
@@ -47,7 +50,7 @@ $color-purple-dark: #200438;
   }
 
   p {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: $color-text-muted;
     margin: 0.25rem 0 0 0;
   }
@@ -65,25 +68,48 @@ $color-purple-dark: #200438;
   gap: 0.4rem;
 
   label {
-    font-size: 0.8rem;
-    color: $color-text-muted;
-    font-weight: 600;
+    font-size: 0.82rem;
+    color: $color-maroon;
+    font-weight: 700;
   }
 
-  input, select, textarea {
-    width: 100%;
-    padding: 0.75rem 0.85rem;
-    border: 1.5px solid rgba($color-gold, 0.3);
-    border-radius: 10px;
-    background-color: #FFFFFF;
-    font-size: 0.9rem;
-    color: $color-text-dark;
-    outline: none;
-    box-sizing: border-box;
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
 
-    &:focus {
-      border-color: $color-gold;
-      box-shadow: 0 0 0 3px rgba($color-gold, 0.1);
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem 2.6rem 0.75rem 0.85rem;
+      border: 1px solid rgba($color-gold, 0.3);
+      border-radius: 12px;
+      background-color: #FAF0D6;
+      font-size: 0.9rem;
+      color: $color-text-dark;
+      outline: none;
+      box-sizing: border-box;
+
+      &:focus {
+        border-color: $color-gold;
+        box-shadow: 0 0 0 3px rgba($color-gold, 0.15);
+      }
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 0.85rem;
+      color: $color-gold;
+      font-size: 1.1rem;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    &.text-area-icon {
+      .input-icon {
+        top: 0.85rem;
+        align-items: flex-start;
+      }
     }
   }
 }

@@ -13,30 +13,46 @@ $color-purple-dark: #200438;
   --color: #{$color-text-dark};
 }
 
-.nav-header {
+.overlay-header {
+  background-color: $color-maroon;
+  color: #FFFFFF;
+  padding-top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 24px)) + 0.6rem);
+  padding-bottom: 0.85rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: calc(env(safe-area-inset-top, 24px) + 1.25rem) 1.5rem 1rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba($color-maroon-dark, 0.3);
 
-  .back-btn {
-    background: transparent;
+  h2 {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0;
+    text-align: center;
+    flex-grow: 1;
+    color: #FFFDF5;
+  }
+
+  .btn-back {
+    background: none;
     border: none;
-    font-size: 1.5rem;
-    color: $color-maroon;
+    color: #FFFFFF;
+    font-size: 1.3rem;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.25rem 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
 
-  .brand-title {
-    font-family: 'Noto Serif Tamil', serif;
-    color: $color-maroon;
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin: 0;
+    &:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
   }
 }
 

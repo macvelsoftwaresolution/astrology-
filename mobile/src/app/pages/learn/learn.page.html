@@ -1,11 +1,11 @@
 <ion-content [fullscreen]="true" class="edu-content">
-  <!-- Nav header for wizard steps -->
-  <div class="nav-header" *ngIf="currentScreen !== 'dashboard' && !activeQuiz && !showCertificate">
-    <button class="back-btn" (click)="handleBack()">
-      <span class="back-arrow">←</span>
+  <!-- Mobile App Sticky Top Header -->
+  <div class="overlay-header">
+    <button class="btn-back" (click)="handleBack()" aria-label="Go Back">
+      <i class="bi bi-arrow-left"></i>
     </button>
-    <h1 class="brand-title">ஆருத்ரா</h1>
-    <div style="width: 40px;"></div>
+    <h2>{{ getHeaderTitle() }}</h2>
+    <div style="width: 32px;"></div>
   </div>
 
   <app-learn-intro *ngIf="currentScreen === 'intro'" (next)="goToRules()"></app-learn-intro>

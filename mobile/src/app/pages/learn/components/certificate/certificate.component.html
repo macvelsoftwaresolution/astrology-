@@ -1,8 +1,10 @@
 <div class="certificate-overlay">
   <div class="cert-header">
-    <button class="cert-back-btn" (click)="close.emit()">← Back</button>
+    <button class="cert-back-btn" (click)="close.emit()">
+      <i class="bi bi-arrow-left me-1"></i>
+    </button>
     <h2>சாதனைச் சான்றிதழ்</h2>
-    <div style="width: 40px;"></div>
+    <div style="width: 32px;"></div>
   </div>
 
   <div class="cert-body-scroll">
@@ -24,16 +26,20 @@
           </p>
           <div class="cert-details-footer">
             <div>
-              <span>நாள்: அக்டோபர் 12, 2023</span>
+              <span>நாள்: அக்டோபர் 12, 2026</span>
               <span>பாட நேரம்: 48 மணிநேரம்</span>
             </div>
-            <div class="cert-seal">🏆 SEAL</div>
+            <div class="cert-seal"><i class="bi bi-patch-check-fill text-gold me-1"></i> SEAL</div>
           </div>
         </div>
       </div>
     </div>
 
-    <button class="cert-action-btn pdf">📥 PDF தரவிறக்கம்</button>
-    <button class="cert-action-btn share">🔗 பகிர்</button>
+    <button class="cert-action-btn pdf">
+      <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> PDF தரவிறக்கம்
+    </button>
+    <button class="cert-action-btn share">
+      <i class="bi bi-share-fill me-2"></i> பகிர்
+    </button>
   </div>
 </div>

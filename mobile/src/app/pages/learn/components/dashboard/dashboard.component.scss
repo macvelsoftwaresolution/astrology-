@@ -1,11 +1,12 @@
-$color-beige: #FBF9E7;
+$color-beige: #FAF6E8;
+$color-card-bg: #FAF0D6;
 $color-maroon: #4A0E17;
+$color-maroon-dark: #2A080C;
 $color-gold: #A27B38;
-$color-gold-light: #ECC876;
-$color-text-dark: #2A2421;
+$color-gold-bright: #C49B45;
+$color-text-dark: #3A2B23;
 $color-text-muted: #7E716A;
-$color-purple: #3A0D5C;
-$color-purple-dark: #200438;
+$color-orange: #F49320;
 
 .dashboard-tab-content {
   overflow-y: auto;
@@ -21,7 +22,7 @@ $color-purple-dark: #200438;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba($color-maroon, 0.1);
-  border: 1px solid rgba($color-gold-light, 0.4);
+  border: 1px solid rgba($color-gold, 0.4);
   margin-bottom: 1.5rem;
 
   .lc-img {
@@ -58,6 +59,8 @@ $color-purple-dark: #200438;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
     }
 
     h3 {
@@ -78,13 +81,13 @@ $color-purple-dark: #200438;
     }
 
     .lc-btn {
-      background-color: $color-gold-light;
-      color: $color-maroon;
+      background-color: $color-orange;
+      color: #3A080E;
       border: none;
-      border-radius: 6px;
-      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      padding: 0.35rem 0.85rem;
       font-size: 0.75rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
     }
   }
@@ -99,49 +102,62 @@ $color-purple-dark: #200438;
   h3 {
     font-family: 'Noto Serif Tamil', serif;
     color: $color-maroon;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     margin: 0;
   }
 
   a {
-    font-size: 0.8rem;
-    color: $color-gold;
+    font-size: 0.82rem;
+    color: $color-maroon;
     font-weight: 700;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
   }
 
   .subheader-badge {
-    background-color: rgba($color-gold-light, 0.3);
+    background-color: rgba($color-gold, 0.15);
     color: $color-maroon;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
   }
 }
 
 .quick-syllabus-card, .quick-exam-card {
   display: flex;
   align-items: center;
-  background-color: #FFFFFF;
-  border-radius: 12px;
-  padding: 0.85rem;
-  border: 1px solid rgba($color-gold-light, 0.3);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-  gap: 0.85rem;
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba($color-gold, 0.22);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
+  gap: 1rem;
   cursor: pointer;
   margin-bottom: 1rem;
 
   .qs-icon, .qe-icon {
-    font-size: 1.4rem;
-    background-color: rgba($color-gold-light, 0.15);
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    font-size: 1.2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .box-gold {
+    background-color: #F3E4C2;
+    color: #8B5E14;
+  }
+
+  .box-peach {
+    background-color: #F8E3D2;
+    color: #A85A20;
   }
 
   .qs-details, .qe-details {
@@ -150,19 +166,20 @@ $color-purple-dark: #200438;
     flex-grow: 1;
 
     strong {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: $color-maroon;
+      font-weight: 700;
     }
 
     span {
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       color: $color-text-muted;
       margin-top: 0.1rem;
     }
   }
 
   .qs-arrow, .qe-arrow {
-    font-size: 0.8rem;
+    font-size: 0.95rem;
     color: $color-gold;
   }
 }
@@ -170,22 +187,25 @@ $color-purple-dark: #200438;
 .audio-lesson-bar {
   display: flex;
   align-items: center;
-  background-color: #FFFFFF;
-  border-radius: 12px;
-  padding: 0.85rem;
-  border: 1px solid rgba($color-gold-light, 0.3);
-  gap: 0.85rem;
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba($color-gold, 0.22);
+  gap: 1rem;
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
+  cursor: pointer;
 
   .audio-play-icon {
-    background-color: rgba($color-purple, 0.1);
-    color: $color-purple;
-    width: 32px;
-    height: 32px;
+    background-color: $color-maroon;
+    color: white;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 1.1rem;
+    flex-shrink: 0;
   }
 
   .audio-details {
@@ -194,12 +214,13 @@ $color-purple-dark: #200438;
     flex-grow: 1;
 
     strong {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: $color-maroon;
+      font-weight: 700;
     }
 
     span {
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       color: $color-text-muted;
     }
   }
@@ -219,12 +240,12 @@ $color-purple-dark: #200438;
 
 .webinar-card {
   flex-shrink: 0;
-  width: 200px;
-  background-color: #FFFFFF;
-  border-radius: 14px;
+  width: 210px;
+  background-color: $color-card-bg;
+  border-radius: 16px;
   padding: 1rem;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid rgba($color-gold, 0.22);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -236,16 +257,16 @@ $color-purple-dark: #200438;
   .web-status-badge {
     background-color: #c62828;
     color: white;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    padding: 0.15rem 0.4rem;
+    padding: 0.15rem 0.5rem;
     border-radius: 4px;
     align-self: flex-start;
     margin-bottom: 0.5rem;
   }
 
   h4 {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: $color-maroon;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
@@ -257,26 +278,28 @@ $color-purple-dark: #200438;
   }
 
   .web-speaker, .web-date {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: $color-text-muted;
     margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
   }
 
   .web-btn {
-    margin-top: auto;
-    background-color: $color-purple;
+    margin-top: 0.75rem;
+    background-color: $color-maroon;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 700;
     cursor: pointer;
 
     &.past {
       background-color: transparent;
       border: 1px solid $color-gold;
-      color: $color-gold;
+      color: $color-maroon;
     }
   }
 }
@@ -288,30 +311,32 @@ $color-purple-dark: #200438;
 }
 
 .pdf-note-card {
-  background-color: #FFFFFF;
-  border-radius: 12px;
-  padding: 0.85rem;
-  border: 1px solid rgba($color-gold-light, 0.3);
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid rgba($color-gold, 0.22);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
+  cursor: pointer;
 
   .pdf-icon {
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: #c62828;
     margin-bottom: 0.4rem;
   }
 
   h4 {
-    font-size: 0.8rem;
-    color: $color-text-dark;
+    font-size: 0.85rem;
+    color: $color-maroon;
     font-weight: 700;
     margin: 0 0 0.2rem 0;
   }
 
   span {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: $color-text-muted;
   }
 }
@@ -321,7 +346,7 @@ $color-purple-dark: #200438;
   border-radius: 16px;
   overflow: hidden;
   background-color: #000;
-  border: 1.5px solid rgba($color-gold-light, 0.4);
+  border: 1px solid rgba($color-gold, 0.3);
   box-shadow: 0 6px 18px rgba(0,0,0,0.1);
   margin-bottom: 1.25rem;
 
@@ -331,6 +356,7 @@ $color-purple-dark: #200438;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 
     .teacher-bg-img {
       width: 100%;
@@ -343,8 +369,8 @@ $color-purple-dark: #200438;
       position: absolute;
       z-index: 2;
       font-size: 2.2rem;
-      background-color: rgba(#FFFFFF, 0.9);
-      color: $color-purple;
+      background-color: rgba(#FFFFFF, 0.95);
+      color: $color-maroon;
       width: 60px;
       height: 60px;
       border-radius: 50%;
@@ -357,35 +383,39 @@ $color-purple-dark: #200438;
 
   .video-info {
     padding: 1rem;
-    background-color: #FFFFFF;
+    background-color: $color-card-bg;
 
     h2 {
       font-family: 'Noto Serif Tamil', serif;
       color: $color-maroon;
       font-size: 1.2rem;
-      font-weight: 700;
+      font-weight: 800;
       margin: 0 0 0.25rem 0;
     }
 
     .v-stats {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: $color-text-muted;
+      display: flex;
+      align-items: center;
     }
   }
 }
 
 .audio-player-box {
-  background-color: #FFFFFF;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  border-radius: 14px;
-  padding: 1rem;
+  background-color: $color-card-bg;
+  border: 1px solid rgba($color-gold, 0.22);
+  border-radius: 16px;
+  padding: 1.1rem;
   margin-bottom: 1.25rem;
 
   h3 {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: $color-maroon;
     font-weight: 700;
     margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
   }
 
   .audio-control-row {
@@ -395,16 +425,17 @@ $color-purple-dark: #200438;
     margin-bottom: 0.75rem;
 
     .audio-play-btn {
-      background-color: $color-purple;
+      background-color: $color-maroon;
       color: white;
       border: none;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
+      cursor: pointer;
     }
 
     .audio-progress {
@@ -412,19 +443,19 @@ $color-purple-dark: #200438;
       align-items: center;
       gap: 0.5rem;
       flex-grow: 1;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: $color-text-muted;
 
       .progress-bar-bg {
         flex-grow: 1;
-        height: 4px;
-        background-color: rgba($color-gold-light, 0.3);
-        border-radius: 2px;
+        height: 6px;
+        background-color: rgba($color-gold, 0.25);
+        border-radius: 3px;
         overflow: hidden;
 
         .progress-fill {
           height: 100%;
-          background-color: $color-purple;
+          background-color: $color-maroon;
         }
       }
     }
@@ -434,40 +465,38 @@ $color-purple-dark: #200438;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: rgba($color-gold-light, 0.15);
-    padding: 0.5rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    background-color: rgba($color-gold, 0.15);
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
     color: $color-text-dark;
-
-    span {
-      color: #2E7D32;
-      font-weight: bold;
-    }
+    cursor: pointer;
 
     strong {
       flex-grow: 1;
+      color: $color-maroon;
     }
 
     span:last-child {
       color: $color-text-muted;
-      font-weight: normal;
     }
   }
 }
 
 .study-documents-box, .lesson-desc-box {
-  background-color: #FFFFFF;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  border-radius: 14px;
-  padding: 1rem;
+  background-color: $color-card-bg;
+  border: 1px solid rgba($color-gold, 0.22);
+  border-radius: 16px;
+  padding: 1.1rem;
   margin-bottom: 1.25rem;
 
   h3 {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: $color-maroon;
     font-weight: 700;
     margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -475,8 +504,8 @@ $color-purple-dark: #200438;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.65rem 0;
-  border-bottom: 1px solid rgba($color-gold-light, 0.15);
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed rgba($color-gold, 0.25);
 
   &:last-child {
     border-bottom: none;
@@ -489,18 +518,17 @@ $color-purple-dark: #200438;
     gap: 0.75rem;
 
     .doc-icon {
-      font-size: 1.4rem;
-      color: #c62828;
+      font-size: 1.5rem;
     }
 
     strong {
       display: block;
-      font-size: 0.85rem;
-      color: $color-text-dark;
+      font-size: 0.88rem;
+      color: $color-maroon;
     }
 
     span {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: $color-text-muted;
     }
   }
@@ -510,63 +538,63 @@ $color-purple-dark: #200438;
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
-    color: $color-purple;
+    color: $color-maroon;
   }
 }
 
 .lesson-desc-box {
   p {
-    font-size: 0.8rem;
-    color: $color-text-muted;
-    line-height: 1.45;
-    margin: 0 0 0.75rem 0;
+    font-size: 0.82rem;
+    color: $color-text-dark;
+    line-height: 1.5;
+    margin: 0 0 0.85rem 0;
   }
 
   .view-full-desc-btn {
     width: 100%;
     background-color: transparent;
     border: 1px solid $color-gold;
-    color: $color-gold;
-    padding: 0.5rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    color: $color-maroon;
+    padding: 0.6rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
     cursor: pointer;
   }
 }
 
 .syllabus-box {
-  background-color: #FFFFFF;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  border-radius: 14px;
-  padding: 1rem;
+  background-color: $color-card-bg;
+  border: 1px solid rgba($color-gold, 0.22);
+  border-radius: 16px;
+  padding: 1.1rem;
   margin-bottom: 1.25rem;
 
   .syllabus-header-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba($color-gold-light, 0.2);
-    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed rgba($color-gold, 0.25);
+    padding-bottom: 0.6rem;
     margin-bottom: 0.75rem;
 
     h3 {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: $color-maroon;
       font-weight: 700;
       margin: 0;
     }
 
     span {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: $color-text-muted;
     }
   }
 }
 
 .chapter-item {
-  border-bottom: 1px solid rgba($color-gold-light, 0.15);
-  padding: 0.65rem 0;
+  border-bottom: 1px dashed rgba($color-gold, 0.2);
+  padding: 0.75rem 0;
 
   &:last-child {
     border-bottom: none;
@@ -579,17 +607,17 @@ $color-purple-dark: #200438;
     cursor: pointer;
 
     strong {
-      font-size: 0.85rem;
-      color: $color-text-dark;
+      font-size: 0.88rem;
+      color: $color-maroon;
       display: block;
     }
 
     .chapter-prog-bar {
       width: 120px;
-      height: 3px;
-      background-color: rgba($color-gold-light, 0.2);
+      height: 4px;
+      background-color: rgba($color-gold, 0.2);
       border-radius: 2px;
-      margin-top: 0.25rem;
+      margin-top: 0.35rem;
       overflow: hidden;
 
       .prog-fill {
@@ -599,8 +627,8 @@ $color-purple-dark: #200438;
     }
 
     .accordion-arrow {
-      font-size: 0.8rem;
-      color: $color-text-muted;
+      font-size: 0.9rem;
+      color: $color-maroon;
     }
   }
 }
@@ -616,65 +644,59 @@ $color-purple-dark: #200438;
 .lesson-sub-item {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.45rem;
-  border-radius: 8px;
-  background-color: rgba($color-beige, 0.5);
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 12px;
+  background-color: rgba(#FFFFFF, 0.6);
 
   &.completed {
-    background-color: rgba(#E8F5E9, 0.6);
+    background-color: rgba(#E8F5E9, 0.7);
   }
 
   .status-circle {
-    font-size: 0.8rem;
-    color: $color-text-muted;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  &.completed .status-circle {
-    color: #2E7D32;
-    font-weight: bold;
   }
 
   .l-details {
     flex-grow: 1;
 
     h4 {
-      font-size: 0.75rem;
-      color: $color-text-dark;
+      font-size: 0.82rem;
+      color: $color-maroon;
       margin: 0;
+      font-weight: 700;
     }
 
     span {
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       color: $color-text-muted;
     }
   }
 
   .lock-icon {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: $color-text-muted;
   }
 }
 
 .action-submit-btn {
-  background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+  background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
   color: #FFFFFF;
   border: none;
-  border-radius: 12px;
-  padding: 1.05rem;
+  border-radius: 14px;
+  padding: 0.95rem 1.2rem;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba($color-purple, 0.25);
-  transition: transform 0.1s ease;
+  box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
+  transition: all 0.2s ease;
   width: 100%;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:active {
     transform: scale(0.98);
@@ -682,8 +704,8 @@ $color-purple-dark: #200438;
 
   &.alt {
     background: transparent;
-    border: 2px solid $color-purple;
-    color: $color-purple;
+    border: 1px solid $color-gold;
+    color: $color-maroon;
     box-shadow: none;
   }
 }
@@ -691,26 +713,27 @@ $color-purple-dark: #200438;
 /* SUB-TAB 3: LIBRARY */
 .lib-search-bar {
   display: flex;
-  background-color: #FFFFFF;
-  border-radius: 12px;
-  border: 1.5px solid rgba($color-gold-light, 0.4);
-  padding: 0.65rem 0.85rem;
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  border: 1px solid rgba($color-gold, 0.25);
+  padding: 0.75rem 1rem;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-  margin-bottom: 1rem;
+  gap: 0.65rem;
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
+  margin-bottom: 1.25rem;
 
   input {
     flex-grow: 1;
     border: none;
     outline: none;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     background: transparent;
+    color: $color-text-dark;
   }
 
   .search-btn-icon {
-    font-size: 0.95rem;
-    color: $color-text-muted;
+    font-size: 1.1rem;
+    color: $color-gold;
   }
 }
 
@@ -726,20 +749,20 @@ $color-purple-dark: #200438;
   }
 
   .cat-pill {
-    background-color: #FFFFFF;
+    background-color: $color-card-bg;
     border: 1px solid rgba($color-gold, 0.25);
-    padding: 0.4rem 0.85rem;
+    padding: 0.45rem 1rem;
     border-radius: 20px;
-    font-size: 0.75rem;
-    color: $color-text-muted;
+    font-size: 0.8rem;
+    color: $color-maroon;
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
 
     &.active {
-      background-color: $color-gold;
+      background-color: $color-maroon;
       color: #FFFFFF;
-      border-color: $color-gold;
+      border-color: $color-maroon;
     }
   }
 }
@@ -752,20 +775,20 @@ $color-purple-dark: #200438;
 
 .book-card {
   display: flex;
-  background-color: #FFFFFF;
-  border-radius: 14px;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  padding: 0.85rem;
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  border: 1px solid rgba($color-gold, 0.22);
+  padding: 1rem;
   gap: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
 
   .book-cover-wrapper {
     flex-shrink: 0;
-    width: 90px;
-    height: 120px;
-    border-radius: 8px;
+    width: 95px;
+    height: 125px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba($color-gold-light, 0.2);
+    border: 1px solid rgba($color-gold, 0.3);
 
     .book-cover {
       width: 100%;
@@ -781,11 +804,11 @@ $color-purple-dark: #200438;
 
     .best-seller-badge {
       align-self: flex-start;
-      background-color: $color-gold;
-      color: white;
+      background-color: $color-orange;
+      color: #3A080E;
       font-size: 0.65rem;
-      font-weight: 700;
-      padding: 0.1rem 0.4rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
       border-radius: 4px;
       margin-bottom: 0.35rem;
     }
@@ -793,41 +816,42 @@ $color-purple-dark: #200438;
     h3 {
       font-family: 'Noto Serif Tamil', serif;
       color: $color-maroon;
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.05rem;
+      font-weight: 800;
       margin: 0;
       line-height: 1.3;
     }
 
     .author-name {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: $color-text-muted;
-      margin: 0.2rem 0;
+      margin: 0.25rem 0;
     }
 
     .book-price {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: $color-maroon;
       margin: 0.25rem 0 0.5rem 0;
     }
 
     .buy-book-btn {
-      background-color: $color-purple;
+      background-color: $color-maroon;
       color: white;
       border: none;
-      border-radius: 6px;
-      padding: 0.45rem;
-      font-size: 0.75rem;
+      border-radius: 20px;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
       align-self: flex-start;
-      padding: 0.45rem 1rem;
 
       &.bought {
         background-color: #E8F5E9;
         color: #2E7D32;
         cursor: default;
+        display: flex;
+        align-items: center;
       }
     }
   }
@@ -835,11 +859,11 @@ $color-purple-dark: #200438;
 
 /* SUB-TAB 4: PROFILE */
 .student-profile-card {
-  background: linear-gradient(135deg, #FFFDF0 0%, #FFF5D0 100%);
-  border: 1.5px solid rgba($color-gold-light, 0.8);
+  background-color: $color-card-bg;
+  border: 1px solid rgba($color-gold, 0.22);
   border-radius: 16px;
   padding: 1.1rem;
-  box-shadow: 0 6px 16px rgba($color-maroon, 0.05);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
   margin-bottom: 1.25rem;
 
   .sp-meta {
@@ -851,24 +875,25 @@ $color-purple-dark: #200438;
       width: 55px;
       height: 55px;
       border-radius: 50%;
-      background-color: $color-purple;
+      background-color: $color-maroon;
       color: white;
-      font-size: 1.6rem;
+      font-size: 2.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     h3 {
       font-family: 'Noto Serif Tamil', serif;
       color: $color-maroon;
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.2rem;
+      font-weight: 800;
       margin: 0;
     }
 
     .sp-badge {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: $color-gold;
       font-weight: 700;
       display: block;
@@ -876,12 +901,12 @@ $color-purple-dark: #200438;
     }
 
     .upgrade-btn {
-      background-color: $color-purple;
+      background-color: $color-maroon;
       color: white;
       border: none;
-      border-radius: 6px;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.7rem;
+      border-radius: 20px;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -889,14 +914,14 @@ $color-purple-dark: #200438;
 }
 
 .progress-section-card, .accomplishment-card {
-  background-color: #FFFFFF;
-  border-radius: 14px;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  padding: 1rem;
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  border: 1px solid rgba($color-gold, 0.22);
+  padding: 1.1rem;
   margin-bottom: 1.25rem;
 
   h3 {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: $color-maroon;
     font-weight: 700;
     margin: 0 0 0.85rem 0;
@@ -907,14 +932,15 @@ $color-purple-dark: #200438;
   .prog-label {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
-    color: $color-text-dark;
-    margin-bottom: 0.25rem;
+    font-size: 0.82rem;
+    color: $color-maroon;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
   }
 
   .prog-bar-wrapper {
-    height: 5px;
-    background-color: rgba($color-gold-light, 0.25);
+    height: 6px;
+    background-color: rgba($color-gold, 0.25);
     border-radius: 3px;
     overflow: hidden;
 
@@ -932,26 +958,26 @@ $color-purple-dark: #200438;
 }
 
 .ach-box {
-  background-color: rgba($color-gold-light, 0.15);
-  border-radius: 12px;
-  padding: 0.85rem;
+  background-color: rgba(#FFFFFF, 0.6);
+  border-radius: 14px;
+  padding: 0.95rem;
   text-align: center;
-  border: 1px solid rgba($color-gold-light, 0.25);
+  border: 1px dashed rgba($color-gold, 0.3);
 
   .ach-icon {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     display: block;
     margin-bottom: 0.35rem;
   }
 
   strong {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: $color-maroon;
     display: block;
   }
 
   span {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: $color-text-muted;
   }
 }
@@ -959,9 +985,9 @@ $color-purple-dark: #200438;
 .profile-options-list {
   display: flex;
   flex-direction: column;
-  background-color: #FFFFFF;
-  border-radius: 14px;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
+  background-color: $color-card-bg;
+  border-radius: 16px;
+  border: 1px solid rgba($color-gold, 0.22);
   overflow: hidden;
   margin-bottom: 1.5rem;
 
@@ -970,9 +996,10 @@ $color-purple-dark: #200438;
     justify-content: space-between;
     align-items: center;
     padding: 0.95rem 1.1rem;
-    border-bottom: 1px solid rgba($color-gold-light, 0.15);
-    font-size: 0.85rem;
-    color: $color-text-dark;
+    border-bottom: 1px dashed rgba($color-gold, 0.2);
+    font-size: 0.88rem;
+    color: $color-maroon;
+    font-weight: 600;
     cursor: pointer;
 
     &:last-child {
@@ -980,12 +1007,12 @@ $color-purple-dark: #200438;
     }
 
     &:active {
-      background-color: rgba($color-beige, 0.4);
+      background-color: rgba($color-gold, 0.15);
     }
 
-    span:last-child {
+    i {
       color: $color-gold;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
     }
   }
 }
@@ -996,44 +1023,54 @@ $color-purple-dark: #200438;
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #FFFFFF;
-  border-top: 1.5px solid rgba($color-gold-light, 0.35);
+  background-color: #FAF6E8;
+  border-top: 1px solid rgba($color-maroon, 0.12);
   display: flex;
-  justify-content: space-around;
-  padding: 0.65rem 0 calc(env(safe-area-inset-bottom, 16px) + 0.5rem) 0;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0.35rem 0.5rem calc(env(safe-area-inset-bottom, 16px) + 0.35rem) 0.5rem;
   box-sizing: border-box;
-  box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 20px rgba($color-maroon, 0.08);
   z-index: 100;
 
   .db-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    justify-content: center;
+    gap: 0.15rem;
+    color: #5A3525;
     cursor: pointer;
-    flex-grow: 1;
+    padding: 0.35rem 0.85rem;
+    border-radius: 28px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     .nav-icon {
-      font-size: 1.35rem;
-      color: $color-text-muted;
-      transition: color 0.2s ease, transform 0.2s ease;
-    }
-
-    .nav-label {
-      font-size: 0.7rem;
-      color: $color-text-muted;
-      font-weight: 500;
+      font-size: 1.25rem;
+      line-height: 1;
+      color: #5A3525;
       transition: color 0.2s ease;
     }
 
+    .nav-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #5A3525;
+    }
+
     &.active {
+      background-color: #F49320;
+      color: #3A080E;
+      box-shadow: 0 4px 14px rgba(244, 147, 32, 0.4);
+
       .nav-icon {
-        color: $color-purple;
-        transform: translateY(-2px);
+        color: #3A080E;
       }
+
       .nav-label {
-        color: $color-purple;
-        font-weight: 700;
+        color: #3A080E;
+        font-weight: 800;
       }
     }
   }
@@ -1046,7 +1083,8 @@ $color-purple-dark: #200438;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -1055,11 +1093,11 @@ $color-purple-dark: #200438;
   box-sizing: border-box;
 
   .checkout-modal-card {
-    background-color: #FFFFFF;
+    background-color: $color-beige;
     width: 100%;
-    max-width: 320px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    max-width: 360px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     overflow: hidden;
     animation: slideUp 0.25s ease-out;
 
@@ -1067,12 +1105,13 @@ $color-purple-dark: #200438;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 1.25rem;
-      border-bottom: 1.5px solid rgba($color-gold-light, 0.3);
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px dashed rgba($color-gold, 0.3);
 
       h3 {
         color: $color-maroon;
-        font-size: 1.05rem;
+        font-family: 'Noto Serif Tamil', serif;
+        font-size: 1.15rem;
         font-weight: 800;
         margin: 0;
       }
@@ -1080,8 +1119,8 @@ $color-purple-dark: #200438;
       .close-checkout-btn {
         background: transparent;
         border: none;
-        font-size: 1.5rem;
-        color: $color-text-muted;
+        font-size: 1.4rem;
+        color: $color-maroon;
         cursor: pointer;
       }
     }
@@ -1097,21 +1136,25 @@ $color-purple-dark: #200438;
         flex-direction: column;
         gap: 0.25rem;
         text-align: left;
+        background-color: $color-card-bg;
+        padding: 0.85rem;
+        border-radius: 14px;
+        border: 1px solid rgba($color-gold, 0.2);
 
         strong {
           font-size: 1rem;
-          color: $color-text-dark;
+          color: $color-maroon;
         }
 
         span {
-          font-size: 0.75rem;
+          font-size: 0.78rem;
           color: $color-text-muted;
         }
 
         .checkout-price {
-          font-size: 0.95rem;
+          font-size: 1.05rem;
           color: $color-maroon;
-          font-weight: 700;
+          font-weight: 800;
           margin-top: 0.35rem;
         }
       }
@@ -1120,38 +1163,38 @@ $color-purple-dark: #200438;
         text-align: left;
 
         p {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: $color-text-dark;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: $color-maroon;
           margin: 0 0 0.5rem 0;
         }
 
         .pay-method-option {
-          border: 1.5px solid $color-gold-light;
-          border-radius: 8px;
-          padding: 0.65rem 0.85rem;
-          font-size: 0.8rem;
-          color: $color-text-dark;
-          font-weight: 600;
+          border: 1px solid rgba($color-gold, 0.3);
+          border-radius: 12px;
+          padding: 0.75rem 0.85rem;
+          font-size: 0.85rem;
+          color: $color-maroon;
+          font-weight: 700;
+          background-color: $color-card-bg;
 
           &.active {
-            border-color: $color-purple;
-            background-color: rgba($color-purple, 0.05);
-            color: $color-purple;
+            border-color: $color-maroon;
+            background-color: #FAF0D6;
           }
         }
       }
 
       .confirm-pay-btn {
-        background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+        background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
         color: #FFFFFF;
         border: none;
-        border-radius: 10px;
-        padding: 0.85rem;
-        font-size: 0.9rem;
+        border-radius: 14px;
+        padding: 0.95rem;
+        font-size: 0.95rem;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 6px 15px rgba($color-purple, 0.2);
+        box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
         width: 100%;
       }
     }

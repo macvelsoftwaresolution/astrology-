@@ -17,18 +17,20 @@ $color-purple-dark: #200438;
 }
 
 .action-submit-btn {
-  background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+  background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
   color: #FFFFFF;
   border: none;
-  border-radius: 12px;
-  padding: 1.05rem;
+  border-radius: 14px;
+  padding: 0.95rem 1.2rem;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba($color-purple, 0.25);
-  transition: transform 0.1s ease;
+  box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
+  transition: all 0.2s ease;
   width: 100%;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:active {
     transform: scale(0.98);
@@ -36,15 +38,15 @@ $color-purple-dark: #200438;
 }
 
 .payment-intro-card {
-  background-color: #FFFFFF;
-  border: 1.5px solid rgba($color-gold-light, 0.4);
+  background-color: #FAF0D6;
+  border: 1px solid rgba($color-gold, 0.22);
   border-radius: 16px;
   padding: 1.1rem;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
 
   .course-name-title {
     font-size: 1.15rem;
-    font-weight: 700;
+    font-weight: 800;
     color: $color-maroon;
     margin: 0;
   }
@@ -61,25 +63,25 @@ $color-purple-dark: #200438;
     align-items: center;
     gap: 0.75rem;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid rgba($color-gold-light, 0.2);
+    border-bottom: 1px dashed rgba($color-gold, 0.25);
     margin-bottom: 0.85rem;
 
     .inst-avatar {
       width: 45px;
       height: 45px;
       border-radius: 50%;
-      border: 1.5px solid $color-gold;
+      border: 2px solid $color-gold;
       object-fit: cover;
     }
 
     strong {
       display: block;
-      font-size: 0.8rem;
-      color: $color-text-dark;
+      font-size: 0.85rem;
+      color: $color-maroon;
     }
 
     span {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: $color-text-muted;
     }
   }
@@ -91,27 +93,29 @@ $color-purple-dark: #200438;
   gap: 0.45rem;
 
   .benefits-title {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: $color-maroon;
     margin: 0 0 0.2rem 0;
   }
 
   .benefit-bullet {
-    font-size: 0.75rem;
-    color: $color-text-muted;
+    font-size: 0.78rem;
+    color: $color-text-dark;
+    display: flex;
+    align-items: center;
   }
 }
 
 .invoice-box {
-  background-color: #FFFFFF;
-  border-radius: 14px;
+  background-color: #FAF0D6;
+  border-radius: 16px;
   padding: 1.1rem;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
+  border: 1px solid rgba($color-gold, 0.22);
 
   h3 {
     margin: 0 0 0.75rem 0;
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: $color-maroon;
     font-weight: 700;
   }
@@ -124,13 +128,13 @@ $color-purple-dark: #200438;
     margin: 0.4rem 0;
 
     strong {
-      color: $color-text-dark;
+      color: $color-maroon;
     }
   }
 
   hr {
     border: none;
-    border-top: 1px solid rgba($color-gold-light, 0.3);
+    border-top: 1px dashed rgba($color-gold, 0.25);
     margin: 0.75rem 0;
   }
 
@@ -140,7 +144,7 @@ $color-purple-dark: #200438;
 
     strong {
       color: $color-maroon;
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 800;
     }
   }
@@ -152,7 +156,7 @@ $color-purple-dark: #200438;
   gap: 0.75rem;
 
   h3 {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: $color-maroon;
     font-weight: 700;
     margin: 0;
@@ -163,34 +167,53 @@ $color-purple-dark: #200438;
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background-color: #FFFFFF;
-  border: 1.5px solid rgba($color-gold-light, 0.3);
-  border-radius: 12px;
-  padding: 0.85rem;
+  background-color: #FAF0D6;
+  border: 1px solid rgba($color-gold, 0.22);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
   cursor: pointer;
 
   input[type="radio"] {
-    accent-color: $color-purple;
+    accent-color: $color-maroon;
   }
 
   .pay-icon {
-    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .box-gold {
+    background-color: #F3E4C2;
+    color: #8B5E14;
+  }
+  .box-peach {
+    background-color: #F8E3D2;
+    color: #A85A20;
   }
 
   strong {
     display: block;
-    font-size: 0.85rem;
-    color: $color-text-dark;
+    font-size: 0.88rem;
+    color: $color-maroon;
   }
 
   span {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: $color-text-muted;
   }
 }
 
 .secure-checkout-note {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

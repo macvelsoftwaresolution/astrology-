@@ -5,7 +5,7 @@
     <div class="lc-img-overlay"></div>
     <img src="assets/images/astro_service_bg.png" alt="Live Class" class="lc-img">
     <div class="lc-info">
-      <div class="live-badge">🔴 LIVE CLASS</div>
+      <div class="live-badge"><i class="bi bi-broadcast me-1"></i> LIVE CLASS</div>
       <h3>நேரடி வகுப்பு - கிரக மாற்றங்கள்</h3>
       <p>இன்றைய கிரக பெயர்ச்சி மற்றும் அதன் பலன்கள் குறித்த விவாதம்.</p>
       <button class="lc-btn" (click)="playLiveClass(); $event.stopPropagation()">தொடர்ந்து கற்க</button>
@@ -15,15 +15,15 @@
   <!-- Syllabus Section Quick Link -->
   <div class="db-section-header">
     <h3>பாடத்திட்டம்</h3>
-    <a (click)="dashboardTab = 'lessons'">அனைத்தும் ➔</a>
+    <a (click)="dashboardTab = 'lessons'">அனைத்தும் <i class="bi bi-chevron-right ms-1"></i></a>
   </div>
   <div class="quick-syllabus-card" (click)="dashboardTab = 'lessons'">
-    <div class="qs-icon">📖</div>
+    <div class="qs-icon box-gold"><i class="bi bi-journal-text"></i></div>
     <div class="qs-details">
       <strong>அடிப்படை ஜோதிடம்</strong>
       <span>கிரகங்கள் மற்றும் ராசிகளின் அறிமுகம்</span>
     </div>
-    <span class="qs-arrow">▶</span>
+    <span class="qs-arrow"><i class="bi bi-play-fill"></i></span>
   </div>
 
   <!-- Exams Section Quick Link -->
@@ -32,12 +32,12 @@
     <span class="subheader-badge">அனைத்தும்</span>
   </div>
   <div class="quick-exam-card" (click)="goToExams()">
-    <div class="qe-icon">📝</div>
+    <div class="qe-icon box-peach"><i class="bi bi-pencil-square"></i></div>
     <div class="qe-details">
       <strong>அடிப்படைகள் தேர்வு 1</strong>
       <span>20 கேள்விகள் • 30 நிமிடங்கள்</span>
     </div>
-    <span class="qe-arrow">▶</span>
+    <span class="qe-arrow"><i class="bi bi-play-fill"></i></span>
   </div>
 
   <!-- Audio Lessons -->
@@ -45,7 +45,7 @@
     <h3>ஒலி பாடங்கள்</h3>
   </div>
   <div class="audio-lesson-bar" (click)="goToAudio()">
-    <span class="audio-play-icon">▶</span>
+    <span class="audio-play-icon"><i class="bi bi-play-fill"></i></span>
     <div class="audio-details">
       <strong>நட்சத்திர பலன்கள் - அறிமுகம்</strong>
       <span>15 நிமிடங்கள்</span>
@@ -60,8 +60,8 @@
     <div class="webinar-card" *ngFor="let s of seminars" [class.live]="s.status === 'live'" (click)="s.status === 'live' ? openMockGoogleMeet() : null">
       <span class="web-status-badge" *ngIf="s.status === 'live'">நேரலை</span>
       <h4>{{ s.title }}</h4>
-      <span class="web-speaker">👤 {{ s.speaker }}</span>
-      <span class="web-date">📅 {{ s.date }} • {{ s.time }}</span>
+      <span class="web-speaker"><i class="bi bi-person-fill me-1"></i> {{ s.speaker }}</span>
+      <span class="web-date"><i class="bi bi-calendar3 me-1"></i> {{ s.date }} • {{ s.time }}</span>
       <button class="web-btn" *ngIf="s.status === 'live'" (click)="openMockGoogleMeet(); $event.stopPropagation()">சேர்</button>
       <button class="web-btn past" *ngIf="s.status === 'past'" (click)="$event.stopPropagation()">மீண்டும் பார்க்க</button>
     </div>
@@ -73,7 +73,7 @@
   </div>
   <div class="pdf-notes-grid">
     <div class="pdf-note-card" *ngFor="let p of pdfNotes" (click)="downloadPDF(p.title)">
-      <span class="pdf-icon">📄</span>
+      <span class="pdf-icon"><i class="bi bi-file-earmark-pdf-fill"></i></span>
       <h4>{{ p.title }}</h4>
       <span>{{ p.pages }}</span>
     </div>
@@ -85,20 +85,20 @@
   <!-- Video Player -->
   <div class="lesson-video-player-container">
     <div class="video-placeholder" (click)="playVideo()">
-      <span class="play-btn-large">▶</span>
+      <span class="play-btn-large"><i class="bi bi-play-fill"></i></span>
       <img src="assets/images/user_avatar.png" alt="Teacher" class="teacher-bg-img">
     </div>
     <div class="video-info">
       <h2>{{ selectedLesson.title }}</h2>
-      <span class="v-stats">👤 {{ selectedLesson.instructor }} • {{ selectedLesson.views }} பார்வைகள்</span>
+      <span class="v-stats"><i class="bi bi-person-fill me-1"></i> {{ selectedLesson.instructor }} • {{ selectedLesson.views }} பார்வைகள்</span>
     </div>
   </div>
 
   <!-- Audio Player Row -->
   <div class="audio-player-box">
-    <h3>🎧 ஒலி பாடங்கள் (Audio)</h3>
+    <h3><i class="bi bi-headphones me-2 text-gold"></i> ஒலி பாடங்கள் (Audio)</h3>
     <div class="audio-control-row">
-      <button class="audio-play-btn" (click)="playVideo()">▶</button>
+      <button class="audio-play-btn" (click)="playVideo()"><i class="bi bi-play-fill"></i></button>
       <div class="audio-progress">
         <span class="time-elapsed">12:05</span>
         <div class="progress-bar-bg"><div class="progress-fill" style="width: 45%;"></div></div>
@@ -106,7 +106,7 @@
       </div>
     </div>
     <div class="audio-track-item" (click)="playVideo()">
-      <span>✓</span>
+      <i class="bi bi-check-circle-fill text-success me-2"></i>
       <strong>மூச்சுப் பயிற்சி</strong>
       <span>15 நிமிடங்கள்</span>
     </div>
@@ -114,32 +114,32 @@
 
   <!-- Download Notes -->
   <div class="study-documents-box">
-    <h3>📁 படிப்பு ஆவணங்கள்</h3>
+    <h3><i class="bi bi-folder-fill me-2 text-gold"></i> படிப்பு ஆவணங்கள்</h3>
     <div class="doc-download-item" (click)="downloadPDF('பாடக்குறிப்புகள்')">
       <div class="doc-left">
-        <span class="doc-icon">📄</span>
+        <span class="doc-icon"><i class="bi bi-file-earmark-pdf-fill text-danger"></i></span>
         <div>
           <strong>பாடக்குறிப்புகள்</strong>
           <span>PDF • 2.6 MB</span>
         </div>
       </div>
-      <button class="download-btn">📥</button>
+      <button class="download-btn"><i class="bi bi-download"></i></button>
     </div>
     <div class="doc-download-item" (click)="downloadPDF('மந்திரங்கள்')">
       <div class="doc-left">
-        <span class="doc-icon">📄</span>
+        <span class="doc-icon"><i class="bi bi-file-earmark-text-fill text-primary"></i></span>
         <div>
           <strong>மந்திரங்கள்</strong>
           <span>TXT • 150 KB</span>
         </div>
       </div>
-      <button class="download-btn">📥</button>
+      <button class="download-btn"><i class="bi bi-download"></i></button>
     </div>
   </div>
 
   <!-- Description -->
   <div class="lesson-desc-box">
-    <h3>💡 விளக்கவுரை</h3>
+    <h3><i class="bi bi-lightbulb-fill me-2 text-gold"></i> விளக்கவுரை</h3>
     <p>{{ selectedLesson.description }}</p>
     <button class="view-full-desc-btn">முழு உரையையும் காண்க</button>
   </div>
@@ -159,16 +159,22 @@
               <div class="prog-fill" [style.width.%]="c.progress"></div>
             </div>
           </div>
-          <span class="accordion-arrow">{{ c.isOpen ? '▼' : '▲' }}</span>
+          <span class="accordion-arrow">
+            <i class="bi bi-chevron-up" *ngIf="c.isOpen"></i>
+            <i class="bi bi-chevron-down" *ngIf="!c.isOpen"></i>
+          </span>
         </div>
         <div class="lessons-sub-list" *ngIf="c.isOpen">
           <div class="lesson-sub-item" *ngFor="let l of c.lessons" [class.completed]="l.completed">
-            <span class="status-circle">{{ l.completed ? '✓' : '○' }}</span>
+            <span class="status-circle">
+              <i class="bi bi-check-circle-fill text-success" *ngIf="l.completed"></i>
+              <i class="bi bi-circle" *ngIf="!l.completed"></i>
+            </span>
             <div class="l-details">
               <h4>{{ l.title }}</h4>
               <span>{{ l.duration }}</span>
             </div>
-            <span class="lock-icon" *ngIf="!l.completed">🔒</span>
+            <span class="lock-icon" *ngIf="!l.completed"><i class="bi bi-lock-fill"></i></span>
           </div>
         </div>
       </div>
@@ -177,8 +183,14 @@
 
   <!-- Exam and Certificate Access Buttons -->
   <div class="lessons-actions-block" style="margin-top: 1.5rem;">
-    <button class="action-submit-btn" (click)="startQuiz.emit()">தேர்வெழுத தொடங்கு ➔</button>
-    <button class="action-submit-btn alt" (click)="viewCertificate.emit()" style="margin-top: 0.75rem;">சான்றிதழ் காண்க 🏆</button>
+    <button class="action-submit-btn" (click)="startQuiz.emit()">
+      <span>தேர்வெழுத தொடங்கு</span>
+      <i class="bi bi-pencil-square ms-2"></i>
+    </button>
+    <button class="action-submit-btn alt" (click)="viewCertificate.emit()" style="margin-top: 0.75rem;">
+      <span>சான்றிதழ் காண்க</span>
+      <i class="bi bi-trophy-fill ms-2 text-warning"></i>
+    </button>
   </div>
 </div>
 
@@ -187,7 +199,7 @@
   <!-- Search -->
   <div class="lib-search-bar">
     <input type="text" placeholder="புத்தகங்கள், ஆசிரியர்கள் அல்லது தலைப்புகள்...">
-    <span class="search-btn-icon">🔍</span>
+    <span class="search-btn-icon"><i class="bi bi-search"></i></span>
   </div>
 
   <!-- Categories -->
@@ -211,7 +223,7 @@
         <span class="book-price">₹{{ b.price }}</span>
         
         <button class="buy-book-btn" (click)="initiateBuyBook(b)" *ngIf="!b.bought">இப்போதே வாங்கு</button>
-        <button class="buy-book-btn bought" *ngIf="b.bought" disabled>வாங்கியது ✓</button>
+        <button class="buy-book-btn bought" *ngIf="b.bought" disabled>வாங்கியது <i class="bi bi-check-circle-fill ms-1"></i></button>
       </div>
     </div>
   </div>
@@ -222,7 +234,7 @@
   <!-- Profile Card -->
   <div class="student-profile-card">
     <div class="sp-meta">
-      <div class="sp-avatar">👤</div>
+      <div class="sp-avatar"><i class="bi bi-person-circle"></i></div>
       <div>
         <h3>{{ enrollForm?.fullName || 'குமார்' }}</h3>
         <span class="sp-badge">Premium Member</span>
@@ -255,12 +267,12 @@
     <h3>சாதனைகள் (Achievements)</h3>
     <div class="ach-grid">
       <div class="ach-box">
-        <span class="ach-icon">🏆</span>
+        <span class="ach-icon"><i class="bi bi-trophy-fill text-gold"></i></span>
         <strong>7 நாட்கள்</strong>
         <span>தொடர் கற்றல்</span>
       </div>
       <div class="ach-box">
-        <span class="ach-icon">📖</span>
+        <span class="ach-icon"><i class="bi bi-journal-check text-gold"></i></span>
         <strong>முதல் பாடம்</strong>
         <span>முடிக்கப்பட்டது</span>
       </div>
@@ -271,23 +283,23 @@
   <div class="profile-options-list">
     <div class="opt-list-item" (click)="dashboardTab = 'lessons'">
       <span>எனது பாடங்கள்</span>
-      <span>➔</span>
+      <i class="bi bi-chevron-right"></i>
     </div>
     <div class="opt-list-item" (click)="viewCertificate.emit()">
       <span>எனது சான்றிதழ்கள்</span>
-      <span>➔</span>
+      <i class="bi bi-chevron-right"></i>
     </div>
     <div class="opt-list-item" (click)="dashboardTab = 'library'">
       <span>சேமித்த நூல்கள்</span>
-      <span>➔</span>
+      <i class="bi bi-chevron-right"></i>
     </div>
     <div class="opt-list-item" (click)="openDiary()">
       <span>ஆன்மீக நாட்குறிப்பு</span>
-      <span>➔</span>
+      <i class="bi bi-chevron-right"></i>
     </div>
     <div class="opt-list-item" (click)="logout.emit()">
       <span style="color: #c62828;">வெளியேறு (Logout Course)</span>
-      <span>➔</span>
+      <i class="bi bi-chevron-right"></i>
     </div>
   </div>
 </div>
@@ -295,19 +307,19 @@
 <!-- ================= BOTTOM NAVIGATION TABS ================= -->
 <div class="db-footer-nav">
   <div class="db-nav-item" [class.active]="dashboardTab === 'home'" (click)="dashboardTab = 'home'">
-    <span class="nav-icon">🏠</span>
+    <span class="nav-icon"><i class="bi bi-house-door-fill"></i></span>
     <span class="nav-label">முகப்பு</span>
   </div>
   <div class="db-nav-item" [class.active]="dashboardTab === 'lessons'" (click)="dashboardTab = 'lessons'">
-    <span class="nav-icon">📚</span>
+    <span class="nav-icon"><i class="bi bi-journal-richtext"></i></span>
     <span class="nav-label">பாடங்கள்</span>
   </div>
   <div class="db-nav-item" [class.active]="dashboardTab === 'library'" (click)="dashboardTab = 'library'">
-    <span class="nav-icon">📖</span>
+    <span class="nav-icon"><i class="bi bi-book-fill"></i></span>
     <span class="nav-label">நூலகம்</span>
   </div>
   <div class="db-nav-item" [class.active]="dashboardTab === 'profile'" (click)="dashboardTab = 'profile'">
-    <span class="nav-icon">👤</span>
+    <span class="nav-icon"><i class="bi bi-person-fill"></i></span>
     <span class="nav-label">சுயவிவரம்</span>
   </div>
 </div>
@@ -317,7 +329,7 @@
   <div class="checkout-modal-card">
     <div class="checkout-modal-header">
       <h3>கட்டணம் செலுத்துதல்</h3>
-      <button class="close-checkout-btn" (click)="closeCheckout()">×</button>
+      <button class="close-checkout-btn" (click)="closeCheckout()"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="checkout-modal-body">
       <div class="checkout-book-summary">
@@ -329,7 +341,7 @@
       <div class="payment-methods-box">
         <p>பணம் செலுத்தும் முறை தேர்வு செய்யவும்:</p>
         <div class="pay-method-option active">
-          <span>💳 GPay / PhonePe / Card / NetBanking</span>
+          <span><i class="bi bi-credit-card-2-front-fill me-1"></i> GPay / PhonePe / Card / NetBanking</span>
         </div>
       </div>
       

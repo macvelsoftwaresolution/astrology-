@@ -15,18 +15,20 @@ $color-purple-dark: #200438;
 }
 
 .action-submit-btn {
-  background: linear-gradient(135deg, $color-purple 0%, $color-purple-dark 100%);
+  background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
   color: #FFFFFF;
   border: none;
-  border-radius: 12px;
-  padding: 1.05rem;
+  border-radius: 14px;
+  padding: 0.95rem 1.2rem;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba($color-purple, 0.25);
-  transition: transform 0.1s ease;
+  box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
+  transition: all 0.2s ease;
   width: 100%;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:active {
     transform: scale(0.98);
@@ -41,7 +43,16 @@ $color-purple-dark: #200438;
   gap: 0.5rem;
 
   .rules-shield-icon {
-    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FAF0D6;
+    border: 1px solid rgba(#A27B38, 0.3);
+    color: $color-maroon;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .rules-heading {
@@ -53,7 +64,7 @@ $color-purple-dark: #200438;
   }
 
   .rules-subheading {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: $color-text-muted;
     line-height: 1.4;
     margin: 0;
@@ -68,15 +79,44 @@ $color-purple-dark: #200438;
 
 .rule-item {
   display: flex;
+  align-items: center;
   gap: 1rem;
-  background-color: #FFFFFF;
-  border-radius: 14px;
+  background-color: #FAF0D6;
+  border-radius: 16px;
   padding: 1rem;
-  border: 1.5px solid rgba($color-gold-light, 0.4);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid rgba(#A27B38, 0.22);
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
 
-  .rule-num {
-    font-size: 1.4rem;
+  .rule-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .box-gold {
+    background-color: #F3E4C2;
+    color: #8B5E14;
+  }
+  .box-peach {
+    background-color: #F8E3D2;
+    color: #A85A20;
+  }
+  .box-ivory {
+    background-color: #F1E5CB;
+    color: #6E531D;
+  }
+  .box-red {
+    background-color: #F8D9D9;
+    color: #8B1A1A;
+  }
+  .box-muted {
+    background-color: #EFE4D2;
+    color: $color-maroon;
   }
 
   strong {
@@ -84,10 +124,11 @@ $color-purple-dark: #200438;
     color: $color-maroon;
     display: block;
     margin-bottom: 0.2rem;
+    font-weight: 700;
   }
 
   p {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     color: $color-text-muted;
     margin: 0;
     line-height: 1.4;

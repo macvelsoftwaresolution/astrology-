@@ -1,7 +1,7 @@
 <div class="quiz-overlay">
   <div class="quiz-header">
     <span class="quiz-title-txt">தேர்வு</span>
-    <button class="close-quiz-btn" (click)="close.emit()">×</button>
+    <button class="close-quiz-btn" (click)="close.emit()"><i class="bi bi-x-lg"></i></button>
   </div>
 
   <div class="quiz-content-body" *ngIf="!quizSubmitted">
@@ -32,7 +32,10 @@
 
   <!-- Quiz Results Screen -->
   <div class="quiz-results-body" *ngIf="quizSubmitted">
-    <span class="result-badge-icon" [class.passed]="quizPassed">{{ quizPassed ? '🎉' : '❌' }}</span>
+    <span class="result-badge-icon" [class.passed]="quizPassed">
+      <i class="bi bi-trophy-fill text-gold" *ngIf="quizPassed"></i>
+      <i class="bi bi-x-circle-fill text-danger" *ngIf="!quizPassed"></i>
+    </span>
     <h3 class="result-title">{{ quizPassed ? 'தேர்வில் வெற்றி பெற்றுள்ளீர்கள்!' : 'மீண்டும் முயற்சிக்கவும்!' }}</h3>
     <p class="result-desc">
       {{ quizPassed ? 'வாழ்த்துகள்! நீங்கள் இந்த தேர்வை வெற்றிகரமாக கடந்துள்ளீர்கள்.' : 'தேர்ச்சி பெற 100% மதிப்பெண்கள் தேவை.' }}

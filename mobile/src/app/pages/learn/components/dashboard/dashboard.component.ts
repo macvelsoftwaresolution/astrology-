@@ -201,9 +201,9 @@ export class LearnDashboardComponent implements OnInit {
 
   async openDiary() {
     const toast = await this.toastController.create({
-      message: '📓 ஆன்மீக நாட்குறிப்பு திறக்கப்பட்டது (Simulated)',
+      message: 'ஆன்மீக நாட்குறிப்பு திறக்கப்பட்டது',
       duration: 2000,
-      color: 'secondary',
+      color: 'dark',
       position: 'bottom'
     });
     await toast.present();
@@ -212,7 +212,7 @@ export class LearnDashboardComponent implements OnInit {
   async playLiveClass() {
     this.dashboardTab = 'lessons';
     const toast = await this.toastController.create({
-      message: '📡 நேரடி வகுப்பு வீடியோ இணைக்கப்படுகிறது...',
+      message: 'நேரடி வகுப்பு வீடியோ இணைக்கப்படுகிறது...',
       duration: 2000,
       color: 'danger',
       position: 'bottom'
@@ -222,7 +222,7 @@ export class LearnDashboardComponent implements OnInit {
 
   async playVideo() {
     const toast = await this.toastController.create({
-      message: '🎬 வீடியோ வகுப்பு பிளே செய்யப்படுகிறது...',
+      message: 'வீடியோ வகுப்பு பிளே செய்யப்படுகிறது...',
       duration: 2000,
       color: 'success',
       position: 'bottom'
