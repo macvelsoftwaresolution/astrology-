@@ -29,7 +29,7 @@ interface Metrics {
       <div class="mobile-topbar">
         <div class="brand">
           <span class="icon">✨</span>
-          <h2>AstroAdmin</h2>
+          <h2>Astro Divine</h2>
         </div>
         <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
           {{ mobileMenuOpen ? '✕ Close' : '☰ Menu' }}
@@ -41,7 +41,7 @@ interface Metrics {
         <div class="brand">
           <span class="icon">✨</span>
           <div style="flex:1">
-            <h2>AstroAdmin</h2>
+            <h2>Astro Divine</h2>
             <span class="brand-sub">Management Engine</span>
           </div>
           <button class="drawer-close-btn" (click)="mobileMenuOpen = false">✕</button>
