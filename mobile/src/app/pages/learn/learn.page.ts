@@ -184,4 +184,16 @@ export class LearnPage implements OnInit {
     this.currentScreen = 'intro';
     this.router.navigate(['/welcome']);
   }
+
+  getHeaderTitle(): string {
+    switch (this.currentScreen) {
+      case 'intro': return 'ஜோதிட பயிலரங்கம்';
+      case 'rules': return 'விதிகள் & நிபந்தனைகள்';
+      case 'enroll': return 'மாணவர் சேர்க்கை படிவம்';
+      case 'payment': return 'கட்டண விபரம்';
+      case 'post-payment-login': return 'உள்நுழைவு மையம்';
+      case 'dashboard': return 'ஜோதிடக் கல்விக்கூடம்';
+      default: return 'ஜோதிட பயிலரங்கம்';
+    }
+  }
 }

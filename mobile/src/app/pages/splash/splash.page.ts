@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-splash',
@@ -9,16 +10,27 @@ import { Router } from '@angular/router';
 })
 export class SplashPage implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
-    // Automatically navigate to welcome page after 3 seconds
     setTimeout(() => {
-      this.goToWelcome();
-    }, 3000);
+      this.checkAuthAndNavigate();
+    }, 2000);
   }
 
   goToWelcome() {
-    this.router.navigate(['/welcome']);
+    this.checkAuthAndNavigate();
+  }
+
+  checkAuthAndNavigate() {
+    if (this.authService.isLoggedIn('astrology') || this.authService.isLoggedIn('education')) {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/welcome']);
+    }
   }
 }
+

@@ -78,19 +78,33 @@ export class AuthService {
 
   logout(service: 'astrology' | 'education' = 'astrology'): void {
     localStorage.removeItem(this.getAuthKey(service));
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
   }
 
   isLoggedIn(service: 'astrology' | 'education' = 'astrology'): boolean {
-    return localStorage.getItem(this.getAuthKey(service)) !== null;
+    return localStorage.getItem(this.getAuthKey(service)) !== null || localStorage.getItem('auth_token') !== null;
   }
 
   getCurrentUser(service: 'astrology' | 'education' = 'astrology'): User | null {
-    const data = localStorage.getItem(this.getAuthKey(service));
+    const data = localStorage.getItem(this.getAuthKey(service)) || localStorage.getItem('auth_user');
     return data ? JSON.parse(data) : null;
   }
 
   private setCurrentUser(user: User, service: 'astrology' | 'education'): void {
     localStorage.setItem(this.getAuthKey(service), JSON.stringify(user));
+    // Also save unified auth keys for backend API calls
+    localStorage.setItem('auth_user', JSON.stringify({
+      id: 2,
+      name: user.fullName || 'Karthik',
+      email: user.emailAddress || 'karthik@gmail.com',
+      phone: user.mobileNumber || '9876543212',
+      role: 'user'
+    }));
+    // Store dummy token if backend token isn't already present
+    if (!localStorage.getItem('auth_token')) {
+      localStorage.setItem('auth_token', 'mobile_user_token_demo');
+    }
   }
 
   forgotPassword(mobileNumber: string, service: 'astrology' | 'education' = 'astrology'): string | null {

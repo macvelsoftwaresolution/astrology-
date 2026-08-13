@@ -252,20 +252,8 @@ export class LearnDashboardComponent implements OnInit {
     await toast.present();
   }
 
-<<<<<<< Updated upstream
-  async playLiveClass() {
-    this.dashboardTab = 'lessons';
-    const toast = await this.toastController.create({
-      message: 'நேரடி வகுப்பு வீடியோ இணைக்கப்படுகிறது...',
-      duration: 2000,
-      color: 'danger',
-      position: 'bottom'
-    });
-    await toast.present();
-=======
   playLiveClass() {
     this.openMockGoogleMeet();
->>>>>>> Stashed changes
   }
 
   async playVideo() {
