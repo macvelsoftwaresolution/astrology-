@@ -1,17 +1,19 @@
 <div class="matches-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>💑 திருமணப் பொருத்தம் & வரன் தேடல் பதிவுகள் (Marriage Match Logs)</h1>
+      <h1><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:8px;"></i>திருமணப் பொருத்தம் & வரன் தேடல் பதிவுகள் (Marriage Match Logs)</h1>
       <p>பயனர்கள் கணித்த 10 திருமணப் பொருத்தங்களின் முடிவுகள் மற்றும் தொலைபேசி ஆலோசனை நிலைகள்.</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-xs-refresh" (click)="loadMatches()" title="Sync">🔄 Sync Logs</button>
+      <button class="btn-xs-refresh" (click)="loadMatches()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i> Sync Logs
+      </button>
     </div>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      ⏳ Loading marriage match logs from database...
+      <i class="bi bi-hourglass-split"></i> Loading marriage match logs from database...
     </div>
   } @else {
     <div class="card-box">
@@ -37,8 +39,12 @@
                 <small class="muted">{{ m.boy_rasi }} &bull; {{ m.boy_nakshatra }}</small>
                 @if (m.user_phone) {
                   <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:4px;">
-                    <a [href]="'tel:' + m.user_phone" class="btn-tel-call">📞 {{ m.user_phone }}</a>
-                    <a [href]="'https://wa.me/91' + m.user_phone" target="_blank" class="btn-wa-link">💬 WA</a>
+                    <a [href]="'tel:' + m.user_phone" class="btn-tel-call">
+                      <i class="bi bi-telephone-fill"></i> {{ m.user_phone }}
+                    </a>
+                    <a [href]="'https://wa.me/91' + m.user_phone" target="_blank" class="btn-wa-link">
+                      <i class="bi bi-whatsapp"></i> WA
+                    </a>
                   </div>
                 }
               </td>
@@ -62,15 +68,19 @@
                 </span>
                 @if (m.admin_notes) {
                   <div class="notes-preview-snippet" [title]="m.admin_notes">
-                    📝 {{ m.admin_notes }}
+                    <i class="bi bi-card-text"></i> {{ m.admin_notes }}
                   </div>
                 }
               </td>
               <td style="font-size:12px;color:#64748b;">{{ m.created_at | date:'dd MMM yyyy' }}</td>
               <td>
                 <div style="display:flex;gap:6px;">
-                  <button class="btn-sm" (click)="selectedMatch = m">10 பொருத்தங்கள்</button>
-                  <button class="btn-sm" (click)="openEditMatchStatus(m)">நிலை மாற்றம்</button>
+                  <button class="btn-sm" (click)="selectedMatch = m">
+                    <i class="bi bi-list-check"></i> 10 பொருத்தங்கள்
+                  </button>
+                  <button class="btn-sm" (click)="openEditMatchStatus(m)">
+                    <i class="bi bi-pencil"></i> நிலை
+                  </button>
                 </div>
               </td>
             </tr>
@@ -93,10 +103,10 @@
       <div class="modal-box" style="max-width:540px;max-height:85vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <h3 style="margin:0;">💑 {{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
+            <h3 style="margin:0;"><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:6px;"></i>{{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
             <span style="font-size:12px;color:#64748b;">10 விதமான திருமணப் பொருத்த முடிவுகள்</span>
           </div>
-          <button class="close-btn" (click)="selectedMatch = null">✕</button>
+          <button class="close-btn" (click)="selectedMatch = null"><i class="bi bi-x-lg"></i></button>
         </div>
 
         <div class="match-score-row">
@@ -116,7 +126,8 @@
             <div class="breakdown-row">
               <span>{{ item.name }} ({{ item.tamil_name || item.name }})</span>
               <strong [class.match-yes]="item.match" [class.match-no]="!item.match">
-                {{ item.match ? '✓ பொருத்தம் உண்டு' : '✕ பொருத்தம் இல்லை' }}
+                <i class="bi" [ngClass]="item.match ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                {{ item.match ? ' பொருத்தம் உண்டு' : ' பொருத்தம் இல்லை' }}
               </strong>
             </div>
           }
@@ -134,8 +145,8 @@
     <div class="modal-overlay" (click)="editingMatch = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>ஆலோசனை நிலை & குறிப்புகள் புதுப்பித்தல்</h3>
-          <button class="close-btn" (click)="editingMatch = null">✕</button>
+          <h3><i class="bi bi-pencil-square" style="color:#d97706;margin-right:6px;"></i>ஆலோசனை நிலை & குறிப்புகள் புதுப்பித்தல்</h3>
+          <button class="close-btn" (click)="editingMatch = null"><i class="bi bi-x-lg"></i></button>
         </div>
         <form (ngSubmit)="saveMatchStatus()">
           <div class="form-group">
@@ -152,7 +163,9 @@
           </div>
           <div class="modal-btns">
             <button type="button" class="btn-cancel" (click)="editingMatch = null">Cancel</button>
-            <button type="submit" class="btn-primary">சேமி (Save Notes)</button>
+            <button type="submit" class="btn-primary">
+              <i class="bi bi-floppy2-fill"></i> சேமி (Save Notes)
+            </button>
           </div>
         </form>
       </div>

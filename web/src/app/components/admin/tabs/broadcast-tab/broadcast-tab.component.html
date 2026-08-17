@@ -1,7 +1,7 @@
 <div class="broadcast-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>📢 Push Notification Broadcast & Daily Rasi Alerts</h1>
+      <h1><i class="bi bi-megaphone-fill" style="color:#d97706;margin-right:8px;"></i>Push Notification Broadcast & Daily Rasi Alerts</h1>
       <p>Send instant announcements, spiritual events, special discount alerts, and manage automated daily Rasi notifications.</p>
     </div>
   </div>
@@ -11,19 +11,20 @@
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
       <div>
         <h3 style="margin:0 0 4px 0;display:flex;align-items:center;gap:8px;">
-          <span>🌟</span> காலை தினசரி ராசி பலன் அறிவிப்பு (Daily 06:00 AM Rasi Push)
+          <i class="bi bi-bell-fill" style="color:#d97706;"></i> காலை தினசரி ராசி பலன் அறிவிப்பு (Daily 06:00 AM Rasi Push)
         </h3>
         <p style="margin:0;font-size:13px;color:#64748b;">
           ஒவ்வொரு நாளும் காலை 6:00 மணிக்கு அனைத்து பயனர்களுக்கும் அவர்களது ராசிக்கான தினசரி பலன்கள் தானாகவே அனுப்பப்படும்.
         </p>
         <div style="margin-top:8px;font-size:12px;color:#b45309;font-weight:700;">
-          📲 அறிவிப்பு பெற பதிவு செய்துள்ள பயனர்கள்: {{ dailyNotifOptedInCount }} பேர்
+          <i class="bi bi-phone"></i> அறிவிப்பு பெற பதிவு செய்துள்ள பயனர்கள்: {{ dailyNotifOptedInCount }} பேர்
         </div>
       </div>
 
       <div style="display:flex;align-items:center;gap:12px;">
         <span [style.color]="dailyNotifEnabled ? '#059669' : '#dc2626'" style="font-weight:800;font-size:14px;">
-          {{ dailyNotifEnabled ? '🟢 இயங்குகிறது (Enabled)' : '🔴 நிறுத்தப்பட்டுள்ளது (Disabled)' }}
+          <i class="bi" [ngClass]="dailyNotifEnabled ? 'bi-check-circle-fill' : 'bi-dash-circle-fill'"></i>
+          {{ dailyNotifEnabled ? ' இயங்குகிறது (Enabled)' : ' நிறுத்தப்பட்டுள்ளது (Disabled)' }}
         </span>
         <button 
           type="button" 
@@ -45,7 +46,7 @@
 
   <!-- MANUAL BROADCAST CAMPAIGN FORM -->
   <div class="card-box" style="max-width: 680px;">
-    <h3>📢 புதிய அறிவிப்பு அனுப்புக (Send Broadcast Push Campaign)</h3>
+    <h3><i class="bi bi-broadcast" style="color:#d97706;margin-right:6px;"></i>புதிய அறிவிப்பு அனுப்புக (Send Broadcast Push Campaign)</h3>
     <form (ngSubmit)="sendBroadcast()">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
         <div class="form-group" style="margin:0;">
@@ -85,13 +86,13 @@
 
       @if (broadcastMsg) {
         <div style="margin-bottom:14px;font-size:13px;font-weight:700;color:#059669;">
-          {{ broadcastMsg }}
+          <i class="bi bi-check-circle-fill"></i> {{ broadcastMsg }}
         </div>
       }
 
       <div style="display:flex;justify-content:flex-end;">
         <button type="submit" class="btn-primary" style="padding:10px 24px;">
-          🚀 உடனடியாக அனுப்புக (Send Broadcast Now)
+          <i class="bi bi-send-fill"></i> உடனடியாக அனுப்புக (Send Broadcast Now)
         </button>
       </div>
     </form>

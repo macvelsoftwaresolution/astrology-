@@ -1,18 +1,18 @@
 <div class="rasi-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>🌟 Rasi Palan Management Engine</h1>
+      <h1><i class="bi bi-sun-fill" style="color:#d97706;margin-right:8px;"></i>Rasi Palan Management Engine</h1>
       <p>Dynamic live synchronization for all 12 Rasis. Any changes published here reflect immediately on the user side /zodiac page and mobile app.</p>
     </div>
     <div class="header-actions-group">
       <button class="btn-secondary-ed" (click)="resetAllToDefaults()" title="Reset to standard defaults">
-        🔄 Reset All Defaults
+        <i class="bi bi-arrow-counterclockwise"></i> Reset All Defaults
       </button>
       <button class="btn-primary" (click)="publishRasiPalan()" [disabled]="rasiPublishing">
         @if (rasiPublishing) {
-          <span>⏳ Publishing...</span>
+          <span><i class="bi bi-hourglass-split"></i> Publishing...</span>
         } @else {
-          <span>📢 Publish All Predictions</span>
+          <span><i class="bi bi-megaphone-fill"></i> Publish All Predictions</span>
         }
       </button>
     </div>
@@ -21,7 +21,7 @@
   <!-- Notification Toast / Alert -->
   @if (rasiSaveSuccessMsg) {
     <div class="alert-success-banner">
-      {{ rasiSaveSuccessMsg }}
+      <i class="bi bi-check-circle-fill"></i> {{ rasiSaveSuccessMsg }}
     </div>
   }
 
@@ -38,7 +38,7 @@
     </div>
 
     <div class="rasi-date-filter">
-      <label>📅 Target Date:</label>
+      <label><i class="bi bi-calendar-event"></i> Target Date:</label>
       <input 
         type="date" 
         [(ngModel)]="selectedRasiDate" 
@@ -46,7 +46,7 @@
         class="date-input-ctrl"
       />
       <button class="btn-xs-refresh" (click)="loadRasiPredictions()" title="Refresh from Database">
-        🔄 Sync
+        <i class="bi bi-arrow-repeat"></i> Sync
       </button>
     </div>
   </div>
@@ -54,7 +54,7 @@
   <!-- Loading Indicator -->
   @if (rasiPredictionsLoading) {
     <div class="center-loader-box">
-      <p>⏳ Loading Rasi Palan predictions from database...</p>
+      <p><i class="bi bi-hourglass-split"></i> Loading Rasi Palan predictions from database...</p>
     </div>
   } @else {
     <!-- 12 Rasi Editor Cards Grid -->
@@ -71,7 +71,7 @@
             </div>
             <div class="card-top-actions">
               <button class="btn-card-save" (click)="saveSingleRasi(i)" title="Save only this Rasi">
-                💾 Save
+                <i class="bi bi-floppy2-fill"></i> Save
               </button>
             </div>
           </div>
@@ -92,7 +92,7 @@
           <!-- Multimedia Integration: Audio & Video -->
           <div class="media-input-box audio-box">
             <label class="media-lbl">
-              <span class="media-icon">🎙️</span> ஆடியோ விளக்கம் URL (Audio URL):
+              <i class="bi bi-mic-fill" style="color:#f59e0b;"></i> ஆடியோ விளக்கம் URL (Audio URL):
             </label>
             <div class="media-input-row">
               <input
@@ -107,7 +107,7 @@
                   (click)="testAudio(rasiPredictions[i].audio_url)"
                   title="Play audio preview"
                 >
-                  ▶ Play
+                  <i class="bi bi-play-fill"></i> Play
                 </button>
               }
             </div>
@@ -115,7 +115,7 @@
 
           <div class="media-input-box video-box">
             <label class="media-lbl video-lbl">
-              <span class="media-icon">🎬</span> வீடியோ விளக்கம் URL (YouTube / Video URL):
+              <i class="bi bi-camera-video-fill" style="color:#2563eb;"></i> வீடியோ விளக்கம் URL (YouTube / Video URL):
             </label>
             <div class="media-input-row">
               <input
@@ -130,7 +130,7 @@
                   (click)="openVideoPreview(rasiPredictions[i].video_url, r.name + ' - ' + rasiEditorType)"
                   title="Preview video modal"
                 >
-                  ▶ Preview
+                  <i class="bi bi-play-fill"></i> Preview
                 </button>
               }
             </div>
@@ -140,7 +140,7 @@
             <button class="btn-link-reset" (click)="resetRasiToDefault(i)">
               Standard Default மீட்டமை
             </button>
-            <span class="status-dot-live">● Live Sync</span>
+            <span class="status-dot-live"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live Sync</span>
           </div>
         </div>
       }
@@ -150,8 +150,8 @@
   <!-- PANCHANGAM LIVE EDITOR -->
   <div class="card-box" style="margin-top: 28px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="margin:0;">📅 இன்றைய பஞ்சாங்கம் (Panchangam Editor)</h3>
-      <span class="status active">● Live on User App</span>
+      <h3 style="margin:0;"><i class="bi bi-calendar-date-fill" style="color:#d97706;margin-right:6px;"></i>இன்றைய பஞ்சாங்கம் (Panchangam Editor)</h3>
+      <span class="status active"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live on User App</span>
     </div>
     
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;margin-bottom:16px;">
@@ -178,7 +178,9 @@
     </div>
 
     <div style="display:flex;justify-content:flex-end;">
-      <button class="btn-primary" (click)="savePanchangam()">💾 Update Today's Panchangam</button>
+      <button class="btn-primary" (click)="savePanchangam()">
+        <i class="bi bi-floppy2-fill"></i> Update Today's Panchangam
+      </button>
     </div>
   </div>
 
@@ -187,8 +189,8 @@
     <div class="modal-overlay" (click)="closeVideoPreview()">
       <div class="modal-box video-modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>🎬 {{ previewVideoTitle }} - வீடியோ முன்னோட்டம் (Video Preview)</h3>
-          <button class="close-btn" (click)="closeVideoPreview()">&times;</button>
+          <h3><i class="bi bi-camera-video-fill" style="color:#d97706;margin-right:6px;"></i>{{ previewVideoTitle }} - வீடியோ முன்னோட்டம் (Video Preview)</h3>
+          <button class="close-btn" (click)="closeVideoPreview()"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="video-preview-body" style="margin: 16px 0;">
           @if (previewVideoSafeUrl) {

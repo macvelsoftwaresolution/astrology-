@@ -1,17 +1,19 @@
 <div class="grading-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>📝 Student Exam Valuation & Certification Center</h1>
+      <h1><i class="bi bi-award-fill" style="color:#d97706;margin-right:8px;"></i>Student Exam Valuation & Certification Center</h1>
       <p>Evaluate final student astrology exam answer sheets and auto-issue verified completion certificates.</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-xs-refresh" (click)="loadSubmissions()" title="Sync">🔄 Sync Exams</button>
+      <button class="btn-xs-refresh" (click)="loadSubmissions()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i> Sync Exams
+      </button>
     </div>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      ⏳ Loading exam submissions from database...
+      <i class="bi bi-hourglass-split"></i> Loading exam submissions from database...
     </div>
   } @else {
     <div class="card-box">
@@ -33,7 +35,9 @@
               <td><strong>{{ sub.student_name }}</strong></td>
               <td>{{ sub.course_title }}</td>
               <td>
-                <a [href]="sub.submission_url" target="_blank" class="pdf-link">📄 View Answer Sheet (PDF)</a>
+                <a [href]="sub.submission_url" target="_blank" class="pdf-link">
+                  <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:4px;"></i> View Answer Sheet
+                </a>
               </td>
               <td>
                 @if (sub.score !== null && sub.score !== undefined) {
@@ -51,7 +55,9 @@
                 </span>
               </td>
               <td>
-                <button class="btn-sm" (click)="openGradingModal(sub)">Grade Exam</button>
+                <button class="btn-sm" (click)="openGradingModal(sub)">
+                  <i class="bi bi-pencil-square"></i> Grade Exam
+                </button>
               </td>
             </tr>
           }
@@ -72,8 +78,8 @@
     <div class="modal-overlay" (click)="selectedSubmissionForGrading = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Grade & Verify Student Exam</h3>
-          <button class="close-btn" (click)="selectedSubmissionForGrading = null">✕</button>
+          <h3><i class="bi bi-award" style="color:#d97706;margin-right:6px;"></i>Grade & Verify Student Exam</h3>
+          <button class="close-btn" (click)="selectedSubmissionForGrading = null"><i class="bi bi-x-lg"></i></button>
         </div>
         <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">Student: <strong style="color:#0f172a;">{{ selectedSubmissionForGrading.student_name }}</strong></p>
         <form (ngSubmit)="saveGrading()">

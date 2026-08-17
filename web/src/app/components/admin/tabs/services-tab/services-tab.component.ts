@@ -16,12 +16,12 @@ export class ServicesTabComponent implements OnInit {
     {
       id: 1,
       name: 'குரு ஸ்ரீநிவாசன்',
-      role_title: 'தலைமை வேத ஜோதிடர் (Chief Vedic Astrologer)',
-      experience: '25+ ஆண்டுகள் அனுபவம்',
-      specialty: 'துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், பிரசன்ன ஜோதிடம்',
+      role_title: 'தலைமை வேத ஜோதிடர்',
+      experience: '25+ ஆண்டுகள்',
+      specialty: 'ஜாதகக் கணிப்பு, திருமணப் பொருத்தம்',
       fee: 999,
       phone: '9840123456',
-      bio: 'வேத ஜோதிடக் கலை பாரம்பரிய குடும்பத்தைச் சேர்ந்தவர். ஆயிரக்கணக்கான குடும்பங்களுக்கு துல்லியமான வழிகாட்டுதல் வழங்கியுள்ளார்.',
+      bio: 'வேத ஜோதிடக் கலை பாரம்பரிய குடும்பத்தைச் சேர்ந்தவர்.',
       avatar_icon: 'bi bi-person-fill',
       available_slots: ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM - 04:30 PM', '05:00 PM - 06:00 PM', '06:30 PM - 07:30 PM'],
       blocked_dates: ['2026-08-23', '2026-08-30'],
@@ -32,12 +32,12 @@ export class ServicesTabComponent implements OnInit {
     {
       id: 2,
       name: 'குரு ராமஜெயம்',
-      role_title: 'முதுநிலை பிரசன்ன & வாஸ்து நிபுணர் (Senior Prashna Expert)',
-      experience: '18+ ஆண்டுகள் அனுபவம்',
-      specialty: 'கேள்வி ஜோதிடம், வாஸ்து சாஸ்திரம், தோஷ நிவாரணப் பரிகாரங்கள்',
+      role_title: 'பிரசன்ன & வாஸ்து நிபுணர்',
+      experience: '18+ ஆண்டுகள்',
+      specialty: 'கேள்வி ஜோதிடம், வாஸ்து பரிகாரம்',
       fee: 799,
       phone: '9840654321',
-      bio: 'பிரசன்ன ஜோதிடம் மற்றும் வாஸ்து சாஸ்திரத்தில் ஆழமான ஞானம் கொண்டவர். எளிய பரிகாரங்கள் மூலம் தீர்வு வழங்குபவர்.',
+      bio: 'பிரசன்ன ஜோதிடம் மற்றும் வாஸ்து சாஸ்திர நிபுணர்.',
       avatar_icon: 'bi bi-person-bounding-box',
       available_slots: ['10:30 AM - 11:30 AM', '02:00 PM - 03:00 PM', '04:30 PM - 05:30 PM', '07:00 PM - 08:00 PM'],
       blocked_dates: ['2026-08-23'],
@@ -48,12 +48,12 @@ export class ServicesTabComponent implements OnInit {
     {
       id: 3,
       name: 'குரு மீனாட்சி சுந்தரம்',
-      role_title: 'நாடி & நியூமராலஜி வல்லுநர் (Nadi & Numerology Specialist)',
-      experience: '15+ ஆண்டுகள் அனுபவம்',
-      specialty: 'நாடி ஜோதிடம், நியூமராலஜி பெயர் அதிர்ஷ்டம், தொழில் & வியாபார யோகம்',
+      role_title: 'நாடி & எண்கணித நிபுணர்',
+      experience: '15+ ஆண்டுகள்',
+      specialty: 'நாடி ஜோதிடம், அதிர்ஷ்டப் பெயர்',
       fee: 599,
       phone: '9840789012',
-      bio: 'நாடி சுவடி வாசிப்பு மற்றும் எண்கணிதத்தில் (Numerology) தேர்ச்சி பெற்றவர். தொழில் மற்றும் வியாபார வெற்றிக்கு ஆலோசனை தருபவர்.',
+      bio: 'நாடி சுவடி மற்றும் எண்கணிதத்தில் தேர்ச்சி பெற்றவர்.',
       avatar_icon: 'bi bi-person-badge',
       available_slots: ['09:00 AM - 10:00 AM', '11:00 AM - 12:00 PM', '03:00 PM - 04:00 PM', '06:00 PM - 07:00 PM'],
       blocked_dates: ['2026-08-24'],
@@ -61,6 +61,16 @@ export class ServicesTabComponent implements OnInit {
       rating: 4.90,
       consultation_count: 1240
     }
+  ];
+
+  quickSlotsList: string[] = [
+    '09:00 AM - 10:00 AM',
+    '10:30 AM - 11:30 AM',
+    '12:00 PM - 01:00 PM',
+    '02:30 PM - 03:30 PM',
+    '04:00 PM - 05:00 PM',
+    '05:30 PM - 06:30 PM',
+    '07:00 PM - 08:00 PM'
   ];
 
   astrologersList: any[] = [...this.defaultAstrologers];
@@ -232,6 +242,11 @@ export class ServicesTabComponent implements OnInit {
     this.generateAstrologerMonthCalendar();
   }
 
+  getBlockedDaysCount(): number {
+    if (!this.selectedAstrologerForManage || !this.astrologerCalendarDays) return 0;
+    return this.astrologerCalendarDays.filter(d => d.isCurrentMonth && d.isBlocked).length;
+  }
+
   getAstrologerMonthNameTamil(): string {
     const tamilMonths = ['ஜனவரி', 'பிப்ரவரி', 'மார்ச்', 'ஏப்ரல்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆகஸ்ட்', 'செப்டம்பர்', 'அக்டோபர்', 'நவம்பர்', 'டிசம்பர்'];
     const engMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -287,6 +302,14 @@ export class ServicesTabComponent implements OnInit {
       return;
     }
     blockedDays.forEach(b => this.toggleAstrologerDate(b.date, 'available'));
+  }
+
+  addQuickSlot(slot: string): void {
+    if (!this.selectedAstrologerForManage) return;
+    if (!this.selectedAstrologerForManage.available_slots.includes(slot)) {
+      this.selectedAstrologerForManage.available_slots.push(slot);
+      this.saveAstrologerSlots();
+    }
   }
 
   addAstrologerSlot(): void {

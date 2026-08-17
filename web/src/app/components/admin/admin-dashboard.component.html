@@ -2,58 +2,61 @@
   <!-- MOBILE TOPBAR WITH HAMBURGER MENU -->
   <div class="mobile-topbar">
     <div class="brand">
-      <span class="icon">✨</span>
+      <i class="bi bi-stars" style="color: #d97706; font-size: 22px;"></i>
       <h2>Astro Divine</h2>
     </div>
     <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
-      {{ mobileMenuOpen ? '✕ Close' : '☰ Menu' }}
+      <i class="bi" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+      <span>{{ mobileMenuOpen ? ' Close' : ' Menu' }}</span>
     </button>
   </div>
 
   <!-- SLEEK LEFT SIDEBAR (Desktop Fixed, Mobile Slide Drawer) -->
   <aside class="sidebar" [class.mobile-open]="mobileMenuOpen">
     <div class="brand">
-      <span class="icon">✨</span>
+      <i class="bi bi-stars" style="color: #d97706; font-size: 24px;"></i>
       <div style="flex:1">
         <h2>Astro Divine</h2>
         <span class="brand-sub">Management Engine</span>
       </div>
-      <button class="drawer-close-btn" (click)="mobileMenuOpen = false">✕</button>
+      <button class="drawer-close-btn" (click)="mobileMenuOpen = false">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
 
     <nav class="nav-menu">
       <button [class.active]="currentTab === 'overview'" (click)="selectTab('overview')">
-        <span class="nav-icon">📊</span> Overview & Analytics
+        <i class="bi bi-grid-1x2-fill nav-icon"></i> Overview & Analytics
       </button>
       <button [class.active]="currentTab === 'team'" (click)="selectTab('team')">
-        <span class="nav-icon">🛡️</span> Team & Astrologers
+        <i class="bi bi-shield-lock-fill nav-icon"></i> Team & Astrologers
       </button>
       <button [class.active]="currentTab === 'lms'" (click)="selectTab('lms')">
-        <span class="nav-icon">📚</span> Learn & Course Studio
+        <i class="bi bi-mortarboard-fill nav-icon"></i> Learn & Course Studio
       </button>
       <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
-        <span class="nav-icon">📦</span> Courier & Book Orders
+        <i class="bi bi-box-seam-fill nav-icon"></i> Courier & Book Orders
       </button>
       <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
-        <span class="nav-icon">📝</span> Exam Valuation & Certs
+        <i class="bi bi-award-fill nav-icon"></i> Exam Valuation & Certs
       </button>
       <button [class.active]="currentTab === 'services'" (click)="selectTab('services')">
-        <span class="nav-icon">🔮</span> Appointment Bookings
+        <i class="bi bi-calendar2-check-fill nav-icon"></i> Appointment Bookings
       </button>
       <button [class.active]="currentTab === 'rasi-editor'" (click)="selectTab('rasi-editor')">
-        <span class="nav-icon">🌟</span> Rasi Palan Editor
+        <i class="bi bi-sun-fill nav-icon"></i> Rasi Palan Editor
       </button>
       <button [class.active]="currentTab === 'matches'" (click)="selectTab('matches')">
-        <span class="nav-icon">💑</span> Marriage Match Log
+        <i class="bi bi-heart-fill nav-icon"></i> Marriage Match Log
       </button>
       <button [class.active]="currentTab === 'payments'" (click)="selectTab('payments')">
-        <span class="nav-icon">💳</span> Payment Transactions
+        <i class="bi bi-credit-card-2-front-fill nav-icon"></i> Payment Transactions
       </button>
       <button [class.active]="currentTab === 'broadcast'" (click)="selectTab('broadcast')">
-        <span class="nav-icon">📢</span> Notify Users
+        <i class="bi bi-megaphone-fill nav-icon"></i> Notify Users
       </button>
       <button [class.active]="currentTab === 'users'" (click)="selectTab('users')">
-        <span class="nav-icon">👥</span> Registered Users
+        <i class="bi bi-people-fill nav-icon"></i> Registered Users
       </button>
     </nav>
 
@@ -67,7 +70,8 @@
         </div>
       </div>
       <button class="btn-logout-full" (click)="logout()">
-        <span>🚪 Sign Out</span>
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Sign Out</span>
       </button>
     </div>
   </aside>

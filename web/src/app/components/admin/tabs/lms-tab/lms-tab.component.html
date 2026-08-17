@@ -1,14 +1,16 @@
 <div class="lms-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>📚 Vedic Astrology Learning Academy & Course Studio</h1>
+      <h1><i class="bi bi-mortarboard-fill" style="color:#d97706;margin-right:8px;"></i>Vedic Astrology Learning Academy & Course Studio</h1>
       <p>Interactive curriculum design, video lessons, audio slokas, downloadable PDF materials, and price controls.</p>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
       <button class="btn-primary" (click)="openNewCourseWizard()">
-        <span>✨ Launch Course Studio Wizard</span>
+        <i class="bi bi-stars"></i> Launch Course Studio Wizard
       </button>
-      <button class="btn-xs-refresh" (click)="loadCourses()" title="Sync">🔄</button>
+      <button class="btn-xs-refresh" (click)="loadCourses()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i>
+      </button>
     </div>
   </div>
 
@@ -16,7 +18,7 @@
   <div class="card-box" style="margin-bottom: 24px; padding: 14px 20px;">
     <div class="course-filters-row">
       <div class="search-box-wrap">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><i class="bi bi-search"></i></span>
         <input 
           type="text" 
           [(ngModel)]="courseSearchQuery" 
@@ -39,7 +41,7 @@
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      ⏳ Loading courses and curriculum from database...
+      <i class="bi bi-hourglass-split"></i> Loading courses and curriculum from database...
     </div>
   } @else {
     <!-- COURSES GRID -->
@@ -60,20 +62,20 @@
             <p class="course-desc-pro">{{ course.description }}</p>
 
             <div style="display:flex;gap:12px;font-size:12px;color:#64748b;margin-bottom:12px;">
-              <span>📁 {{ getCourseModulesCount(course) }} Modules</span>
-              <span>🎬 {{ getCourseLessonsCount(course) }} Lessons</span>
+              <span><i class="bi bi-folder-fill" style="color:#f59e0b;margin-right:4px;"></i>{{ getCourseModulesCount(course) }} Modules</span>
+              <span><i class="bi bi-play-circle-fill" style="color:#2563eb;margin-right:4px;"></i>{{ getCourseLessonsCount(course) }} Lessons</span>
             </div>
 
             <!-- ACTION BUTTONS -->
             <div style="display:flex;gap:8px;margin-top:auto;">
               <button class="btn-xs-pro gold" style="flex:1;" (click)="openSyllabusDrawer(course)">
-                📋 View Full Syllabus
+                <i class="bi bi-journal-text"></i> View Full Syllabus
               </button>
               <button class="btn-xs-pro" (click)="openAddModule(course.id)">
                 + Module
               </button>
-              <button class="btn-xs-pro danger" (click)="deleteCourse(course.id)">
-                🗑️
+              <button class="btn-xs-pro danger" (click)="deleteCourse(course.id)" title="Delete">
+                <i class="bi bi-trash3-fill"></i>
               </button>
             </div>
           </div>
@@ -81,10 +83,12 @@
       }
       @if (getFilteredCourses().length === 0) {
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0;">
-          <div style="font-size: 36px; margin-bottom: 8px;">📚</div>
+          <div style="font-size: 36px; margin-bottom: 8px; color: #cbd5e1;"><i class="bi bi-journal-x"></i></div>
           <h3 style="color: #0f172a; margin: 0 0 6px;">No Courses Found</h3>
           <p style="color: #64748b; font-size: 13px; margin: 0 0 16px;">Create your first astrology masterclass course curriculum.</p>
-          <button class="btn-primary" (click)="openNewCourseWizard()">Launch Course Studio Wizard</button>
+          <button class="btn-primary" (click)="openNewCourseWizard()">
+            <i class="bi bi-stars"></i> Launch Course Studio Wizard
+          </button>
         </div>
       }
     </div>
@@ -96,24 +100,29 @@
       <div class="modal-box" style="max-width:640px;max-height:85vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <h3 style="margin:0;">📚 {{ selectedCourseForSyllabus.title }}</h3>
+            <h3 style="margin:0;"><i class="bi bi-book-half" style="color:#d97706;margin-right:6px;"></i>{{ selectedCourseForSyllabus.title }}</h3>
             <span style="font-size:12px;color:#64748b;">Complete Course Curriculum & Lesson Assets</span>
           </div>
-          <button class="close-btn" (click)="openSyllabusDrawerModal = false">✕</button>
+          <button class="close-btn" (click)="openSyllabusDrawerModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
 
         <div style="margin-bottom:16px;">
           @for (mod of selectedCourseForSyllabus.modules; track mod.id; let mIdx = $index) {
             <div class="module-box" style="margin-bottom:12px;">
               <div class="mod-title">
-                <span>📁 Module {{ mIdx + 1 }}: {{ mod.title }}</span>
+                <span><i class="bi bi-folder2-open" style="color:#d97706;margin-right:4px;"></i>Module {{ mIdx + 1 }}: {{ mod.title }}</span>
                 <button class="btn-xs" (click)="openAddLesson(mod.id)">+ Add Lesson</button>
               </div>
               <div class="lessons-list">
                 @for (les of mod.lessons; track les.id; let lIdx = $index) {
                   <div class="lesson-chip">
-                    <span>{{ lIdx + 1 }}. {{ les.title }} ({{ les.duration || '10 mins' }})</span>
-                    <a [href]="les.content_url" target="_blank" class="les-link">▶ Preview ({{ les.content_type }})</a>
+                    <span>
+                      <i class="bi" [ngClass]="les.content_type === 'video' ? 'bi-play-btn-fill' : (les.content_type === 'audio' ? 'bi-volume-up-fill' : 'bi-file-earmark-pdf-fill')" style="color:#2563eb;margin-right:4px;"></i>
+                      {{ lIdx + 1 }}. {{ les.title }} ({{ les.duration || '10 mins' }})
+                    </span>
+                    <a [href]="les.content_url" target="_blank" class="les-link">
+                      <i class="bi bi-box-arrow-up-right"></i> Preview ({{ les.content_type }})
+                    </a>
                   </div>
                 }
                 @if (!mod.lessons || mod.lessons.length === 0) {
@@ -142,8 +151,8 @@
     <div class="modal-overlay" (click)="openModuleModal = false">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Add Curriculum Module</h3>
-          <button class="close-btn" (click)="openModuleModal = false">✕</button>
+          <h3><i class="bi bi-folder-plus" style="color:#d97706;margin-right:6px;"></i>Add Curriculum Module</h3>
+          <button class="close-btn" (click)="openModuleModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
         <form (ngSubmit)="submitModule()">
           <div class="form-group">
@@ -164,8 +173,8 @@
     <div class="modal-overlay" (click)="openLessonModal = false">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Add Lesson Content</h3>
-          <button class="close-btn" (click)="openLessonModal = false">✕</button>
+          <h3><i class="bi bi-film" style="color:#d97706;margin-right:6px;"></i>Add Lesson Content</h3>
+          <button class="close-btn" (click)="openLessonModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
         <form (ngSubmit)="submitLesson()">
           <div class="form-group">
@@ -203,10 +212,10 @@
       <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <h3 style="margin:0;">🚀 Course Studio Builder Wizard</h3>
-            <span style="font-size:12px;color:#64748b;">Step {{ wizardStep }} of 3</span>
+            <h3 style="margin:0;"><i class="bi bi-magic" style="color:#d97706;margin-right:6px;"></i>Course Studio Builder Wizard</h3>
+            <span style="font-size:12px;color:#64748b;">Step {{ wizardStep }} of 2</span>
           </div>
-          <button class="close-btn" (click)="openCourseWizardModal = false">✕</button>
+          <button class="close-btn" (click)="openCourseWizardModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
 
         @if (wizardStep === 1) {
@@ -261,7 +270,7 @@
             <div style="max-height:260px;overflow-y:auto;margin-bottom:16px;">
               @for (m of wizardModules; track m.id; let i = $index) {
                 <div class="module-box" style="margin-bottom:8px;">
-                  <strong style="color:#b45309;font-size:13px;">Module {{ i + 1 }}: {{ m.title }}</strong>
+                  <strong style="color:#b45309;font-size:13px;"><i class="bi bi-folder-fill" style="margin-right:4px;"></i>Module {{ i + 1 }}: {{ m.title }}</strong>
                   <div style="font-size:11px;color:#64748b;margin-top:4px;">{{ (m.lessons || []).length }} Lessons attached</div>
                 </div>
               }
@@ -272,7 +281,9 @@
 
             <div class="modal-btns">
               <button type="button" class="btn-cancel" (click)="wizardStep = 1">◀ Back</button>
-              <button type="button" class="btn-primary" (click)="publishWizardCourse()">🚀 Publish Course Live</button>
+              <button type="button" class="btn-primary" (click)="publishWizardCourse()">
+                <i class="bi bi-cloud-arrow-up-fill"></i> Publish Course Live
+              </button>
             </div>
           </div>
         }

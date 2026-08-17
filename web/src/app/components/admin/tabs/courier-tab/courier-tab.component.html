@@ -1,17 +1,19 @@
 <div class="courier-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>📦 Courier Logistics & Book Orders Fulfillment</h1>
+      <h1><i class="bi bi-box-seam-fill" style="color:#d97706;margin-right:8px;"></i>Courier Logistics & Book Orders Fulfillment</h1>
       <p>Dispatch spiritual books, yantras, astrology guides, and update AWB tracking codes.</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-xs-refresh" (click)="loadOrders()" title="Sync">🔄 Sync Orders</button>
+      <button class="btn-xs-refresh" (click)="loadOrders()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i> Sync Orders
+      </button>
     </div>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      ⏳ Loading courier orders from database...
+      <i class="bi bi-hourglass-split"></i> Loading courier orders from database...
     </div>
   } @else {
     <div class="card-box">
@@ -51,7 +53,9 @@
                 </span>
               </td>
               <td>
-                <button class="btn-sm" (click)="openCourierModal(order)">Update Courier</button>
+                <button class="btn-sm" (click)="openCourierModal(order)">
+                  <i class="bi bi-truck"></i> Update Courier
+                </button>
               </td>
             </tr>
           }
@@ -72,8 +76,8 @@
     <div class="modal-overlay" (click)="selectedOrderForCourier = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Update Courier Dispatch Details</h3>
-          <button class="close-btn" (click)="selectedOrderForCourier = null">✕</button>
+          <h3><i class="bi bi-truck" style="color:#d97706;margin-right:6px;"></i>Update Courier Dispatch Details</h3>
+          <button class="close-btn" (click)="selectedOrderForCourier = null"><i class="bi bi-x-lg"></i></button>
         </div>
         <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">Order Number: <strong style="color:#0f172a;">{{ selectedOrderForCourier.order_number }}</strong></p>
         <form (ngSubmit)="saveCourierStatus()">

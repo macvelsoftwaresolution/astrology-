@@ -1,18 +1,22 @@
 <div class="team-container">
   <div class="header-banner flex-between">
     <div>
-      <h1>🛡️ Platform Administrators & Astrologers</h1>
+      <h1><i class="bi bi-shield-lock-fill" style="color:#d97706;margin-right:8px;"></i>Platform Administrators & Astrologers</h1>
       <p>Role-based access control, credentials, and executive system privileges.</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-primary" (click)="openAddAdminModal = true">+ Add Team Member</button>
-      <button class="btn-xs-refresh" (click)="loadTeam()" title="Sync">🔄</button>
+      <button class="btn-primary" (click)="openAddAdminModal = true">
+        <i class="bi bi-person-plus-fill"></i> Add Team Member
+      </button>
+      <button class="btn-xs-refresh" (click)="loadTeam()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i>
+      </button>
     </div>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      ⏳ Loading team accounts from database...
+      <i class="bi bi-hourglass-split"></i> Loading team accounts from database...
     </div>
   } @else {
     <div class="card-box">
@@ -34,9 +38,11 @@
               <td>{{ member.email }}</td>
               <td>{{ member.phone || '-' }}</td>
               <td><span class="badge-role">{{ member.role | uppercase }}</span></td>
-              <td><span class="status active">Active</span></td>
+              <td><span class="status active"><i class="bi bi-check-circle-fill"></i> Active</span></td>
               <td>
-                <button class="btn-sm danger" (click)="deleteTeamMember(member.id)">Delete</button>
+                <button class="btn-sm danger" (click)="deleteTeamMember(member.id)">
+                  <i class="bi bi-trash3-fill"></i> Delete
+                </button>
               </td>
             </tr>
           }
@@ -57,8 +63,8 @@
     <div class="modal-overlay" (click)="openAddAdminModal = false">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Create New Admin / Astrologer Account</h3>
-          <button class="close-btn" (click)="openAddAdminModal = false">✕</button>
+          <h3><i class="bi bi-person-plus-fill" style="color:#d97706;margin-right:6px;"></i>Create New Admin / Astrologer Account</h3>
+          <button class="close-btn" (click)="openAddAdminModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
         <form (ngSubmit)="createAdmin()">
           <div class="form-group">
