@@ -3,6 +3,7 @@ $color-card-bg: #FAF0D6;
 $color-maroon: #4A0E17;
 $color-maroon-dark: #2A080C;
 $color-gold: #A27B38;
+$color-gold-light: #D4AF37;
 $color-gold-bright: #C49B45;
 $color-text-dark: #3A2B23;
 $color-text-muted: #7E716A;
@@ -111,6 +112,7 @@ $color-orange: #F49320;
       margin: 0.15rem 0 0.5rem 0;
       display: -webkit-box;
       -webkit-line-clamp: 1;
+      line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -308,6 +310,7 @@ $color-orange: #F49320;
     line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

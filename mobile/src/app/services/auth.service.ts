@@ -1,105 +1,77 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 
 export interface User {
-  fullName: string;
-  mobileNumber: string;
-  emailAddress: string;
+  id?: number;
+  fullName?: string;
+  name?: string;
+  mobileNumber?: string;
+  phone?: string;
+  emailAddress?: string;
+  email?: string;
   password?: string;
+  role?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly REG_USERS_KEY = 'astro_registered_users';
+  private apiUrl = 'http://127.0.0.1:8000/api';
 
-  // Separate session keys
-  private getAuthKey(service: 'astrology' | 'education'): string {
-    return `astro_auth_user_${service}`;
+  constructor(private http: HttpClient) {}
+
+  register(user: User, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
+    const payload = {
+      name: user.fullName || user.name,
+      email: user.emailAddress || user.email,
+      password: user.password || 'test123',
+      phone: user.mobileNumber || user.phone
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/auth/register`, payload).pipe(
+      tap(res => {
+        if (res.success && res.token) {
+          localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('auth_user', JSON.stringify(res.user));
+        }
+      })
+    );
   }
 
-  // Default credentials
-  private defaultAstrologyUser: User = {
-    fullName: 'ஜோதிட பயனர்',
-    mobileNumber: '9876543210',
-    emailAddress: 'astrology@example.com',
-    password: '123456'
-  };
+  login(input: string, password?: string, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
+    const payload = {
+      email: input,
+      password: password || ''
+    };
 
-  private defaultEducationUser: User = {
-    fullName: 'கல்வி பயனர்',
-    mobileNumber: '9876543210',
-    emailAddress: 'education@example.com',
-    password: '654321' // Different password as requested
-  };
-
-  constructor() {
-    const users = this.getRegisteredUsers();
-    // Seed default users if not already present
-    if (!users.find(u => u.mobileNumber === this.defaultAstrologyUser.mobileNumber && u.emailAddress === this.defaultAstrologyUser.emailAddress)) {
-      users.push(this.defaultAstrologyUser);
-    }
-    if (!users.find(u => u.mobileNumber === this.defaultEducationUser.mobileNumber && u.emailAddress === this.defaultEducationUser.emailAddress)) {
-      users.push(this.defaultEducationUser);
-    }
-    localStorage.setItem(this.REG_USERS_KEY, JSON.stringify(users));
-  }
-
-  getRegisteredUsers(): User[] {
-    const data = localStorage.getItem(this.REG_USERS_KEY);
-    return data ? JSON.parse(data) : [];
-  }
-
-  register(user: User, service: 'astrology' | 'education' = 'astrology'): boolean {
-    const users = this.getRegisteredUsers();
-    // To allow different signups for same mobile on different services, check by both mobile and email/name
-    if (users.find(u => u.mobileNumber === user.mobileNumber && u.emailAddress === user.emailAddress)) {
-      return false; // User already exists with this mobile & email combination
-    }
-    const newUser = { ...user, password: user.password || (service === 'education' ? '654321' : '123456') };
-    users.push(newUser);
-    localStorage.setItem(this.REG_USERS_KEY, JSON.stringify(users));
-    
-    // Auto login
-    this.setCurrentUser(newUser, service);
-    return true;
-  }
-
-  login(mobileNumber: string, password?: string, service: 'astrology' | 'education' = 'astrology'): boolean {
-    const users = this.getRegisteredUsers();
-    // Filter matching user accounts
-    const matchedUser = users.find(u => u.mobileNumber === mobileNumber && (!password || u.password === password));
-    if (matchedUser) {
-      this.setCurrentUser(matchedUser, service);
-      return true;
-    }
-    return false;
+    return this.http.post<any>(`${this.apiUrl}/auth/mobile-login`, payload).pipe(
+      tap(res => {
+        if (res.success && res.token) {
+          localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('auth_user', JSON.stringify(res.user));
+        }
+      })
+    );
   }
 
   logout(service: 'astrology' | 'education' = 'astrology'): void {
-    localStorage.removeItem(this.getAuthKey(service));
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    localStorage.removeItem(`astro_auth_user_${service}`);
   }
 
   isLoggedIn(service: 'astrology' | 'education' = 'astrology'): boolean {
-    return localStorage.getItem(this.getAuthKey(service)) !== null;
+    return !!localStorage.getItem('auth_token');
   }
 
   getCurrentUser(service: 'astrology' | 'education' = 'astrology'): User | null {
-    const data = localStorage.getItem(this.getAuthKey(service));
+    const data = localStorage.getItem('auth_user');
     return data ? JSON.parse(data) : null;
   }
 
-  private setCurrentUser(user: User, service: 'astrology' | 'education'): void {
-    localStorage.setItem(this.getAuthKey(service), JSON.stringify(user));
-  }
-
-  forgotPassword(mobileNumber: string, service: 'astrology' | 'education' = 'astrology'): string | null {
-    const users = this.getRegisteredUsers();
-    // Return matching user
-    const user = users.find(u => u.mobileNumber === mobileNumber);
-    if (user) {
-      return user.password || (service === 'education' ? '654321' : '123456');
-    }
-    return null;
+  forgotPassword(mobileNumber: string, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/auth/forgot-password`, { phone: mobileNumber });
   }
 }

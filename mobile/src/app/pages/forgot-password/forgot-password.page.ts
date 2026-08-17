@@ -28,14 +28,21 @@ export class ForgotPasswordPage implements OnInit {
       return;
     }
 
-    const password = this.authService.forgotPassword(this.mobileNumber);
-    if (password) {
-      this.recoveredPassword = password;
-      this.showToast('கடவுச்சொல் வெற்றிகரமாக மீட்டெடுக்கப்பட்டது!', 'success');
-    } else {
-      this.recoveredPassword = null;
-      this.showToast('இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை', 'danger');
-    }
+    this.authService.forgotPassword(this.mobileNumber).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.recoveredPassword = `சரிபார்க்கப்பட்டது: ${res.user?.email || res.message}`;
+          this.showToast(res.message, 'success');
+        } else {
+          this.recoveredPassword = null;
+          this.showToast('இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை', 'danger');
+        }
+      },
+      error: () => {
+        this.recoveredPassword = null;
+        this.showToast('இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை', 'danger');
+      }
+    });
   }
 
   goBack() {

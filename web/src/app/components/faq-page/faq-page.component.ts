@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
             <span class="logo-symbol"><i class="bi bi-moon-stars-fill"></i></span>
             <div class="logo-text">
               <span class="tamil-title">ஆருத்ரா ஜோதிடம்</span>
-              <span class="english-subtitle">ARUTHRA ASTROLOGY</span>
+              <span class="english-subtitle">ASTRO DIVINE</span>
             </div>
           </div>
           <nav class="nav-links">
@@ -37,7 +37,7 @@ import { RouterModule } from '@angular/router';
             <div class="center-editorial-header">
               <span class="section-eyebrow"><i class="bi bi-question-circle me-1"></i> FREQUENTLY ASKED QUESTIONS</span>
               <h2>அடிக்கடி கேட்கப்படும் கேள்விகள்</h2>
-              <p class="section-desc">EVERYTHING YOU NEED TO KNOW ABOUT ARUTHRA ASTROLOGY</p>
+              <p class="section-desc">EVERYTHING YOU NEED TO KNOW ABOUT ASTRO DIVINE</p>
             </div>
 
             <div class="faq-accordion-rows">
@@ -58,7 +58,7 @@ import { RouterModule } from '@angular/router';
       <footer class="app-footer">
         <div class="section-container">
           <div class="footer-bottom-bar">
-            <p>&copy; 2026 Aruthra Astrology. All Rights Reserved. Dedicated FAQ Page.</p>
+            <p>&copy; 2026 Astro Divine. All Rights Reserved. Dedicated FAQ Page.</p>
           </div>
         </div>
       </footer>

@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
             <span class="logo-symbol"><i class="bi bi-moon-stars-fill"></i></span>
             <div class="logo-text">
               <span class="tamil-title">ஆருத்ரா ஜோதிடம்</span>
-              <span class="english-subtitle">ARUTHRA ASTROLOGY</span>
+              <span class="english-subtitle">ASTRO DIVINE</span>
             </div>
           </div>
           <nav class="nav-links">
@@ -91,7 +91,7 @@ import { RouterModule } from '@angular/router';
       <footer class="app-footer">
         <div class="section-container">
           <div class="footer-bottom-bar">
-            <p>&copy; 2026 Aruthra Astrology. All Rights Reserved. Dedicated Panchangam Page.</p>
+            <p>&copy; 2026 Astro Divine. All Rights Reserved. Dedicated Panchangam Page.</p>
           </div>
         </div>
       </footer>
