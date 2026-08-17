@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 
 interface Metrics {
@@ -1256,13 +1256,18 @@ interface Metrics {
 })
 
 export class AdminDashboardComponent implements OnInit {
-  currentTab = 'services';
+  currentTab = 'overview';
   currentUser: User | null = null;
   mobileMenuOpen = false;
 
   selectTab(tab: string): void {
     this.currentTab = tab;
     this.mobileMenuOpen = false;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
 
@@ -1328,11 +1333,24 @@ export class AdminDashboardComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    const initialTab = this.route.snapshot?.queryParams?.['tab'];
+    if (initialTab) {
+      this.currentTab = initialTab;
+    }
+  }
 
   ngOnInit(): void {
     if (typeof window === 'undefined') return;
+
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.currentTab = params['tab'];
+      }
+    });
+
     this.currentUser = this.authService.getUser();
     setTimeout(() => {
       this.loadAllData();

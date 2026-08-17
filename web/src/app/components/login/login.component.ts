@@ -25,10 +25,10 @@ import { AuthService } from '../../services/auth.service';
           <div class="quick-credentials">
             <span class="chip-title">Quick Demo Login:</span>
             <div class="chips">
-              <button type="button" class="chip admin" (click)="fillDemo('admin@astrology.com', 'password123')">
+              <button type="button" class="chip admin" (click)="fillDemo('admin@gmail.com', 'admin123')">
                 🛡️ Admin Account
               </button>
-              <button type="button" class="chip student" (click)="fillDemo('student@astrology.com', 'password123')">
+              <button type="button" class="chip student" (click)="fillDemo('karthik@gmail.com', 'test123')">
                 📱 Student (Blocked Test)
               </button>
             </div>
@@ -51,7 +51,7 @@ import { AuthService } from '../../services/auth.service';
               name="email" 
               [(ngModel)]="email" 
               required 
-              placeholder="admin@astrology.com"
+              placeholder="admin@gmail.com"
               class="form-control"
             />
           </div>

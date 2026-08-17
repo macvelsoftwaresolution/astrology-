@@ -35,17 +35,20 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    const success = this.authService.login(this.mobileNumber, this.password, this.serviceType);
-    if (success) {
-      await this.showToast('வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
-      if (this.serviceType === 'education') {
-        this.router.navigate(['/learn']);
-      } else {
-        this.router.navigate(['/home']);
+    this.authService.login(this.mobileNumber, this.password, this.serviceType).subscribe({
+      next: async (res) => {
+        await this.showToast('வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
+        if (this.serviceType === 'education') {
+          this.router.navigate(['/learn']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+      },
+      error: async (err) => {
+        const msg = err.error?.message || 'தவறான அலைபேசி எண் அல்லது கடவுச்சொல்';
+        await this.showToast(msg, 'danger');
       }
-    } else {
-      await this.showToast('தவறான அலைபேசி எண் அல்லது கடவுச்சொல்', 'danger');
-    }
+    });
   }
 
   goBack() {

@@ -44,17 +44,20 @@ export class RegisterPage implements OnInit {
       password: defaultPwd // set default password based on service type
     };
 
-    const success = this.authService.register(user, this.serviceType);
-    if (success) {
-      await this.showToast('பதிவு வெற்றிகரமாக முடிந்தது!', 'success');
-      if (this.serviceType === 'education') {
-        this.router.navigate(['/learn']);
-      } else {
-        this.router.navigate(['/home']);
+    this.authService.register(user, this.serviceType).subscribe({
+      next: async (res) => {
+        await this.showToast('பதிவு வெற்றிகரமாக முடிந்தது!', 'success');
+        if (this.serviceType === 'education') {
+          this.router.navigate(['/learn']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+      },
+      error: async (err) => {
+        const msg = err.error?.message || 'இந்த அலைபேசி எண் / மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.';
+        await this.showToast(msg, 'danger');
       }
-    } else {
-      await this.showToast('இந்த அலைபேசி எண் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.', 'danger');
-    }
+    });
   }
 
   goBack() {

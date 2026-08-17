@@ -65,11 +65,12 @@ class AuthController extends Controller
     public function mobileLogin(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'email'    => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $input = $request->input('email');
+        $user = User::where('email', $input)->orWhere('phone', $input)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -154,6 +155,36 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'user' => $request->user()
+        ]);
+    }
+
+    /**
+     * Forgot Password Reset Lookup
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+        ]);
+
+        $input = $request->phone;
+        $user = User::where('phone', $input)->orWhere('email', $input)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'கணக்கு எதுவும் பெறப்படவில்லை. தயவுசெய்து பதிவு செய்யவும்.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'உங்கள் கடவுச்சொல் மீட்பு விவரங்கள் சரிபார்க்கப்பட்டது.',
+            'user' => [
+                'name'  => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone
+            ]
         ]);
     }
 }

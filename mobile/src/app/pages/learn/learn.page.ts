@@ -74,9 +74,8 @@ export class LearnPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    const enrolled = localStorage.getItem('astro_course_enrolled');
     const loggedIn = this.authService.isLoggedIn('education');
-    if (enrolled && loggedIn) {
+    if (loggedIn) {
       this.currentScreen = 'dashboard';
     } else {
       this.currentScreen = 'intro';
@@ -84,7 +83,6 @@ export class LearnPage implements OnInit {
 
     App.addListener('backButton', () => {
       this.ngZone.run(() => {
-        // Only run back button handler if we are active on the learn page route
         if (this.router.url !== '/learn') {
           return;
         }
@@ -101,9 +99,8 @@ export class LearnPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    const enrolled = localStorage.getItem('astro_course_enrolled');
     const loggedIn = this.authService.isLoggedIn('education');
-    if (enrolled && loggedIn) {
+    if (loggedIn) {
       this.currentScreen = 'dashboard';
     }
   }
@@ -144,23 +141,24 @@ export class LearnPage implements OnInit {
   }
 
   payAndStart() {
-    // Generate credentials
     const randomId = Math.floor(1000 + Math.random() * 9000);
     this.generatedLoginId = `EDU-${randomId}`;
-    this.generatedPassword = '654321'; // Set static password for ease of test
+    this.generatedPassword = '654321';
 
-    // Register user account dynamically in auth service
     const newUser = {
       fullName: this.enrollForm.fullName || 'கல்வி பயனர்',
       mobileNumber: this.generatedLoginId,
-      emailAddress: 'education@example.com',
+      emailAddress: `student_${randomId}@gmail.com`,
       password: this.generatedPassword
     };
-    this.authService.register(newUser, 'education');
-    // Save enrollment state
-    localStorage.setItem('astro_course_enrolled', 'true');
-    // Transition to post payment login screen
-    this.currentScreen = 'post-payment-login';
+    this.authService.register(newUser, 'education').subscribe({
+      next: () => {
+        this.currentScreen = 'post-payment-login';
+      },
+      error: () => {
+        this.currentScreen = 'post-payment-login';
+      }
+    });
   }
 
   loginToCourse() {
@@ -169,18 +167,19 @@ export class LearnPage implements OnInit {
       return;
     }
 
-    const success = this.authService.login(this.loginIdInput, this.loginPasswordInput, 'education');
-    if (success) {
-      this.loginErrorMessage = '';
-      this.currentScreen = 'dashboard';
-    } else {
-      this.loginErrorMessage = 'தவறான பயனர் ஐடி அல்லது கடவுச்சொல்.';
-    }
+    this.authService.login(this.loginIdInput, this.loginPasswordInput, 'education').subscribe({
+      next: () => {
+        this.loginErrorMessage = '';
+        this.currentScreen = 'dashboard';
+      },
+      error: () => {
+        this.loginErrorMessage = 'தவறான பயனர் ஐடி அல்லது கடவுச்சொல்.';
+      }
+    });
   }
 
   logoutCourse() {
     this.authService.logout('education');
-    localStorage.removeItem('astro_course_enrolled');
     this.currentScreen = 'intro';
     this.router.navigate(['/welcome']);
   }

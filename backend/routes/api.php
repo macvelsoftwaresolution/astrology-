@@ -17,9 +17,10 @@ use App\Http\Middleware\CheckRole;
 // =====================================================================
 
 // Auth
-Route::post('/auth/web-login',    [AuthController::class, 'webLogin']);
-Route::post('/auth/mobile-login', [AuthController::class, 'mobileLogin']);
-Route::post('/auth/register',     [AuthController::class, 'register']);
+Route::post('/auth/web-login',        [AuthController::class, 'webLogin']);
+Route::post('/auth/mobile-login',     [AuthController::class, 'mobileLogin']);
+Route::post('/auth/register',         [AuthController::class, 'register']);
+Route::post('/auth/forgot-password',  [AuthController::class, 'forgotPassword']);
 
 // Public Astrology Data
 Route::get('/panchangam/today', [AstrologyController::class, 'getTodayPanchangam']);
