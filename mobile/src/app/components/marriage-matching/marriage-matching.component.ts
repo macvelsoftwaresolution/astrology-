@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-marriage-matching',
@@ -6,46 +6,117 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./marriage-matching.component.scss'],
   standalone: false
 })
-export class MarriageMatchingComponent {
+export class MarriageMatchingComponent implements OnInit {
   @Input() rasis: any[] = [];
 
-  matchingForm = {
-    boyName: '', boyDob: '', boyTob: '', boyPob: '', boyRasi: 'சிம்மம்', boyStar: 'பூரம்',
-    girlName: '', girlDob: '', girlTob: '', girlPob: '', girlRasi: 'தனுசு', girlStar: 'மூலம்'
+  // Main flow state
+  // 0: Options screen
+  // 1: Registration Form
+  // 2: Registration Payment
+  // 3: Registration Success
+  // 4: Matching Form
+  // 5: Matching Success
+  serviceStep: number = 0; 
+
+  // Form model for Option 1: Matrimony Registration
+  regForm = {
+    // Basic Details
+    regNo: '', date: '', name: '', gender: 'ஆண்',
+    religion: '', caste: '', subcaste: '',
+    
+    // Birth Details
+    dob: '', tob: '', pob: '', age: '',
+    
+    // Physical & Edu
+    height: '', complexion: '', bloodGroup: '', education: '',
+    
+    // Professional
+    job: '', workPlace: '', monthlyIncome: '',
+    
+    // Family
+    fatherName: '', motherName: '', fatherJob: '', motherJob: '',
+    nativePlace: '', currentPlace: '', familyDeity: '', gotra: '',
+    
+    // Siblings
+    brothers: '', sisters: '', siblingsMaritalStatus: '',
+    
+    // Expectations & Assets
+    dowryExpectation: '', propertyDetails: '', partnerExpectation: '',
+    
+    // Astrological
+    lagnam: '', rasi: '', star: '', dasaBalance: '',
+    
+    // Contact
+    address: '', contactPersonRelation: '', contactPersonName: '',
+    phone1: '', phone2: '', photoAttached: false
   };
 
-  matchingResult: any = null;
-  serviceStep: number = 1; // 1: Form, 2: Results
+  // Form model for Option 2: Marriage Matching (Thirumana Porutham)
+  matchingForm = {
+    boyName: '', boyDob: '', boyTob: '', boyPob: '', boyRasi: 'சிம்மம்', boyStar: 'பூரம்', boyAge: '',
+    girlName: '', girlDob: '', girlTob: '', girlPob: '', girlRasi: 'தனுசு', girlStar: 'மூலம்', girlAge: ''
+  };
 
-  calculateMatching() {
-    if (!this.matchingForm.boyName || !this.matchingForm.girlName) {
-      alert('இருபாலரின் விவரங்களையும் முழுமையாக பூர்த்தி செய்யவும்!');
-      return;
-    }
-    this.matchingResult = {
-      score: '8 / 10',
-      status: 'நன்றாக பொருந்துகிறது (Good Match)',
-      boy: { name: this.matchingForm.boyName, rasi: this.matchingForm.boyRasi, star: this.matchingForm.boyStar },
-      girl: { name: this.matchingForm.girlName, rasi: this.matchingForm.girlRasi, star: this.matchingForm.girlStar },
-      matchesDetails: [
-        { name: 'தினப் பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'கணப் பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'மகேந்திரப் பொருத்தம்', status: 'பொருந்தவில்லை ❌' },
-        { name: 'ஸ்திரீ தீர்க்கப் பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'யோனிப் பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'இராசிப் பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'இராசியதிபதி பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'வசியப் பொருத்தம்', status: 'பொருந்தவில்லை ❌' },
-        { name: 'இரஜ்ஜுப் பொருத்தம்', status: 'பொருந்துகிறது ✅' },
-        { name: 'வேதைப் பொருத்தம்', status: 'பொருந்துகிறது ✅' }
-      ]
-    };
-    this.serviceStep = 2;
+  // User Orders tracking for payment simulation (dummy)
+  userOrders: any[] = [];
+
+  ngOnInit() {
+    // Set current date in registration form
+    const today = new Date();
+    this.regForm.date = today.toISOString().split('T')[0];
   }
 
-  resetForm() {
-    this.matchingResult = null;
-    this.serviceStep = 1;
+  // Navigation Methods
+  goBack() {
+    if (this.serviceStep === 1 || this.serviceStep === 4) {
+      this.serviceStep = 0; // Back to options
+    } else if (this.serviceStep === 2) {
+      this.serviceStep = 1; // Back to reg form from payment
+    } else {
+      this.serviceStep = 0;
+    }
+  }
+
+  selectOption(option: 'register' | 'match') {
+    if (option === 'register') {
+      this.serviceStep = 1;
+    } else {
+      this.serviceStep = 4;
+    }
+  }
+
+  // Registration Flow
+  goToRegPayment() {
+    if (!this.regForm.name || !this.regForm.dob || !this.regForm.phone1) {
+      alert('முக்கிய விவரங்களை (பெயர், பிறந்த தேதி, அலைபேசி எண்) உள்ளிடவும்.');
+      return;
+    }
+    this.serviceStep = 2; // Payment
+  }
+
+  payForRegistration() {
+    // Simulating Payment
+    setTimeout(() => {
+      this.serviceStep = 3; // Success
+    }, 1000);
+  }
+
+  // Matching Flow
+  sendMatchingToAdmin() {
+    if (!this.matchingForm.boyName || !this.matchingForm.girlName) {
+      alert('இருபாலரின் பெயரையும் உள்ளிடவும்!');
+      return;
+    }
+    
+    // Simulating API call to admin
+    setTimeout(() => {
+      this.serviceStep = 5; // Success Admin Notified
+    }, 800);
+  }
+
+  resetApp() {
+    this.serviceStep = 0;
+    // Reset matching form
     this.matchingForm.boyName = '';
     this.matchingForm.girlName = '';
   }

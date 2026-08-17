@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth.service';
 
+import { BackButtonService } from '../../services/back-button.service';
+
 export interface Chapter {
   title: string;
   progress: number;
@@ -70,7 +72,8 @@ export class LearnPage implements OnInit {
   constructor(
     private router: Router,
     private ngZone: NgZone,
-    private authService: AuthService
+    private authService: AuthService,
+    private backButtonService: BackButtonService
   ) { }
 
   ngOnInit() {
@@ -81,24 +84,35 @@ export class LearnPage implements OnInit {
     } else {
       this.currentScreen = 'intro';
     }
-
-    App.addListener('backButton', () => {
-      this.ngZone.run(() => {
-        // Only run back button handler if we are active on the learn page route
-        if (this.router.url !== '/learn') {
-          return;
-        }
-
-        if (this.activeQuiz) {
-          this.activeQuiz = false;
-        } else if (this.showCertificate) {
-          this.showCertificate = false;
-        } else {
-          this.handleBack();
-        }
-      });
-    });
   }
+
+  ionViewDidEnter() {
+    this.backButtonService.registerHandler(this.customBackHandler);
+  }
+
+  ionViewWillLeave() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  ngOnDestroy() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  customBackHandler = () => {
+    if (this.activeQuiz) {
+      this.activeQuiz = false;
+      return true;
+    }
+    if (this.showCertificate) {
+      this.showCertificate = false;
+      return true;
+    }
+    if (this.currentScreen === 'intro') {
+      return false;
+    }
+    this.handleBack();
+    return true;
+  };
 
   ionViewWillEnter() {
     const enrolled = localStorage.getItem('astro_course_enrolled');
@@ -183,5 +197,17 @@ export class LearnPage implements OnInit {
     localStorage.removeItem('astro_course_enrolled');
     this.currentScreen = 'intro';
     this.router.navigate(['/welcome']);
+  }
+
+  getHeaderTitle(): string {
+    switch (this.currentScreen) {
+      case 'intro': return 'அறிமுகம்';
+      case 'rules': return 'விதிமுறைகள்';
+      case 'enroll': return 'சேர்க்கை படிவம்';
+      case 'payment': return 'கட்டணம்';
+      case 'post-payment-login': return 'உள்நுழைவு';
+      case 'dashboard': return 'ஆருத்ரா';
+      default: return 'ஆருத்ரா';
+    }
   }
 }

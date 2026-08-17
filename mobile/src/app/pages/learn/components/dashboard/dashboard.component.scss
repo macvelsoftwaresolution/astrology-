@@ -14,7 +14,7 @@ $color-orange: #F49320;
   justify-content: space-between;
   padding: calc(env(safe-area-inset-top, 24px) + 0.75rem) 1.25rem 0.75rem 1.25rem;
   background-color: #FFFFFF;
-  border-bottom: 1.5px solid rgba($color-gold-light, 0.3);
+  border-bottom: 1.5px solid rgba($color-gold-bright, 0.3);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1271,7 +1271,7 @@ $color-orange: #F49320;
   align-items: center;
   text-align: center;
   box-shadow: 0 10px 25px rgba($color-maroon, 0.15);
-  border: 1.5px solid rgba($color-gold-light, 0.3);
+  border: 1.5px solid rgba($color-gold-bright, 0.3);
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
@@ -1291,7 +1291,7 @@ $color-orange: #F49320;
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba($color-gold-light, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba($color-gold-bright, 0.4) 0%, transparent 70%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1323,13 +1323,13 @@ $color-orange: #F49320;
     }
 
     .mp-badge-premium {
-      background-color: rgba($color-gold-light, 0.2);
-      color: $color-gold-light;
+      background-color: rgba($color-gold-bright, 0.2);
+      color: $color-gold-bright;
       font-size: 0.7rem;
       font-weight: 700;
       padding: 0.25rem 0.65rem;
       border-radius: 20px;
-      border: 1px solid rgba($color-gold-light, 0.3);
+      border: 1px solid rgba($color-gold-bright, 0.3);
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
@@ -1343,7 +1343,7 @@ $color-orange: #F49320;
 
   .mp-upgrade-btn {
     margin-top: 1.25rem;
-    background: linear-gradient(135deg, $color-gold-light 0%, $color-gold 100%);
+    background: linear-gradient(135deg, $color-gold-bright 0%, $color-gold 100%);
     color: $color-maroon;
     border: none;
     border-radius: 25px;
@@ -1364,7 +1364,7 @@ $color-orange: #F49320;
   background-color: #FFFFFF;
   border-radius: 16px;
   padding: 1.25rem;
-  border: 1px solid rgba($color-gold-light, 0.3);
+  border: 1px solid rgba($color-gold-bright, 0.3);
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   margin-bottom: 1.5rem;
 
@@ -1399,13 +1399,13 @@ $color-orange: #F49320;
 
     .modern-prog-track {
       height: 6px;
-      background-color: rgba($color-gold-light, 0.15);
+      background-color: rgba($color-gold-bright, 0.15);
       border-radius: 3px;
       overflow: hidden;
 
       .modern-prog-thumb {
         height: 100%;
-        background: linear-gradient(90deg, $color-gold-light 0%, $color-gold 100%);
+        background: linear-gradient(90deg, $color-gold-bright 0%, $color-gold 100%);
         border-radius: 3px;
       }
     }
@@ -1433,7 +1433,7 @@ $color-orange: #F49320;
     background-color: #FFFFFF;
     border-radius: 14px;
     padding: 1rem;
-    border: 1px solid rgba($color-gold-light, 0.3);
+    border: 1px solid rgba($color-gold-bright, 0.3);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -1442,7 +1442,7 @@ $color-orange: #F49320;
       width: 38px;
       height: 38px;
       border-radius: 10px;
-      background-color: rgba($color-gold-light, 0.15);
+      background-color: rgba($color-gold-bright, 0.15);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1479,13 +1479,13 @@ $color-orange: #F49320;
     background-color: #FFFFFF;
     border-radius: 14px;
     padding: 1rem 1.25rem;
-    border: 1px solid rgba($color-gold-light, 0.3);
+    border: 1px solid rgba($color-gold-bright, 0.3);
     box-shadow: 0 4px 10px rgba(0,0,0,0.01);
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:active {
-      background-color: rgba($color-gold-light, 0.05);
+      background-color: rgba($color-gold-bright, 0.05);
       transform: scale(0.99);
     }
 

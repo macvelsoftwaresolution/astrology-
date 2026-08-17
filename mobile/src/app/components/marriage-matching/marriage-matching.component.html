@@ -1,83 +1,353 @@
-<!-- Step 1: Input Form -->
-<div class="matching-form-card" *ngIf="serviceStep === 1">
-  <div class="form-banner">ஜாதக பொருத்தம் அறிய இருபாலரின் விவரங்களை உள்ளிடவும்</div>
+<!-- Step 0: Options Screen -->
+<div class="options-container" *ngIf="serviceStep === 0">
+  <div class="form-banner">சிவசக்தி திருமண தகவல் மையம்</div>
+  <p class="subtitle">உங்கள் தேவையை தேர்ந்தெடுக்கவும்</p>
   
-  <!-- Boy Inputs -->
-  <div class="form-section-title">ஆண் விவரங்கள் (Boy Details)</div>
-  <div class="input-row">
-    <label>பெயர் (Name)</label>
-    <input type="text" [(ngModel)]="matchingForm.boyName" placeholder="ஆணின் பெயர்">
+  <div class="options-grid">
+    <div class="option-card" (click)="selectOption('register')">
+      <div class="option-icon"><i class="bi bi-file-earmark-person-fill text-gold"></i></div>
+      <h3>திருமண பதிவு</h3>
+      <p>புதிய வரன் விவரங்களை பதிவு செய்ய</p>
+      <button class="btn-app-gold">பதிவு செய்க ➔</button>
+    </div>
+    
+    <div class="option-card" (click)="selectOption('match')">
+      <div class="option-icon"><i class="bi bi-heart-fill text-danger"></i></div>
+      <h3>திருமண பொருத்தம்</h3>
+      <p>ஆண், பெண் ஜாதக பொருத்தம் அறிய</p>
+      <button class="btn-app-gold">பொருத்தம் பார்க்க ➔</button>
+    </div>
   </div>
+</div>
+
+<!-- ============================================== -->
+<!-- OPTION 1: MATRIMONY REGISTRATION FLOW          -->
+<!-- ============================================== -->
+
+<!-- Step 1: Registration Form -->
+<div class="matching-form-card" *ngIf="serviceStep === 1">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()">◀</button>
+    <h2>பதிவு விண்ணப்பம்</h2>
+  </div>
+  
+  <div class="form-section-title">அடிப்படை விவரங்கள்</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பதிவு எண்</label>
+      <input type="text" [(ngModel)]="regForm.regNo" placeholder="உ.ம்: 1234">
+    </div>
+    <div class="input-row">
+      <label>தேதி</label>
+      <input type="date" [(ngModel)]="regForm.date">
+    </div>
+  </div>
+  
   <div class="input-row">
-    <label>பிறந்த தேதி (DOB)</label>
-    <input type="date" [(ngModel)]="matchingForm.boyDob">
+    <label>பெயர்</label>
+    <input type="text" [(ngModel)]="regForm.name" placeholder="முழு பெயர்">
+  </div>
+  
+  <div class="input-row">
+    <label>இனம்</label>
+    <div class="radio-row">
+      <label><input type="radio" name="rGender" value="ஆண்" [(ngModel)]="regForm.gender"> ஆண்</label>
+      <label><input type="radio" name="rGender" value="பெண்" [(ngModel)]="regForm.gender"> பெண்</label>
+    </div>
+  </div>
+
+  <div class="input-grid">
+    <div class="input-row">
+      <label>மதம்</label>
+      <input type="text" [(ngModel)]="regForm.religion" placeholder="மதம்">
+    </div>
+    <div class="input-row">
+      <label>ஜாதி</label>
+      <input type="text" [(ngModel)]="regForm.caste" placeholder="ஜாதி">
+    </div>
+    <div class="input-row">
+      <label>உட்பிரிவு</label>
+      <input type="text" [(ngModel)]="regForm.subcaste" placeholder="உட்பிரிவு">
+    </div>
+  </div>
+
+  <div class="form-section-title">பிறப்பு விவரங்கள்</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பிறந்த தேதி</label>
+      <input type="date" [(ngModel)]="regForm.dob">
+    </div>
+    <div class="input-row">
+      <label>நேரம்</label>
+      <input type="time" [(ngModel)]="regForm.tob">
+    </div>
   </div>
   <div class="input-grid">
     <div class="input-row">
+      <label>பிறந்த இடம்</label>
+      <input type="text" [(ngModel)]="regForm.pob" placeholder="ஊர்">
+    </div>
+    <div class="input-row">
+      <label>வயது</label>
+      <input type="number" [(ngModel)]="regForm.age" placeholder="வயது">
+    </div>
+  </div>
+
+  <div class="form-section-title">உடல் & கல்வி</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>உயரம்</label>
+      <input type="text" [(ngModel)]="regForm.height" placeholder="உ.ம்: 5'6">
+    </div>
+    <div class="input-row">
+      <label>நிறம்</label>
+      <input type="text" [(ngModel)]="regForm.complexion" placeholder="நிறம்">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>இரத்த பிரிவு</label>
+      <input type="text" [(ngModel)]="regForm.bloodGroup" placeholder="B+">
+    </div>
+    <div class="input-row">
+      <label>கல்வித் தகுதி</label>
+      <input type="text" [(ngModel)]="regForm.education" placeholder="படிப்பு">
+    </div>
+  </div>
+
+  <div class="form-section-title">பணி & வருமானம்</div>
+  <div class="input-row">
+    <label>வேலை / தொழில்</label>
+    <input type="text" [(ngModel)]="regForm.job" placeholder="வேலை விவரம்">
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பணியிடம்</label>
+      <input type="text" [(ngModel)]="regForm.workPlace" placeholder="பணியிடம்">
+    </div>
+    <div class="input-row">
+      <label>மாத வருமானம்</label>
+      <input type="text" [(ngModel)]="regForm.monthlyIncome" placeholder="₹">
+    </div>
+  </div>
+
+  <div class="form-section-title">குடும்ப விவரங்கள்</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>தந்தை பெயர்</label>
+      <input type="text" [(ngModel)]="regForm.fatherName" placeholder="தந்தை பெயர்">
+    </div>
+    <div class="input-row">
+      <label>தாய் பெயர்</label>
+      <input type="text" [(ngModel)]="regForm.motherName" placeholder="தாய் பெயர்">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>தந்தை வேலை</label>
+      <input type="text" [(ngModel)]="regForm.fatherJob" placeholder="தந்தை வேலை">
+    </div>
+    <div class="input-row">
+      <label>தாய் வேலை</label>
+      <input type="text" [(ngModel)]="regForm.motherJob" placeholder="தாய் வேலை">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பூர்வீகம்</label>
+      <input type="text" [(ngModel)]="regForm.nativePlace" placeholder="பூர்வீக ஊர்">
+    </div>
+    <div class="input-row">
+      <label>வசிப்பிடம்</label>
+      <input type="text" [(ngModel)]="regForm.currentPlace" placeholder="தற்போதைய ஊர்">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>குலதெய்வம்</label>
+      <input type="text" [(ngModel)]="regForm.familyDeity" placeholder="குலதெய்வம்">
+    </div>
+    <div class="input-row">
+      <label>கோத்ரம்</label>
+      <input type="text" [(ngModel)]="regForm.gotra" placeholder="கோத்ரம்">
+    </div>
+  </div>
+
+  <div class="form-section-title">உடன்பிறந்தோர்</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>ஆண்</label>
+      <input type="number" [(ngModel)]="regForm.brothers" placeholder="எண்ணிக்கை">
+    </div>
+    <div class="input-row">
+      <label>பெண்</label>
+      <input type="number" [(ngModel)]="regForm.sisters" placeholder="எண்ணிக்கை">
+    </div>
+  </div>
+  <div class="input-row">
+    <label>திருமண நிலை (உடன்பிறந்தோர்)</label>
+    <input type="text" [(ngModel)]="regForm.siblingsMaritalStatus" placeholder="திருமணமானவர்கள் விவரம்">
+  </div>
+
+  <div class="form-section-title">எதிர்பார்ப்பு & சொத்து</div>
+  <div class="input-row">
+    <label>சீர் வரிசை</label>
+    <input type="text" [(ngModel)]="regForm.dowryExpectation" placeholder="சீர் வரிசை விவரம்">
+  </div>
+  <div class="input-row">
+    <label>சொத்து விவரம்</label>
+    <input type="text" [(ngModel)]="regForm.propertyDetails" placeholder="சொத்து விவரம்">
+  </div>
+  <div class="input-row">
+    <label>எதிர்பார்ப்பு</label>
+    <textarea [(ngModel)]="regForm.partnerExpectation" placeholder="வரன் பற்றிய எதிர்பார்ப்பு..." rows="3"></textarea>
+  </div>
+
+  <div class="form-section-title">ஜாதக விவரங்கள்</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>லக்னம்</label>
+      <input type="text" [(ngModel)]="regForm.lagnam" placeholder="லக்னம்">
+    </div>
+    <div class="input-row">
       <label>ராசி</label>
-      <select [(ngModel)]="matchingForm.boyRasi">
+      <select [(ngModel)]="regForm.rasi">
         <option *ngFor="let r of rasis" [value]="r.name">{{ r.name }}</option>
       </select>
     </div>
+  </div>
+  <div class="input-grid">
     <div class="input-row">
       <label>நட்சத்திரம்</label>
-      <input type="text" [(ngModel)]="matchingForm.boyStar" placeholder="நட்சத்திரம்">
+      <input type="text" [(ngModel)]="regForm.star" placeholder="நட்சத்திரம்">
+    </div>
+    <div class="input-row">
+      <label>திசா இருப்பு (வருடம், மாதம், நாள்)</label>
+      <input type="text" [(ngModel)]="regForm.dasaBalance" placeholder="உ.ம்: 2வ 3மா 10நா">
+    </div>
+  </div>
+
+  <div class="form-section-title">தொடர்பு விவரங்கள்</div>
+  <div class="input-row">
+    <label>முகவரி</label>
+    <textarea [(ngModel)]="regForm.address" placeholder="முழு முகவரி" rows="3"></textarea>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பதிவு செய்தவர் உறவு நிலை</label>
+      <input type="text" [(ngModel)]="regForm.contactPersonRelation" placeholder="உறவு">
+    </div>
+    <div class="input-row">
+      <label>பெயர்</label>
+      <input type="text" [(ngModel)]="regForm.contactPersonName" placeholder="பெயர்">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>அலைபேசி எண் 1</label>
+      <input type="tel" [(ngModel)]="regForm.phone1" placeholder="எண் 1">
+    </div>
+    <div class="input-row">
+      <label>அலைபேசி எண் 2</label>
+      <input type="tel" [(ngModel)]="regForm.phone2" placeholder="எண் 2">
+    </div>
+  </div>
+  <div class="input-row">
+    <label class="checkbox-label">
+      <input type="checkbox" [(ngModel)]="regForm.photoAttached"> புகைப்படம் இணைக்கப்பட்டுள்ளதா?
+    </label>
+  </div>
+
+  <button (click)="goToRegPayment()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">கட்டணம் செலுத்த (பதிவு கட்டணம்)</button>
+</div>
+
+<!-- Step 2: Registration Payment -->
+<div class="match-result-container" *ngIf="serviceStep === 2">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()">◀</button>
+    <h2>கட்டண விவரம்</h2>
+  </div>
+  <div class="payment-card" style="margin-top: 1rem;">
+    <div class="pm-row">
+      <span>பதிவு கட்டணம்:</span>
+      <strong>₹500</strong>
+    </div>
+    <div class="pm-row">
+      <span>விண்ணப்பதாரர்:</span>
+      <strong>{{ regForm.name }}</strong>
+    </div>
+    
+    <button class="btn-app-gold btn-pay-now" (click)="payForRegistration()">இப்போதே செலுத்தவும் 🔒</button>
+  </div>
+</div>
+
+<!-- Step 3: Registration Success -->
+<div class="match-result-container" *ngIf="serviceStep === 3">
+  <div class="success-box">
+    <span class="success-icon">🎉</span>
+    <h3>பதிவு வெற்றியடைந்தது!</h3>
+    <p>உங்கள் திருமண பதிவு வெற்றிகரமாக பெறப்பட்டது. எங்கள் மையம் உங்களை விரைவில் தொடர்பு கொள்ளும்.</p>
+    <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- OPTION 2: MATCHMAKING FLOW                     -->
+<!-- ============================================== -->
+
+<!-- Step 4: Matching Form -->
+<div class="matching-form-card" *ngIf="serviceStep === 4">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()">◀</button>
+    <h2>திருமண பொருத்தம்</h2>
+  </div>
+  <div class="form-banner" style="margin-top:1rem;">ஜாதக பொருத்தம் அறிய இருபாலரின் விவரங்களை உள்ளிடவும்</div>
+  
+  <!-- Girl Inputs -->
+  <div class="form-section-title">பெண் விவரங்கள் (Girl Details)</div>
+  <div class="input-row">
+    <label>ஜாதகி பெயர் (Name)</label>
+    <input type="text" [(ngModel)]="matchingForm.girlName" placeholder="பெண்ணின் பெயர்">
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பெண் வயது (Age)</label>
+      <input type="number" [(ngModel)]="matchingForm.girlAge" placeholder="வயது">
+    </div>
+    <div class="input-row">
+      <label>பெண் நட்சத்திரம்</label>
+      <input type="text" [(ngModel)]="matchingForm.girlStar" placeholder="நட்சத்திரம்">
     </div>
   </div>
 
   <div class="form-divider"></div>
 
-  <!-- Girl Inputs -->
-  <div class="form-section-title">பெண் விவரங்கள் (Girl Details)</div>
+  <!-- Boy Inputs -->
+  <div class="form-section-title">ஆண் விவரங்கள் (Boy Details)</div>
   <div class="input-row">
-    <label>பெயர் (Name)</label>
-    <input type="text" [(ngModel)]="matchingForm.girlName" placeholder="பெண்ணின் பெயர்">
-  </div>
-  <div class="input-row">
-    <label>பிறந்த தேதி (DOB)</label>
-    <input type="date" [(ngModel)]="matchingForm.girlDob">
+    <label>ஜாதகர் பெயர் (Name)</label>
+    <input type="text" [(ngModel)]="matchingForm.boyName" placeholder="ஆணின் பெயர்">
   </div>
   <div class="input-grid">
     <div class="input-row">
-      <label>ராசி</label>
-      <select [(ngModel)]="matchingForm.girlRasi">
-        <option *ngFor="let r of rasis" [value]="r.name">{{ r.name }}</option>
-      </select>
+      <label>ஆண் வயது (Age)</label>
+      <input type="number" [(ngModel)]="matchingForm.boyAge" placeholder="வயது">
     </div>
     <div class="input-row">
-      <label>நட்சத்திரம்</label>
-      <input type="text" [(ngModel)]="matchingForm.girlStar" placeholder="நட்சத்திரம்">
+      <label>ஆண் நட்சத்திரம்</label>
+      <input type="text" [(ngModel)]="matchingForm.boyStar" placeholder="நட்சத்திரம்">
     </div>
   </div>
 
-  <button (click)="calculateMatching()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">பொருத்தம் பார்க்க (₹500)</button>
+  <button (click)="sendMatchingToAdmin()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">அட்மினுக்கு அனுப்பவும்</button>
 </div>
 
-<!-- Step 2: Matchmaking results scorecard -->
-<div class="match-result-container" *ngIf="serviceStep === 2 && matchingResult">
-  <div class="match-result-card">
-    <h3>பொருத்த விவரங்கள்</h3>
-    <div class="score-badge">{{ matchingResult.score }}</div>
-    <p class="score-status">{{ matchingResult.status }}</p>
-
-    <div class="match-summary-grid">
-      <div>
-        <strong>ஆண்:</strong>
-        <p>{{ matchingResult.boy.name }} ({{ matchingResult.boy.rasi }} - {{ matchingResult.boy.star }})</p>
-      </div>
-      <div>
-        <strong>பெண்:</strong>
-        <p>{{ matchingResult.girl.name }} ({{ matchingResult.girl.rasi }} - {{ matchingResult.girl.star }})</p>
-      </div>
-    </div>
-
-    <div class="match-list">
-      <div class="match-list-item" *ngFor="let m of matchingResult.matchesDetails">
-        <span>{{ m.name }}</span>
-        <strong>{{ m.status }}</strong>
-      </div>
-    </div>
-
-    <button class="btn-app-gold" (click)="resetForm()" style="margin-top: 1.5rem; width: 100%;">புதிய பொருத்தம் பார்க்க</button>
+<!-- Step 5: Matching Success Admin Notified -->
+<div class="match-result-container" *ngIf="serviceStep === 5">
+  <div class="success-box">
+    <span class="success-icon">✅</span>
+    <h3>விவரங்கள் அனுப்பப்பட்டன</h3>
+    <p>ஆண், பெண் ஜாதக விவரங்கள் அட்மினுக்கு அனுப்பப்பட்டுள்ளன. பொருத்தம் பார்த்து முடிவுகள் விரைவில் தெரிவிக்கப்படும்.</p>
+    <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>
   </div>
 </div>

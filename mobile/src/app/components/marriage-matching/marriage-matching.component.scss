@@ -178,3 +178,149 @@ $color-white: #FFFFFF;
     color: #2e7d32;
   }
 }
+
+/* NEW STYLES */
+.options-container {
+  padding: 1rem;
+  text-align: center;
+  
+  .subtitle {
+    color: $color-text-muted;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.option-card {
+  background-color: $color-white;
+  border: 1px solid rgba($color-gold, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 4px 12px rgba($color-maroon, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  h3 {
+    color: $color-maroon;
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+  
+  p {
+    color: $color-text-muted;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.option-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.text-gold { color: $color-gold; }
+.text-danger { color: #d32f2f; }
+
+.overlay-header-inline {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  
+  .btn-back {
+    background: rgba($color-maroon, 0.1);
+    color: $color-maroon;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-right: 0.75rem;
+  }
+  
+  h2 {
+    color: $color-maroon;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0;
+  }
+}
+
+.radio-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: normal;
+  }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: normal;
+}
+
+.payment-card {
+  background-color: $color-white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid rgba($color-gold, 0.2);
+  
+  .pm-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    
+    strong {
+      color: $color-maroon;
+    }
+  }
+}
+
+.btn-pay-now {
+  margin-top: 1.5rem;
+}
+
+.success-box {
+  background-color: $color-white;
+  border-radius: 12px;
+  padding: 2rem 1.25rem;
+  border: 1px solid rgba(#2e7d32, 0.2);
+  text-align: center;
+  
+  .success-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  h3 {
+    color: #2e7d32;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: $color-text-muted;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+}

@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true" class="edu-content">
   <!-- Mobile App Sticky Top Header -->
-  <div class="overlay-header">
+  <div class="overlay-header" *ngIf="currentScreen !== 'dashboard'">
     <button class="btn-back" (click)="handleBack()" aria-label="Go Back">
       <i class="bi bi-arrow-left"></i>
     </button>

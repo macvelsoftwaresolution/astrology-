@@ -3,7 +3,6 @@
   <!-- 1. Home Header -->
   <div class="app-header-bar" *ngIf="currentTab === 'home'">
     <div class="profile-header">
-      <img class="avatar-small-img" src="assets/images/user_avatar.png" alt="Avatar">
       <div class="header-titles">
         <span class="welcome-txt">வணக்கம்,</span>
         <h2 class="app-brand-name">ஆருத்ரா ஜோதிடம்</h2>
@@ -14,7 +13,6 @@
 
   <!-- 2. Services Header -->
   <div class="app-header-bar" *ngIf="currentTab === 'services'">
-    <h2>ஜோதிட சேவைகள்</h2>
   </div>
 
   <!-- 3. Matching Header -->
@@ -107,7 +105,6 @@
             <h3>ஜாதகம் எழுதுதல்</h3>
             <span class="src-price">₹2,000</span>
           </div>
-          <p class="src-desc">முழுமையான ஜாதகக் கணிப்பு, திசா புத்தி பலன்கள் மற்றும் பரிகார ஆலோசனைகள்</p>
           <div class="src-footer">
             <span class="src-badge-tag"><i class="bi bi-patch-check-fill me-1"></i> துல்லிய கணிப்பு</span>
             <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
@@ -126,7 +123,6 @@
             <h3>வாஸ்து ஆலோசனைகள்</h3>
             <span class="src-price">₹2,500+</span>
           </div>
-          <p class="src-desc">வீடு, அலுவலகம் மற்றும் மனை வாஸ்து வரைபட ஆய்வுகள்</p>
           <div class="src-footer">
             <span class="src-badge-tag"><i class="bi bi-house-heart-fill me-1"></i> நேரடி ஆய்வு</span>
             <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
@@ -145,7 +141,6 @@
             <h3>குரு ராமஜெயம் (எண்கணிதம்)</h3>
             <span class="src-price">₹750</span>
           </div>
-          <p class="src-desc">அதிர்ஷ்ட பெயர்கள், தொழில் எண்கணிதம் மற்றும் பிறந்த குழந்தை பெயர் தேர்வு</p>
           <div class="src-footer">
             <span class="src-badge-tag"><i class="bi bi-123 me-1"></i> எண்கணித நிபுணர்</span>
             <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
@@ -164,7 +159,6 @@
             <h3>குரு ஸ்ரீநிவாசன்</h3>
             <span class="src-price">₹1,000+</span>
           </div>
-          <p class="src-desc">நேரடி தொலைபேசி ஜாதக பலன் மற்றும் சுப முகூர்த்த நேரத் தேர்வுகள்</p>
           <div class="src-footer">
             <span class="src-badge-tag"><i class="bi bi-telephone-fill me-1"></i> நேரடி அழைப்பு</span>
             <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
@@ -256,7 +250,7 @@
 
     <!-- Step 2: Input Form -->
     <div class="step-content" *ngIf="serviceStep === 2">
-      <div class="form-banner">உங்கள் பிறப்பு விவரங்களை சரியாக பூர்த்தி செய்யவும்</div>
+      <div class="form-banner">உங்கள் விவரங்கள் மற்றும் ஆலோசனை தேதியை பூர்த்தி செய்யவும்</div>
       
       <div class="form-body">
         <div class="input-row">
@@ -281,6 +275,10 @@
             <label><input type="radio" name="gender" value="ஆண்" [(ngModel)]="horoscopeForm.gender" checked> ஆண்</label>
             <label><input type="radio" name="gender" value="பெண்" [(ngModel)]="horoscopeForm.gender"> பெண்</label>
           </div>
+        </div>
+        <div class="input-row">
+          <label>ஆலோசனை பெற விரும்பும் தேதி (Preferred Booking Date)</label>
+          <input type="date" [(ngModel)]="horoscopeForm.date">
         </div>
         <button class="btn-app-gold" style="margin-top: 1.5rem;" (click)="nextStep()">கட்டணம் செலுத்த</button>
       </div>
@@ -315,7 +313,7 @@
           </label>
         </div>
 
-        <button class="btn-app-gold btn-pay-now" (click)="payAndFulfill('ஜாதகம் எழுதுதல்', 2000, 'Name: ' + horoscopeForm.name + ', DOB: ' + horoscopeForm.dob)">இப்போதே செலுத்தவும் 🔒</button>
+        <button class="btn-app-gold btn-pay-now" (click)="payAndFulfill('ஜாதகம் எழுதுதல்', 2000, 'Name: ' + horoscopeForm.name + ', DOB: ' + horoscopeForm.dob + ', Booking Date: ' + horoscopeForm.date)">இப்போதே செலுத்தவும் 🔒</button>
       </div>
     </div>
 
@@ -544,6 +542,10 @@
           <label>பிறந்த தேதி</label>
           <input type="date" [(ngModel)]="ramajayamForm.dob">
         </div>
+        <div class="input-row">
+          <label>ஆலோசனை பெற விரும்பும் தேதி</label>
+          <input type="date" [(ngModel)]="ramajayamForm.date">
+        </div>
         <button class="btn-app-gold" (click)="nextStep()">கட்டணத்திற்கு செல்லவும்</button>
       </div>
     </div>
@@ -560,7 +562,7 @@
           <span>தொகை:</span>
           <strong>₹{{ selectedRamajayamService.price }}</strong>
         </div>
-        <button class="btn-app-gold btn-pay-now" (click)="payAndFulfill(selectedRamajayamService.title, selectedRamajayamService.price, 'Numerology for ' + ramajayamForm.name)">இப்போதே செலுத்தவும் 🔒</button>
+        <button class="btn-app-gold btn-pay-now" (click)="payAndFulfill(selectedRamajayamService.title, selectedRamajayamService.price, 'Numerology for ' + ramajayamForm.name + ' on ' + ramajayamForm.date)">இப்போதே செலுத்தவும் 🔒</button>
       </div>
     </div>
 

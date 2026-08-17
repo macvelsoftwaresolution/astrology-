@@ -3,7 +3,7 @@
   <div class="overlay-header rasi-header">
     <div class="header-left">
       <div class="header-back-btn" (click)="selectedRasi ? closeDetail() : closeFlow.emit()">
-        <i class="bi bi-chevron-left text-white fs-5" style="margin-left: 6px; line-height: 24px;"></i>
+        <i class="bi bi-chevron-left text-maroon fs-4"></i>
       </div>
       <h2 class="app-brand-name">ஆருத்ரா</h2>
     </div>
@@ -52,7 +52,8 @@
       <div class="zodiac-grid">
         <div class="zodiac-item" *ngFor="let r of rasis" (click)="selectRasi(r)">
           <div class="zodiac-icon-box">
-            <span class="zodiac-glyph">{{ r.image }}&#xFE0E;</span>
+            <img [src]="r.imagePath" class="zodiac-img" *ngIf="r.imagePath" alt="{{ r.name }}">
+            <span class="zodiac-glyph" *ngIf="!r.imagePath">{{ r.image }}&#xFE0E;</span>
           </div>
           <span class="zodiac-name">{{ r.name }}</span>
         </div>
@@ -67,7 +68,6 @@
         <p class="prediction-text">
           இன்று மேஷ ராசிக்காரர்களுக்கு யோகமான நாள். தொழில் மற்றும் வியாபாரத்தில் புதிய வாய்ப்புகள் தேடி வரும். குடும்பத்தில் மகிழ்ச்சி நிலவும்...
         </p>
-        <button class="btn-read-more" (click)="closeFlow.emit()">முழுமையாக படிக்க</button>
       </div>
       <!-- Empty space to fix scrolling issue -->
       <div style="height: 90px;"></div>
@@ -78,8 +78,9 @@
       <div class="detail-hero-card">
         <div class="hero-image-placeholder">
           <!-- Placeholder for the rich image -->
-          <img src="assets/images/temple_sunrise.jpg" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-          <div class="hero-overlay-content">
+          <img src="assets/images/temple_sunrise.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+          <div class="hero-overlay-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+            <img [src]="selectedRasi.imagePath" style="width: 90px; height: 90px; margin-bottom: 0.5rem; object-fit: contain; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5));" *ngIf="selectedRasi.imagePath">
             <span class="zodiac-date-range">மார்ச் 21 - ஏப்ரல் 19</span>
             <h2 class="zodiac-main-title">{{ selectedRasi.name }} ({{ selectedRasi.english }})</h2>
           </div>

@@ -47,14 +47,11 @@ $color-white: #FFFFFF;
     gap: 0.75rem;
 
     .header-back-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background-color: $color-maroon;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      padding: 0.2rem 0.4rem;
     }
 
     .app-brand-name {
@@ -205,6 +202,12 @@ $color-white: #FFFFFF;
     justify-content: center;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 5px rgba($color-gold, 0.05);
+
+    .zodiac-img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
 
     .zodiac-glyph {
       font-size: 2rem;

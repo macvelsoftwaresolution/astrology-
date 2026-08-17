@@ -13,6 +13,8 @@ interface Order {
   details: string;
 }
 
+import { BackButtonService } from '../services/back-button.service';
+
 declare var Razorpay: any;
 
 @Component({
@@ -54,7 +56,8 @@ export class HomePage implements OnInit {
     dob: '',
     tob: '',
     pob: '',
-    gender: 'ஆண்'
+    gender: 'ஆண்',
+    date: ''
   };
 
   vastuForm = {
@@ -69,7 +72,8 @@ export class HomePage implements OnInit {
     name: '',
     phone: '',
     dob: '',
-    queryType: 'பெயர் மாற்று ஆலோசனை'
+    queryType: 'பெயர் மாற்று ஆலோசனை',
+    date: ''
   };
 
   srinivasanForm = {
@@ -83,18 +87,18 @@ export class HomePage implements OnInit {
 
   // 12 Zodiac list
   rasis = [
-    { name: 'மேஷம்', english: 'Aries', image: '♈' },
-    { name: 'ரிஷபம்', english: 'Taurus', image: '♉' },
-    { name: 'மிதுனம்', english: 'Gemini', image: '♊' },
-    { name: 'கடகம்', english: 'Cancer', image: '♋' },
-    { name: 'சிம்மம்', english: 'Leo', image: '♌' },
-    { name: 'கன்னி', english: 'Virgo', image: '♍' },
-    { name: 'துலாம்', english: 'Libra', image: '♎' },
-    { name: 'விருச்சிகம்', english: 'Scorpio', image: '♏' },
-    { name: 'தனுசு', english: 'Sagittarius', image: '♐' },
-    { name: 'மகரம்', english: 'Capricorn', image: '♑' },
-    { name: 'கும்பம்', english: 'Aquarius', image: '♒' },
-    { name: 'மீனம்', english: 'Pisces', image: '♓' }
+    { name: 'மேஷம்', english: 'Aries', image: '♈', imagePath: 'assets/images/zodiac/aries.png' },
+    { name: 'ரிஷபம்', english: 'Taurus', image: '♉', imagePath: 'assets/images/zodiac/taurus.png' },
+    { name: 'மிதுனம்', english: 'Gemini', image: '♊', imagePath: 'assets/images/zodiac/gemini.png' },
+    { name: 'கடகம்', english: 'Cancer', image: '♋', imagePath: 'assets/images/zodiac/cancer.png' },
+    { name: 'சிம்மம்', english: 'Leo', image: '♌', imagePath: 'assets/images/zodiac/leo.png' },
+    { name: 'கன்னி', english: 'Virgo', image: '♍', imagePath: 'assets/images/zodiac/virgo.png' },
+    { name: 'துலாம்', english: 'Libra', image: '♎', imagePath: 'assets/images/zodiac/libra.png' },
+    { name: 'விருச்சிகம்', english: 'Scorpio', image: '♏', imagePath: 'assets/images/zodiac/scorpio.png' },
+    { name: 'தனுசு', english: 'Sagittarius', image: '♐', imagePath: 'assets/images/zodiac/sagittarius.png' },
+    { name: 'மகரம்', english: 'Capricorn', image: '♑', imagePath: 'assets/images/zodiac/capricorn.png' },
+    { name: 'கும்பம்', english: 'Aquarius', image: '♒', imagePath: 'assets/images/zodiac/aquarius.png' },
+    { name: 'மீனம்', english: 'Pisces', image: '♓', imagePath: 'assets/images/zodiac/pisces.png' }
   ];
 
   // Today's Panchangam values
@@ -108,7 +112,7 @@ export class HomePage implements OnInit {
   // Vastu Services lists
   vastuServices = [
     { title: 'வீட்டு வாஸ்து', sub: 'உங்களின் இல்லத்திற்கு அமைதியான மற்றும் மகிழ்ச்சியூட்டும் ஆலோசனை.', price: 2500 },
-    { title: 'அலுவலக வாஸ்து', sub: 'தொழில் முன்னேற்றம் மற்றும் லாபம் தரும் ஆலோசனைகள்.', price: 5000 },
+    { title: 'அலுவலக வாஸ்து', sub: 'தொழில் முன்னேற்றம் மற்றும் லாபம் தரும் ஆলোசனைகள்.', price: 5000 },
     { title: 'வரைபட ஆய்வு', sub: 'புதிய கட்டிட வரைபடங்களை வாஸ்து முறைப்படி ஆய்வு செய்தல்.', price: 3500 }
   ];
 
@@ -129,26 +133,29 @@ export class HomePage implements OnInit {
   constructor(
     private ngZone: NgZone,
     private router: Router,
-    private authService: AuthService
-  ) {
-    App.addListener('backButton', () => {
-      this.ngZone.run(() => {
-        // Only run back button handler if we are active on the home page route
-        if (this.router.url !== '/home') {
-          return;
-        }
-        this.handleHardwareBack();
-      });
-    });
+    private authService: AuthService,
+    private backButtonService: BackButtonService
+  ) {}
+
+  ionViewDidEnter() {
+    this.backButtonService.registerHandler(this.customBackHandler);
   }
 
-  handleHardwareBack() {
+  ionViewWillLeave() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  ngOnDestroy() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  customBackHandler = () => {
     if (this.activeServiceFlow === 'rasi-palan') {
       if (this.rasiComponent && this.rasiComponent.handleBack()) {
-        return;
+        return true;
       }
       this.closeServiceFlow();
-      return;
+      return true;
     }
 
     if (this.activeServiceFlow) {
@@ -157,16 +164,16 @@ export class HomePage implements OnInit {
       } else {
         this.closeServiceFlow();
       }
-      return;
+      return true;
     }
 
     if (this.currentTab !== 'home') {
       this.selectTab('home');
-      return;
+      return true;
     }
 
-    App.exitApp();
-  }
+    return false;
+  };
 
   handleOverlayBack() {
     if (this.activeServiceFlow === 'rasi-palan') {
@@ -177,7 +184,7 @@ export class HomePage implements OnInit {
       return;
     }
 
-    if (this.serviceStep > 1) {
+    if (this.serviceStep > 1 && this.serviceStep !== 4) {
       this.prevStep();
     } else {
       this.closeServiceFlow();
