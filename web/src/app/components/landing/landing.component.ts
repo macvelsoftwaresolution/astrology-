@@ -1,6 +1,7 @@
-import { Component, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 declare var AOS: any;
 
@@ -11,10 +12,40 @@ declare var AOS: any;
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css'
 })
-export class LandingComponent implements AfterViewInit {
+export class LandingComponent implements OnInit, AfterViewInit {
   isMobileMenuOpen = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    this.loadLiveRasiPalan();
+  }
+
+  loadLiveRasiPalan() {
+    if (typeof window === 'undefined') return;
+    const today = new Date().toISOString().split('T')[0];
+    this.http.get<any>(`http://127.0.0.1:8000/api/rasi-palan?date=${today}&type=daily`).subscribe({
+      next: (res) => {
+        if (res && Array.isArray(res.predictions) && res.predictions.length > 0) {
+          this.zodiacSigns = this.zodiacSigns.map(z => {
+            const found = res.predictions.find((p: any) => p.rasi_name === z.name);
+            return {
+              ...z,
+              prediction: found && found.prediction_text ? found.prediction_text : z.prediction
+            };
+          });
+          const cur = this.zodiacSigns.find(z => z.name === this.selectedZodiac.name);
+          if (cur) this.selectedZodiac = cur;
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {}
+    });
+  }
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -39,18 +70,18 @@ export class LandingComponent implements AfterViewInit {
 
   // 12 Zodiac signs with Tamil names and predictions
   zodiacSigns = [
-    { name: 'மேஷம்', englishName: 'Aries', symbol: '♈', dates: 'மார்ச் 21 - ஏப்ரல் 19', prediction: 'இன்றைய நாள் உங்களுக்கு தொட்டதெல்லாம் துலங்கும் நாளாக அமையும். தொழிலில் புதிய வாய்ப்புகள் தேடி வரும்.' },
-    { name: 'ரிஷபம்', englishName: 'Taurus', symbol: '♉', dates: 'ஏப்ரல் 20 - மே 20', prediction: 'பண வரவு திருப்திகரமாக இருக்கும். குடும்பத்தில் அமைதியும் மகிழ்ச்சியும் நிலவும்.' },
-    { name: 'மிதுனம்', englishName: 'Gemini', symbol: '♊', dates: 'மே 21 - ஜூன் 20', prediction: 'புதிய மனிதர்களின் அறிமுகத்தால் நன்மை உண்டாகும். பயணங்கள் சாதகமான பலனைத் தரும்.' },
-    { name: 'கடகம்', englishName: 'Cancer', symbol: '♋', dates: 'ஜூன் 21 - ஜூலை 22', prediction: 'தொழிலில் சிறு தடங்கல்கள் வந்தாலும் திறம்பட சமாளிப்பீர்கள். ஆரோக்கியத்தில் கவனம் தேவை.' },
-    { name: 'சிம்மம்', englishName: 'Leo', symbol: '♌', dates: 'ஜூலை 23 - ஆகஸ்ட் 22', prediction: 'உங்கள் கம்பீரமும் திறமையும் மேலதிகாரிகளால் பாராட்டைப் பெறும். சுப செய்தி வந்து சேரும்.' },
-    { name: 'கன்னி', englishName: 'Virgo', symbol: '♍', dates: 'ஆகஸ்ட் 23 - செப்டம்பர் 22', prediction: 'திட்டமிட்ட காரியங்கள் தடையின்றி முடியும். கடன் பிரச்சனைகள் குறையத் தொடங்கும்.' },
-    { name: 'துலாம்', englishName: 'Libra', symbol: '♎', dates: 'செப்டம்பர் 23 - அக்டோபர் 22', prediction: 'கணவன் மனைவி இடையே அன்பு கூடும். உத்தியோகத்தில் புதிய பொறுப்புகள் வந்து சேரும்.' },
-    { name: 'விருச்சிகம்', englishName: 'Scorpio', symbol: '♏', dates: 'அக்டோபர் 23 - நவம்பர் 21', prediction: 'எதிர்பாராத தனலாபம் உண்டாகும். நண்பர்களின் மூலம் தேவையான உதவிகள் கிடைக்கும்.' },
-    { name: 'தனுசு', englishName: 'Sagittarius', symbol: '♐', dates: 'நவம்பர் 22 - டிசம்பர் 21', prediction: 'ஆன்மீக காரியங்களில் ஈடுபாடு அதிகரிக்கும். வெளிநாட்டு முயற்சிகள் கைகூடும்.' },
-    { name: 'மகரம்', englishName: 'Capricorn', symbol: '♑', dates: 'டிசம்பர் 22 - ஜனவரி 19', prediction: 'கடின உழைப்பிற்கு ஏற்ற பலன் கிடைக்கும். நிலம், சொத்து தொடர்பான விஷயங்களில் ஆதாயம் உண்டு.' },
-    { name: 'கும்பம்', englishName: 'Aquarius', symbol: '♒', dates: 'ஜனவரி 20 - பிப்ரவரி 18', prediction: 'மனதில் இருந்த குழப்பங்கள் நீங்கி தெளிவு பிறக்கும். கலைத் துறையினருக்கு புதிய வாய்ப்புகள் தேடி வரும்.' },
-    { name: 'மீனம்', englishName: 'Pisces', symbol: '♓', dates: 'பிப்ரவரி 19 - மார்ச் 20', prediction: 'சுப காரிய முயற்சிகள் வெற்றிகரமாக முடியும். பிள்ளைகளால் பெருமை சேரும்.' }
+    { name: 'மேஷம்', englishName: 'Aries', symbol: '♈', dates: 'மார்ச் 21 - ஏப்ரல் 19', prediction: 'இன்று உங்களுக்கு சுப பலன்கள் அதிகரிக்கும். தொட்ட காரியங்கள் அனைத்தும் வெற்றியடையும்.' },
+    { name: 'ரிஷபம்', englishName: 'Taurus', symbol: '♉', dates: 'ஏப்ரல் 20 - மே 20', prediction: 'இன்று தனலாபம் உண்டு. குடும்பத்தில் மகிழ்ச்சியும் அமைதியும் நிலவும்.' },
+    { name: 'மிதுனம்', englishName: 'Gemini', symbol: '♊', dates: 'மே 21 - ஜூன் 20', prediction: 'தொழிலில் புதிய வாய்ப்புகள் தேடி வரும். நண்பர்களின் ஆதரவு கிடைக்கும்.' },
+    { name: 'கடகம்', englishName: 'Cancer', symbol: '♋', dates: 'ஜூன் 21 - ஜூலை 22', prediction: 'மனதில் தெளிவும் உற்சாகமும் பிறக்கும். புதிய முயற்சிகள் கைகூடும்.' },
+    { name: 'சிம்மம்', englishName: 'Leo', symbol: '♌', dates: 'ஜூலை 23 - ஆகஸ்ட் 22', prediction: 'தொழிலில் நல்ல முன்னேற்றம் காணப்படும். சுப நிகழ்ச்சிகள் திட்டமிடுவீர்கள்.' },
+    { name: 'கன்னி', englishName: 'Virgo', symbol: '♍', dates: 'ஆகஸ்ட் 23 - செப்டம்பர் 22', prediction: 'அலுவலகத்தில் உங்களின் உழைப்பிற்கு நல்ல அங்கீகாரம் கிடைக்கும்.' },
+    { name: 'துலாம்', englishName: 'Libra', symbol: '♎', dates: 'செப்டம்பர் 23 - அக்டோபர் 22', prediction: 'பயணங்களால் நன்மைகள் விளையும். பணப்புழக்கம் தாராளமாக இருக்கும்.' },
+    { name: 'விருச்சிகம்', englishName: 'Scorpio', symbol: '♏', dates: 'அக்டோபர் 23 - நவம்பர் 21', prediction: 'ஆரோக்கியத்தில் கவனம் தேவை. காரியங்களில் சிந்தித்து செயல்படவும்.' },
+    { name: 'தனுசு', englishName: 'Sagittarius', symbol: '♐', dates: 'நவம்பர் 22 - டிசம்பர் 21', prediction: 'தொழில் விரிவாக்க சிந்தனை மேலோங்கும். நல்ல லாபம் கிட்டும்.' },
+    { name: 'மகரம்', englishName: 'Capricorn', symbol: '♑', dates: 'டிசம்பர் 22 - ஜனவரி 19', prediction: 'உறவினர்களின் ஆதரவு கிடைக்கும். தடைபட்ட காரியங்கள் நிவர்த்தியாகும்.' },
+    { name: 'கும்பம்', englishName: 'Aquarius', symbol: '♒', dates: 'ஜனவரி 20 - பிப்ரவரி 18', prediction: 'சுப செய்தி வந்து சேரும். எதிர்பார்த்த தனவரவு உண்டாகும்.' },
+    { name: 'மீனம்', englishName: 'Pisces', symbol: '♓', dates: 'பிப்ரவரி 19 - மார்ச் 20', prediction: 'ஆன்மீக சிந்தனை மேலோங்கும். புதிய மனிதர்களின் நட்பு கிடைக்கும்.' }
   ];
 
   selectedZodiac = this.zodiacSigns[0];

@@ -51,7 +51,7 @@ class AstrologyController extends Controller
     }
 
     /**
-     * Create a new booking
+     * Create a new booking (with date availability check)
      */
     public function createBooking(Request $request)
     {
@@ -63,12 +63,43 @@ class AstrologyController extends Controller
             'details' => 'required|array'
         ]);
 
+        // Check if requested date is marked as busy/blocked by Astrologer
+        $requestedDate = $request->input('booking_date') 
+            ?? ($request->details['preferred_date'] ?? ($request->details['booking_date'] ?? null));
+
+        if ($requestedDate) {
+            $isBlocked = DB::table('astrologer_availabilities')
+                ->where('date', $requestedDate)
+                ->where('status', 'busy')
+                ->first();
+
+            if ($isBlocked) {
+                $reason = $isBlocked->reason ? " ({$isBlocked->reason})" : '';
+                return response()->json([
+                    'success' => false,
+                    'message' => "மன்னிக்கவும்! தேர்ந்தெடுக்கப்பட்ட தேதியில் ({$requestedDate}) ஜோதிடர் வேறு ஆன்மீக நிகழ்வுகளில் இருப்பதால் முன்பதிவு முடக்கப்பட்டுள்ளது{$reason}. தயவுசெய்து மாற்று தேதியை தேர்வு செய்யவும்."
+                ], 422);
+            }
+        }
+
         $orderId = 'AST-2026-' . rand(100, 999);
+
+        // Check for authenticated user token
+        $userId = null;
+        try {
+            if ($request->bearerToken()) {
+                $token = DB::table('personal_access_tokens')
+                    ->where('token', hash('sha256', $request->bearerToken()))
+                    ->first();
+                $userId = $token?->tokenable_id;
+            }
+        } catch (\Exception $e) {}
 
         DB::table('bookings')->insert([
             'id' => $orderId,
             'user_name' => $request->user_name,
             'user_phone' => $request->user_phone,
+            'user_id' => $userId,
             'service_type' => $request->service_type,
             'price' => $request->price,
             'status' => 'Pending',
@@ -83,6 +114,25 @@ class AstrologyController extends Controller
             'order_id' => $orderId,
             'price' => $request->price
         ], 201);
+    }
+
+    /**
+     * Get Public Calendar Availability (Blocked / Busy dates)
+     */
+    public function getAvailability()
+    {
+        $today = date('Y-m-d');
+        $blocked = DB::table('astrologer_availabilities')
+            ->where('date', '>=', $today)
+            ->where('status', 'busy')
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'blocked_dates' => $blocked->pluck('date')->toArray(),
+            'details' => $blocked
+        ]);
     }
 
     /**
@@ -180,11 +230,76 @@ class AstrologyController extends Controller
     }
 
     /**
-     * Fulfill pending booking (Upload chart/complete appointment)
+     * Admin: Get all Astrologer Availability & Blocked Dates
+     */
+    public function getAdminAvailability()
+    {
+        $records = DB::table('astrologer_availabilities')
+            ->orderBy('date', 'asc')
+            ->get()
+            ->map(function ($item) {
+                $item->date = date('Y-m-d', strtotime($item->date));
+                return $item;
+            });
+
+        return response()->json([
+            'success' => true,
+            'records' => $records
+        ]);
+    }
+
+    /**
+     * Admin: Toggle a date as Busy / Blocked or Available / Free
+     */
+    public function toggleDateAvailability(Request $request)
+    {
+        $request->validate([
+            'date' => 'required',
+            'status' => 'required|string', // 'busy' or 'available'
+            'reason' => 'nullable|string'  // e.g. கோவில் பூஜை, விடுப்பு
+        ]);
+
+        $date = date('Y-m-d', strtotime($request->date));
+        $status = strtolower($request->status);
+
+        if ($status === 'busy' || $status === 'blocked') {
+            DB::table('astrologer_availabilities')->updateOrInsert(
+                ['date' => $date],
+                [
+                    'status' => 'busy',
+                    'reason' => $request->reason ?: 'ஜோதிடர் முன்பதிவு நிறுத்தம் (Busy / Blocked)',
+                    'updated_at' => now()
+                ]
+            );
+            return response()->json([
+                'success' => true,
+                'message' => "தேதி ({$date}) வெற்றிகரமாக முன்பதிவு முடக்கப்பட்டது (Marked as Busy)."
+            ]);
+        } else {
+            DB::table('astrologer_availabilities')->where('date', $date)->delete();
+            return response()->json([
+                'success' => true,
+                'message' => "தேதி ({$date}) முன்பதிவுக்கு திறக்கப்பட்டது (Marked as Free / Available)."
+            ]);
+        }
+    }
+
+    /**
+     * Admin: Delete/Unblock availability
+     */
+    public function deleteAvailability($id)
+    {
+        DB::table('astrologer_availabilities')->where('id', $id)->delete();
+        return response()->json(['success' => true, 'message' => 'Date unblocked successfully']);
+    }
+
+    /**
+     * Fulfill/Update booking (Upload chart, update consultation status)
      */
     public function fulfillBooking(Request $request, $id)
     {
         $request->validate([
+            'status' => 'nullable|string',
             'chart_url' => 'nullable|string'
         ]);
 
@@ -194,17 +309,31 @@ class AstrologyController extends Controller
             return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
         }
 
+        $status = $request->status ?: 'Completed';
+
         DB::table('bookings')
             ->where('id', $id)
             ->update([
-                'status' => 'Completed',
-                'chart_url' => $request->chart_url ?? 'horoscope_chart_' . time() . '.pdf',
+                'status' => $status,
+                'chart_url' => $request->chart_url ?? $booking->chart_url,
                 'updated_at' => now()
             ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Booking fulfilled successfully'
+            'message' => 'Booking status updated successfully'
+        ]);
+    }
+
+    /**
+     * Admin: Delete a booking
+     */
+    public function deleteBooking($id)
+    {
+        DB::table('bookings')->where('id', $id)->delete();
+        return response()->json([
+            'success' => true,
+            'message' => "முன்பதிவு (#{$id}) வெற்றிகரமாக நீக்கப்பட்டது (Booking Deleted successfully)."
         ]);
     }
 
