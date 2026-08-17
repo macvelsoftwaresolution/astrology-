@@ -42,24 +42,26 @@ import { RouterModule } from '@angular/router';
             </div>
 
             <div class="editorial-astrologers-grid">
-              <div class="astro-editorial-card" *ngFor="let astro of astrologers">
-                <div class="astro-card-left">
-                  <div class="astro-portrait-placeholder">
-                    <i [class]="astro.iconClass"></i>
-                    <span class="astro-exp-label">{{ astro.experience }}</span>
+              @for (astro of astrologers; track astro.name) {
+                <div class="astro-editorial-card">
+                  <div class="astro-card-left">
+                    <div class="astro-portrait-placeholder">
+                      <i [class]="astro.iconClass"></i>
+                      <span class="astro-exp-label">{{ astro.experience }}</span>
+                    </div>
+                  </div>
+                  <div class="astro-card-right">
+                    <h3>{{ astro.name }}</h3>
+                    <span class="astro-editorial-role">{{ astro.role }}</span>
+                    <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
+                    <div class="astro-editorial-tags">
+                      <strong>நிபுணத்துவம்:</strong>
+                      <span>{{ astro.specialty }}</span>
+                    </div>
+                    <a routerLink="/" class="btn-astro-consult">உரையாடலைத் துவங்கு <i class="bi bi-arrow-right-short ms-2"></i></a>
                   </div>
                 </div>
-                <div class="astro-card-right">
-                  <h3>{{ astro.name }}</h3>
-                  <span class="astro-editorial-role">{{ astro.role }}</span>
-                  <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
-                  <div class="astro-editorial-tags">
-                    <strong>நிபுணத்துவம்:</strong>
-                    <span>{{ astro.specialty }}</span>
-                  </div>
-                  <a routerLink="/" class="btn-astro-consult">உரையாடலைத் துவங்கு <i class="bi bi-arrow-right-short ms-2"></i></a>
-                </div>
-              </div>
+              }
             </div>
           </div>
         </section>

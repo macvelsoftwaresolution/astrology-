@@ -41,18 +41,20 @@ import { RouterModule } from '@angular/router';
             </div>
 
             <div class="services-cards-grid">
-              <div class="service-light-card" *ngFor="let service of services">
-                <div class="service-icon-badge">
-                  <i [class]="service.iconClass"></i>
+              @for (service of services; track service.title) {
+                <div class="service-light-card">
+                  <div class="service-icon-badge">
+                    <i [class]="service.iconClass"></i>
+                  </div>
+                  <h3>{{ service.title }}</h3>
+                  <span class="service-subtitle">{{ service.englishTitle }}</span>
+                  <p>{{ service.description }}</p>
+                  <div class="service-card-footer">
+                    <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
+                    <a routerLink="/" class="btn-service-action"><i class="bi bi-arrow-right-circle-fill"></i></a>
+                  </div>
                 </div>
-                <h3>{{ service.title }}</h3>
-                <span class="service-subtitle">{{ service.englishTitle }}</span>
-                <p>{{ service.description }}</p>
-                <div class="service-card-footer">
-                  <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
-                  <a routerLink="/" class="btn-service-action"><i class="bi bi-arrow-right-circle-fill"></i></a>
-                </div>
-              </div>
+              }
             </div>
           </div>
         </section>

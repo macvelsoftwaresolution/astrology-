@@ -1,372 +1,412 @@
 <!-- ADMIN LOGIN GATE -->
-<div class="login-container" *ngIf="!isLoggedIn">
-  <div class="login-card">
-    <div class="login-header">
-      <span class="login-icon">⚜️</span>
-      <h2>ஆருத்ரா ஜோதிடம்</h2>
-      <p>Super Admin Portal Login</p>
-    </div>
-    <form (submit)="login(); $event.preventDefault();">
-      <div class="form-group">
-        <label for="username">பயனர் பெயர் (Username)</label>
-        <input type="text" id="username" name="username" [(ngModel)]="username" required placeholder="Enter username">
+@if (!isLoggedIn) {
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <span class="login-icon">⚜️</span>
+        <h2>ஆருத்ரா ஜோதிடம்</h2>
+        <p>Super Admin Portal Login</p>
       </div>
-      <div class="form-group">
-        <label for="password">கடவுச்சொல் (Password)</label>
-        <input type="password" id="password" name="password" [(ngModel)]="password" required placeholder="Enter password">
+      <form (submit)="login(); $event.preventDefault();">
+        <div class="form-group">
+          <label for="username">பயனர் பெயர் (Username)</label>
+          <input type="text" id="username" name="username" [(ngModel)]="username" required placeholder="Enter username">
+        </div>
+        <div class="form-group">
+          <label for="password">கடவுச்சொல் (Password)</label>
+          <input type="password" id="password" name="password" [(ngModel)]="password" required placeholder="Enter password">
+        </div>
+        @if (loginError) {
+          <div class="login-error">{{ loginError }}</div>
+        }
+        <button type="submit" class="btn-login">உள்நுழைக (Sign In)</button>
+      </form>
+      <div class="login-footer">
+        <a routerLink="/" class="back-link">← இணையதள முகப்பு (Back to Home)</a>
       </div>
-      <div class="login-error" *ngIf="loginError">{{ loginError }}</div>
-      <button type="submit" class="btn-login">உள்நுழைக (Sign In)</button>
-    </form>
-    <div class="login-footer">
-      <a routerLink="/" class="back-link">← இணையதள முகப்பு (Back to Home)</a>
     </div>
   </div>
-</div>
+}
 
 <!-- SUPER ADMIN DASHBOARD PANEL -->
-<div class="admin-panel" *ngIf="isLoggedIn">
-  
-  <!-- Sidebar -->
-  <aside class="admin-sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-icon">🔱</span>
-      <div>
-        <h3>ஆருத்ரா ஜோதிடம்</h3>
-        <span>Super Admin</span>
-      </div>
-    </div>
-    <nav class="sidebar-menu">
-      <button [class.active]="activeTab === 'dashboard'" (click)="activeTab = 'dashboard'">
-        <span class="menu-icon">📊</span> கட்டுப்பாட்டு மையம் (Dashboard)
-      </button>
-      <button [class.active]="activeTab === 'bookings'" (click)="activeTab = 'bookings'">
-        <span class="menu-icon">📅</span> முன்பதிவு மேலாண்மை (Bookings)
-      </button>
-      <button [class.active]="activeTab === 'horoscope-editor'" (click)="activeTab = 'horoscope-editor'">
-        <span class="menu-icon">✍️</span> ராசிபலன் & பஞ்சாங்கம் (Editor)
-      </button>
-      <button [class.active]="activeTab === 'astrologers'" (click)="activeTab = 'astrologers'">
-        <span class="menu-icon">👤</span> ஜோதிடர்கள் அட்டவணை (Schedules)
-      </button>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-logout" (click)="logout()">🚪 வெளியேறு (Logout)</button>
-    </div>
-  </aside>
-
-  <!-- Main Content Area -->
-  <main class="admin-main">
+@if (isLoggedIn) {
+  <div class="admin-panel">
     
-    <!-- Top Nav -->
-    <header class="admin-header">
-      <div class="header-title">
-        <h2>{{ activeTab === 'dashboard' ? 'கட்டுப்பாட்டு மையம் (Dashboard)' : 
-               activeTab === 'bookings' ? 'முன்பதிவு மேலாண்மை (Bookings)' :
-               activeTab === 'horoscope-editor' ? 'ராசிபலன் & பஞ்சாங்கம் திருத்தி (Editor)' : 
-               'ஜோதிடர்கள் கால அட்டவணை (Schedules)' }}</h2>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🔱</span>
+        <div>
+          <h3>ஆருத்ரா ஜோதிடம்</h3>
+          <span>Super Admin</span>
+        </div>
       </div>
-      <div class="header-user">
-        <span class="user-avatar">⚙️</span>
-        <span class="user-name">Welcome, Admin</span>
-        <a routerLink="/" class="view-site-link">View Site 👁️</a>
+      <nav class="sidebar-menu">
+        <button [class.active]="activeTab === 'dashboard'" (click)="activeTab = 'dashboard'">
+          <span class="menu-icon">📊</span> கட்டுப்பாட்டு மையம் (Dashboard)
+        </button>
+        <button [class.active]="activeTab === 'bookings'" (click)="activeTab = 'bookings'">
+          <span class="menu-icon">📅</span> முன்பதிவு மேலாண்மை (Bookings)
+        </button>
+        <button [class.active]="activeTab === 'horoscope-editor'" (click)="activeTab = 'horoscope-editor'">
+          <span class="menu-icon">✍️</span> ராசிபலன் & பஞ்சாங்கம் (Editor)
+        </button>
+        <button [class.active]="activeTab === 'astrologers'" (click)="activeTab = 'astrologers'">
+          <span class="menu-icon">👤</span> ஜோதிடர்கள் அட்டவணை (Schedules)
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn-logout" (click)="logout()">🚪 வெளியேறு (Logout)</button>
       </div>
-    </header>
+    </aside>
 
-    <!-- Tab Contents -->
-    <div class="panel-body">
-
-      <!-- 1. DASHBOARD TAB -->
-      <section *ngIf="activeTab === 'dashboard'" class="dashboard-tab">
-        <div class="metrics-row">
-          <div class="metric-box">
-            <div class="metric-icon">💰</div>
-            <div class="metric-data">
-              <h3>₹{{ totalRevenue | number }}</h3>
-              <p>மொத்த வருவாய் (Revenue)</p>
-            </div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-icon">📦</div>
-            <div class="metric-data">
-              <h3>{{ totalBookingsCount }}</h3>
-              <p>முன்பதிவுகள் (Bookings)</p>
-            </div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-icon">⏳</div>
-            <div class="metric-data">
-              <h3>{{ pendingHoroscopesCount }}</h3>
-              <p>ஜாதக கோரிக்கைகள் (Pending)</p>
-            </div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-icon">👥</div>
-            <div class="metric-data">
-              <h3>{{ totalUsers }}</h3>
-              <p>பயனாளர்கள் (Total Users)</p>
-            </div>
-          </div>
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      
+      <!-- Top Nav -->
+      <header class="admin-header">
+        <div class="header-title">
+          <h2>{{ activeTab === 'dashboard' ? 'கட்டுப்பாட்டு மையம் (Dashboard)' : 
+                 activeTab === 'bookings' ? 'முன்பதிவு மேலாண்மை (Bookings)' :
+                 activeTab === 'horoscope-editor' ? 'ராசிபலன் & பஞ்சாங்கம் திருத்தி (Editor)' : 
+                 'ஜோதிடர்கள் கால அட்டவணை (Schedules)' }}</h2>
         </div>
-
-        <div class="dashboard-grid">
-          <!-- Recent Bookings Table -->
-          <div class="dashboard-card table-card">
-            <div class="card-header">
-              <h3>சமீபத்திய முன்பதிவுகள் (Recent Bookings)</h3>
-              <button (click)="activeTab = 'bookings'" class="btn-text">அனைத்தையும் காண்க (View All) →</button>
-            </div>
-            <div class="table-container">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>ஆர்டர் ID</th>
-                    <th>வாடிக்கையாளர்</th>
-                    <th>சேவையின் வகை</th>
-                    <th>கட்டணம்</th>
-                    <th>நிலை (Status)</th>
-                    <th>செயல்பாடு</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let b of bookings.slice(0, 4)">
-                    <td><code>{{ b.id }}</code></td>
-                    <td>
-                      <div class="table-user-info">
-                        <strong>{{ b.user }}</strong>
-                        <span>{{ b.phone }}</span>
-                      </div>
-                    </td>
-                    <td>{{ b.service }}</td>
-                    <td>₹{{ b.price }}</td>
-                    <td>
-                      <span class="status-badge" [class.status-pending]="b.status === 'Pending'" [class.status-completed]="b.status === 'Completed'">
-                        {{ b.status === 'Pending' ? 'நிலுவையில்' : 'முடிக்கப்பட்டது' }}
-                      </span>
-                    </td>
-                    <td>
-                      <button (click)="viewBookingDetails(b)" class="btn-action-sm">விவரங்கள்</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="header-user">
+          <span class="user-avatar">⚙️</span>
+          <span class="user-name">Welcome, Admin</span>
+          <a routerLink="/" class="view-site-link">View Site 👁️</a>
         </div>
-      </section>
+      </header>
 
-      <!-- 2. BOOKINGS TAB -->
-      <section *ngIf="activeTab === 'bookings'" class="bookings-tab">
-        <div class="dashboard-card">
-          <div class="card-header">
-            <h3>அனைத்து ஜோதிட முன்பதிவுகள்</h3>
-          </div>
-          <div class="table-container">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>ஆர்டர் ID</th>
-                  <th>தேதி</th>
-                  <th>வாடிக்கையாளர்</th>
-                  <th>சேவையின் வகை</th>
-                  <th>விலை</th>
-                  <th>நிலை (Status)</th>
-                  <th>செயல்பாடு</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let b of bookings">
-                  <td><code>{{ b.id }}</code></td>
-                  <td>{{ b.date }}</td>
-                  <td>
-                    <div class="table-user-info">
-                      <strong>{{ b.user }}</strong>
-                      <span>{{ b.phone }}</span>
-                    </div>
-                  </td>
-                  <td>{{ b.service }}</td>
-                  <td>₹{{ b.price }}</td>
-                  <td>
-                    <span class="status-badge" [class.status-pending]="b.status === 'Pending'" [class.status-completed]="b.status === 'Completed'">
-                      {{ b.status === 'Pending' ? 'நிலுவையில் (Pending)' : 'நிறைவேறியது (Completed)' }}
-                    </span>
-                  </td>
-                  <td>
-                    <button (click)="viewBookingDetails(b)" class="btn-action-sm">ஆய்வு செய்ய (Review)</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+      <!-- Tab Contents -->
+      <div class="panel-body">
 
-      <!-- 3. PANCHANGAM & RASI PALAN EDITOR -->
-      <section *ngIf="activeTab === 'horoscope-editor'" class="editor-tab">
-        <div class="editor-grid">
-          
-          <!-- Panchangam Editor -->
-          <div class="dashboard-card editor-card">
-            <div class="card-header">
-              <h3>இன்றைய பஞ்சாங்கம் விவரங்கள்</h3>
+        <!-- 1. DASHBOARD TAB -->
+        @if (activeTab === 'dashboard') {
+          <section class="dashboard-tab">
+            <div class="metrics-row">
+              <div class="metric-box">
+                <div class="metric-icon">💰</div>
+                <div class="metric-data">
+                  <h3>₹{{ totalRevenue | number }}</h3>
+                  <p>மொத்த வருவாய் (Revenue)</p>
+                </div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-icon">📦</div>
+                <div class="metric-data">
+                  <h3>{{ totalBookingsCount }}</h3>
+                  <p>முன்பதிவுகள் (Bookings)</p>
+                </div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-icon">⏳</div>
+                <div class="metric-data">
+                  <h3>{{ pendingHoroscopesCount }}</h3>
+                  <p>ஜாதக கோரிக்கைகள் (Pending)</p>
+                </div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-icon">👥</div>
+                <div class="metric-data">
+                  <h3>{{ totalUsers }}</h3>
+                  <p>பயனாளர்கள் (Total Users)</p>
+                </div>
+              </div>
             </div>
-            <form (submit)="savePanchangam(); $event.preventDefault();" class="editor-form">
-              <div class="form-group">
-                <label>தேதி (Date)</label>
-                <input type="date" [(ngModel)]="panchangam.date" name="pDate" class="admin-input">
-              </div>
-              <div class="form-group">
-                <label>திதி (Thithi)</label>
-                <input type="text" [(ngModel)]="panchangam.thithi" name="pThithi" class="admin-input">
-              </div>
-              <div class="form-group">
-                <label>நட்சத்திரம் (Nakshathiram)</label>
-                <input type="text" [(ngModel)]="panchangam.nakshathiram" name="pNakshathiram" class="admin-input">
-              </div>
-              <div class="form-group">
-                <label>இராகு காலம் (Rahukalam)</label>
-                <input type="text" [(ngModel)]="panchangam.rahukalam" name="pRahukalam" class="admin-input">
-              </div>
-              <div class="form-group">
-                <label>எமகண்டம் (Yamagandam)</label>
-                <input type="text" [(ngModel)]="panchangam.yamagandam" name="pYamagandam" class="admin-input">
-              </div>
-              <div class="form-group">
-                <label>நல்ல நேரம் (Auspicious Time)</label>
-                <input type="text" [(ngModel)]="panchangam.nallaNeram" name="pGoodTime" class="admin-input">
-              </div>
-              <button type="submit" class="btn-primary" style="margin-top: 1rem;">பஞ்சாங்கம் புதுப்பிக்கவும்</button>
-            </form>
-          </div>
 
-          <!-- Rasi Palan Editor -->
-          <div class="dashboard-card editor-card">
-            <div class="card-header">
-              <h3>இன்றைய ராசி பலன் கணிப்புகள்</h3>
+            <div class="dashboard-grid">
+              <!-- Recent Bookings Table -->
+              <div class="dashboard-card table-card">
+                <div class="card-header">
+                  <h3>சமீபத்திய முன்பதிவுகள் (Recent Bookings)</h3>
+                  <button (click)="activeTab = 'bookings'" class="btn-text">அனைத்தையும் காண்க (View All) →</button>
+                </div>
+                <div class="table-container">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>ஆர்டர் ID</th>
+                        <th>வாடிக்கையாளர்</th>
+                        <th>சேவையின் வகை</th>
+                        <th>கட்டணம்</th>
+                        <th>நிலை (Status)</th>
+                        <th>செயல்பாடு</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (b of bookings.slice(0, 4); track b.id) {
+                        <tr>
+                          <td><code>{{ b.id }}</code></td>
+                          <td>
+                            <div class="table-user-info">
+                              <strong>{{ b.user }}</strong>
+                              <span>{{ b.phone }}</span>
+                            </div>
+                          </td>
+                          <td>{{ b.service }}</td>
+                          <td>₹{{ b.price }}</td>
+                          <td>
+                            <span class="status-badge" [class.status-pending]="b.status === 'Pending'" [class.status-completed]="b.status === 'Completed'">
+                              {{ b.status === 'Pending' ? 'நிலுவையில்' : 'முடிக்கப்பட்டது' }}
+                            </span>
+                          </td>
+                          <td>
+                            <button (click)="viewBookingDetails(b)" class="btn-action-sm">விவரங்கள்</button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-            <form (submit)="saveRasiPalan(); $event.preventDefault();" class="editor-form">
-              <div class="rasi-editor-list">
-                <div class="rasi-editor-item" *ngFor="let r of rasiPalanList; let i = index">
-                  <div class="rasi-label-row">
-                    <strong>🔮 {{ r.rasi }}</strong>
-                    <span class="star-sub">{{ r.star }}</span>
+          </section>
+        }
+
+        <!-- 2. BOOKINGS TAB -->
+        @if (activeTab === 'bookings') {
+          <section class="bookings-tab">
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3>அனைத்து ஜோதிட முன்பதிவுகள்</h3>
+              </div>
+              <div class="table-container">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>ஆர்டர் ID</th>
+                      <th>தேதி</th>
+                      <th>வாடிக்கையாளர்</th>
+                      <th>சேவையின் வகை</th>
+                      <th>விலை</th>
+                      <th>நிலை (Status)</th>
+                      <th>செயல்பாடு</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (b of bookings; track b.id) {
+                      <tr>
+                        <td><code>{{ b.id }}</code></td>
+                        <td>{{ b.date }}</td>
+                        <td>
+                          <div class="table-user-info">
+                            <strong>{{ b.user }}</strong>
+                            <span>{{ b.phone }}</span>
+                          </div>
+                        </td>
+                        <td>{{ b.service }}</td>
+                        <td>₹{{ b.price }}</td>
+                        <td>
+                          <span class="status-badge" [class.status-pending]="b.status === 'Pending'" [class.status-completed]="b.status === 'Completed'">
+                            {{ b.status === 'Pending' ? 'நிலுவையில் (Pending)' : 'நிறைவேறியது (Completed)' }}
+                          </span>
+                        </td>
+                        <td>
+                          <button (click)="viewBookingDetails(b)" class="btn-action-sm">ஆய்வு செய்ய (Review)</button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- 3. PANCHANGAM & RASI PALAN EDITOR -->
+        @if (activeTab === 'horoscope-editor') {
+          <section class="editor-tab">
+            <div class="editor-grid">
+              
+              <!-- Panchangam Editor -->
+              <div class="dashboard-card editor-card">
+                <div class="card-header">
+                  <h3>இன்றைய பஞ்சாங்கம் விவரங்கள்</h3>
+                </div>
+                <form (submit)="savePanchangam(); $event.preventDefault();" class="editor-form">
+                  <div class="form-group">
+                    <label>தேதி (Date)</label>
+                    <input type="date" [(ngModel)]="panchangam.date" name="pDate" class="admin-input">
                   </div>
-                  <textarea [(ngModel)]="r.prediction" name="pred-{{i}}" rows="2" class="admin-textarea"></textarea>
+                  <div class="form-group">
+                    <label>திதி (Thithi)</label>
+                    <input type="text" [(ngModel)]="panchangam.thithi" name="pThithi" class="admin-input">
+                  </div>
+                  <div class="form-group">
+                    <label>நட்சத்திரம் (Nakshathiram)</label>
+                    <input type="text" [(ngModel)]="panchangam.nakshathiram" name="pNakshathiram" class="admin-input">
+                  </div>
+                  <div class="form-group">
+                    <label>இராகு காலம் (Rahukalam)</label>
+                    <input type="text" [(ngModel)]="panchangam.rahukalam" name="pRahukalam" class="admin-input">
+                  </div>
+                  <div class="form-group">
+                    <label>எமகண்டம் (Yamagandam)</label>
+                    <input type="text" [(ngModel)]="panchangam.yamagandam" name="pYamagandam" class="admin-input">
+                  </div>
+                  <div class="form-group">
+                    <label>நல்ல நேரம் (Auspicious Time)</label>
+                    <input type="text" [(ngModel)]="panchangam.nallaNeram" name="pGoodTime" class="admin-input">
+                  </div>
+                  <button type="submit" class="btn-primary" style="margin-top: 1rem;">பஞ்சாங்கம் புதுப்பிக்கவும்</button>
+                </form>
+              </div>
+
+              <!-- Rasi Palan Editor -->
+              <div class="dashboard-card editor-card">
+                <div class="card-header">
+                  <h3>இன்றைய ராசி பலன் கணிப்புகள்</h3>
                 </div>
+                <form (submit)="saveRasiPalan(); $event.preventDefault();" class="editor-form">
+                  <div class="rasi-editor-list">
+                    @for (r of rasiPalanList; track r.rasi; let i = $index) {
+                      <div class="rasi-editor-item">
+                        <div class="rasi-label-row">
+                          <strong>🔮 {{ r.rasi }}</strong>
+                          <span class="star-sub">{{ r.star }}</span>
+                        </div>
+                        <textarea [(ngModel)]="r.prediction" name="pred-{{i}}" rows="2" class="admin-textarea"></textarea>
+                      </div>
+                    }
+                  </div>
+                  <button type="submit" class="btn-primary" style="margin-top: 1.5rem; width: 100%;">அனைத்து ராசி பலன்களையும் சேமிக்கவும்</button>
+                </form>
               </div>
-              <button type="submit" class="btn-primary" style="margin-top: 1.5rem; width: 100%;">அனைத்து ராசி பலன்களையும் சேமிக்கவும்</button>
-            </form>
-          </div>
 
-        </div>
-      </section>
-
-      <!-- 4. ASTROLOGER SCHEDULES -->
-      <section *ngIf="activeTab === 'astrologers'" class="astrologers-tab">
-        <div class="astrologers-grid">
-          <div class="dashboard-card astro-card" *ngFor="let astro of astrologers; let i = index">
-            <div class="card-header">
-              <div>
-                <h3>{{ astro.name }}</h3>
-                <p class="specialty">{{ astro.specialty }}</p>
-              </div>
-              <button (click)="addSlot(i)" class="btn-action-sm">+ நேரம் சேர்க்க</button>
             </div>
-            
-            <div class="slot-list">
-              <h4>இன்றைய நேரங்கள் (Slots)</h4>
-              <div class="slot-item" *ngFor="let slot of astro.slots; let j = index" [class.slot-booked]="slot.status === 'Booked'">
-                <span>⏰ {{ slot.time }}</span>
-                <div class="slot-actions">
-                  <span class="slot-status-label">{{ slot.status === 'Available' ? 'காலியாக உள்ளது' : 'முன்பதிவாகியுள்ளது' }}</span>
-                  <button (click)="toggleSlot(i, j)" class="btn-text">நிலை மாற்று</button>
+          </section>
+        }
+
+        <!-- 4. ASTROLOGER SCHEDULES -->
+        @if (activeTab === 'astrologers') {
+          <section class="astrologers-tab">
+            <div class="astrologers-grid">
+              @for (astro of astrologers; track astro.name; let i = $index) {
+                <div class="dashboard-card astro-card">
+                  <div class="card-header">
+                    <div>
+                      <h3>{{ astro.name }}</h3>
+                      <p class="specialty">{{ astro.specialty }}</p>
+                    </div>
+                    <button (click)="addSlot(i)" class="btn-action-sm">+ நேரம் சேர்க்க</button>
+                  </div>
+                  
+                  <div class="slot-list">
+                    <h4>இன்றைய நேரங்கள் (Slots)</h4>
+                    @for (slot of astro.slots; track slot.time; let j = $index) {
+                      <div class="slot-item" [class.slot-booked]="slot.status === 'Booked'">
+                        <span>⏰ {{ slot.time }}</span>
+                        <div class="slot-actions">
+                          <span class="slot-status-label">{{ slot.status === 'Available' ? 'காலியாக உள்ளது' : 'முன்பதிவாகியுள்ளது' }}</span>
+                          <button (click)="toggleSlot(i, j)" class="btn-text">நிலை மாற்று</button>
+                        </div>
+                      </div>
+                    }
+                  </div>
                 </div>
-              </div>
+              }
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        }
 
-    </div>
-  </main>
-</div>
+      </div>
+    </main>
+  </div>
+}
 
 <!-- BOOKING DETAILS DIALOG MODAL -->
-<div class="modal-overlay" *ngIf="selectedBooking">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3>முன்பதிவு விவரங்கள் (ID: {{ selectedBooking.id }})</h3>
-      <button class="btn-close" (click)="closeModal()">×</button>
-    </div>
-    
-    <div class="modal-body">
-      <div class="details-section">
-        <h4>வாடிக்கையாளர் விவரங்கள்</h4>
-        <p><strong>பெயர்:</strong> {{ selectedBooking.user }}</p>
-        <p><strong>மொபைல்:</strong> {{ selectedBooking.phone }}</p>
-        <p><strong>சேவை:</strong> {{ selectedBooking.service }}</p>
-        <p><strong>செலுத்திய கட்டணம்:</strong> ₹{{ selectedBooking.price }}</p>
-      </div>
-
-      <!-- Specific details depending on the service -->
-      <div class="details-section" *ngIf="selectedBooking.service === 'ஜாதகம் எழுதுதல்'">
-        <h4>பிறப்பு தகவல்கள்</h4>
-        <p><strong>பெயர் (Name):</strong> {{ selectedBooking.details.name }}</p>
-        <p><strong>பிறந்த தேதி:</strong> {{ selectedBooking.details.dob }}</p>
-        <p><strong>பிறந்த நேரம்:</strong> {{ selectedBooking.details.tob }}</p>
-        <p><strong>பிறந்த இடம்:</strong> {{ selectedBooking.details.pob }}</p>
-        <p><strong>பாலினம்:</strong> {{ selectedBooking.details.gender }}</p>
-      </div>
-
-      <div class="details-section" *ngIf="selectedBooking.service === 'வீட்டு வாஸ்து ஆலோசனை'">
-        <h4>வாஸ்து விவரங்கள்</h4>
-        <p><strong>சந்திப்பு நேரம்:</strong> {{ selectedBooking.details.slot }}</p>
-        <p><strong>முகவரி:</strong> {{ selectedBooking.details.address }}</p>
-        <p><strong>வரைபடம்:</strong> <a href="#" (click)="$event.preventDefault()">{{ selectedBooking.details.planUploaded }} (Download)</a></p>
-      </div>
-
-      <div class="details-section" *ngIf="selectedBooking.service === 'திருமண பொருத்தம்'">
-        <h4>திருமண பொருத்த விவரங்கள்</h4>
-        <div class="match-grid">
-          <div class="match-column">
-            <h5>ஆண் (Boy Details)</h5>
-            <p><strong>பெயர்:</strong> {{ selectedBooking.details.boyName }}</p>
-            <p><strong>பிறந்த தேதி:</strong> {{ selectedBooking.details.boyDob }}</p>
-            <p><strong>பிறந்த நேரம்:</strong> {{ selectedBooking.details.boyTob }}</p>
-            <p><strong>ராசி:</strong> {{ selectedBooking.details.boyRasi }}</p>
-            <p><strong>நட்சத்திரம்:</strong> {{ selectedBooking.details.boyStar }}</p>
-          </div>
-          <div class="match-column">
-            <h5>பெண் (Girl Details)</h5>
-            <p><strong>பெயர்:</strong> {{ selectedBooking.details.girlName }}</p>
-            <p><strong>பிறந்த தேதி:</strong> {{ selectedBooking.details.girlDob }}</p>
-            <p><strong>பிறந்த நேரம்:</strong> {{ selectedBooking.details.girlTob }}</p>
-            <p><strong>ராசி:</strong> {{ selectedBooking.details.girlRasi }}</p>
-            <p><strong>நட்சத்திரம்:</strong> {{ selectedBooking.details.girlStar }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action items for fulfillment -->
-      <div class="fulfillment-section" *ngIf="selectedBooking.status === 'Pending'">
-        <h4>சேவையை நிறைவேற்றுதல் (Fulfill Service)</h4>
-        
-        <div class="form-group" *ngIf="selectedBooking.service === 'ஜாதகம் எழுதுதல்'">
-          <label>ஜாதக PDF கோப்பினை பதிவேற்றவும் (Upload Horoscope PDF):</label>
-          <input type="text" [(ngModel)]="uploadedFileName" placeholder="Enter file name (e.g. horoscope_chart.pdf)" class="admin-input">
-        </div>
-        
-        <div class="button-row" style="margin-top: 1rem;">
-          <button (click)="fulfillBooking()" class="btn-primary">முடிக்கப்பட்டது என சேமி (Fulfill Booking)</button>
-          <button (click)="closeModal()" class="btn-secondary">ரத்துசெய் (Cancel)</button>
-        </div>
+@if (selectedBooking) {
+  <div class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>முன்பதிவு விவரங்கள் (ID: {{ selectedBooking.id }})</h3>
+        <button class="btn-close" (click)="closeModal()">×</button>
       </div>
       
-      <div class="fulfillment-section" *ngIf="selectedBooking.status === 'Completed'">
-        <p class="completed-msg">✅ இந்த முன்பதிவு வெற்றிகரமாக நிறைவேற்றப்பட்டுள்ளது.</p>
-        <p *ngIf="selectedBooking.chartUrl"><strong>கோப்பு (Uploaded File):</strong> {{ selectedBooking.chartUrl }}</p>
-      </div>
+      <div class="modal-body">
+        <div class="details-section">
+          <h4>வாடிக்கையாளர் விவரங்கள்</h4>
+          <p><strong>பெயர்:</strong> {{ selectedBooking.user }}</p>
+          <p><strong>மொபைல்:</strong> {{ selectedBooking.phone }}</p>
+          <p><strong>சேவை:</strong> {{ selectedBooking.service }}</p>
+          <p><strong>செலுத்திய கட்டணம்:</strong> ₹{{ selectedBooking.price }}</p>
+        </div>
 
+        <!-- Specific details depending on the service -->
+        @if (selectedBooking.service === 'ஜாதகம் எழுதுதல்') {
+          <div class="details-section">
+            <h4>பிறப்பு தகவல்கள்</h4>
+            <p><strong>பெயர் (Name):</strong> {{ selectedBooking.details.name }}</p>
+            <p><strong>பிறந்த தேதி:</strong> {{ selectedBooking.details.dob }}</p>
+            <p><strong>பிறந்த நேரம்:</strong> {{ selectedBooking.details.tob }}</p>
+            <p><strong>பிறந்த இடம்:</strong> {{ selectedBooking.details.pob }}</p>
+            <p><strong>பாலினம்:</strong> {{ selectedBooking.details.gender }}</p>
+          </div>
+        }
+
+        @if (selectedBooking.service === 'வீட்டு வாஸ்து ஆலோசனை') {
+          <div class="details-section">
+            <h4>வாஸ்து விவரங்கள்</h4>
+            <p><strong>சந்திப்பு நேரம்:</strong> {{ selectedBooking.details.slot }}</p>
+            <p><strong>முகவரி:</strong> {{ selectedBooking.details.address }}</p>
+            <p><strong>வரைபடம்:</strong> <a href="#" (click)="$event.preventDefault()">{{ selectedBooking.details.planUploaded }} (Download)</a></p>
+          </div>
+        }
+
+        @if (selectedBooking.service === 'திருமண பொருத்தம்') {
+          <div class="details-section">
+            <h4>திருமண பொருத்த விவரங்கள்</h4>
+            <div class="match-grid">
+              <div class="match-column">
+                <h5>ஆண் (Boy Details)</h5>
+                <p><strong>பெயர்:</strong> {{ selectedBooking.details.boyName }}</p>
+                <p><strong>பிறந்த தேதி:</strong> {{ selectedBooking.details.boyDob }}</p>
+                <p><strong>பிறந்த நேரம்:</strong> {{ selectedBooking.details.boyTob }}</p>
+                <p><strong>ராசி:</strong> {{ selectedBooking.details.boyRasi }}</p>
+                <p><strong>நட்சத்திரம்:</strong> {{ selectedBooking.details.boyStar }}</p>
+              </div>
+              <div class="match-column">
+                <h5>பெண் (Girl Details)</h5>
+                <p><strong>பெயர்:</strong> {{ selectedBooking.details.girlName }}</p>
+                <p><strong>பிறந்த தேதி:</strong> {{ selectedBooking.details.girlDob }}</p>
+                <p><strong>பிறந்த நேரம்:</strong> {{ selectedBooking.details.girlTob }}</p>
+                <p><strong>ராசி:</strong> {{ selectedBooking.details.girlRasi }}</p>
+                <p><strong>நட்சத்திரம்:</strong> {{ selectedBooking.details.girlStar }}</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Action items for fulfillment -->
+        @if (selectedBooking.status === 'Pending') {
+          <div class="fulfillment-section">
+            <h4>சேவையை நிறைவேற்றுதல் (Fulfill Service)</h4>
+            
+            @if (selectedBooking.service === 'ஜாதகம் எழுதுதல்') {
+              <div class="form-group">
+                <label>ஜாதக PDF கோப்பினை பதிவேற்றவும் (Upload Horoscope PDF):</label>
+                <input type="text" [(ngModel)]="uploadedFileName" placeholder="Enter file name (e.g. horoscope_chart.pdf)" class="admin-input">
+              </div>
+            }
+            
+            <div class="button-row" style="margin-top: 1rem;">
+              <button (click)="fulfillBooking()" class="btn-primary">முடிக்கப்பட்டது என சேமி (Fulfill Booking)</button>
+              <button (click)="closeModal()" class="btn-secondary">ரத்துசெய் (Cancel)</button>
+            </div>
+          </div>
+        }
+        
+        @if (selectedBooking.status === 'Completed') {
+          <div class="fulfillment-section">
+            <p class="completed-msg">✅ இந்த முன்பதிவு வெற்றிகரமாக நிறைவேற்றப்பட்டுள்ளது.</p>
+            @if (selectedBooking.chartUrl) {
+              <p><strong>கோப்பு (Uploaded File):</strong> {{ selectedBooking.chartUrl }}</p>
+            }
+          </div>
+        }
+
+      </div>
     </div>
   </div>
-</div>
+}

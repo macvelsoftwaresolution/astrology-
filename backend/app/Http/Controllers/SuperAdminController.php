@@ -14,27 +14,33 @@ class SuperAdminController extends Controller
      */
     public function getDashboardMetrics()
     {
-        $totalUsers = User::where('role', 'user')->count();
-        $totalAdmins = User::where('role', 'admin')->count();
-        $totalCourses = DB::table('courses')->count();
-        $totalBookings = DB::table('bookings')->count();
-        $totalBookOrders = DB::table('book_orders')->count();
-
-        $courseRevenue = DB::table('courses')->sum('price');
-        $serviceRevenue = DB::table('bookings')->sum('price');
-        $bookRevenue = DB::table('book_orders')->sum('price');
-        $totalRevenue = $courseRevenue + $serviceRevenue + $bookRevenue;
+        $data = DB::selectOne("
+            SELECT 
+                (SELECT COUNT(*) FROM users WHERE role = 'user') as total_students,
+                (SELECT COUNT(*) FROM users WHERE role IN ('admin', 'super_admin')) as total_admins,
+                (SELECT COUNT(*) FROM courses) as total_courses,
+                (SELECT COUNT(*) FROM bookings) as total_bookings,
+                (SELECT COUNT(*) FROM book_orders) as total_book_orders,
+                (SELECT COALESCE(SUM(price), 0) FROM courses) as course_revenue,
+                (SELECT COALESCE(SUM(price), 0) FROM bookings) as service_revenue,
+                (SELECT COALESCE(SUM(price), 0) FROM book_orders) as book_revenue
+        ");
 
         $recentAdmins = User::whereIn('role', ['admin', 'super_admin'])->get();
+
+        $courseRevenue = (float) ($data->course_revenue ?? 0);
+        $serviceRevenue = (float) ($data->service_revenue ?? 0);
+        $bookRevenue = (float) ($data->book_revenue ?? 0);
+        $totalRevenue = $courseRevenue + $serviceRevenue + $bookRevenue;
 
         return response()->json([
             'success' => true,
             'metrics' => [
-                'total_students' => $totalUsers,
-                'total_admins' => $totalAdmins,
-                'total_courses' => $totalCourses,
-                'total_bookings' => $totalBookings,
-                'total_book_orders' => $totalBookOrders,
+                'total_students' => (int) ($data->total_students ?? 0),
+                'total_admins' => (int) ($data->total_admins ?? 0),
+                'total_courses' => (int) ($data->total_courses ?? 0),
+                'total_bookings' => (int) ($data->total_bookings ?? 0),
+                'total_book_orders' => (int) ($data->total_book_orders ?? 0),
                 'total_revenue' => $totalRevenue,
                 'revenue_breakdown' => [
                     'courses' => $courseRevenue,

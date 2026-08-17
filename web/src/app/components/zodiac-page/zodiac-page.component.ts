@@ -42,14 +42,15 @@ import { RouterModule } from '@angular/router';
 
             <div class="celestial-zodiac-selector">
               <div class="zodiac-btns-layout">
-                <button 
-                  *ngFor="let zodiac of zodiacSigns" 
-                  class="zodiac-luxury-btn"
-                  [class.active]="selectedZodiac.name === zodiac.name"
-                  (click)="selectZodiac(zodiac)">
-                  <span class="sign-glyph">{{ zodiac.symbol }}</span>
-                  <span class="sign-tamil-name">{{ zodiac.name }}</span>
-                </button>
+                @for (zodiac of zodiacSigns; track zodiac.name) {
+                  <button 
+                    class="zodiac-luxury-btn"
+                    [class.active]="selectedZodiac.name === zodiac.name"
+                    (click)="selectZodiac(zodiac)">
+                    <span class="sign-glyph">{{ zodiac.symbol }}</span>
+                    <span class="sign-tamil-name">{{ zodiac.name }}</span>
+                  </button>
+                }
               </div>
 
               <div class="zodiac-display-card">

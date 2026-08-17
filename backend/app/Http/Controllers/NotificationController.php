@@ -112,6 +112,102 @@ class NotificationController extends Controller
     }
 
     /**
+     * Get user's notification preferences
+     */
+    public function getNotificationPreferences(Request $request)
+    {
+        $user = $request->user();
+
+        $profile = DB::table('users')->where('id', $user->id)->first();
+
+        return response()->json([
+            'daily_rasi_notification' => $profile->daily_rasi_notification ?? true,
+        ]);
+    }
+
+    /**
+     * Update user's notification preferences
+     */
+    public function updateNotificationPreferences(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'daily_rasi_notification' => 'required|boolean',
+        ]);
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'daily_rasi_notification' => $request->daily_rasi_notification,
+                'updated_at' => now(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'அறிவிப்பு விருப்பத்தேர்வுகள் புதுப்பிக்கப்பட்டன.',
+            'daily_rasi_notification' => $request->daily_rasi_notification,
+        ]);
+    }
+
+    /**
+     * Admin: Toggle global daily rasi notification feature on/off
+     */
+    public function toggleDailyNotificationFeature(Request $request)
+    {
+        $request->validate([
+            'enabled' => 'required|boolean',
+        ]);
+
+        $setting = DB::table('system_settings')
+            ->where('key', 'daily_rasi_notification_enabled')
+            ->first();
+
+        if ($setting) {
+            DB::table('system_settings')
+                ->where('key', 'daily_rasi_notification_enabled')
+                ->update(['value' => $request->enabled ? '1' : '0', 'updated_at' => now()]);
+        } else {
+            DB::table('system_settings')->insert([
+                'key' => 'daily_rasi_notification_enabled',
+                'value' => $request->enabled ? '1' : '0',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $request->enabled
+                ? 'தினசரி ராசி பலன் அறிவிப்பு இயக்கப்பட்டது.'
+                : 'தினசரி ராசி பலன் அறிவிப்பு நிறுத்தப்பட்டது.',
+            'enabled' => $request->enabled,
+        ]);
+    }
+
+    /**
+     * Admin: Get daily notification feature status
+     */
+    public function getDailyNotificationStatus()
+    {
+        $setting = DB::table('system_settings')
+            ->where('key', 'daily_rasi_notification_enabled')
+            ->first();
+
+        $enabled = $setting ? $setting->value === '1' : true;
+
+        $optedInCount = DB::table('users')
+            ->where('role', 'user')
+            ->where('daily_rasi_notification', true)
+            ->count();
+
+        return response()->json([
+            'enabled' => $enabled,
+            'opted_in_users' => $optedInCount,
+        ]);
+    }
+
+    /**
      * Helper: Create notification for a specific user (used internally by other controllers)
      */
     public static function createForUser(int $userId, string $title, string $body, string $type, ?array $data = null): void

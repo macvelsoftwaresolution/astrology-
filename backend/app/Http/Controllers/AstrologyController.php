@@ -247,28 +247,48 @@ class AstrologyController extends Controller
     {
         $request->validate([
             'date' => 'required|date',
-            'type' => 'required|string', // daily, weekly...
-            'predictions' => 'required|array' // array of ['rasi_name' => '...', 'prediction_text' => '...']
+            'type' => 'required|string',
+            'predictions' => 'required|array'
         ]);
 
-        foreach ($request->predictions as $p) {
-            DB::table('rasi_palans')->updateOrInsert(
-                [
-                    'prediction_date' => $request->date,
-                    'rasi_name' => $p['rasi_name'],
-                    'tab_type' => $request->type
-                ],
-                [
-                    'prediction_text' => $p['prediction_text'],
-                    'audio_url' => $p['audio_url'] ?? null,
-                    'updated_at' => now()
-                ]
-            );
+        try {
+            foreach ($request->predictions as $p) {
+                if (empty($p['rasi_name'])) continue;
+
+                $existing = DB::table('rasi_palans')
+                    ->where('prediction_date', $request->date)
+                    ->where('rasi_name', $p['rasi_name'])
+                    ->where('tab_type', $request->type)
+                    ->first();
+
+                if ($existing) {
+                    DB::table('rasi_palans')->where('id', $existing->id)->update([
+                        'prediction_text' => (string) ($p['prediction_text'] ?? ''),
+                        'audio_url'       => $p['audio_url'] ?? null,
+                        'updated_at'      => now()
+                    ]);
+                } else {
+                    DB::table('rasi_palans')->insert([
+                        'prediction_date' => $request->date,
+                        'rasi_name'       => $p['rasi_name'],
+                        'tab_type'        => $request->type,
+                        'prediction_text' => (string) ($p['prediction_text'] ?? ''),
+                        'audio_url'       => $p['audio_url'] ?? null,
+                        'created_at'      => now(),
+                        'updated_at'      => now()
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rasi Palan predictions updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update predictions: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Rasi Palan predictions updated successfully'
-        ]);
     }
 }

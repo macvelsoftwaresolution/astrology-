@@ -12,26 +12,49 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = DB::table('courses')->get()->map(function ($course) {
-            $modules = DB::table('syllabus_modules')
-                ->where('course_id', $course->id)
-                ->orderBy('order_index')
-                ->get()
-                ->map(function ($module) {
-                    $module->lessons = DB::table('lessons')
-                        ->where('module_id', $module->id)
-                        ->orderBy('order_index')
-                        ->get();
-                    return $module;
-                });
-            $course->modules = $modules;
-            return $course;
-        });
+        try {
+            $courses = DB::table('courses')->orderBy('id', 'desc')->get();
+            $courseIds = $courses->pluck('id')->filter();
 
-        return response()->json([
-            'success' => true,
-            'courses' => $courses
-        ]);
+            if ($courseIds->isNotEmpty()) {
+                $modules = DB::table('syllabus_modules')
+                    ->whereIn('course_id', $courseIds)
+                    ->orderBy('order_index')
+                    ->get();
+                $moduleIds = $modules->pluck('id')->filter();
+
+                $lessons = $moduleIds->isNotEmpty()
+                    ? DB::table('lessons')
+                        ->whereIn('module_id', $moduleIds)
+                        ->orderBy('order_index')
+                        ->get()
+                        ->groupBy('module_id')
+                    : collect();
+
+                $modulesGrouped = $modules->map(function ($module) use ($lessons) {
+                    $module->lessons = $lessons->get($module->id, collect())->values();
+                    return $module;
+                })->groupBy('course_id');
+
+                $coursesFormatted = $courses->map(function ($course) use ($modulesGrouped) {
+                    $course->modules = $modulesGrouped->get($course->id, collect())->values();
+                    return $course;
+                });
+            } else {
+                $coursesFormatted = collect();
+            }
+
+            return response()->json([
+                'success' => true,
+                'courses' => $coursesFormatted
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('CourseController index error: ' . $e->getMessage());
+            return response()->json([
+                'success' => true,
+                'courses' => []
+            ]);
+        }
     }
 
     /**

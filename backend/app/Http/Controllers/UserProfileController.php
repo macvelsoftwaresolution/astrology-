@@ -14,20 +14,19 @@ class UserProfileController extends Controller
     public function getProfile(Request $request)
     {
         $user = $request->user();
-        $profile = DB::table('users')->where('id', $user->id)->first();
 
         return response()->json([
-            'id'               => $profile->id,
-            'name'             => $profile->name,
-            'email'            => $profile->email,
-            'phone'            => $profile->phone,
-            'address'          => $profile->address ?? null,
-            'avatar_url'       => $profile->avatar_url ?? null,
-            'jathagam_details' => $profile->jathagam_details
-                ? json_decode($profile->jathagam_details)
+            'id'               => $user->id,
+            'name'             => $user->name,
+            'email'            => $user->email,
+            'phone'            => $user->phone,
+            'address'          => $user->address ?? null,
+            'avatar_url'       => $user->avatar_url ?? null,
+            'jathagam_details' => $user->jathagam_details
+                ? (is_string($user->jathagam_details) ? json_decode($user->jathagam_details) : $user->jathagam_details)
                 : null,
-            'role'             => $profile->role,
-            'status'           => $profile->status,
+            'role'             => $user->role,
+            'status'           => $user->status,
         ]);
     }
 
@@ -38,26 +37,40 @@ class UserProfileController extends Controller
     {
         $user = $request->user();
 
-        $request->validate([
-            'name'       => 'sometimes|string|max:255',
-            'phone'      => 'sometimes|string|max:20',
-            'address'    => 'sometimes|nullable|string',
-            'avatar_url' => 'sometimes|nullable|string',
+        $validated = $request->validate([
+            'name'             => 'sometimes|string|max:255',
+            'phone'            => 'sometimes|string|max:20',
+            'address'          => 'sometimes|nullable|string',
+            'avatar_url'       => 'sometimes|nullable|string',
+            'jathagam_details' => 'sometimes|nullable',
         ]);
 
-        $updates = array_filter([
-            'name'       => $request->name,
-            'phone'      => $request->phone,
-            'address'    => $request->address,
-            'avatar_url' => $request->avatar_url,
-            'updated_at' => now()
-        ], fn($v) => !is_null($v));
+        if (isset($validated['jathagam_details']) && is_array($validated['jathagam_details'])) {
+            $validated['jathagam_details'] = json_encode($validated['jathagam_details']);
+        }
 
-        DB::table('users')->where('id', $user->id)->update($updates);
+        $user->fill($validated);
+
+        if ($user->isDirty()) {
+            $user->save();
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'சுயவிவரம் புதுப்பிக்கப்பட்டது.'
+            'message' => 'சுயவிவரம் புதுப்பிக்கப்பட்டது.',
+            'user'    => [
+                'id'               => $user->id,
+                'name'             => $user->name,
+                'email'            => $user->email,
+                'phone'            => $user->phone,
+                'address'          => $user->address,
+                'avatar_url'       => $user->avatar_url,
+                'jathagam_details' => $user->jathagam_details
+                    ? (is_string($user->jathagam_details) ? json_decode($user->jathagam_details) : $user->jathagam_details)
+                    : null,
+                'role'             => $user->role,
+                'status'           => $user->status,
+            ]
         ]);
     }
 

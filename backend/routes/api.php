@@ -63,9 +63,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/payments', [UserProfileController::class, 'getPaymentHistory']);
 
     // Notifications
-    Route::get('/user/notifications',             [NotificationController::class, 'getMyNotifications']);
-    Route::put('/user/notifications/{id}/read',   [NotificationController::class, 'markRead']);
-    Route::put('/user/notifications/read-all',    [NotificationController::class, 'markAllRead']);
+    Route::get('/user/notifications',                    [NotificationController::class, 'getMyNotifications']);
+    Route::put('/user/notifications/{id}/read',          [NotificationController::class, 'markRead']);
+    Route::put('/user/notifications/read-all',           [NotificationController::class, 'markAllRead']);
+    Route::get('/user/notification-preferences',         [NotificationController::class, 'getNotificationPreferences']);
+    Route::put('/user/notification-preferences',         [NotificationController::class, 'updateNotificationPreferences']);
 });
 
 // =====================================================================
@@ -113,5 +115,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/payment-transactions',             [UserProfileController::class, 'adminGetPayments']);
 
     // Notification Broadcast
-    Route::post('/notifications/broadcast',         [NotificationController::class, 'broadcastNotification']);
+    Route::post('/notifications/broadcast',                    [NotificationController::class, 'broadcastNotification']);
+    Route::get('/notifications/daily-rasi-status',             [NotificationController::class, 'getDailyNotificationStatus']);
+    Route::put('/notifications/daily-rasi-toggle',             [NotificationController::class, 'toggleDailyNotificationFeature']);
 });

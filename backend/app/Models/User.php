@@ -27,7 +27,10 @@ class User extends Authenticatable
         'role',
         'phone',
         'status',
-        'address'
+        'address',
+        'jathagam_details',
+        'avatar_url',
+        'daily_rasi_notification',
     ];
 
     /**

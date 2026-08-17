@@ -41,15 +41,19 @@ import { RouterModule } from '@angular/router';
             </div>
 
             <div class="faq-accordion-rows">
-              <div class="faq-accordion-row" *ngFor="let faq of faqs; let idx = index" [class.active]="faq.open">
-                <div class="faq-row-header" (click)="toggleFaq(idx)">
-                  <h3>{{ faq.question }}</h3>
-                  <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
+              @for (faq of faqs; track faq.question; let idx = $index) {
+                <div class="faq-accordion-row" [class.active]="faq.open">
+                  <div class="faq-row-header" (click)="toggleFaq(idx)">
+                    <h3>{{ faq.question }}</h3>
+                    <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
+                  </div>
+                  @if (faq.open) {
+                    <div class="faq-row-body">
+                      <p>{{ faq.answer }}</p>
+                    </div>
+                  }
                 </div>
-                <div class="faq-row-body" *ngIf="faq.open">
-                  <p>{{ faq.answer }}</p>
-                </div>
-              </div>
+              }
             </div>
           </div>
         </section>

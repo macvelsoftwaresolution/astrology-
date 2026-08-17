@@ -219,15 +219,16 @@
     <div class="celestial-zodiac-selector">
       <!-- 12 Zodiac Wheel Buttons -->
       <div class="zodiac-btns-layout" data-aos="fade-right" data-aos-duration="400">
-        <button 
-          *ngFor="let zodiac of zodiacSigns; let i = index" 
-          class="zodiac-luxury-btn"
-          [class.active]="selectedZodiac.name === zodiac.name"
-          (click)="selectZodiac(zodiac)"
-          [attr.aria-label]="zodiac.name">
-          <span class="sign-glyph">{{ zodiac.symbol }}</span>
-          <span class="sign-tamil-name">{{ zodiac.name }}</span>
-        </button>
+        @for (zodiac of zodiacSigns; track zodiac.name; let i = $index) {
+          <button 
+            class="zodiac-luxury-btn"
+            [class.active]="selectedZodiac.name === zodiac.name"
+            (click)="selectZodiac(zodiac)"
+            [attr.aria-label]="zodiac.name">
+            <span class="sign-glyph">{{ zodiac.symbol }}</span>
+            <span class="sign-tamil-name">{{ zodiac.name }}</span>
+          </button>
+        }
       </div>
 
       <!-- Active Zodiac Display Card -->
@@ -257,18 +258,20 @@
     </div>
 
     <div class="services-cards-grid">
-      <div class="service-light-card" *ngFor="let service of services; let i = index" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
-        <div class="service-icon-badge">
-          <i [class]="service.iconClass"></i>
+      @for (service of services; track service.title; let i = $index) {
+        <div class="service-light-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
+          <div class="service-icon-badge">
+            <i [class]="service.iconClass"></i>
+          </div>
+          <h3>{{ service.title }}</h3>
+          <span class="service-subtitle">{{ service.englishTitle }}</span>
+          <p>{{ service.description }}</p>
+          <div class="service-card-footer">
+            <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
+            <a href="#download" class="btn-service-action" aria-label="Order Service"><i class="bi bi-arrow-right-circle-fill"></i></a>
+          </div>
         </div>
-        <h3>{{ service.title }}</h3>
-        <span class="service-subtitle">{{ service.englishTitle }}</span>
-        <p>{{ service.description }}</p>
-        <div class="service-card-footer">
-          <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
-          <a href="#download" class="btn-service-action" aria-label="Order Service"><i class="bi bi-arrow-right-circle-fill"></i></a>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
@@ -283,7 +286,8 @@
     </div>
 
     <div class="academy-courses-grid">
-      <div class="academy-course-card" *ngFor="let course of academyCourses" data-aos="fade-up">
+      @for (course of academyCourses; track course.title) {
+        <div class="academy-course-card" data-aos="fade-up">
         <div class="course-header-badge">
           <span class="course-badge-tag">{{ course.badge }}</span>
           <span class="course-rating"><i class="bi bi-star-fill text-gold me-1"></i> {{ course.rating }}</span>
@@ -302,8 +306,9 @@
           <a href="#download" class="btn-course-enroll">கற்கத் துவங்க <i class="bi bi-arrow-right-short ms-1"></i></a>
         </div>
       </div>
-    </div>
+    }
   </div>
+</div>
 </section>
 
 <!-- How It Works Flow (#0B0820) -->
@@ -434,24 +439,26 @@
     </div>
 
     <div class="editorial-astrologers-grid">
-      <div class="astro-editorial-card" *ngFor="let astro of astrologers; let i = index" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 100" data-aos-duration="400">
-        <div class="astro-card-left">
-          <div class="astro-portrait-placeholder">
-            <i [class]="astro.iconClass"></i>
-            <span class="astro-exp-label">{{ astro.experience }}</span>
+      @for (astro of astrologers; track astro.name; let i = $index) {
+        <div class="astro-editorial-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 100" data-aos-duration="400">
+          <div class="astro-card-left">
+            <div class="astro-portrait-placeholder">
+              <i [class]="astro.iconClass"></i>
+              <span class="astro-exp-label">{{ astro.experience }}</span>
+            </div>
+          </div>
+          <div class="astro-card-right">
+            <h3>{{ astro.name }}</h3>
+            <span class="astro-editorial-role">{{ astro.role }}</span>
+            <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
+            <div class="astro-editorial-tags">
+              <strong>நிபுணத்துவம்:</strong>
+              <span>{{ astro.specialty }}</span>
+            </div>
+            <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i class="bi bi-arrow-right-short ms-2"></i></a>
           </div>
         </div>
-        <div class="astro-card-right">
-          <h3>{{ astro.name }}</h3>
-          <span class="astro-editorial-role">{{ astro.role }}</span>
-          <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
-          <div class="astro-editorial-tags">
-            <strong>நிபுணத்துவம்:</strong>
-            <span>{{ astro.specialty }}</span>
-          </div>
-          <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i class="bi bi-arrow-right-short ms-2"></i></a>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
@@ -470,40 +477,48 @@
   <div class="cosmic-wave-wrapper">
     <div class="cosmic-wave-track">
       <!-- First set of review cards -->
-      <div class="cosmic-wave-card" *ngFor="let item of testimonials; let i = index" [style.animation-delay]="(i * 0.4) + 's'">
-        <div class="card-quote-header">
-          <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
-          <div class="review-stars-badge">
-            <i class="bi bi-star-fill text-gold" *ngFor="let s of [1,2,3,4,5]"></i>
+      @for (item of testimonials; track item.name; let i = $index) {
+        <div class="cosmic-wave-card" [style.animation-delay]="(i * 0.4) + 's'">
+          <div class="card-quote-header">
+            <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
+            <div class="review-stars-badge">
+              @for (s of [1,2,3,4,5]; track s) {
+                <i class="bi bi-star-fill text-gold"></i>
+              }
+            </div>
+          </div>
+          <p class="review-comment-text">"{{ item.comment }}"</p>
+          <div class="review-author-row">
+            <div class="author-avatar-circle">{{ item.name[0] }}</div>
+            <div class="author-details">
+              <strong class="author-name-text">{{ item.name }}</strong>
+              <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
+            </div>
           </div>
         </div>
-        <p class="review-comment-text">"{{ item.comment }}"</p>
-        <div class="review-author-row">
-          <div class="author-avatar-circle">{{ item.name[0] }}</div>
-          <div class="author-details">
-            <strong class="author-name-text">{{ item.name }}</strong>
-            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
-          </div>
-        </div>
-      </div>
+      }
 
       <!-- Duplicated set of review cards for seamless cosmic wave -->
-      <div class="cosmic-wave-card" *ngFor="let item of testimonials; let i = index" [style.animation-delay]="(i * 0.4) + 's'">
-        <div class="card-quote-header">
-          <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
-          <div class="review-stars-badge">
-            <i class="bi bi-star-fill text-gold" *ngFor="let s of [1,2,3,4,5]"></i>
+      @for (item of testimonials; track 'dup_' + item.name; let i = $index) {
+        <div class="cosmic-wave-card" [style.animation-delay]="(i * 0.4) + 's'">
+          <div class="card-quote-header">
+            <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
+            <div class="review-stars-badge">
+              @for (s of [1,2,3,4,5]; track s) {
+                <i class="bi bi-star-fill text-gold"></i>
+              }
+            </div>
+          </div>
+          <p class="review-comment-text">"{{ item.comment }}"</p>
+          <div class="review-author-row">
+            <div class="author-avatar-circle">{{ item.name[0] }}</div>
+            <div class="author-details">
+              <strong class="author-name-text">{{ item.name }}</strong>
+              <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
+            </div>
           </div>
         </div>
-        <p class="review-comment-text">"{{ item.comment }}"</p>
-        <div class="review-author-row">
-          <div class="author-avatar-circle">{{ item.name[0] }}</div>
-          <div class="author-details">
-            <strong class="author-name-text">{{ item.name }}</strong>
-            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
-          </div>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
@@ -518,16 +533,20 @@
     </div>
 
     <div class="faq-accordion-rows">
-      <div class="faq-accordion-row" *ngFor="let faq of faqs; let idx = index" [class.active]="faq.open"
-        data-aos="fade-up" [attr.data-aos-delay]="(idx + 1) * 50" data-aos-duration="400">
-        <div class="faq-row-header" (click)="toggleFaq(idx)">
-          <h3>{{ faq.question }}</h3>
-          <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
+      @for (faq of faqs; track faq.question; let idx = $index) {
+        <div class="faq-accordion-row" [class.active]="faq.open"
+          data-aos="fade-up" [attr.data-aos-delay]="(idx + 1) * 50" data-aos-duration="400">
+          <div class="faq-row-header" (click)="toggleFaq(idx)">
+            <h3>{{ faq.question }}</h3>
+            <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
+          </div>
+          @if (faq.open) {
+            <div class="faq-row-body">
+              <p>{{ faq.answer }}</p>
+            </div>
+          }
         </div>
-        <div class="faq-row-body" *ngIf="faq.open">
-          <p>{{ faq.answer }}</p>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>

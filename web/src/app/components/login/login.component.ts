@@ -35,13 +35,15 @@ import { AuthService } from '../../services/auth.service';
           </div>
 
           <!-- Error / Warning Alert -->
-          <div *ngIf="errorMessage" [class]="isStudentError ? 'alert warning' : 'alert error'">
-            <span class="alert-icon">{{ isStudentError ? '📱' : '⚠️' }}</span>
-            <div class="alert-content">
-              <strong>{{ isStudentError ? 'Student Account Notice' : 'Authentication Error' }}</strong>
-              <p>{{ errorMessage }}</p>
+          @if (errorMessage) {
+            <div [class]="isStudentError ? 'alert warning' : 'alert error'">
+              <span class="alert-icon">{{ isStudentError ? '📱' : '⚠️' }}</span>
+              <div class="alert-content">
+                <strong>{{ isStudentError ? 'Student Account Notice' : 'Authentication Error' }}</strong>
+                <p>{{ errorMessage }}</p>
+              </div>
             </div>
-          </div>
+          }
 
           <div class="form-group">
             <label for="email">Admin Email Address</label>
@@ -70,8 +72,11 @@ import { AuthService } from '../../services/auth.service';
           </div>
 
           <button type="submit" [disabled]="loading" class="btn-submit">
-            <span *ngIf="!loading">Sign In to Admin Dashboard ➔</span>
-            <span *ngIf="loading">Authenticating...</span>
+            @if (!loading) {
+              <span>Sign In to Admin Dashboard ➔</span>
+            } @else {
+              <span>Authenticating...</span>
+            }
           </button>
         </form>
 

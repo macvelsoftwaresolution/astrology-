@@ -192,6 +192,34 @@ import { IonContent, IonHeader, IonToolbar, IonTitle, IonSpinner } from '@ionic/
         </div>
       }
 
+      <!-- TAB: NOTIFICATION PREFERENCES -->
+      @if (activeTab === 'preferences') {
+        <div class="tab-content">
+          <div class="section-title">
+            <h3>⚙️ அறிவிப்பு விருப்பத்தேர்வுகள்</h3>
+            <p>உங்கள் அறிவிப்பு அமைப்புகளை நிர்வகிக்கவும்</p>
+          </div>
+          <div class="pref-card">
+            <div class="pref-row">
+              <div class="pref-info">
+                <span class="pref-icon">🌟</span>
+                <div>
+                  <strong>தினசரி ராசி பலன்</strong>
+                  <p class="muted">ஒவ்வொரு காலையிலும் 6 மணிக்கு உங்கள் ராசி பலன் அறிவிப்பு</p>
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [checked]="dailyNotifPref" (change)="toggleDailyNotif()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          @if (prefMsg) {
+            <p [class.success]="prefSuccess" class="msg">{{ prefMsg }}</p>
+          }
+        </div>
+      }
+
     </ion-content>
   `,
   styles: [`
@@ -307,6 +335,20 @@ import { IonContent, IonHeader, IonToolbar, IonTitle, IonSpinner } from '@ionic/
     .empty-state { text-align: center; padding: 50px 20px; }
     .empty-state span { font-size: 40px; }
     .empty-state p { color: #8a8ab0; font-size: 14px; margin-top: 10px; }
+
+    .pref-card { background: #160f33; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+    .pref-row { display: flex; align-items: center; justify-content: space-between; }
+    .pref-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .pref-icon { font-size: 24px; flex-shrink: 0; }
+    .pref-info strong { color: #fff; font-size: 14px; display: block; margin-bottom: 2px; }
+    .pref-info .muted { font-size: 11px; line-height: 1.4; }
+
+    .toggle-switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: rgba(255,255,255,0.15); border-radius: 26px; cursor: pointer; transition: 0.3s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
+    .toggle-switch input:checked + .toggle-slider { background: linear-gradient(135deg, #d4af37, #aa7c11); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); }
   `]
 })
 export class ProfilePage implements OnInit {
@@ -315,6 +357,7 @@ export class ProfilePage implements OnInit {
     { key: 'history', icon: '📅', label: 'History' },
     { key: 'payments', icon: '💳', label: 'Payments' },
     { key: 'notifications', icon: '🔔', label: 'Notifs' },
+    { key: 'preferences', icon: '⚙️', label: 'Settings' },
   ];
   activeTab = 'profile';
 
@@ -337,6 +380,10 @@ export class ProfilePage implements OnInit {
   loadingNotifs = false;
   unreadCount = 0;
 
+  dailyNotifPref = true;
+  prefMsg = '';
+  prefSuccess = false;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
@@ -351,6 +398,7 @@ export class ProfilePage implements OnInit {
     this.loadHistory();
     this.loadPayments();
     this.loadNotifications();
+    this.loadPreferences();
   }
 
   get token() { return localStorage.getItem('auth_token') || ''; }
@@ -426,5 +474,27 @@ export class ProfilePage implements OnInit {
       certificate: '🏆', course: '📚', general: '🔔'
     };
     return icons[type] || '🔔';
+  }
+
+  loadPreferences() {
+    this.http.get<any>('http://127.0.0.1:8000/api/user/notification-preferences', this.headers).subscribe({
+      next: res => { this.dailyNotifPref = res.daily_rasi_notification ?? true; }
+    });
+  }
+
+  toggleDailyNotif() {
+    this.prefMsg = '';
+    const newValue = !this.dailyNotifPref;
+    this.http.put<any>('http://127.0.0.1:8000/api/user/notification-preferences', { daily_rasi_notification: newValue }, this.headers).subscribe({
+      next: res => {
+        this.dailyNotifPref = res.daily_rasi_notification;
+        this.prefMsg = res.message;
+        this.prefSuccess = true;
+      },
+      error: () => {
+        this.prefMsg = 'பிழை ஏற்பட்டது.';
+        this.prefSuccess = false;
+      }
+    });
   }
 }
