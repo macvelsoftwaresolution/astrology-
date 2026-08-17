@@ -1,0 +1,282 @@
+<div class="lms-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1>📚 Vedic Astrology Learning Academy & Course Studio</h1>
+      <p>Interactive curriculum design, video lessons, audio slokas, downloadable PDF materials, and price controls.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="btn-primary" (click)="openNewCourseWizard()">
+        <span>✨ Launch Course Studio Wizard</span>
+      </button>
+      <button class="btn-xs-refresh" (click)="loadCourses()" title="Sync">🔄</button>
+    </div>
+  </div>
+
+  <!-- SEARCH & FILTER CONTROLS -->
+  <div class="card-box" style="margin-bottom: 24px; padding: 14px 20px;">
+    <div class="course-filters-row">
+      <div class="search-box-wrap">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          [(ngModel)]="courseSearchQuery" 
+          placeholder="Search astrology courses, titles, categories..." 
+          class="ctrl search-ctrl"
+        />
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:12px;color:#475569;font-weight:600;">Level:</span>
+        <div class="rasi-type-bar" style="display:flex;gap:6px;">
+          <button [class.active]="selectedCourseLevelFilter === 'all'" (click)="selectedCourseLevelFilter = 'all'">All</button>
+          <button [class.active]="selectedCourseLevelFilter === 'Beginner'" (click)="selectedCourseLevelFilter = 'Beginner'">Beginner</button>
+          <button [class.active]="selectedCourseLevelFilter === 'Intermediate'" (click)="selectedCourseLevelFilter = 'Intermediate'">Intermediate</button>
+          <button [class.active]="selectedCourseLevelFilter === 'Advanced'" (click)="selectedCourseLevelFilter = 'Advanced'">Advanced</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      ⏳ Loading courses and curriculum from database...
+    </div>
+  } @else {
+    <!-- COURSES GRID -->
+    <div class="courses-grid">
+      @for (course of getFilteredCourses(); track course.id) {
+        <div class="course-card-pro">
+          <div class="card-image-pro" [style.background-image]="'url(' + (course.thumbnail || 'https://images.unsplash.com/photo-1532012164546-f432f2e37b73?w=800') + ')'">
+            <div class="card-overlay"></div>
+            <div class="badge-price-pro">₹{{ course.price }}</div>
+            <div class="card-tags-row">
+              <span class="level-tag-pro" [ngClass]="(course.level || 'Beginner').toLowerCase()">{{ course.level || 'Beginner' }}</span>
+              <span class="category-tag-pro">{{ course.category || 'Astrology' }}</span>
+            </div>
+          </div>
+
+          <div class="card-content-pro">
+            <h4 class="course-title-pro">{{ course.title }}</h4>
+            <p class="course-desc-pro">{{ course.description }}</p>
+
+            <div style="display:flex;gap:12px;font-size:12px;color:#64748b;margin-bottom:12px;">
+              <span>📁 {{ getCourseModulesCount(course) }} Modules</span>
+              <span>🎬 {{ getCourseLessonsCount(course) }} Lessons</span>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div style="display:flex;gap:8px;margin-top:auto;">
+              <button class="btn-xs-pro gold" style="flex:1;" (click)="openSyllabusDrawer(course)">
+                📋 View Full Syllabus
+              </button>
+              <button class="btn-xs-pro" (click)="openAddModule(course.id)">
+                + Module
+              </button>
+              <button class="btn-xs-pro danger" (click)="deleteCourse(course.id)">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+      @if (getFilteredCourses().length === 0) {
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0;">
+          <div style="font-size: 36px; margin-bottom: 8px;">📚</div>
+          <h3 style="color: #0f172a; margin: 0 0 6px;">No Courses Found</h3>
+          <p style="color: #64748b; font-size: 13px; margin: 0 0 16px;">Create your first astrology masterclass course curriculum.</p>
+          <button class="btn-primary" (click)="openNewCourseWizard()">Launch Course Studio Wizard</button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- SYLLABUS DRAWER MODAL -->
+  @if (openSyllabusDrawerModal && selectedCourseForSyllabus) {
+    <div class="modal-overlay" (click)="openSyllabusDrawerModal = false">
+      <div class="modal-box" style="max-width:640px;max-height:85vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h3 style="margin:0;">📚 {{ selectedCourseForSyllabus.title }}</h3>
+            <span style="font-size:12px;color:#64748b;">Complete Course Curriculum & Lesson Assets</span>
+          </div>
+          <button class="close-btn" (click)="openSyllabusDrawerModal = false">✕</button>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          @for (mod of selectedCourseForSyllabus.modules; track mod.id; let mIdx = $index) {
+            <div class="module-box" style="margin-bottom:12px;">
+              <div class="mod-title">
+                <span>📁 Module {{ mIdx + 1 }}: {{ mod.title }}</span>
+                <button class="btn-xs" (click)="openAddLesson(mod.id)">+ Add Lesson</button>
+              </div>
+              <div class="lessons-list">
+                @for (les of mod.lessons; track les.id; let lIdx = $index) {
+                  <div class="lesson-chip">
+                    <span>{{ lIdx + 1 }}. {{ les.title }} ({{ les.duration || '10 mins' }})</span>
+                    <a [href]="les.content_url" target="_blank" class="les-link">▶ Preview ({{ les.content_type }})</a>
+                  </div>
+                }
+                @if (!mod.lessons || mod.lessons.length === 0) {
+                  <div style="font-size:11px;color:#94a3b8;padding:4px;">No lessons attached yet.</div>
+                }
+              </div>
+            </div>
+          }
+          @if (!selectedCourseForSyllabus.modules || selectedCourseForSyllabus.modules.length === 0) {
+            <div style="text-align:center;padding:24px;color:#64748b;font-size:13px;">
+              No modules added yet. Click "+ Module" to add modules.
+            </div>
+          }
+        </div>
+
+        <div class="modal-btns">
+          <button type="button" class="btn-cancel" (click)="openSyllabusDrawerModal = false">Close</button>
+          <button type="button" class="btn-primary" (click)="openAddModule(selectedCourseForSyllabus.id)">+ Add New Module</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: ADD MODULE -->
+  @if (openModuleModal) {
+    <div class="modal-overlay" (click)="openModuleModal = false">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Add Curriculum Module</h3>
+          <button class="close-btn" (click)="openModuleModal = false">✕</button>
+        </div>
+        <form (ngSubmit)="submitModule()">
+          <div class="form-group">
+            <label>Module Title *</label>
+            <input [(ngModel)]="newModuleTitle" name="mtitle" required placeholder="e.g. Chapter 1: Graha Basics & Rashis" class="ctrl"/>
+          </div>
+          <div class="modal-btns">
+            <button type="button" (click)="openModuleModal = false" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-primary">Add Module</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: ADD LESSON -->
+  @if (openLessonModal) {
+    <div class="modal-overlay" (click)="openLessonModal = false">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Add Lesson Content</h3>
+          <button class="close-btn" (click)="openLessonModal = false">✕</button>
+        </div>
+        <form (ngSubmit)="submitLesson()">
+          <div class="form-group">
+            <label>Lesson Title *</label>
+            <input [(ngModel)]="newLesson.title" name="ltitle" required placeholder="e.g. Introduction to Sun & Moon" class="ctrl"/>
+          </div>
+          <div class="form-group">
+            <label>Content Type</label>
+            <select [(ngModel)]="newLesson.content_type" name="ltype" class="ctrl">
+              <option value="video">MP4 Video Stream / HLS</option>
+              <option value="audio">Vedic Mantra Audio (MP3)</option>
+              <option value="pdf">PDF E-Book / Study Notes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Content Cloud URL *</label>
+            <input [(ngModel)]="newLesson.content_url" name="lurl" required placeholder="https://cdn.astrodivine.com/video/sun.mp4" class="ctrl"/>
+          </div>
+          <div class="form-group">
+            <label>Estimated Duration</label>
+            <input [(ngModel)]="newLesson.duration" name="ldur" placeholder="e.g. 15 mins" class="ctrl"/>
+          </div>
+          <div class="modal-btns">
+            <button type="button" (click)="openLessonModal = false" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-primary">Save Lesson</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- COURSE STUDIO WIZARD MODAL -->
+  @if (openCourseWizardModal) {
+    <div class="modal-overlay" (click)="openCourseWizardModal = false">
+      <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h3 style="margin:0;">🚀 Course Studio Builder Wizard</h3>
+            <span style="font-size:12px;color:#64748b;">Step {{ wizardStep }} of 3</span>
+          </div>
+          <button class="close-btn" (click)="openCourseWizardModal = false">✕</button>
+        </div>
+
+        @if (wizardStep === 1) {
+          <div>
+            <div class="form-group">
+              <label>Course Title *</label>
+              <input [(ngModel)]="newCourse.title" class="ctrl" placeholder="e.g. Complete Vedic Kundali Masterclass"/>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea [(ngModel)]="newCourse.description" rows="3" class="ctrl" placeholder="Deep dive into rasi charts, nakshatras..."></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+              <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" [(ngModel)]="newCourse.price" class="ctrl"/>
+              </div>
+              <div class="form-group">
+                <label>Level</label>
+                <select [(ngModel)]="newCourse.level" class="ctrl">
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <input [(ngModel)]="newCourse.category" class="ctrl" placeholder="Astrology"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Thumbnail Image URL</label>
+              <input [(ngModel)]="newCourse.thumbnail" class="ctrl" placeholder="https://images.unsplash.com/..."/>
+            </div>
+            <div class="modal-btns">
+              <button type="button" class="btn-cancel" (click)="openCourseWizardModal = false">Cancel</button>
+              <button type="button" class="btn-primary" (click)="wizardStep = 2">Next: Build Modules ➔</button>
+            </div>
+          </div>
+        }
+
+        @if (wizardStep === 2) {
+          <div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:10px;margin-bottom:16px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:6px;">Add Module to Course:</label>
+              <div style="display:flex;gap:8px;">
+                <input [(ngModel)]="newModuleTitle" placeholder="Module Title (e.g. Chapter 1: Basics)" class="ctrl" style="flex:1;"/>
+                <button type="button" class="btn-primary" (click)="addModuleInWizard()">+ Add</button>
+              </div>
+            </div>
+
+            <div style="max-height:260px;overflow-y:auto;margin-bottom:16px;">
+              @for (m of wizardModules; track m.id; let i = $index) {
+                <div class="module-box" style="margin-bottom:8px;">
+                  <strong style="color:#b45309;font-size:13px;">Module {{ i + 1 }}: {{ m.title }}</strong>
+                  <div style="font-size:11px;color:#64748b;margin-top:4px;">{{ (m.lessons || []).length }} Lessons attached</div>
+                </div>
+              }
+              @if (wizardModules.length === 0) {
+                <div style="text-align:center;padding:16px;color:#64748b;font-size:12px;">No modules added yet.</div>
+              }
+            </div>
+
+            <div class="modal-btns">
+              <button type="button" class="btn-cancel" (click)="wizardStep = 1">◀ Back</button>
+              <button type="button" class="btn-primary" (click)="publishWizardCourse()">🚀 Publish Course Live</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

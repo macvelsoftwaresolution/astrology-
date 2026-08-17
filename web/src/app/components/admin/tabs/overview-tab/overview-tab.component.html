@@ -1,0 +1,86 @@
+<div class="overview-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1>📊 Command Center & Analytics</h1>
+      <p>Real-time platform metrics, telemetry, and revenue overview.</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-primary" (click)="loadMetrics()">🔄 Refresh Metrics</button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      ⏳ Loading analytics data from database...
+    </div>
+  } @else {
+    <!-- METRICS GRID -->
+    <div class="metrics-grid">
+      <div class="metric-card gold">
+        <div class="icon">💰</div>
+        <div class="val">₹{{ metrics?.total_revenue || 0 | number }}</div>
+        <div class="lbl">Total Platform Revenue</div>
+      </div>
+      <div class="metric-card blue">
+        <div class="icon">🎓</div>
+        <div class="val">{{ metrics?.total_students || 0 }}</div>
+        <div class="lbl">Registered Students</div>
+      </div>
+      <div class="metric-card purple">
+        <div class="icon">🔮</div>
+        <div class="val">{{ metrics?.total_bookings || 0 }}</div>
+        <div class="lbl">Astrology Bookings</div>
+      </div>
+      <div class="metric-card green">
+        <div class="icon">📦</div>
+        <div class="val">{{ metrics?.total_book_orders || 0 }}</div>
+        <div class="lbl">Book & Courier Orders</div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS ROWS -->
+    <div class="analytics-row">
+      <div class="card-box">
+        <h3>💰 Revenue Breakdown</h3>
+        <div class="ledger-row">
+          <span>📚 Course Sales Revenue</span>
+          <strong>₹{{ metrics?.revenue_breakdown?.courses || 0 | number }}</strong>
+        </div>
+        <div class="ledger-row">
+          <span>🔮 Astrology Consultation Revenue</span>
+          <strong>₹{{ metrics?.revenue_breakdown?.services || 0 | number }}</strong>
+        </div>
+        <div class="ledger-row">
+          <span>📦 Books & Physical Goods</span>
+          <strong>₹{{ metrics?.revenue_breakdown?.books || 0 | number }}</strong>
+        </div>
+        <div class="ledger-row" style="border-bottom:none;margin-top:8px;font-weight:800;font-size:15px;color:#b45309;">
+          <span>Grand Total</span>
+          <strong>₹{{ metrics?.total_revenue || 0 | number }}</strong>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <h3 style="margin:0;">🛡️ Active Management Team</h3>
+          <button class="btn-sm" (click)="goToTab('team')">Manage Team ➔</button>
+        </div>
+        <div class="team-mini-list">
+          @for (member of teamList.slice(0, 4); track member.id) {
+            <div class="mini-item">
+              <div class="mini-avatar">{{ member.name.charAt(0) }}</div>
+              <div class="mini-info">
+                <strong>{{ member.name }}</strong>
+                <small>{{ member.email }}</small>
+              </div>
+              <span class="status active">Active</span>
+            </div>
+          }
+          @if (teamList.length === 0) {
+            <div style="text-align:center;padding:12px;color:#64748b;font-size:12px;">No team members found.</div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

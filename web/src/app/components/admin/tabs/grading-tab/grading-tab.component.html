@@ -1,0 +1,103 @@
+<div class="grading-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1>📝 Student Exam Valuation & Certification Center</h1>
+      <p>Evaluate final student astrology exam answer sheets and auto-issue verified completion certificates.</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-xs-refresh" (click)="loadSubmissions()" title="Sync">🔄 Sync Exams</button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      ⏳ Loading exam submissions from database...
+    </div>
+  } @else {
+    <div class="card-box">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Exam Submission</th>
+            <th>Score</th>
+            <th>Notes</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (sub of submissions; track sub.id) {
+            <tr>
+              <td><strong>{{ sub.student_name }}</strong></td>
+              <td>{{ sub.course_title }}</td>
+              <td>
+                <a [href]="sub.submission_url" target="_blank" class="pdf-link">📄 View Answer Sheet (PDF)</a>
+              </td>
+              <td>
+                @if (sub.score !== null && sub.score !== undefined) {
+                  <span class="score-badge" [ngClass]="sub.score >= 60 ? 'good' : 'bad'">
+                    {{ sub.score }} / 100
+                  </span>
+                } @else {
+                  <span class="muted">Pending</span>
+                }
+              </td>
+              <td class="muted">{{ sub.evaluator_notes || '-' }}</td>
+              <td>
+                <span class="status-pill" [ngClass]="(sub.status || 'Pending').toLowerCase()">
+                  {{ sub.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-sm" (click)="openGradingModal(sub)">Grade Exam</button>
+              </td>
+            </tr>
+          }
+          @if (submissions.length === 0) {
+            <tr>
+              <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
+                No pending exam submissions.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- MODAL: GRADE EXAM SUBMISSION -->
+  @if (selectedSubmissionForGrading) {
+    <div class="modal-overlay" (click)="selectedSubmissionForGrading = null">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Grade & Verify Student Exam</h3>
+          <button class="close-btn" (click)="selectedSubmissionForGrading = null">✕</button>
+        </div>
+        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">Student: <strong style="color:#0f172a;">{{ selectedSubmissionForGrading.student_name }}</strong></p>
+        <form (ngSubmit)="saveGrading()">
+          <div class="form-group">
+            <label>Marks / Score (Out of 100) *</label>
+            <input type="number" [(ngModel)]="gradingForm.score" name="gscore" required class="ctrl"/>
+          </div>
+          <div class="form-group">
+            <label>Approval Status</label>
+            <select [(ngModel)]="gradingForm.status" name="gstatus" class="ctrl">
+              <option value="Approved">Approved (Issue E-Certificate if Score ≥ 60)</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Evaluator Notes</label>
+            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gnotes" rows="2" class="ctrl" placeholder="Provide feedback to student..."></textarea>
+          </div>
+          <div class="modal-btns">
+            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-primary">Submit Grade & Auto-Issue Certificate</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

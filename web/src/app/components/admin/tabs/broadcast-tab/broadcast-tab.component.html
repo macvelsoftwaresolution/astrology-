@@ -1,0 +1,99 @@
+<div class="broadcast-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1>📢 Push Notification Broadcast & Daily Rasi Alerts</h1>
+      <p>Send instant announcements, spiritual events, special discount alerts, and manage automated daily Rasi notifications.</p>
+    </div>
+  </div>
+
+  <!-- DAILY RASI NOTIFICATION CONTROL CARD -->
+  <div class="card-box" style="margin-bottom: 24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+      <div>
+        <h3 style="margin:0 0 4px 0;display:flex;align-items:center;gap:8px;">
+          <span>🌟</span> காலை தினசரி ராசி பலன் அறிவிப்பு (Daily 06:00 AM Rasi Push)
+        </h3>
+        <p style="margin:0;font-size:13px;color:#64748b;">
+          ஒவ்வொரு நாளும் காலை 6:00 மணிக்கு அனைத்து பயனர்களுக்கும் அவர்களது ராசிக்கான தினசரி பலன்கள் தானாகவே அனுப்பப்படும்.
+        </p>
+        <div style="margin-top:8px;font-size:12px;color:#b45309;font-weight:700;">
+          📲 அறிவிப்பு பெற பதிவு செய்துள்ள பயனர்கள்: {{ dailyNotifOptedInCount }} பேர்
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span [style.color]="dailyNotifEnabled ? '#059669' : '#dc2626'" style="font-weight:800;font-size:14px;">
+          {{ dailyNotifEnabled ? '🟢 இயங்குகிறது (Enabled)' : '🔴 நிறுத்தப்பட்டுள்ளது (Disabled)' }}
+        </span>
+        <button 
+          type="button" 
+          [class.btn-primary]="!dailyNotifEnabled"
+          [class.btn-cancel]="dailyNotifEnabled"
+          (click)="toggleDailyRasiNotification()"
+          [disabled]="dailyNotifLoading"
+          style="padding:9px 18px;font-weight:700;font-size:13px;"
+        >
+          @if (dailyNotifLoading) {
+            <span>மாற்றப்படுகிறது...</span>
+          } @else {
+            <span>{{ dailyNotifEnabled ? 'அறிவிப்பை நிறுத்து' : 'அறிவிப்பை இயக்கு' }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANUAL BROADCAST CAMPAIGN FORM -->
+  <div class="card-box" style="max-width: 680px;">
+    <h3>📢 புதிய அறிவிப்பு அனுப்புக (Send Broadcast Push Campaign)</h3>
+    <form (ngSubmit)="sendBroadcast()">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div class="form-group" style="margin:0;">
+          <label>அனுப்பும் இலக்கு (Target Audience):</label>
+          <select [(ngModel)]="broadcastForm.target" name="b_target" class="ctrl">
+            <option value="all">அனைத்து பயனர்கள் (All Registered Users)</option>
+            <option value="single">குறிப்பிட்ட பயனர் (Specific User ID)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>அறிவிப்பு வகை (Type):</label>
+          <select [(ngModel)]="broadcastForm.type" name="b_type" class="ctrl">
+            <option value="general">பொதுவான தகவல் (General)</option>
+            <option value="rasi_palan">ராசி பலன் (Rasi Palan Alert)</option>
+            <option value="appointment">ஆலோசனை தகவல் (Appointment)</option>
+            <option value="discount">சிறப்பு சலுகை (Discount Offer)</option>
+          </select>
+        </div>
+      </div>
+
+      @if (broadcastForm.target === 'single') {
+        <div class="form-group">
+          <label>பயனர் ID (User ID):</label>
+          <input type="number" [(ngModel)]="broadcastForm.user_id" name="b_uid" required class="ctrl" placeholder="எ.கா: 12"/>
+        </div>
+      }
+
+      <div class="form-group">
+        <label>அறிவிப்பின் தலைப்பு (Notification Title) *:</label>
+        <input [(ngModel)]="broadcastForm.title" name="b_title" required class="ctrl" placeholder="எ.கா: இன்றைய சிறப்பு தினசரி பலன்கள் வெளியானது!"/>
+      </div>
+
+      <div class="form-group">
+        <label>அறிவிப்பின் முழு விவரம் (Notification Message Body) *:</label>
+        <textarea [(ngModel)]="broadcastForm.body" name="b_body" required rows="3" class="ctrl" placeholder="பயனர்களுக்கு அனுப்ப வேண்டிய செய்தி விவரங்களை இங்கு உள்ளிடவும்..."></textarea>
+      </div>
+
+      @if (broadcastMsg) {
+        <div style="margin-bottom:14px;font-size:13px;font-weight:700;color:#059669;">
+          {{ broadcastMsg }}
+        </div>
+      }
+
+      <div style="display:flex;justify-content:flex-end;">
+        <button type="submit" class="btn-primary" style="padding:10px 24px;">
+          🚀 உடனடியாக அனுப்புக (Send Broadcast Now)
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

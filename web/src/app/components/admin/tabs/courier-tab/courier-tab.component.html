@@ -1,0 +1,105 @@
+<div class="courier-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1>📦 Courier Logistics & Book Orders Fulfillment</h1>
+      <p>Dispatch spiritual books, yantras, astrology guides, and update AWB tracking codes.</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-xs-refresh" (click)="loadOrders()" title="Sync">🔄 Sync Orders</button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      ⏳ Loading courier orders from database...
+    </div>
+  } @else {
+    <div class="card-box">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Book Title</th>
+            <th>Shipping Address</th>
+            <th>Tracking Details</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of bookOrders; track order.id) {
+            <tr>
+              <td><strong>{{ order.order_number }}</strong></td>
+              <td>
+                <div>{{ order.user_name }}</div>
+                <small class="muted">{{ order.user_phone }}</small>
+              </td>
+              <td>{{ order.book_title }}</td>
+              <td class="address-col">{{ order.shipping_address }}</td>
+              <td>
+                @if (order.awb_number) {
+                  <div><strong>{{ order.courier_partner }}</strong></div>
+                  <small style="color:#2563eb;font-weight:700;">AWB: {{ order.awb_number }}</small>
+                } @else {
+                  <span class="muted">Unassigned</span>
+                }
+              </td>
+              <td>
+                <span class="status-pill" [ngClass]="(order.status || 'Processing').toLowerCase()">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-sm" (click)="openCourierModal(order)">Update Courier</button>
+              </td>
+            </tr>
+          }
+          @if (bookOrders.length === 0) {
+            <tr>
+              <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
+                No courier book orders found.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- MODAL: UPDATE COURIER -->
+  @if (selectedOrderForCourier) {
+    <div class="modal-overlay" (click)="selectedOrderForCourier = null">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Update Courier Dispatch Details</h3>
+          <button class="close-btn" (click)="selectedOrderForCourier = null">✕</button>
+        </div>
+        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">Order Number: <strong style="color:#0f172a;">{{ selectedOrderForCourier.order_number }}</strong></p>
+        <form (ngSubmit)="saveCourierStatus()">
+          <div class="form-group">
+            <label>Shipping Status</label>
+            <select [(ngModel)]="courierForm.status" name="cstatus" class="ctrl">
+              <option value="Processing">Processing</option>
+              <option value="Packed">Packed</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Courier Partner Name</label>
+            <input [(ngModel)]="courierForm.courier_partner" name="cpartner" placeholder="e.g. Blue Dart / DTDC / India Post" class="ctrl"/>
+          </div>
+          <div class="form-group">
+            <label>AWB Tracking Number</label>
+            <input [(ngModel)]="courierForm.awb_number" name="cawb" placeholder="e.g. AWB-991823" class="ctrl"/>
+          </div>
+          <div class="modal-btns">
+            <button type="button" (click)="selectedOrderForCourier = null" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-primary">Save Courier Status</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

@@ -77,45 +77,89 @@ import { HttpClient } from '@angular/common/http';
       <!-- USER SIDE SERVICE BOOKING MODAL -->
       @if (selectedService) {
         <div class="booking-modal-overlay" style="position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;" (click)="selectedService = null">
-          <div class="booking-modal-box" style="background:#fff;border-radius:20px;padding:24px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 45px rgba(0,0,0,0.2);" (click)="$event.stopPropagation()">
+          <div class="booking-modal-box" style="background:#fff;border-radius:20px;padding:24px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 45px rgba(0,0,0,0.2);" (click)="$event.stopPropagation()">
             
             <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;padding-bottom:12px;margin-bottom:16px;">
               <div>
                 <h3 style="margin:0;color:#0f172a;font-size:17px;">{{ selectedService.title }}</h3>
-                <span style="font-size:12px;color:#b45309;font-weight:700;">கட்டணம்: {{ selectedService.priceDisplay }}</span>
+                <span style="font-size:12px;color:#b45309;font-weight:700;">தட்சிணை: ₹{{ getCurrentPrice() }}</span>
               </div>
               <button type="button" style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:50%;width:28px;height:28px;cursor:pointer;" (click)="selectedService = null">✕</button>
             </div>
 
-            <form (ngSubmit)="submitUserBooking()">
-              <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">உங்கள் பெயர் (Full Name) *</label>
-                <input [(ngModel)]="bookingForm.user_name" name="u_name" required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;" placeholder="பெயர் உள்ளிடவும்"/>
-              </div>
-
-              <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">தொலைபேசி எண் (Phone Number) *</label>
-                <input [(ngModel)]="bookingForm.user_phone" name="u_phone" required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;" placeholder="10 இலக்க எண்"/>
-              </div>
-
-              <!-- Preferred Date with Live Astrologer Availability Validation -->
-              <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">விரும்பிய ஆலோசனை தேதி (Preferred Date) *</label>
-                <input 
-                  type="date" 
-                  [(ngModel)]="bookingForm.preferred_date" 
-                  name="u_prefdate" 
-                  required 
-                  (change)="checkSelectedDate()"
-                  style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;"
-                />
-                <!-- Blocked Warning -->
-                @if (selectedDateIsBlocked) {
-                  <div style="margin-top:6px;background:#fee2e2;border:1px solid #fecaca;padding:8px 12px;border-radius:8px;color:#b91c1c;font-size:12px;font-weight:600;">
-                    ⛔ மன்னிக்கவும்! தேர்ந்தெடுக்கப்பட்ட தேதியில் ஜோதிடர் ஆன்மீக நிகழ்வுகளில் இருப்பதால் முன்பதிவு செய்ய இயலாது. மாற்று தேதியை தேர்வு செய்யவும்.
+            <!-- CHOOSE ASTROLOGER SELECTOR -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;">
+                🧙‍♂️ ஆலோசனை வழங்கும் தலைமை ஜோதிடர் (Select Astrologer):
+              </label>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:8px;">
+                @for (astro of astrologers; track astro.name) {
+                  <div 
+                    (click)="selectAstrologer(astro)"
+                    [style.background]="selectedAstrologer?.id === astro.id ? '#fef3c7' : '#f8fafc'"
+                    [style.borderColor]="selectedAstrologer?.id === astro.id ? '#f59e0b' : '#e2e8f0'"
+                    style="border:2px solid;border-radius:10px;padding:10px;cursor:pointer;transition:all 0.15s;"
+                  >
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                      <span style="font-size:16px;">🧙‍♂️</span>
+                      <strong style="font-size:12px;color:#0f172a;display:block;">{{ astro.name }}</strong>
+                    </div>
+                    <div style="font-size:10px;color:#64748b;margin-bottom:4px;">{{ astro.experience }}</div>
+                    <div style="font-size:11px;font-weight:800;color:#b45309;">₹{{ astro.fee }}</div>
                   </div>
                 }
               </div>
+            </div>
+
+            <form (ngSubmit)="submitUserBooking()">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">உங்கள் பெயர் (Full Name) *</label>
+                  <input [(ngModel)]="bookingForm.user_name" name="u_name" required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;" placeholder="பெயர் உள்ளிடவும்"/>
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">தொலைபேசி எண் (Phone Number) *</label>
+                  <input [(ngModel)]="bookingForm.user_phone" name="u_phone" required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;" placeholder="10 இலக்க எண்"/>
+                </div>
+              </div>
+
+              <!-- Preferred Date and Astrologer Specific Timing Slots -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">விரும்பிய ஆலோசனை தேதி *</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="bookingForm.preferred_date" 
+                    name="u_prefdate" 
+                    required 
+                    (change)="checkSelectedDate()"
+                    style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;"
+                  />
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">ஆலோசனை நேரம் (Time Slot) *</label>
+                  <select 
+                    [(ngModel)]="bookingForm.time_slot" 
+                    name="u_timeslot" 
+                    required
+                    style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;background:#fff;"
+                  >
+                    @for (slot of getAvailableSlots(); track slot) {
+                      <option [value]="slot">{{ slot }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <!-- Blocked Warning for Selected Astrologer -->
+              @if (selectedDateIsBlocked) {
+                <div style="margin-bottom:12px;background:#fee2e2;border:1px solid #fecaca;padding:10px 14px;border-radius:10px;color:#b91c1c;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:16px;">⛔</span>
+                  <span>
+                    மன்னிக்கவும்! <strong>{{ selectedAstrologer?.name }}</strong> அவர்கள் இந்த தேதியில் ({{ bookingForm.preferred_date }}) ஆன்மீக பூஜைகளில் / விடுப்பில் உள்ளார். மாற்று தேதியை தேர்வு செய்யவும்.
+                  </span>
+                </div>
+              }
 
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
                 <div>
@@ -137,20 +181,25 @@ import { HttpClient } from '@angular/common/http';
                 <textarea [(ngModel)]="bookingForm.query" name="u_query" rows="2" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;" placeholder="தொழில், திருமணம், குடும்பம் குறித்த கேள்விகள்..."></textarea>
               </div>
 
-              <div style="display:flex;justify-content:flex-end;gap:10px;">
-                <button type="button" style="padding:9px 16px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;cursor:pointer;" (click)="selectedService = null">Cancel</button>
-                <button 
-                  type="submit" 
-                  class="btn-primary" 
-                  [disabled]="selectedDateIsBlocked || isSubmitting"
-                  style="padding:9px 20px;font-size:13px;"
-                >
-                  @if (isSubmitting) {
-                    <span>⏳ பதிவு செய்யப்படுகிறது...</span>
-                  } @else {
-                    <span>✓ முன்பதிவை உறுதிசெய்</span>
-                  }
-                </button>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;font-weight:800;color:#0f172a;">
+                  மொத்த கட்டணம்: <span style="color:#b45309;">₹{{ getCurrentPrice() }}</span>
+                </span>
+                <div style="display:flex;gap:10px;">
+                  <button type="button" style="padding:9px 16px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;cursor:pointer;" (click)="selectedService = null">Cancel</button>
+                  <button 
+                    type="submit" 
+                    class="btn-primary" 
+                    [disabled]="selectedDateIsBlocked || isSubmitting"
+                    style="padding:9px 20px;font-size:13px;"
+                  >
+                    @if (isSubmitting) {
+                      <span>⏳ பதிவு செய்யப்படுகிறது...</span>
+                    } @else {
+                      <span>✓ முன்பதிவை உறுதிசெய்</span>
+                    }
+                  </button>
+                </div>
               </div>
             </form>
 
@@ -161,13 +210,15 @@ import { HttpClient } from '@angular/common/http';
       <!-- SUCCESS CONFIRMATION MODAL -->
       @if (bookingSuccessModal) {
         <div class="booking-modal-overlay" style="position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;">
-          <div style="background:#fff;border-radius:20px;padding:28px;width:100%;max-width:440px;text-align:center;box-shadow:0 20px 45px rgba(0,0,0,0.2);">
+          <div style="background:#fff;border-radius:20px;padding:28px;width:100%;max-width:460px;text-align:center;box-shadow:0 20px 45px rgba(0,0,0,0.2);">
             <div style="font-size:42px;margin-bottom:10px;">🎉</div>
             <h3 style="margin:0 0 6px 0;color:#0f172a;font-size:20px;">முன்பதிவு வெற்றிகரமாக பதிவு செய்யப்பட்டது!</h3>
             <p style="color:#64748b;font-size:13px;margin:0 0 16px 0;">முன்பதிவு எண்: <strong style="color:#b45309;">{{ confirmedOrderId }}</strong></p>
-            <p style="font-size:12px;color:#334155;background:#f8fafc;padding:12px;border-radius:8px;margin-bottom:20px;line-height:1.4;">
-              எங்கள் தலைமை ஜோதிடர் குறிப்பிட்ட தேதியில் உங்கள் தொலைபேசி எண்ணிற்கு தொடர்பு கொண்டு துல்லியமான பலன்களை வழங்குவார்.
-            </p>
+            <div style="font-size:12px;color:#334155;background:#f8fafc;padding:12px;border-radius:8px;margin-bottom:20px;line-height:1.5;text-align:left;">
+              <div>🧙‍♂️ <strong>ஜோதிடர்:</strong> {{ confirmedAstrologerName || 'தலைமை ஜோதிடர்' }}</div>
+              <div>🗓️ <strong>தேதி & நேரம்:</strong> {{ bookingForm.preferred_date }} &bull; {{ bookingForm.time_slot }}</div>
+              <div style="margin-top:6px;color:#166534;font-weight:600;">குறிப்பிட்ட நேரத்தில் ஜோதிடர் உங்கள் எண்ணிற்கு தொடர்பு கொள்வார்.</div>
+            </div>
             <button type="button" class="btn-primary" style="padding:10px 24px;" (click)="bookingSuccessModal = false">
               சரி (Done)
             </button>
@@ -194,17 +245,54 @@ export class ServicesPageComponent implements OnInit {
     { title: 'நியூமராலஜி & பெயர் அதிர்ஷ்டம்', englishTitle: 'NUMEROLOGY & NAMING', description: 'உங்கள் பிறந்த தேதி மற்றும் நட்சத்திரத்திற்கு ஏற்ற அதிர்ஷ்டப் பெயர்கள் மற்றும் எண்கணித வழிகாட்டுதல்கள்.', price: 399, priceDisplay: '₹399', iconClass: 'bi bi-123' }
   ];
 
+  defaultAstrologers = [
+    {
+      id: 1,
+      name: 'குரு ஸ்ரீநிவாசன்',
+      role_title: 'தலைமை வேத ஜோதிடர் (Chief Vedic Astrologer)',
+      experience: '25+ ஆண்டுகள் அனுபவம்',
+      specialty: 'துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், பிரசன்ன ஜோதிடம்',
+      fee: 999,
+      available_slots: ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM - 04:30 PM', '05:00 PM - 06:00 PM', '06:30 PM - 07:30 PM'],
+      blocked_dates: ['2026-08-23', '2026-08-30']
+    },
+    {
+      id: 2,
+      name: 'குரு ராமஜெயம்',
+      role_title: 'முதுநிலை பிரசன்ன & வாஸ்து நிபுணர் (Senior Prashna Expert)',
+      experience: '18+ ஆண்டுகள் அனுபவம்',
+      specialty: 'கேள்வி ஜோதிடம், வாஸ்து சாஸ்திரம், தோஷ நிவாரணப் பரிகாரங்கள்',
+      fee: 799,
+      available_slots: ['10:30 AM - 11:30 AM', '02:00 PM - 03:00 PM', '04:30 PM - 05:30 PM', '07:00 PM - 08:00 PM'],
+      blocked_dates: ['2026-08-23']
+    },
+    {
+      id: 3,
+      name: 'குரு மீனாட்சி சுந்தரம்',
+      role_title: 'நாடி & நியூமராலஜி வல்லுநர் (Nadi & Numerology Specialist)',
+      experience: '15+ ஆண்டுகள் அனுபவம்',
+      specialty: 'நாடி ஜோதிடம், நியூமராலஜி பெயர் அதிர்ஷ்டம், தொழில் & வியாபார யோகம்',
+      fee: 599,
+      available_slots: ['09:00 AM - 10:00 AM', '11:00 AM - 12:00 PM', '03:00 PM - 04:00 PM', '06:00 PM - 07:00 PM'],
+      blocked_dates: ['2026-08-24']
+    }
+  ];
+
+  astrologers: any[] = [...this.defaultAstrologers];
+  selectedAstrologer: any = this.defaultAstrologers[0];
   blockedDates: string[] = [];
   selectedService: any = null;
   selectedDateIsBlocked = false;
   isSubmitting = false;
   bookingSuccessModal = false;
   confirmedOrderId = '';
+  confirmedAstrologerName = '';
 
   bookingForm = {
     user_name: '',
     user_phone: '',
     preferred_date: new Date().toISOString().split('T')[0],
+    time_slot: '10:00 AM - 11:00 AM',
     dob: '',
     tob: '',
     pob: '',
@@ -214,7 +302,24 @@ export class ServicesPageComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
+    this.fetchAstrologers();
     this.fetchAvailability();
+  }
+
+  fetchAstrologers(): void {
+    this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
+      next: (res) => {
+        if (res.astrologers && res.astrologers.length > 0) {
+          this.astrologers = res.astrologers;
+          this.selectedAstrologer = this.astrologers[0];
+          if (this.selectedAstrologer.available_slots && this.selectedAstrologer.available_slots.length > 0) {
+            this.bookingForm.time_slot = this.selectedAstrologer.available_slots[0];
+          }
+        }
+        this.checkSelectedDate();
+      },
+      error: () => {}
+    });
   }
 
   fetchAvailability(): void {
@@ -227,9 +332,34 @@ export class ServicesPageComponent implements OnInit {
     });
   }
 
+  selectAstrologer(astro: any): void {
+    this.selectedAstrologer = astro;
+    if (astro.available_slots && astro.available_slots.length > 0) {
+      this.bookingForm.time_slot = astro.available_slots[0];
+    }
+    this.checkSelectedDate();
+  }
+
+  getAvailableSlots(): string[] {
+    if (this.selectedAstrologer && this.selectedAstrologer.available_slots && this.selectedAstrologer.available_slots.length > 0) {
+      return this.selectedAstrologer.available_slots;
+    }
+    return ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '04:00 PM - 05:00 PM', '06:00 PM - 07:00 PM'];
+  }
+
+  getCurrentPrice(): number {
+    if (this.selectedAstrologer && this.selectedAstrologer.fee) {
+      return Number(this.selectedAstrologer.fee);
+    }
+    return this.selectedService ? Number(this.selectedService.price) : 499;
+  }
+
   openBooking(service: any): void {
     this.selectedService = service;
     this.bookingForm.preferred_date = new Date().toISOString().split('T')[0];
+    if (this.selectedAstrologer && this.selectedAstrologer.available_slots && this.selectedAstrologer.available_slots.length > 0) {
+      this.bookingForm.time_slot = this.selectedAstrologer.available_slots[0];
+    }
     this.checkSelectedDate();
   }
 
@@ -238,25 +368,31 @@ export class ServicesPageComponent implements OnInit {
       this.selectedDateIsBlocked = false;
       return;
     }
-    this.selectedDateIsBlocked = this.blockedDates.includes(this.bookingForm.preferred_date);
+    const curDate = this.bookingForm.preferred_date;
+    const astroBlocked = this.selectedAstrologer?.blocked_dates || [];
+    this.selectedDateIsBlocked = astroBlocked.includes(curDate) || this.blockedDates.includes(curDate);
   }
 
   submitUserBooking(): void {
     if (!this.selectedService) return;
     if (this.selectedDateIsBlocked) {
-      alert('மன்னிக்கவும்! தேர்ந்தெடுக்கப்பட்ட தேதியில் முன்பதிவு செய்ய இயலாது.');
+      alert('மன்னிக்கவும்! தேர்ந்தெடுக்கப்பட்ட தேதியில் ஜோதிடர் விடுப்பில் உள்ளார். மாற்று தேதியை தேர்வு செய்யவும்.');
       return;
     }
 
     this.isSubmitting = true;
+    const finalPrice = this.getCurrentPrice();
 
     const payload = {
       user_name: this.bookingForm.user_name,
       user_phone: this.bookingForm.user_phone,
       service_type: this.selectedService.title,
-      price: this.selectedService.price,
+      price: finalPrice,
       booking_date: this.bookingForm.preferred_date,
       details: {
+        astrologer_name: this.selectedAstrologer?.name || 'முதன்மை ஜோதிடர்',
+        astrologer_id: this.selectedAstrologer?.id || 1,
+        time_slot: this.bookingForm.time_slot,
         dob: this.bookingForm.dob,
         tob: this.bookingForm.tob,
         pob: this.bookingForm.pob,
@@ -269,6 +405,7 @@ export class ServicesPageComponent implements OnInit {
       next: (res) => {
         this.isSubmitting = false;
         this.confirmedOrderId = res.order_id || 'AST-2026';
+        this.confirmedAstrologerName = this.selectedAstrologer?.name || '';
         this.selectedService = null;
         this.bookingSuccessModal = true;
       },

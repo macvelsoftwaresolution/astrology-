@@ -1,0 +1,4 @@
+/* Broadcast tab specific styles */
+:host {
+  display: block;
+}

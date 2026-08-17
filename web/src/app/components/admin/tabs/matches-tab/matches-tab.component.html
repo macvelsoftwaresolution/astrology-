@@ -1,0 +1,161 @@
+<div class="matches-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1>💑 திருமணப் பொருத்தம் & வரன் தேடல் பதிவுகள் (Marriage Match Logs)</h1>
+      <p>பயனர்கள் கணித்த 10 திருமணப் பொருத்தங்களின் முடிவுகள் மற்றும் தொலைபேசி ஆலோசனை நிலைகள்.</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-xs-refresh" (click)="loadMatches()" title="Sync">🔄 Sync Logs</button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      ⏳ Loading marriage match logs from database...
+    </div>
+  } @else {
+    <div class="card-box">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>மணமகன் விவரம் (Boy)</th>
+            <th>மணமகள் விவரம் (Girl)</th>
+            <th>பொருத்தம் (Score)</th>
+            <th>முடிவு (Verdict)</th>
+            <th>ஆலோசனை நிலை</th>
+            <th>பதிவு தேதி</th>
+            <th>செயல்கள்</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of marriageMatches; track m.id) {
+            <tr>
+              <td><strong>#{{ m.id }}</strong></td>
+              <td>
+                <div style="font-weight:600;color:#0f172a;">{{ m.boy_name }}</div>
+                <small class="muted">{{ m.boy_rasi }} &bull; {{ m.boy_nakshatra }}</small>
+                @if (m.user_phone) {
+                  <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:4px;">
+                    <a [href]="'tel:' + m.user_phone" class="btn-tel-call">📞 {{ m.user_phone }}</a>
+                    <a [href]="'https://wa.me/91' + m.user_phone" target="_blank" class="btn-wa-link">💬 WA</a>
+                  </div>
+                }
+              </td>
+              <td>
+                <div style="font-weight:600;color:#0f172a;">{{ m.girl_name }}</div>
+                <small class="muted">{{ m.girl_rasi }} &bull; {{ m.girl_nakshatra }}</small>
+              </td>
+              <td>
+                <span class="score-badge" [ngClass]="m.match_score >= 6 ? 'good' : 'bad'">
+                  {{ m.match_score }} / 10
+                </span>
+              </td>
+              <td>
+                <strong [style.color]="m.match_score >= 6 ? '#059669' : '#dc2626'">
+                  {{ m.verdict || (m.match_score >= 6 ? 'பொருத்தம் உண்டு' : 'பொருத்தம் குறைவு') }}
+                </strong>
+              </td>
+              <td>
+                <span class="status-pill" [ngClass]="(m.consultation_status || 'Pending').toLowerCase()">
+                  {{ m.consultation_status || 'Pending' }}
+                </span>
+                @if (m.admin_notes) {
+                  <div class="notes-preview-snippet" [title]="m.admin_notes">
+                    📝 {{ m.admin_notes }}
+                  </div>
+                }
+              </td>
+              <td style="font-size:12px;color:#64748b;">{{ m.created_at | date:'dd MMM yyyy' }}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn-sm" (click)="selectedMatch = m">10 பொருத்தங்கள்</button>
+                  <button class="btn-sm" (click)="openEditMatchStatus(m)">நிலை மாற்றம்</button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (marriageMatches.length === 0) {
+            <tr>
+              <td colspan="8" style="text-align:center;padding:24px;color:#64748b;">
+                திருமணப் பொருத்த பதிவுகள் எதுவும் இல்லை.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- MODAL: 10 PORUTHAM BREAKDOWN -->
+  @if (selectedMatch) {
+    <div class="modal-overlay" (click)="selectedMatch = null">
+      <div class="modal-box" style="max-width:540px;max-height:85vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h3 style="margin:0;">💑 {{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
+            <span style="font-size:12px;color:#64748b;">10 விதமான திருமணப் பொருத்த முடிவுகள்</span>
+          </div>
+          <button class="close-btn" (click)="selectedMatch = null">✕</button>
+        </div>
+
+        <div class="match-score-row">
+          <div class="big-score-badge" [ngClass]="selectedMatch.match_score >= 6 ? 'good' : 'bad'">
+            {{ selectedMatch.match_score }} / 10
+          </div>
+          <div>
+            <div class="match-verdict">முடிவு: {{ selectedMatch.verdict }}</div>
+            <small class="muted">
+              {{ selectedMatch.boy_rasi }} ({{ selectedMatch.boy_nakshatra }}) &bull; {{ selectedMatch.girl_rasi }} ({{ selectedMatch.girl_nakshatra }})
+            </small>
+          </div>
+        </div>
+
+        <div class="breakdown-table">
+          @for (item of getMatchDetailsArray(selectedMatch.match_details); track item.name) {
+            <div class="breakdown-row">
+              <span>{{ item.name }} ({{ item.tamil_name || item.name }})</span>
+              <strong [class.match-yes]="item.match" [class.match-no]="!item.match">
+                {{ item.match ? '✓ பொருத்தம் உண்டு' : '✕ பொருத்தம் இல்லை' }}
+              </strong>
+            </div>
+          }
+        </div>
+
+        <div class="modal-btns" style="margin-top:18px;">
+          <button type="button" class="btn-cancel" (click)="selectedMatch = null">மூடு (Close)</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: UPDATE MATCH STATUS -->
+  @if (editingMatch) {
+    <div class="modal-overlay" (click)="editingMatch = null">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>ஆலோசனை நிலை & குறிப்புகள் புதுப்பித்தல்</h3>
+          <button class="close-btn" (click)="editingMatch = null">✕</button>
+        </div>
+        <form (ngSubmit)="saveMatchStatus()">
+          <div class="form-group">
+            <label>ஆலோசனை நிலை (Consultation Status)</label>
+            <select [(ngModel)]="matchStatusForm.consultation_status" name="m_cstatus" class="ctrl">
+              <option value="Pending">Pending (புதிய பதிவு)</option>
+              <option value="In-Progress">In-Progress (பேசப்படுகிறது)</option>
+              <option value="Completed">Completed (முடிவடைந்தது)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ஜோதிடர் குறிப்பு / வரன் பரிந்துரைகள் (Admin Notes)</label>
+            <textarea [(ngModel)]="matchStatusForm.admin_notes" name="m_anotes" rows="3" class="ctrl" placeholder="வாடிக்கையாளருக்கு தெரிவிக்கப்பட்ட தகவல்கள்..."></textarea>
+          </div>
+          <div class="modal-btns">
+            <button type="button" class="btn-cancel" (click)="editingMatch = null">Cancel</button>
+            <button type="submit" class="btn-primary">சேமி (Save Notes)</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

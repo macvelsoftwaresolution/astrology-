@@ -44,12 +44,13 @@
 <section id="hero" class="hero-section">
   <div class="hero-bg-decoration"></div>
   <div class="hero-center-container">
-    
+
     <!-- Centered Header Content -->
     <div class="hero-center-header" data-aos="fade-down" data-aos-duration="400">
       <h1>உங்கள் வாழ்வின் துல்லியமான வழிகாட்டி <br><span class="title-highlight">ஆருத்ரா ஜோதிடம்</span></h1>
       <p class="hero-desc-para-center">
-        பாரம்பரிய தென் இந்திய வேத கணித முறைப்படி கணிக்கப்படும் ஜாதகக் கணிப்புகள், 10-பொருத்த திருமணப் பொருத்தம் மற்றும் முதன்மை ஜோதிடர்களின் நேரடி ஆலோசனைகளை உங்கள் மொபைல் மூலமாகவே பெறுங்கள்.
+        பாரம்பரிய தென் இந்திய வேத கணித முறைப்படி கணிக்கப்படும் ஜாதகக் கணிப்புகள், 10-பொருத்த திருமணப் பொருத்தம் மற்றும்
+        முதன்மை ஜோதிடர்களின் நேரடி ஆலோசனைகளை உங்கள் மொபைல் மூலமாகவே பெறுங்கள்.
       </p>
 
       <div class="hero-actions-center">
@@ -220,14 +221,11 @@
       <!-- 12 Zodiac Wheel Buttons -->
       <div class="zodiac-btns-layout" data-aos="fade-right" data-aos-duration="400">
         @for (zodiac of zodiacSigns; track zodiac.name; let i = $index) {
-          <button 
-            class="zodiac-luxury-btn"
-            [class.active]="selectedZodiac.name === zodiac.name"
-            (click)="selectZodiac(zodiac)"
-            [attr.aria-label]="zodiac.name">
-            <span class="sign-glyph">{{ zodiac.symbol }}</span>
-            <span class="sign-tamil-name">{{ zodiac.name }}</span>
-          </button>
+        <button class="zodiac-luxury-btn" [class.active]="selectedZodiac.name === zodiac.name"
+          (click)="selectZodiac(zodiac)" [attr.aria-label]="zodiac.name">
+          <span class="sign-glyph">{{ zodiac.symbol }}</span>
+          <span class="sign-tamil-name">{{ zodiac.name }}</span>
+        </button>
         }
       </div>
 
@@ -259,18 +257,19 @@
 
     <div class="services-cards-grid">
       @for (service of services; track service.title; let i = $index) {
-        <div class="service-light-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
-          <div class="service-icon-badge">
-            <i [class]="service.iconClass"></i>
-          </div>
-          <h3>{{ service.title }}</h3>
-          <span class="service-subtitle">{{ service.englishTitle }}</span>
-          <p>{{ service.description }}</p>
-          <div class="service-card-footer">
-            <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
-            <a href="#download" class="btn-service-action" aria-label="Order Service"><i class="bi bi-arrow-right-circle-fill"></i></a>
-          </div>
+      <div class="service-light-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
+        <div class="service-icon-badge">
+          <i [class]="service.iconClass"></i>
         </div>
+        <h3>{{ service.title }}</h3>
+        <span class="service-subtitle">{{ service.englishTitle }}</span>
+        <p>{{ service.description }}</p>
+        <div class="service-card-footer">
+          <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
+          <a href="#download" class="btn-service-action" aria-label="Order Service"><i
+              class="bi bi-arrow-right-circle-fill"></i></a>
+        </div>
+      </div>
       }
     </div>
   </div>
@@ -287,7 +286,7 @@
 
     <div class="academy-courses-grid">
       @for (course of academyCourses; track course.title) {
-        <div class="academy-course-card" data-aos="fade-up">
+      <div class="academy-course-card" data-aos="fade-up">
         <div class="course-header-badge">
           <span class="course-badge-tag">{{ course.badge }}</span>
           <span class="course-rating"><i class="bi bi-star-fill text-gold me-1"></i> {{ course.rating }}</span>
@@ -306,9 +305,9 @@
           <a href="#download" class="btn-course-enroll">கற்கத் துவங்க <i class="bi bi-arrow-right-short ms-1"></i></a>
         </div>
       </div>
-    }
+      }
+    </div>
   </div>
-</div>
 </section>
 
 <!-- How It Works Flow (#0B0820) -->
@@ -364,26 +363,30 @@
 <section id="about" class="app-showcase-section">
   <div class="section-container">
     <div class="showcase-layout-grid">
-      
+
       <div class="showcase-content-left" data-aos="fade-right" data-aos-duration="400">
         <span class="section-eyebrow"><i class="bi bi-shield-lock me-1"></i> EXCLUSIVITY & CONVENIENCE</span>
         <h2>ஏன் ஆருத்ரா ஜோதிடம் செயலியைத் தேர்ந்தெடுக்க வேண்டும்?</h2>
         <p class="showcase-desc-para">
-          பாரம்பரிய தென் இந்திய வேத ஜோதிடத்தை நவீன பாதுகாப்புடன் உங்கள் கைபேசியிலேயே எளிதாகப் பெற உதவும் பிரத்யேகத் தளம்.
+          பாரம்பரிய தென் இந்திய வேத ஜோதிடத்தை நவீன பாதுகாப்புடன் உங்கள் கைபேசியிலேயே எளிதாகப் பெற உதவும் பிரத்யேகத்
+          தளம்.
         </p>
 
         <ul class="luxury-feature-list">
           <li data-aos="fade-up" data-aos-delay="50">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து சமர்ப்பிக்கலாம்.</div>
+            <div><strong>எளிமையான படிவங்கள்:</strong> உங்கள் பிறந்த விவரங்களை ஒரு சில வினாடிகளில் பூர்த்தி செய்து
+              சமர்ப்பிக்கலாம்.</div>
           </li>
           <li data-aos="fade-up" data-aos-delay="100">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>100% பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மூலம் பாதுகாப்பான பரிவர்த்தனைகள்.</div>
+            <div><strong>100% பாதுகாப்பான கட்டணம்:</strong> GPay, PhonePe, கார்டுகள் மூலம் பாதுகாப்பான பரிவர்த்தனைகள்.
+            </div>
           </li>
           <li data-aos="fade-up" data-aos-delay="150">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
-            <div><strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து கொள்ளலாம்.</div>
+            <div><strong>ஆடியோ/வீடியோ கணிப்புகள்:</strong> உங்கள் ஜாதக பலன்களை ஆடியோ வடிவில் எளிதாகக் கேட்டுப் புரிந்து
+              கொள்ளலாம்.</div>
           </li>
           <li data-aos="fade-up" data-aos-delay="200">
             <span class="bullet-gold"><i class="bi bi-check-circle-fill"></i></span>
@@ -440,24 +443,26 @@
 
     <div class="editorial-astrologers-grid">
       @for (astro of astrologers; track astro.name; let i = $index) {
-        <div class="astro-editorial-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 100" data-aos-duration="400">
-          <div class="astro-card-left">
-            <div class="astro-portrait-placeholder">
-              <i [class]="astro.iconClass"></i>
-              <span class="astro-exp-label">{{ astro.experience }}</span>
-            </div>
-          </div>
-          <div class="astro-card-right">
-            <h3>{{ astro.name }}</h3>
-            <span class="astro-editorial-role">{{ astro.role }}</span>
-            <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
-            <div class="astro-editorial-tags">
-              <strong>நிபுணத்துவம்:</strong>
-              <span>{{ astro.specialty }}</span>
-            </div>
-            <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i class="bi bi-arrow-right-short ms-2"></i></a>
+      <div class="astro-editorial-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 100"
+        data-aos-duration="400">
+        <div class="astro-card-left">
+          <div class="astro-portrait-placeholder">
+            <i [class]="astro.iconClass"></i>
+            <span class="astro-exp-label">{{ astro.experience }}</span>
           </div>
         </div>
+        <div class="astro-card-right">
+          <h3>{{ astro.name }}</h3>
+          <span class="astro-editorial-role">{{ astro.role }}</span>
+          <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
+          <div class="astro-editorial-tags">
+            <strong>நிபுணத்துவம்:</strong>
+            <span>{{ astro.specialty }}</span>
+          </div>
+          <a href="#download" class="btn-astro-consult">உரையாடலைத் துவங்கு <i
+              class="bi bi-arrow-right-short ms-2"></i></a>
+        </div>
+      </div>
       }
     </div>
   </div>
@@ -478,46 +483,48 @@
     <div class="cosmic-wave-track">
       <!-- First set of review cards -->
       @for (item of testimonials; track item.name; let i = $index) {
-        <div class="cosmic-wave-card" [style.animation-delay]="(i * 0.4) + 's'">
-          <div class="card-quote-header">
-            <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
-            <div class="review-stars-badge">
-              @for (s of [1,2,3,4,5]; track s) {
-                <i class="bi bi-star-fill text-gold"></i>
-              }
-            </div>
-          </div>
-          <p class="review-comment-text">"{{ item.comment }}"</p>
-          <div class="review-author-row">
-            <div class="author-avatar-circle">{{ item.name[0] }}</div>
-            <div class="author-details">
-              <strong class="author-name-text">{{ item.name }}</strong>
-              <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
-            </div>
+      <div class="cosmic-wave-card" [style.animation-delay]="(i * 0.4) + 's'">
+        <div class="card-quote-header">
+          <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
+          <div class="review-stars-badge">
+            @for (s of [1,2,3,4,5]; track s) {
+            <i class="bi bi-star-fill text-gold"></i>
+            }
           </div>
         </div>
+        <p class="review-comment-text">"{{ item.comment }}"</p>
+        <div class="review-author-row">
+          <div class="author-avatar-circle">{{ item.name[0] }}</div>
+          <div class="author-details">
+            <strong class="author-name-text">{{ item.name }}</strong>
+            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i
+                  class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
+          </div>
+        </div>
+      </div>
       }
 
       <!-- Duplicated set of review cards for seamless cosmic wave -->
       @for (item of testimonials; track 'dup_' + item.name; let i = $index) {
-        <div class="cosmic-wave-card" [style.animation-delay]="(i * 0.4) + 's'">
-          <div class="card-quote-header">
-            <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
-            <div class="review-stars-badge">
-              @for (s of [1,2,3,4,5]; track s) {
-                <i class="bi bi-star-fill text-gold"></i>
-              }
-            </div>
-          </div>
-          <p class="review-comment-text">"{{ item.comment }}"</p>
-          <div class="review-author-row">
-            <div class="author-avatar-circle">{{ item.name[0] }}</div>
-            <div class="author-details">
-              <strong class="author-name-text">{{ item.name }}</strong>
-              <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
-            </div>
+      <div class="cosmic-wave-card" [style.animation-delay]="(i * 0.4) + 's'">
+        <div class="card-quote-header">
+          <span class="quote-icon"><i class="bi bi-quote text-gold"></i></span>
+          <div class="review-stars-badge">
+            @for (s of [1,2,3,4,5]; track s) {
+            <i class="bi bi-star-fill text-gold"></i>
+            }
           </div>
         </div>
+        <p class="review-comment-text">"{{ item.comment }}"</p>
+        <div class="review-author-row">
+          <div class="author-avatar-circle">{{ item.name[0] }}</div>
+          <div class="author-details">
+            <strong class="author-name-text">{{ item.name }}</strong>
+            <span class="author-meta-sub">{{ item.location }} &bull; <span class="verified-tag"><i
+                  class="bi bi-patch-check-fill me-1 text-gold"></i>சரிபார்க்கப்பட்டது</span></span>
+          </div>
+        </div>
+      </div>
       }
     </div>
   </div>
@@ -534,18 +541,18 @@
 
     <div class="faq-accordion-rows">
       @for (faq of faqs; track faq.question; let idx = $index) {
-        <div class="faq-accordion-row" [class.active]="faq.open"
-          data-aos="fade-up" [attr.data-aos-delay]="(idx + 1) * 50" data-aos-duration="400">
-          <div class="faq-row-header" (click)="toggleFaq(idx)">
-            <h3>{{ faq.question }}</h3>
-            <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
-          </div>
-          @if (faq.open) {
-            <div class="faq-row-body">
-              <p>{{ faq.answer }}</p>
-            </div>
-          }
+      <div class="faq-accordion-row" [class.active]="faq.open" data-aos="fade-up" [attr.data-aos-delay]="(idx + 1) * 50"
+        data-aos-duration="400">
+        <div class="faq-row-header" (click)="toggleFaq(idx)">
+          <h3>{{ faq.question }}</h3>
+          <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
         </div>
+        @if (faq.open) {
+        <div class="faq-row-body">
+          <p>{{ faq.answer }}</p>
+        </div>
+        }
+      </div>
       }
     </div>
   </div>
@@ -585,7 +592,7 @@
 <footer class="app-footer">
   <div class="section-container">
     <div class="footer-grid-layout">
-      
+
       <!-- Column 1: Brand & Social Media -->
       <div class="footer-brand-column">
         <div class="footer-brand-title">
