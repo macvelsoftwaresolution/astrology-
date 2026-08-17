@@ -25,10 +25,12 @@ Route::post('/auth/forgot-password',  [AuthController::class, 'forgotPassword'])
 // Public Astrology Data
 Route::get('/panchangam/today', [AstrologyController::class, 'getTodayPanchangam']);
 Route::get('/rasi-palan',       [JathagamController::class, 'getRasiPalan']);
+Route::get('/availability',     [AstrologyController::class, 'getAvailability']);
 Route::get('/public/courses',   [CourseController::class, 'index']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
+Route::post('/jathagam/varan-search', [JathagamController::class, 'submitVaranSearch']);
 Route::post('/jathagam/para-reading', [JathagamController::class, 'paraJathagamReading']);
 
 // Booking & Payment (public — payment gateway does auth externally)
@@ -95,16 +97,21 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/book-orders',                      [CourierManagementController::class, 'getOrders']);
     Route::put('/book-orders/{id}/courier',         [CourierManagementController::class, 'updateCourierStatus']);
 
-    // Astrology Appointment Bookings
+    // Astrology Appointment Bookings & Astrologer Availability
     Route::get('/bookings',                         [AstrologyController::class, 'getAdminBookings']);
     Route::put('/bookings/{id}/fulfill',            [AstrologyController::class, 'fulfillBooking']);
+    Route::delete('/bookings/{id}',                 [AstrologyController::class, 'deleteBooking']);
+    Route::get('/availability',                     [AstrologyController::class, 'getAdminAvailability']);
+    Route::post('/availability/toggle',             [AstrologyController::class, 'toggleDateAvailability']);
+    Route::delete('/availability/{id}',             [AstrologyController::class, 'deleteAvailability']);
 
     // Rasi Palan Management (CRUD for all 12 rasis)
     Route::put('/rasi-palan',                       [AstrologyController::class, 'updateRasiPalan']);
     Route::put('/panchangam',                       [AstrologyController::class, 'updatePanchangam']);
 
-    // Marriage Match Logs
+    // Marriage Match Logs & Phone Consultation Updates
     Route::get('/marriage-matches',                 [JathagamController::class, 'adminGetMatches']);
+    Route::put('/marriage-matches/{id}',            [JathagamController::class, 'adminUpdateMatch']);
 
     // User Profiles
     Route::get('/users',                            [UserProfileController::class, 'adminGetUsers']);
