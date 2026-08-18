@@ -616,6 +616,7 @@ class AstrologyController extends Controller
                     DB::table('rasi_palans')->where('id', $existing->id)->update([
                         'prediction_text' => (string) ($p['prediction_text'] ?? ''),
                         'audio_url'       => $p['audio_url'] ?? null,
+                        'video_url'       => $p['video_url'] ?? null,
                         'updated_at'      => now()
                     ]);
                 } else {
@@ -625,6 +626,7 @@ class AstrologyController extends Controller
                         'tab_type'        => $request->type,
                         'prediction_text' => (string) ($p['prediction_text'] ?? ''),
                         'audio_url'       => $p['audio_url'] ?? null,
+                        'video_url'       => $p['video_url'] ?? null,
                         'created_at'      => now(),
                         'updated_at'      => now()
                     ]);

@@ -1,7 +1,8 @@
 import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
+import { ToastController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
 
 interface Order {
@@ -166,7 +167,8 @@ export class HomePage implements OnInit {
     private ngZone: NgZone,
     private router: Router,
     private authService: AuthService,
-    private backButtonService: BackButtonService
+    private backButtonService: BackButtonService,
+    private toastController: ToastController
   ) {}
 
   // Navigation History Stack for step-by-step ("line by line") back navigation
@@ -276,6 +278,16 @@ export class HomePage implements OnInit {
 
   canShowBackButton(): boolean {
     return this.activeServiceFlow !== null || this.currentTab !== 'home';
+  }
+
+  async showNotificationToast() {
+    const toast = await this.toastController.create({
+      message: 'புதிய அறிவிப்புகள் ஏதுமில்லை',
+      duration: 2000,
+      color: 'dark',
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   ngOnInit() {

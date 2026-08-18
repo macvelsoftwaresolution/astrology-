@@ -51,7 +51,11 @@ const routes: Routes = [
     path: '',
     redirectTo: 'splash',
     pathMatch: 'full'
+  },  {
+    path: 'notifications',
+    loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
   },
+
 ];
 
 @NgModule({

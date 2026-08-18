@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +20,8 @@ export class RegisterPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private navCtrl: NavController
   ) { }
 
   ngOnInit() {
@@ -61,9 +62,9 @@ export class RegisterPage implements OnInit {
       next: async (res) => {
         await this.showToast('பதிவு வெற்றிகரமாக முடிந்தது!', 'success');
         if (this.serviceType === 'education') {
-          this.router.navigate(['/learn']);
+          this.navCtrl.navigateRoot('/learn');
         } else {
-          this.router.navigate(['/home']);
+          this.navCtrl.navigateRoot('/home');
         }
       },
       error: async (err) => {
