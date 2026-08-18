@@ -972,445 +972,514 @@ interface Metrics {
             </div>
           </div>
 
-          <!-- Loading Indicator -->
-          <div *ngIf="rasiPredictionsLoading" class="center-loader-box">
-            <p>⏳ Loading Rasi Palan predictions from database...</p>
+          <!-- 12 COMPACT RASI CARDS GRID (ICON & NAME ONLY - INSTANT DISPLAY) -->
+          <div class="rasi-compact-grid">
+            <div 
+              *ngFor="let r of rasiEditorList; let i = index" 
+              class="rasi-compact-card"
+              (click)="openRasiModal(i)"
+              [title]="r.name + ' பலனை திருத்த கிளிக் செய்க (Click to Edit)'"
+            >
+              <div class="rasi-icon-circle">
+                <span>{{ r.symbol }}</span>
+              </div>
+              <div class="rasi-compact-meta">
+                <strong class="rasi-compact-tamil">{{ r.name }}</strong>
+                <span class="rasi-compact-eng">{{ r.englishName }} &bull; {{ r.dates }}</span>
+                <div class="rasi-compact-badges">
+                  <span class="badge-mini has-text" *ngIf="rasiPredictions[i]?.prediction_text">✓ பலன் தயார்</span>
+                  <span class="badge-mini has-audio" *ngIf="rasiPredictions[i]?.audio_url">🎙️ Audio</span>
+                  <span class="badge-mini has-video" *ngIf="rasiPredictions[i]?.video_url">🎬 Video</span>
+                </div>
+              </div>
+              <div class="rasi-card-edit-btn" title="Edit Rasi Palan">
+                <span>✏️</span>
+              </div>
+            </div>
           </div>
 
-          <!-- 12 Rasi Editor Cards Grid -->
-          <div *ngIf="!rasiPredictionsLoading" class="rasi-editor-grid">
-            <div *ngFor="let r of rasiEditorList; let i = index" class="rasi-editor-card">
-              <div class="rasi-ed-header">
-                <div class="rasi-left-meta">
-                  <span class="rasi-symbol-ed">{{ r.symbol }}</span>
-                  <div class="rasi-title-group">
-                    <strong class="rasi-tamil-title">{{ r.name }}</strong>
-                    <span class="rasi-eng-sub">{{ r.englishName }} &bull; {{ r.dates }}</span>
+          <!-- RASI PALAN EDIT POPUP MODAL (ராசியை தொட்டவுடன் தோன்றும் விண்டோ) -->
+          <div *ngIf="selectedRasiIndex !== null" class="modal-overlay" (click)="closeRasiModal()">
+            <div class="modal-box rasi-edit-modal-box" style="max-width:560px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+              
+              <!-- Modal Header -->
+              <div class="modal-header" style="border-bottom:1px solid #f1f5f9;padding-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div class="rasi-icon-circle" style="width:44px;height:44px;font-size:24px;">
+                    <span>{{ rasiEditorList[selectedRasiIndex].symbol }}</span>
+                  </div>
+                  <div>
+                    <h3 style="margin:0;color:#b45309;font-size:18px;font-weight:800;">
+                      {{ rasiEditorList[selectedRasiIndex].name }} ({{ rasiEditorList[selectedRasiIndex].englishName }})
+                    </h3>
+                    <span style="font-size:12px;color:#64748b;font-weight:500;">
+                      {{ rasiEditorType | titlecase }} பலன் &bull; தேதி: {{ selectedRasiDate | date:'dd MMM yyyy' }}
+                    </span>
                   </div>
                 </div>
-                <div class="card-top-actions">
-                  <button class="btn-card-save" (click)="saveSingleRasi(i)" title="Save only this Rasi">
-                    💾 Save
+                <button class="close-btn" (click)="closeRasiModal()">✕</button>
+              </div>
+
+              <!-- Modal Body -->
+              <div style="margin:16px 0;display:flex;flex-direction:column;gap:14px;">
+                
+                <!-- Prediction Textarea -->
+                <div class="form-group" style="margin:0;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <label style="font-weight:700;color:#334155;font-size:13px;">
+                      {{ rasiEditorList[selectedRasiIndex].name }} பலன் (Prediction Text):
+                    </label>
+                    <span style="font-size:11px;color:#2563eb;font-weight:600;">
+                      {{ (rasiPredictions[selectedRasiIndex]?.prediction_text || '').length }} chars
+                    </span>
+                  </div>
+                  <textarea
+                    [(ngModel)]="rasiPredictions[selectedRasiIndex].prediction_text"
+                    class="ctrl"
+                    rows="5"
+                    style="line-height:1.5;resize:vertical;"
+                    [placeholder]="rasiEditorList[selectedRasiIndex].name + ' ராசிக்கான பலன் உள்ளிடவும்...'"
+                  ></textarea>
+                </div>
+
+                <!-- Audio URL -->
+                <div class="media-input-box audio-box">
+                  <label class="media-lbl">
+                    <span class="media-icon">🎙️</span> 
+                    <strong>ஆடியோ பலன் (Audio Stream URL - Optional):</strong>
+                  </label>
+                  <div class="media-input-row">
+                    <input 
+                      [(ngModel)]="rasiPredictions[selectedRasiIndex].audio_url" 
+                      class="ctrl-sm" 
+                      placeholder="https://example.com/audio/mesham.mp3"
+                    />
+                    <button 
+                      *ngIf="rasiPredictions[selectedRasiIndex].audio_url" 
+                      type="button"
+                      class="btn-audio-test" 
+                      (click)="testPlayAudio(rasiPredictions[selectedRasiIndex].audio_url)"
+                      title="Play Audio">
+                      ▶ Play
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Video URL -->
+                <div class="media-input-box video-box">
+                  <label class="media-lbl video-lbl">
+                    <span class="media-icon">🎬</span> 
+                    <strong>வீடியோ பலன் (Video URL / YouTube - Optional):</strong>
+                  </label>
+                  <div class="media-input-row">
+                    <input 
+                      [(ngModel)]="rasiPredictions[selectedRasiIndex].video_url" 
+                      class="ctrl-sm" 
+                      placeholder="https://www.youtube.com/watch?v=... அல்லது MP4 வீடியோ லிங்க்"
+                    />
+                    <button 
+                      *ngIf="rasiPredictions[selectedRasiIndex].video_url" 
+                      type="button"
+                      class="btn-video-test" 
+                      (click)="openVideoPreview(rasiPredictions[selectedRasiIndex].video_url, rasiEditorList[selectedRasiIndex].name)"
+                      title="Preview Video">
+                      👁️ Preview
+                    </button>
+                  </div>
+                  <span class="video-hint-text">💡 YouTube / MP4 வீடியோ சேர்த்தால் User Side (/zodiac)-ல் வீடியோ பிளேயர் தோன்றும்.</span>
+                </div>
+
+                <!-- Footer Quick Actions inside Modal -->
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;">
+                  <button type="button" class="btn-link-reset" (click)="resetSingleRasi(selectedRasiIndex)">
+                    ↺ Reset Default
                   </button>
+                  <span class="status-dot-live">● Live Sync Ready</span>
                 </div>
+
               </div>
 
-              <div class="form-group-rasi">
-                <div class="textarea-header">
-                  <label>{{ r.name }} {{ rasiEditorType | titlecase }} பலன் (Prediction Text):</label>
-                  <span class="char-count">{{ (rasiPredictions[i]?.prediction_text || '').length }} chars</span>
-                </div>
-                <textarea
-                  [(ngModel)]="rasiPredictions[i].prediction_text"
-                  class="rasi-textarea"
-                  rows="4"
-                  [placeholder]="r.name + ' (' + r.englishName + ') ராசிக்கான ' + rasiEditorType + ' பலன் உள்ளிடவும்...'"
-                ></textarea>
-              </div>
-
-              <!-- Audio Prediction Stream Input -->
-              <div class="media-input-box audio-box">
-                <label class="media-lbl">
-                  <span class="media-icon">🎙️</span> 
-                  <strong>ஆடியோ பலன் (Audio Stream URL - Optional):</strong>
-                </label>
-                <div class="media-input-row">
-                  <input 
-                    [(ngModel)]="rasiPredictions[i].audio_url" 
-                    class="ctrl-sm" 
-                    placeholder="https://example.com/audio/mesham.mp3"
-                  />
-                  <button 
-                    *ngIf="rasiPredictions[i].audio_url" 
-                    type="button"
-                    class="btn-audio-test" 
-                    (click)="testPlayAudio(rasiPredictions[i].audio_url)"
-                    title="Play Audio">
-                    ▶ Play
-                  </button>
-                </div>
-              </div>
-
-              <!-- Video Horoscope / YouTube Stream Input -->
-              <div class="media-input-box video-box">
-                <label class="media-lbl video-lbl">
-                  <span class="media-icon">🎬</span> 
-                  <strong>வீடியோ பலன் (Video URL / YouTube - Optional):</strong>
-                </label>
-                <div class="media-input-row">
-                  <input 
-                    [(ngModel)]="rasiPredictions[i].video_url" 
-                    class="ctrl-sm" 
-                    placeholder="https://www.youtube.com/watch?v=... அல்லது MP4 வீடியோ லிங்க்"
-                  />
-                  <button 
-                    *ngIf="rasiPredictions[i].video_url" 
-                    type="button"
-                    class="btn-video-test" 
-                    (click)="openVideoPreview(rasiPredictions[i].video_url, r.name)"
-                    title="Preview Video">
-                    👁️ Preview Video
-                  </button>
-                </div>
-                <span class="video-hint-text">💡 YouTube / MP4 வீடியோ சேர்த்தால் User Side (/zodiac)-ல் வீடியோ பிளேயர் தோன்றும்.</span>
-              </div>
-
-              <div class="card-footer-mini">
-                <button class="btn-link-reset" (click)="resetSingleRasi(i)">
-                  ↺ Reset Default
+              <!-- Modal Footer -->
+              <div class="modal-btns" style="border-top:1px solid #f1f5f9;padding-top:14px;margin-top:10px;">
+                <button type="button" class="btn-cancel" (click)="closeRasiModal()">Cancel</button>
+                <button 
+                  type="button" 
+                  class="btn-primary" 
+                  style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%);"
+                  (click)="saveSingleRasi(selectedRasiIndex); closeRasiModal();"
+                >
+                  💾 இந்த ராசி பலனை சேமி (Save)
                 </button>
-                <span class="status-dot-live">● Live Sync</span>
               </div>
+
             </div>
           </div>
         }
 
-        <!-- TAB 8: MARRIAGE MATCH & MATRIMONY CONSULTATION LOG -->
+        <!-- TAB 8: PORUTHAM & MATRIMONY -->
         <div *ngIf="currentTab === 'matches'">
           
-          <!-- TOP MAIN HEADER BANNER WITH ACTION BUTTONS -->
-          <div class="header-banner flex-between" style="background:#ffffff;border:1px solid #e2e8f0;padding:20px 24px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.03);margin-bottom:20px;">
+          <!-- TOP 2 CLEAN TOGGLE BUTTONS -->
+          <div style="background:#ffffff;border:1px solid #e2e8f0;padding:16px 20px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
             <div>
-              <h1 style="font-size:22px;margin:0 0 6px 0;color:#0f172a;display:flex;align-items:center;gap:8px;">
-                <span>💑</span> திருமணப் பொருத்தம் & வரன் தேடல் மேலாண்மை
-              </h1>
-              <p style="margin:0;color:#64748b;font-size:13px;">
-                இருவர் ஜாதகப் பொருத்தம் (Pair Match) மற்றும் வரன் தேடல் (Looking for Bride / Groom) கோரிக்கைகள் & தொலைபேசி ஆலோசனை.
-              </p>
+              <h2 style="font-size:20px;margin:0 0 4px 0;color:#0f172a;font-weight:800;">
+                {{ matchFilterType === 'pair_match' ? '💑 திருமணப் பொருத்தம் (Porutham)' : '👰 வரன் தேடல் & மேட்ரிமோனி (Matrimony)' }}
+              </h2>
+              <span style="font-size:12px;color:#64748b;">
+                {{ matchFilterType === 'pair_match' ? 'பயனர் அனுப்பிய 2 ஜாதகங்களை ஆய்வு செய்து இறுதி முடிவு வழங்கும் பகுதி.' : 'பயனரின் விவரங்களை பார்த்து பொருத்தமான வரன் பரிந்துரைக்கும் பகுதி.' }}
+              </span>
             </div>
-            
-            <!-- TOP PROMINENT ACTION BUTTONS -->
-            <div class="header-actions-group" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+
+            <!-- 2 TABS -->
+            <div style="display:flex;gap:10px;">
               <button 
-                type="button" 
-                class="btn-primary" 
-                [style.opacity]="matchFilterType === 'pair_match' ? '1' : '0.85'"
-                style="background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);color:#ffffff;box-shadow:0 3px 10px rgba(37,99,235,0.25);border:none;padding:10px 18px;font-size:13px;font-weight:700;border-radius:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;"
+                type="button"
                 (click)="matchFilterType = 'pair_match'"
+                [style.background]="matchFilterType === 'pair_match' ? '#2563eb' : '#f1f5f9'"
+                [style.color]="matchFilterType === 'pair_match' ? '#ffffff' : '#334155'"
+                style="border:none;padding:10px 20px;font-size:13px;font-weight:700;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;"
               >
-                <span>💑</span> இருவர் பொருத்தம் (Pair Match)
+                <span>💑</span>
+                <span>பொருத்தம் (Porutham)</span>
+                <span style="background:rgba(0,0,0,0.15);padding:1px 6px;border-radius:12px;font-size:11px;">{{ getMatchCount('pair_match') }}</span>
               </button>
 
               <button 
-                type="button" 
-                class="btn-primary" 
-                [style.opacity]="matchFilterType === 'single_search' ? '1' : '0.85'"
-                style="background:linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);color:#ffffff;box-shadow:0 3px 10px rgba(147,51,234,0.25);border:none;padding:10px 18px;font-size:13px;font-weight:700;border-radius:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;"
+                type="button"
                 (click)="matchFilterType = 'single_search'"
+                [style.background]="matchFilterType === 'single_search' ? '#9333ea' : '#f1f5f9'"
+                [style.color]="matchFilterType === 'single_search' ? '#ffffff' : '#334155'"
+                style="border:none;padding:10px 20px;font-size:13px;font-weight:700;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;"
               >
-                <span>🔍</span> வரன் தேடல் (Looking for Bride/Groom)
-              </button>
-
-              <button 
-                type="button" 
-                class="btn-primary" 
-                style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%);padding:10px 18px;font-size:13px;font-weight:700;border-radius:10px;display:inline-flex;align-items:center;gap:6px;"
-                (click)="openNewLeadModal()"
-              >
-                <span>➕</span> புதிய வரன் பதிவு (Add Lead)
+                <span>👰</span>
+                <span>மேட்ரிமோனி (Matrimony)</span>
+                <span style="background:rgba(0,0,0,0.15);padding:1px 6px;border-radius:12px;font-size:11px;">{{ getMatchCount('single_search') }}</span>
               </button>
             </div>
           </div>
 
-          <!-- Filter Sub-Tabs Bar -->
-          <div class="rasi-controls-bar" style="margin-bottom:16px;">
-            <div class="rasi-type-bar">
-              <button [class.active]="matchFilterType === 'all'" (click)="matchFilterType = 'all'">
-                அனைத்தும் ({{ marriageMatches.length }})
-              </button>
-              <button [class.active]="matchFilterType === 'pair_match'" (click)="matchFilterType = 'pair_match'">
-                💑 இருவர் பொருத்தம் ({{ getMatchCount('pair_match') }})
-              </button>
-              <button [class.active]="matchFilterType === 'single_search'" (click)="matchFilterType = 'single_search'">
-                🔍 வரன் தேடல் / மணமகன்-மணமகள் தேவை ({{ getMatchCount('single_search') }})
-              </button>
+          <!-- ============================================== -->
+          <!-- 1. PORUTHAM (இருவர் ஜாதகப் பொருத்தம்) -->
+          <!-- ============================================== -->
+          <div *ngIf="matchFilterType === 'pair_match'">
+            
+            <div *ngIf="getFilteredMatches().length === 0" class="card-box text-center" style="padding:40px;">
+              <p class="muted" style="margin:0;font-size:14px;">எந்த இருவர் ஜாதகப் பொருத்தம் கோரிக்கைகளும் வரவில்லை.</p>
             </div>
-            <div class="status-summary-hint">
-              <span class="muted">💡 பயனரின் ஜாதக விவரங்களை ஆய்வு செய்து தொலைபேசி வழியே ஆலோசனை வழங்கலாம்.</span>
-            </div>
-          </div>
 
-          <!-- Empty State -->
-          <div *ngIf="getFilteredMatches().length === 0" class="card-box text-center py-5">
-            <p class="muted">எந்த கோரிக்கைகளும் இல்லை.</p>
-          </div>
+            <div *ngIf="getFilteredMatches().length > 0" style="display:flex;flex-direction:column;gap:16px;">
+              <div *ngFor="let m of getFilteredMatches()" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+                
+                <!-- Card Header -->
+                <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;padding-bottom:12px;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:12px;font-weight:800;background:#eff6ff;color:#2563eb;padding:3px 8px;border-radius:6px;">#{{ m.id }}</span>
+                    <div>
+                      <strong style="color:#0f172a;font-size:14px;">{{ m.requester_display || m.requester_name || 'பயனர்' }}</strong>
+                      <span *ngIf="m.contact_phone || m.requester_phone" style="font-size:13px;color:#166534;font-weight:600;margin-left:8px;">
+                        ({{ m.contact_phone || m.requester_phone }})
+                      </span>
+                    </div>
+                  </div>
 
-          <!-- Matches / Leads Table -->
-          <div *ngIf="getFilteredMatches().length > 0" class="card-box">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>கோரிக்கை ID</th>
-                  <th>வகை (Type)</th>
-                  <th>பயனர் / தொடர்பு (Requester Contact)</th>
-                  <th>மணமகன் விவரம் (Boy Details)</th>
-                  <th>மணமகள் / எதிர்பார்ப்பு (Girl / Preference)</th>
-                  <th>ஆலோசனை நிலை (Status)</th>
-                  <th>தேதி</th>
-                  <th>செயல்கள்</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let m of getFilteredMatches()">
-                  <td><strong>#{{ m.id }}</strong></td>
-                  <td>
-                    <span *ngIf="m.request_type !== 'single_search'" class="badge-role" style="background:#eff6ff;color:#2563eb;border-color:#bfdbfe;">
-                      💑 இருவர் பொருத்தம்
-                    </span>
-                    <span *ngIf="m.request_type === 'single_search'" class="badge-role" style="background:#fdf4ff;color:#c026d3;border-color:#f5d0fe;">
-                      🔍 {{ m.candidate_gender === 'groom' ? '🤵 மணமகன் தேவை' : '👰 மணமகள் தேவை' }}
-                    </span>
-                  </td>
-                  <td>
-                    <div style="font-weight:600;color:#0f172a;">{{ m.requester_display || m.requester_name || 'பதிவு செய்த பயனர்' }}</div>
-                    <div *ngIf="m.contact_phone || m.requester_phone" class="phone-contact-row" style="margin-top:4px;display:flex;gap:6px;align-items:center;">
-                      <a [href]="'tel:' + (m.contact_phone || m.requester_phone)" class="btn-tel-call" title="Call Requester">
-                        📞 {{ m.contact_phone || m.requester_phone }}
-                      </a>
-                      <a [href]="'https://wa.me/91' + (m.contact_phone || m.requester_phone)" target="_blank" class="btn-wa-link" title="WhatsApp Message">
-                        💬 WA
-                      </a>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <a *ngIf="m.contact_phone || m.requester_phone" [href]="'tel:' + (m.contact_phone || m.requester_phone)" class="btn-primary" style="padding:5px 12px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                      📞 Call
+                    </a>
+                    <a *ngIf="m.contact_phone || m.requester_phone" [href]="'https://wa.me/91' + (m.contact_phone || m.requester_phone)" target="_blank" style="padding:5px 12px;font-size:12px;text-decoration:none;background:#25d366;color:#fff;font-weight:700;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">
+                      💬 WhatsApp
+                    </a>
+                    <span style="font-size:11px;color:#94a3b8;margin-left:6px;">{{ m.created_at | date:'dd MMM yyyy' }}</span>
+                  </div>
+                </div>
+
+                <!-- 2 Jathagams Grid (Boy vs Girl) -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                  
+                  <!-- Boy Details -->
+                  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;">
+                    <strong style="color:#1d4ed8;font-size:13px;display:block;margin-bottom:6px;">👦 மணமகன் விவரங்கள் (Boy):</strong>
+                    <div style="font-size:12px;color:#334155;display:flex;flex-direction:column;gap:3px;">
+                      <div><span class="muted">பெயர்:</span> <strong>{{ m.boy_name || '-' }}</strong></div>
+                      <div><span class="muted">பிறந்த தேதி & நேரம்:</span> <strong>{{ m.boy_dob | date:'dd MMM yyyy' }} • {{ m.boy_tob || '-' }}</strong></div>
+                      <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ m.boy_pob || '-' }}</strong></div>
+                      <div><span class="muted">ராசி & நட்சத்திரம்:</span> <strong style="color:#b45309;">{{ m.boy_rasi || '-' }} | {{ m.boy_nakshatra || '-' }}</strong></div>
                     </div>
-                  </td>
-                  <td>
-                    <!-- If Pair Match or Boy Profile -->
-                    <div *ngIf="m.boy_name">
-                      <strong style="color:#0f172a;">{{ m.boy_name }}</strong>
-                      <div class="muted" style="font-size:11px;">
-                        {{ m.boy_dob | date:'dd MMM yyyy' }} {{ m.boy_tob ? '• ' + m.boy_tob : '' }}
-                      </div>
-                      <div style="font-size:11px;color:#b45309;font-weight:600;">
-                        {{ m.boy_rasi || '-' }} | {{ m.boy_nakshatra || '-' }}
-                      </div>
-                      <div *ngIf="m.boy_pob" class="muted" style="font-size:10px;">இடம்: {{ m.boy_pob }}</div>
+                  </div>
+
+                  <!-- Girl Details -->
+                  <div style="background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:12px;">
+                    <strong style="color:#be185d;font-size:13px;display:block;margin-bottom:6px;">👧 மணமகள் விவரங்கள் (Girl):</strong>
+                    <div style="font-size:12px;color:#334155;display:flex;flex-direction:column;gap:3px;">
+                      <div><span class="muted">பெயர்:</span> <strong>{{ m.girl_name || '-' }}</strong></div>
+                      <div><span class="muted">பிறந்த தேதி & நேரம்:</span> <strong>{{ m.girl_dob | date:'dd MMM yyyy' }} • {{ m.girl_tob || '-' }}</strong></div>
+                      <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ m.girl_pob || '-' }}</strong></div>
+                      <div><span class="muted">ராசி & நட்சத்திரம்:</span> <strong style="color:#b45309;">{{ m.girl_rasi || '-' }} | {{ m.girl_nakshatra || '-' }}</strong></div>
                     </div>
-                    <div *ngIf="!m.boy_name" class="muted" style="font-size:11px;">-</div>
-                  </td>
-                  <td>
-                    <!-- If Pair Match: Girl Details -->
-                    <div *ngIf="m.request_type !== 'single_search' && m.girl_name">
-                      <strong style="color:#0f172a;">{{ m.girl_name }}</strong>
-                      <div class="muted" style="font-size:11px;">
-                        {{ m.girl_dob | date:'dd MMM yyyy' }} {{ m.girl_tob ? '• ' + m.girl_tob : '' }}
-                      </div>
-                      <div style="font-size:11px;color:#b45309;font-weight:600;">
-                        {{ m.girl_rasi || '-' }} | {{ m.girl_nakshatra || '-' }}
-                      </div>
-                      <div *ngIf="m.girl_pob" class="muted" style="font-size:10px;">இடம்: {{ m.girl_pob }}</div>
+                  </div>
+
+                </div>
+
+                <!-- Admin Final Decision Box -->
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                  <div style="flex:1;min-width:260px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                      <span style="font-size:12px;font-weight:700;color:#0f172a;">🔮 ஜோதிடரின் முடிவு:</span>
+                      <span class="status-pill" 
+                        [class.completed]="m.admin_status === 'Completed' || m.admin_status === 'Good Match' || m.admin_status === 'Excellent Match'"
+                        [class.processing]="m.admin_status === 'Average Match' || m.admin_status === 'Contacted'"
+                        [class.pending]="!m.admin_status || m.admin_status === 'Pending'">
+                        {{ getPoruthamDecisionLabel(m.admin_status) }}
+                      </span>
                     </div>
-                    <!-- If Single Search: Girl Profile or Preferences -->
-                    <div *ngIf="m.request_type === 'single_search'">
-                      <div *ngIf="m.girl_name">
-                        <strong style="color:#0f172a;">{{ m.girl_name }}</strong>
-                        <div class="muted" style="font-size:11px;">{{ m.girl_dob | date:'dd MMM yyyy' }} • {{ m.girl_rasi }} | {{ m.girl_nakshatra }}</div>
-                      </div>
-                      <div *ngIf="m.preferences" style="font-size:11px;color:#475569;background:#f8fafc;padding:4px 8px;border-radius:6px;margin-top:2px;">
-                        <strong>எதிர்பார்ப்பு:</strong> {{ m.preferences }}
-                      </div>
-                      <div *ngIf="m.education_job" class="muted" style="font-size:10px;margin-top:2px;">
-                        கல்வி/வேலை: {{ m.education_job }}
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="status-pill" 
-                      [class.completed]="m.admin_status === 'Completed' || m.admin_status === 'Consultation Done'"
-                      [class.processing]="m.admin_status === 'Contacted'"
-                      [class.pending]="!m.admin_status || m.admin_status === 'Pending'">
-                      {{ getStatusTamilLabel(m.admin_status) }}
-                    </span>
-                    <div *ngIf="m.admin_notes" class="notes-preview-snippet" [title]="m.admin_notes">
-                      📝 {{ m.admin_notes }}
-                    </div>
-                  </td>
-                  <td style="font-size:12px;color:#64748b;">{{ m.created_at | date:'dd MMM yyyy' }}</td>
-                  <td>
-                    <button class="btn-sm" style="background:#fffbeb;border-color:#fde68a;color:#b45309;font-weight:700;" (click)="viewMatchDetails(m)">
-                      👁️ முழு விவரம் & குறிப்பு
+                    <p style="margin:0;font-size:12px;color:#475569;" *ngIf="m.admin_notes">
+                      <strong>குறிப்பு:</strong> {{ m.admin_notes }}
+                    </p>
+                    <span style="font-size:11px;color:#94a3b8;" *ngIf="!m.admin_notes">இன்னும் முடிவு உள்ளிடப்படவில்லை.</span>
+                  </div>
+
+                  <div style="display:flex;gap:8px;">
+                    <button 
+                      class="btn-primary" 
+                      style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%);padding:7px 14px;font-size:12px;font-weight:700;"
+                      (click)="viewMatchDetails(m)"
+                    >
+                      ✏️ முடிவு எழுத (Give Decision)
                     </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    <button 
+                      class="btn-sm" 
+                      style="background:#fee2e2;border:1px solid #fecaca;color:#dc2626;font-weight:700;padding:7px 12px;font-size:12px;border-radius:8px;cursor:pointer;"
+                      (click)="deleteMatchRecord(m.id, (m.boy_name + ' & ' + m.girl_name))"
+                    >
+                      🗑️ நீக்கு
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
 
-          <!-- MATCH & CONSULTATION DETAIL MODAL -->
-          <div *ngIf="selectedMatch" class="modal-overlay" (click)="selectedMatch = null">
-            <div class="modal-box" style="max-width:700px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+          <!-- ============================================== -->
+          <!-- 2. MATRIMONY (வரன் தேடல்) -->
+          <!-- ============================================== -->
+          <div *ngIf="matchFilterType === 'single_search'">
+            
+            <div *ngIf="getFilteredMatches().length === 0" class="card-box text-center" style="padding:40px;">
+              <p class="muted" style="margin:0;font-size:14px;">எந்த வரன் தேடல் கோரிக்கைகளும் வரவில்லை.</p>
+            </div>
+
+            <div *ngIf="getFilteredMatches().length > 0" style="display:flex;flex-direction:column;gap:16px;">
+              <div *ngFor="let m of getFilteredMatches()" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+                
+                <!-- Card Header -->
+                <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;padding-bottom:12px;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:12px;font-weight:800;background:#fdf4ff;color:#9333ea;padding:3px 8px;border-radius:6px;">#{{ m.id }}</span>
+                    <div>
+                      <strong style="color:#0f172a;font-size:14px;">{{ m.requester_display || m.requester_name || 'பயனர்' }}</strong>
+                      <span *ngIf="m.contact_phone || m.requester_phone" style="font-size:13px;color:#166534;font-weight:600;margin-left:8px;">
+                        ({{ m.contact_phone || m.requester_phone }})
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <a *ngIf="m.contact_phone || m.requester_phone" [href]="'tel:' + (m.contact_phone || m.requester_phone)" class="btn-primary" style="padding:5px 12px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                      📞 Call
+                    </a>
+                    <a *ngIf="m.contact_phone || m.requester_phone" [href]="'https://wa.me/91' + (m.contact_phone || m.requester_phone)" target="_blank" style="padding:5px 12px;font-size:12px;text-decoration:none;background:#25d366;color:#fff;font-weight:700;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">
+                      💬 WhatsApp
+                    </a>
+                    <span style="font-size:11px;color:#94a3b8;margin-left:6px;">{{ m.created_at | date:'dd MMM yyyy' }}</span>
+                  </div>
+                </div>
+
+                <!-- Single User Details & Expectations Grid -->
+                <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:14px;">
+                  
+                  <!-- Candidate Details -->
+                  <div style="background:#fdf4ff;border:1px solid #f5d0fe;border-radius:10px;padding:12px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                      <span style="font-size:10px;font-weight:800;background:#9333ea;color:#fff;padding:2px 6px;border-radius:4px;">
+                        {{ m.candidate_gender === 'groom' ? '🤵 மணமகன் தேவை (Seeking Groom)' : '👰 மணமகள் தேவை (Seeking Bride)' }}
+                      </span>
+                      <strong style="color:#0f172a;font-size:14px;">{{ m.boy_name || m.girl_name || '-' }}</strong>
+                    </div>
+                    <div style="font-size:12px;color:#334155;display:flex;flex-direction:column;gap:3px;">
+                      <div><span class="muted">பிறந்த தேதி & நேரம்:</span> <strong>{{ (m.boy_dob || m.girl_dob) | date:'dd MMM yyyy' }} • {{ m.boy_tob || m.girl_tob || '-' }}</strong></div>
+                      <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ m.boy_pob || m.girl_pob || '-' }}</strong></div>
+                      <div><span class="muted">ராசி & நட்சத்திரம்:</span> <strong style="color:#b45309;">{{ m.boy_rasi || m.girl_rasi || '-' }} | {{ m.boy_nakshatra || m.girl_nakshatra || '-' }}</strong></div>
+                      <div *ngIf="m.education_job"><span class="muted">படிப்பு & தொழில்:</span> <strong>{{ m.education_job }}</strong></div>
+                    </div>
+                  </div>
+
+                  <!-- User Expectations -->
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;">
+                    <strong style="color:#7e22ce;font-size:13px;display:block;margin-bottom:6px;">🎯 பயனரின் எதிர்பார்ப்புகள் (Preferences):</strong>
+                    <p style="margin:0;font-size:12px;color:#334155;line-height:1.4;">
+                      {{ m.preferences || 'குறிப்பிட்ட எதிர்பார்ப்புகள் ஏதுமில்லை.' }}
+                    </p>
+                  </div>
+
+                </div>
+
+                <!-- Astrologer Matrimony Response Box -->
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                  <div style="flex:1;min-width:260px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                      <span style="font-size:12px;font-weight:700;color:#0f172a;">💬 ஜோதிடர் வரன் பரிந்துரை நிலை:</span>
+                      <span class="status-pill" 
+                        [class.completed]="m.admin_status === 'Completed' || m.admin_status === 'Match Finalized'"
+                        [class.processing]="m.admin_status === 'Matches Suggested' || m.admin_status === 'Contacted'"
+                        [class.pending]="!m.admin_status || m.admin_status === 'Pending'">
+                        {{ getMatrimonyStatusLabel(m.admin_status) }}
+                      </span>
+                    </div>
+                    <p style="margin:0;font-size:12px;color:#475569;" *ngIf="m.admin_notes">
+                      <strong>பரிந்துரைத்த வரன் விவரங்கள்:</strong> {{ m.admin_notes }}
+                    </p>
+                    <span style="font-size:11px;color:#94a3b8;" *ngIf="!m.admin_notes">பொருத்தமான வரன் ஆய்வு செய்யப்படுகிறது.</span>
+                  </div>
+
+                  <div style="display:flex;gap:8px;">
+                    <button 
+                      class="btn-primary" 
+                      style="background:linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);padding:7px 14px;font-size:12px;font-weight:700;"
+                      (click)="viewMatchDetails(m)"
+                    >
+                      ✏️ வரன் பரிந்துரைக்க (Suggest Match)
+                    </button>
+                    <button 
+                      class="btn-sm" 
+                      style="background:#fee2e2;border:1px solid #fecaca;color:#dc2626;font-weight:700;padding:7px 12px;font-size:12px;border-radius:8px;cursor:pointer;"
+                      (click)="deleteMatchRecord(m.id, (m.boy_name || m.girl_name || 'Candidate'))"
+                    >
+                      🗑️ நீக்கு
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- MODAL 1: PORUTHAM FINAL DECISION MODAL -->
+          <div *ngIf="selectedMatch && selectedMatch.request_type !== 'single_search'" class="modal-overlay" (click)="selectedMatch = null">
+            <div class="modal-box" style="max-width:580px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
               <div class="modal-header">
                 <div>
-                  <h3 style="margin:0;color:#0f172a;">
-                    {{ selectedMatch.request_type === 'single_search' ? '🔍 வரன் தேடல் விவரங்கள்' : '💑 இருவர் ஜாதக பொருத்தம் விவரங்கள்' }}
-                  </h3>
-                  <span style="font-size:12px;color:#64748b;">கோரிக்கை ID: #{{ selectedMatch.id }} &bull; சமர்ப்பித்த தேதி: {{ selectedMatch.created_at | date:'dd MMMM yyyy' }}</span>
+                  <h3 style="margin:0;color:#0f172a;font-size:18px;">💑 இருவர் ஜாதகப் பொருத்தம் - தலைமை முடிவு</h3>
+                  <span style="font-size:12px;color:#64748b;">கோரிக்கை #{{ selectedMatch.id }} &bull; {{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</span>
                 </div>
                 <button class="close-btn" (click)="selectedMatch = null">✕</button>
               </div>
 
-              <!-- Requester Direct Contact Bar -->
-              <div class="modal-contact-card" style="background:#f0fdf4;border:1px solid #bbf7d0;padding:12px 16px;border-radius:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <!-- Contact Bar -->
+              <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 14px;border-radius:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
                 <div>
-                  <span style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;display:block;">தொடர்பு கொள்ள வேண்டிய பயனர் விவரம்:</span>
-                  <strong style="font-size:14px;color:#0f172a;">{{ selectedMatch.requester_display || selectedMatch.requester_name }}</strong>
-                  <span *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" style="font-size:13px;color:#166534;margin-left:8px;font-weight:600;">
-                    ({{ selectedMatch.contact_phone || selectedMatch.requester_phone }})
-                  </span>
+                  <strong style="font-size:13px;color:#0f172a;">{{ selectedMatch.requester_display || selectedMatch.requester_name }}</strong>
+                  <span style="font-size:12px;color:#166534;margin-left:6px;">({{ selectedMatch.contact_phone || selectedMatch.requester_phone }})</span>
                 </div>
+                <div style="display:flex;gap:6px;">
+                  <a *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" [href]="'tel:' + (selectedMatch.contact_phone || selectedMatch.requester_phone)" class="btn-primary" style="padding:5px 10px;font-size:11px;text-decoration:none;">📞 Call</a>
+                  <a *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" [href]="'https://wa.me/91' + (selectedMatch.contact_phone || selectedMatch.requester_phone)" target="_blank" style="padding:5px 10px;font-size:11px;text-decoration:none;background:#25d366;color:#fff;border-radius:6px;">💬 WhatsApp</a>
+                </div>
+              </div>
+
+              <!-- Form -->
+              <div class="form-group">
+                <label>ஜோதிடரின் இறுதி முடிவு (Final Decision):</label>
+                <select [(ngModel)]="selectedMatch.admin_status" class="ctrl">
+                  <option value="Good Match">🟢 நல்ல பொருத்தம் (Good Match - திருமணம் செய்யலாம்)</option>
+                  <option value="Excellent Match">🟢 மிகவும் நல்ல பொருத்தம் (Excellent Match)</option>
+                  <option value="Average Match">🟡 சுமாரான பொருத்தம் (Average Match - பரிகாரம் தேவை)</option>
+                  <option value="Not Recommended">🔴 பொருத்தம் இல்லை (Not Recommended / தோஷ முரண்பாடு)</option>
+                  <option value="Pending">⏳ காத்திருப்பில் (Pending)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>ஜோதிடரின் விரிவான கருத்துரை / பலன் குறிப்பு:</label>
+                <textarea 
+                  [(ngModel)]="selectedMatch.admin_notes" 
+                  class="ctrl" 
+                  rows="4" 
+                  placeholder="ரஜ்ஜு பொருத்தம், தோஷங்கள் மற்றும் திருமணத்திற்கு தலைமை ஜோதிடரின் முடிவை இங்கு உள்ளிடவும்..."
+                ></textarea>
+              </div>
+
+              <div class="modal-btns" style="border-top:1px solid #f1f5f9;padding-top:14px;display:flex;justify-content:space-between;">
+                <button type="button" style="background:#fee2e2;border:1px solid #fecaca;color:#dc2626;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;" (click)="deleteMatchRecord(selectedMatch.id, (selectedMatch.boy_name + ' & ' + selectedMatch.girl_name))">
+                  🗑️ நீக்கு
+                </button>
                 <div style="display:flex;gap:8px;">
-                  <a *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" [href]="'tel:' + (selectedMatch.contact_phone || selectedMatch.requester_phone)" class="btn-primary" style="padding:7px 14px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                    📞 தொலைபேசி அழைப்பு (Call)
-                  </a>
-                  <a *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" [href]="'https://wa.me/91' + (selectedMatch.contact_phone || selectedMatch.requester_phone)" target="_blank" style="padding:7px 14px;font-size:12px;text-decoration:none;background:#25d366;color:#fff;font-weight:700;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">
-                    💬 WhatsApp
-                  </a>
+                  <button type="button" class="btn-cancel" (click)="selectedMatch = null">Close</button>
+                  <button type="button" class="btn-primary" (click)="saveMatchConsultationNotes()">
+                    💾 இறுதி முடிவை சேமி
+                  </button>
                 </div>
               </div>
-
-              <!-- Pair Matching Side-by-Side Profiles -->
-              <div *ngIf="selectedMatch.request_type !== 'single_search'" class="profiles-comparison-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">
-                <!-- Boy Profile Card -->
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;border-top:3px solid #3b82f6;">
-                  <h4 style="margin:0 0 10px 0;color:#1d4ed8;font-size:14px;display:flex;align-items:center;gap:6px;">
-                    <span>🤵</span> மணமகன் ஜாதகம் (Boy Profile)
-                  </h4>
-                  <div class="profile-meta-list" style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
-                    <div><span class="muted">பெயர்:</span> <strong>{{ selectedMatch.boy_name || '-' }}</strong></div>
-                    <div><span class="muted">பிறந்த தேதி:</span> <strong>{{ selectedMatch.boy_dob | date:'dd MMM yyyy' }}</strong></div>
-                    <div><span class="muted">பிறந்த நேரம்:</span> <strong>{{ selectedMatch.boy_tob || 'குறிப்பிடப்படவில்லை' }}</strong></div>
-                    <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ selectedMatch.boy_pob || 'குறிப்பிடப்படவில்லை' }}</strong></div>
-                    <div><span class="muted">ராசி:</span> <strong style="color:#b45309;">{{ selectedMatch.boy_rasi || '-' }}</strong></div>
-                    <div><span class="muted">நட்சத்திரம்:</span> <strong style="color:#b45309;">{{ selectedMatch.boy_nakshatra || '-' }}</strong></div>
-                  </div>
-                </div>
-
-                <!-- Girl Profile Card -->
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;border-top:3px solid #ec4899;">
-                  <h4 style="margin:0 0 10px 0;color:#be185d;font-size:14px;display:flex;align-items:center;gap:6px;">
-                    <span>👰</span> மணமகள் ஜாதகம் (Girl Profile)
-                  </h4>
-                  <div class="profile-meta-list" style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
-                    <div><span class="muted">பெயர்:</span> <strong>{{ selectedMatch.girl_name || '-' }}</strong></div>
-                    <div><span class="muted">பிறந்த தேதி:</span> <strong>{{ selectedMatch.girl_dob | date:'dd MMM yyyy' }}</strong></div>
-                    <div><span class="muted">பிறந்த நேரம்:</span> <strong>{{ selectedMatch.girl_tob || 'குறிப்பிடப்படவில்லை' }}</strong></div>
-                    <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ selectedMatch.girl_pob || 'குறிப்பிடப்படவில்லை' }}</strong></div>
-                    <div><span class="muted">ராசி:</span> <strong style="color:#b45309;">{{ selectedMatch.girl_rasi || '-' }}</strong></div>
-                    <div><span class="muted">நட்சத்திரம்:</span> <strong style="color:#b45309;">{{ selectedMatch.girl_nakshatra || '-' }}</strong></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Single Profile Search View -->
-              <div *ngIf="selectedMatch.request_type === 'single_search'" style="background:#fdf4ff;border:1px solid #f0abfc;border-radius:12px;padding:16px;margin-bottom:18px;">
-                <h4 style="margin:0 0 12px 0;color:#86198f;font-size:15px;">
-                  {{ selectedMatch.candidate_gender === 'groom' ? '🤵 மணமகன் தேவைப்படும் வரன் பதிவு' : '👰 மணமகள் தேவைப்படும் வரன் பதிவு' }}
-                </h4>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
-                  <div><span class="muted">ஜாதகர் பெயர்:</span> <strong>{{ selectedMatch.boy_name || selectedMatch.girl_name }}</strong></div>
-                  <div><span class="muted">பிறந்த தேதி:</span> <strong>{{ (selectedMatch.boy_dob || selectedMatch.girl_dob) | date:'dd MMM yyyy' }}</strong></div>
-                  <div><span class="muted">ராசி:</span> <strong style="color:#b45309;">{{ selectedMatch.boy_rasi || selectedMatch.girl_rasi || '-' }}</strong></div>
-                  <div><span class="muted">நட்சத்திரம்:</span> <strong style="color:#b45309;">{{ selectedMatch.boy_nakshatra || selectedMatch.girl_nakshatra || '-' }}</strong></div>
-                  <div><span class="muted">பிறந்த நேரம் & இடம்:</span> <strong>{{ selectedMatch.boy_tob || selectedMatch.girl_tob || '-' }} • {{ selectedMatch.boy_pob || selectedMatch.girl_pob || '-' }}</strong></div>
-                  <div><span class="muted">கல்வி & வேலை:</span> <strong>{{ selectedMatch.education_job || 'குறிப்பிடப்படவில்லை' }}</strong></div>
-                </div>
-                <div *ngIf="selectedMatch.preferences" style="margin-top:12px;background:#fff;padding:10px;border-radius:8px;border:1px solid #f5d0fe;font-size:12px;">
-                  <strong style="color:#86198f;display:block;margin-bottom:4px;">எதிர்பார்ப்புகள் & விருப்பங்கள் (Preferences):</strong>
-                  <p style="margin:0;color:#334155;line-height:1.4;">{{ selectedMatch.preferences }}</p>
-                </div>
-              </div>
-
-              <!-- Astrologer Consultation & Call Notes Form -->
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px;">
-                <h4 style="margin:0 0 12px 0;color:#0f172a;font-size:14px;display:flex;align-items:center;gap:6px;">
-                  <span>📝</span> ஜோதிடர் தொலைபேசி ஆலோசனைப் பதிவு (Astrologer Call Notes)
-                </h4>
-                
-                <div class="form-group" style="margin-bottom:12px;">
-                  <label>ஆலோசனை நிலை (Consultation Status):</label>
-                  <select [(ngModel)]="selectedMatch.admin_status" class="ctrl">
-                    <option value="Pending">⏳ Pending (புதிய கோரிக்கை - இன்னும் பேசவில்லை)</option>
-                    <option value="Contacted">📞 Contacted (பயனரிடம் தொலைபேசியில் பேசப்பட்டது)</option>
-                    <option value="Completed">✅ Consultation Done (முழுமையான ஆலோசனை & பலன் கூறப்பட்டது)</option>
-                    <option value="Matches Suggested">🔍 Matches Suggested (வரன்கள் பரிந்துரைக்கப்பட்டது)</option>
-                    <option value="Followup">📝 Follow-up Required (மீண்டும் அழைக்க வேண்டும்)</option>
-                  </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom:14px;">
-                  <label>ஜோதிடர் குறிப்புகள் / பரிந்துரைகள் (Consultation Notes / Astrologer Remarks):</label>
-                  <textarea 
-                    [(ngModel)]="selectedMatch.admin_notes" 
-                    class="ctrl" 
-                    rows="3" 
-                    placeholder="பயனரிடம் பேசிய விவரங்கள், ஜாதகப் பொருத்தம் பற்றிய தலைமை ஜோதிடரின் கருத்துக்கள், அல்லது பரிந்துரைக்கப்பட்ட வரன்கள் குறித்து இங்கு குறிப்பெடுக்கவும்..."
-                  ></textarea>
-                </div>
-
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                  <span *ngIf="matchNotesSaveMsg" style="color:#059669;font-weight:600;font-size:12px;">{{ matchNotesSaveMsg }}</span>
-                  <div style="display:flex;gap:10px;margin-left:auto;">
-                    <button type="button" class="btn-cancel" (click)="selectedMatch = null">Close</button>
-                    <button type="button" class="btn-primary" (click)="saveMatchConsultationNotes()">
-                      💾 குறிப்புகளை சேமி (Save Consultation Notes)
-                    </button>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
 
-          <!-- NEW MANUAL LEAD MODAL -->
-          <div *ngIf="newLeadModalOpen" class="modal-overlay" (click)="newLeadModalOpen = false">
-            <div class="modal-box" style="max-width:560px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+          <!-- MODAL 2: MATRIMONY SUGGESTION MODAL -->
+          <div *ngIf="selectedMatch && selectedMatch.request_type === 'single_search'" class="modal-overlay" (click)="selectedMatch = null">
+            <div class="modal-box" style="max-width:580px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
               <div class="modal-header">
-                <h3 style="margin:0;color:#0f172a;">+ புதிய வரன் / பொருத்தம் பதிவு</h3>
-                <button class="close-btn" (click)="newLeadModalOpen = false">✕</button>
+                <div>
+                  <h3 style="margin:0;color:#0f172a;font-size:18px;">👰 வரன் தேடல் - ஜோதிடர் பரிந்துரை</h3>
+                  <span style="font-size:12px;color:#64748b;">கோரிக்கை #{{ selectedMatch.id }} &bull; {{ selectedMatch.boy_name || selectedMatch.girl_name }}</span>
+                </div>
+                <button class="close-btn" (click)="selectedMatch = null">✕</button>
               </div>
-              <form (ngSubmit)="submitManualLead()">
-                <div class="form-group">
-                  <label>கோரிக்கை வகை (Request Type):</label>
-                  <select [(ngModel)]="newLeadForm.request_type" name="req_type" class="ctrl">
-                    <option value="single_search">🔍 வரன் தேடல் (Looking for Bride / Groom)</option>
-                    <option value="pair_match">💑 இருவர் ஜாதக பொருத்தம் (Pair Match)</option>
-                  </select>
+
+              <!-- Contact Bar -->
+              <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 14px;border-radius:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <strong style="font-size:13px;color:#0f172a;">{{ selectedMatch.requester_display || selectedMatch.requester_name }}</strong>
+                  <span style="font-size:12px;color:#166534;margin-left:6px;">({{ selectedMatch.contact_phone || selectedMatch.requester_phone }})</span>
                 </div>
-                <div class="form-group">
-                  <label>பயனர் தொடர்பு எண் (Contact Phone):</label>
-                  <input [(ngModel)]="newLeadForm.contact_phone" name="c_phone" required class="ctrl" placeholder="எ.கா: 9876543210"/>
+                <div style="display:flex;gap:6px;">
+                  <a *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" [href]="'tel:' + (selectedMatch.contact_phone || selectedMatch.requester_phone)" class="btn-primary" style="padding:5px 10px;font-size:11px;text-decoration:none;">📞 Call</a>
+                  <a *ngIf="selectedMatch.contact_phone || selectedMatch.requester_phone" [href]="'https://wa.me/91' + (selectedMatch.contact_phone || selectedMatch.requester_phone)" target="_blank" style="padding:5px 10px;font-size:11px;text-decoration:none;background:#25d366;color:#fff;border-radius:6px;">💬 WhatsApp</a>
                 </div>
-                <div class="form-group">
-                  <label>ஜாதகர் பெயர் (Candidate Name):</label>
-                  <input [(ngModel)]="newLeadForm.candidate_name" name="c_name" required class="ctrl" placeholder="பெயர்"/>
+              </div>
+
+              <!-- Form -->
+              <div class="form-group">
+                <label>வரன் பரிந்துரை நிலை (Matrimony Status):</label>
+                <select [(ngModel)]="selectedMatch.admin_status" class="ctrl">
+                  <option value="Matches Suggested">📞 பொருத்தமான வரன் போனில் தெரிவிக்கப்பட்டது (Suggested on Call)</option>
+                  <option value="Searching">🔍 பொருத்தமான வரன் தேடப்படுகிறது (Searching)</option>
+                  <option value="Match Finalized">✅ வரன் முடிந்தது / திருமணம் நிச்சயமானது (Finalized)</option>
+                  <option value="Pending">⏳ புதிய பதிவு - ஆய்வு செய்யப்படுகிறது (Pending)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>பயனருக்கு பரிந்துரைத்த வரன் விவரங்கள் / குறிப்பு:</label>
+                <textarea 
+                  [(ngModel)]="selectedMatch.admin_notes" 
+                  class="ctrl" 
+                  rows="4" 
+                  placeholder="பயனரின் எதிர்பார்ப்பிற்கு ஏற்ப நாம் தேர்வு செய்துள்ள வரன்களின் பெயர், ராசி, நட்சத்திரம், தொழில் மற்றும் போனில் பேசிய விவரங்களை இங்கு உள்ளிடவும்..."
+                ></textarea>
+              </div>
+
+              <div class="modal-btns" style="border-top:1px solid #f1f5f9;padding-top:14px;display:flex;justify-content:space-between;">
+                <button type="button" style="background:#fee2e2;border:1px solid #fecaca;color:#dc2626;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;" (click)="deleteMatchRecord(selectedMatch.id, (selectedMatch.boy_name || selectedMatch.girl_name || 'Candidate'))">
+                  🗑️ நீக்கு
+                </button>
+                <div style="display:flex;gap:8px;">
+                  <button type="button" class="btn-cancel" (click)="selectedMatch = null">Close</button>
+                  <button type="button" class="btn-primary" style="background:linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);" (click)="saveMatchConsultationNotes()">
+                    💾 குறிப்புகளை சேமி
+                  </button>
                 </div>
-                <div class="form-group">
-                  <label>தேவைப்படும் வரன் (Looking For):</label>
-                  <select [(ngModel)]="newLeadForm.candidate_gender" name="c_gender" class="ctrl">
-                    <option value="groom">மணமகன் தேவை (Seeking Groom)</option>
-                    <option value="bride">மணமகள் தேவை (Seeking Bride)</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>பிறந்த தேதி (DOB):</label>
-                  <input type="date" [(ngModel)]="newLeadForm.candidate_dob" name="c_dob" required class="ctrl"/>
-                </div>
-                <div class="form-group">
-                  <label>ராசி & நட்சத்திரம்:</label>
-                  <div style="display:flex;gap:8px;">
-                    <select [(ngModel)]="newLeadForm.candidate_rasi" name="c_rasi" class="ctrl">
-                      <option *ngFor="let r of rasiEditorList" [value]="r.name">{{ r.name }}</option>
-                    </select>
-                    <input [(ngModel)]="newLeadForm.candidate_star" name="c_star" placeholder="நட்சத்திரம்" class="ctrl"/>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>விருப்பங்கள் / எதிர்பார்ப்புகள் (Preferences):</label>
-                  <textarea [(ngModel)]="newLeadForm.preferences" name="c_pref" class="ctrl" rows="2" placeholder="வயது வரம்பு, படிப்பு, தொழில், எதிர்பார்ப்புகள்..."></textarea>
-                </div>
-                <div class="modal-btns">
-                  <button type="button" (click)="newLeadModalOpen = false" class="btn-cancel">Cancel</button>
-                  <button type="submit" class="btn-primary">பதிவு செய் (Submit Lead)</button>
-                </div>
-              </form>
+              </div>
             </div>
           </div>
 
@@ -2105,12 +2174,12 @@ interface Metrics {
       font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* LEFT SIDEBAR STYLING */
+    /* LEFT SIDEBAR STYLING - MEDIUM DARK SLATE / NAVY THEME */
     .sidebar {
       width: 270px;
-      background: #ffffff;
-      border-right: 1px solid #e2e8f0;
-      box-shadow: 2px 0 16px rgba(0, 0, 0, 0.03);
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
       display: flex;
       flex-direction: column;
       padding: 24px 16px;
@@ -2122,18 +2191,18 @@ interface Metrics {
       align-items: center;
       gap: 12px;
       padding-bottom: 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .brand .icon { font-size: 26px; }
-    .brand h2 { font-size: 20px; color: #b45309; margin: 0; font-weight: 700; }
-    .brand-sub { font-size: 11px; color: #64748b; font-weight: 500; }
+    .brand h2 { font-size: 20px; color: #fbbf24; margin: 0; font-weight: 800; letter-spacing: 0.3px; }
+    .brand-sub { font-size: 11px; color: #94a3b8; font-weight: 500; }
 
     .drawer-close-btn {
       display: none;
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      color: #475569;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -2145,8 +2214,9 @@ interface Metrics {
     }
 
     .drawer-close-btn:hover {
-      background: #fee2e2;
-      color: #dc2626;
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
     }
 
     .nav-menu {
@@ -2165,7 +2235,7 @@ interface Metrics {
       background: transparent;
       border: 1px solid transparent;
       border-radius: 10px;
-      color: #475569;
+      color: #94a3b8;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
@@ -2176,17 +2246,18 @@ interface Metrics {
     }
 
     .nav-menu button.active {
-      background: #fffbeb;
-      border-color: #fde68a;
-      color: #b45309;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.06) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-left: 4px solid #f59e0b;
+      color: #fbbf24;
       font-weight: 700;
-      box-shadow: 0 1px 4px rgba(180, 83, 9, 0.08);
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.1);
     }
 
     @media (hover: hover) {
       .nav-menu button:hover:not(.active) {
-        background: #f1f5f9;
-        color: #0f172a;
+        background: rgba(255, 255, 255, 0.06);
+        color: #f8fafc;
       }
     }
 
@@ -2197,8 +2268,8 @@ interface Metrics {
       flex-direction: column;
       gap: 12px;
       padding: 14px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
       margin-top: auto;
     }
@@ -2216,34 +2287,35 @@ interface Metrics {
       color: #ffffff; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
     }
 
     .u-details { flex: 1; overflow: hidden; }
-    .u-name { display: block; font-size: 13px; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .u-role { font-size: 9px; color: #b45309; font-weight: 700; letter-spacing: 0.5px; }
+    .u-name { display: block; font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .u-role { font-size: 9px; color: #fbbf24; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: rgba(245, 158, 11, 0.15); padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.25); display: inline-block; margin-top: 2px; }
 
     .btn-logout-full {
       width: 100%;
       padding: 9px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #f87171;
       border-radius: 10px;
       cursor: pointer;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s ease;
     }
 
     .btn-logout-full:hover {
-      background: #fee2e2;
-      border-color: #ef4444;
-      color: #b91c1c;
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
     }
 
     /* MAIN PANEL */
@@ -2474,6 +2546,102 @@ interface Metrics {
     .btn-xs-refresh { padding: 6px 12px; background: #fffbeb; border: 1px solid #fde68a; color: #b45309; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
     .center-loader-box { text-align: center; padding: 40px; color: #b45309; font-size: 14px; font-weight: 600; }
+    
+    /* COMPACT RASI CARDS (ICON & NAME ONLY) */
+    .rasi-compact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .rasi-compact-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .rasi-compact-card:hover {
+      transform: translateY(-3px);
+      border-color: #d97706;
+      box-shadow: 0 8px 22px rgba(217, 119, 6, 0.12);
+      background: #fffdfa;
+    }
+    .rasi-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1px solid #fde68a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(180, 83, 9, 0.08);
+    }
+    .rasi-compact-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+    .rasi-compact-tamil {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .rasi-compact-eng {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .rasi-compact-badges {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .badge-mini {
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .badge-mini.has-text { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-mini.has-audio { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-mini.has-video { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .rasi-card-edit-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #64748b;
+      opacity: 0.6;
+      transition: all 0.2s;
+    }
+    .rasi-compact-card:hover .rasi-card-edit-btn {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #b45309;
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    .rasi-edit-modal-box {
+      max-width: 560px;
+    }
+
     .rasi-editor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
     .rasi-editor-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; transition: border-color 0.2s, box-shadow 0.2s; }
     .rasi-editor-card:hover { border-color: #cbd5e1; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06); }
@@ -2881,11 +3049,20 @@ export class AdminDashboardComponent implements OnInit {
   };
 
   // Rasi Palan Editor State
+  selectedRasiIndex: number | null = null;
   selectedRasiDate = new Date().toISOString().split('T')[0];
   rasiEditorType = 'daily';
   rasiPublishing = false;
   rasiPredictionsLoading = false;
   rasiSaveSuccessMsg = '';
+
+  openRasiModal(index: number): void {
+    this.selectedRasiIndex = index;
+  }
+
+  closeRasiModal(): void {
+    this.selectedRasiIndex = null;
+  }
 
   rasiTypes = [
     { label: 'Daily', tamilLabel: 'தினசரி பலன்', val: 'daily' },
@@ -3061,6 +3238,7 @@ export class AdminDashboardComponent implements OnInit {
     if (typeof window === 'undefined') return;
 
     this.currentUser = this.authService.getUser();
+    this.resetAllToDefaultsState();
 
     this.route.queryParams.subscribe(params => {
       const tab = params['tab'] || 'overview';
@@ -3252,6 +3430,10 @@ export class AdminDashboardComponent implements OnInit {
               console.error('Daily rasi notification status fetch error:', err);
             }
           });
+          break;
+
+        case 'rasi-editor':
+          this.loadRasiPredictions();
           break;
 
         default:
@@ -3838,15 +4020,41 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  getStatusTamilLabel(status: string): string {
+  getPoruthamDecisionLabel(status: string): string {
     switch (status) {
-      case 'Contacted': return '📞 பேசப்பட்டது (Contacted)';
-      case 'Completed':
-      case 'Consultation Done': return '✅ பலன் கூறப்பட்டது (Completed)';
-      case 'Matches Suggested': return '🔍 வரன் பரிந்துரைக்கப்பட்டது';
-      case 'Followup': return '📝 Follow-up தேவை';
+      case 'Excellent Match': return '🟢 மிக நல்ல பொருத்தம்';
+      case 'Good Match': return '🟢 நல்ல பொருத்தம்';
+      case 'Average Match': return '🟡 சுமாரான பொருத்தம்';
+      case 'Not Recommended': return '🔴 பொருத்தம் இல்லை';
+      case 'Completed': return '✅ முடிவு கூறப்பட்டது';
+      case 'Contacted': return '📞 பேசப்பட்டது';
       default: return '⏳ புதிய கோரிக்கை (Pending)';
     }
+  }
+
+  getMatrimonyStatusLabel(status: string): string {
+    switch (status) {
+      case 'Matches Suggested': return '📞 வரன் கூறப்பட்டது (Suggested)';
+      case 'Match Finalized': return '✅ வரன் முடிந்தது (Finalized)';
+      case 'Searching': return '🔍 வரன் தேடப்படுகிறது';
+      case 'Completed': return '✅ நிறைவடைந்தது';
+      case 'Contacted': return '📞 பேசப்பட்டது';
+      default: return '⏳ புதிய பதிவு (Pending)';
+    }
+  }
+
+  deleteMatchRecord(id: number, name: string): void {
+    if (!confirm(`இந்த பதிவை (#${id} - ${name || ''}) நிச்சயமாக நீக்க வேண்டுமா?`)) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/marriage-matches/${id}`, headers).subscribe({
+      next: (res) => {
+        alert(res.message || '✅ பதிவு வெற்றிகரமாக நீக்கப்பட்டது!');
+        this.selectedMatch = null;
+        this.marriageMatches = this.marriageMatches.filter(m => m.id !== id);
+        this.cdr.detectChanges();
+      },
+      error: () => alert('❌ Failed to delete record.')
+    });
   }
 
   viewMatchDetails(match: any): void {

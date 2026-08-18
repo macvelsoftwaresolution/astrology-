@@ -1,12 +1,33 @@
-<ion-content [fullscreen]="true" class="edu-content">
-  <!-- Mobile App Sticky Top Header -->
-  <div class="overlay-header" *ngIf="currentScreen !== 'dashboard'">
-    <button class="btn-back" (click)="handleBack()" aria-label="Go Back">
-      <i class="bi bi-arrow-left"></i>
-    </button>
-    <h2>{{ getHeaderTitle() }}</h2>
-    <div style="width: 32px;"></div>
+<!-- ================= FIXED STICKY TOP HEADER NAVBAR ================= -->
+<ion-header class="app-top-navbar ion-no-border" *ngIf="currentScreen !== 'dashboard'">
+  <div class="top-navbar-content">
+    
+    <!-- Left Section: Back Button + Screen Title -->
+    <div class="top-nav-left">
+      <button 
+        type="button" 
+        class="top-nav-back-btn" 
+        (click)="handleBack()" 
+        title="Go Back">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+
+      <div class="top-nav-title-box">
+        <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
+      </div>
+    </div>
+
+    <!-- Right Section: Logo / Brand Badge -->
+    <div class="top-nav-right">
+      <div class="top-nav-brand-badge">
+        <span>📖 வேத ஜோதிடம்</span>
+      </div>
+    </div>
+
   </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="edu-content">
 
   <app-learn-intro *ngIf="currentScreen === 'intro'" (next)="goToRules()"></app-learn-intro>
   <app-learn-rules *ngIf="currentScreen === 'rules'" (next)="agreeAndContinue()"></app-learn-rules>

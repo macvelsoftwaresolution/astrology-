@@ -114,6 +114,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     // Marriage Match Logs & Phone Consultation Updates
     Route::get('/marriage-matches',                 [JathagamController::class, 'adminGetMatches']);
     Route::put('/marriage-matches/{id}',            [JathagamController::class, 'adminUpdateMatch']);
+    Route::delete('/marriage-matches/{id}',         [JathagamController::class, 'adminDeleteMatch']);
 
     // User Profiles
     Route::get('/users',                            [UserProfileController::class, 'adminGetUsers']);

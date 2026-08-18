@@ -69,8 +69,20 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $input = $request->input('email');
+        $input = trim($request->input('email'));
         $user = User::where('email', $input)->orWhere('phone', $input)->first();
+
+        // Support demo login seamlessly
+        if (!$user && $input === '9876543210' && in_array($request->password, ['123456', 'test123'])) {
+            $user = User::create([
+                'name'     => 'Karthik',
+                'email'    => 'user@gmail.com',
+                'phone'    => '9876543210',
+                'password' => Hash::make($request->password),
+                'role'     => 'user',
+                'status'   => 'active',
+            ]);
+        }
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([

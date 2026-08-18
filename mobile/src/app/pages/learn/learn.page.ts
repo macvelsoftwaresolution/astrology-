@@ -83,22 +83,6 @@ export class LearnPage implements OnInit {
     } else {
       this.currentScreen = 'intro';
     }
-
-    App.addListener('backButton', () => {
-      this.ngZone.run(() => {
-        if (this.router.url !== '/learn') {
-          return;
-        }
-
-        if (this.activeQuiz) {
-          this.activeQuiz = false;
-        } else if (this.showCertificate) {
-          this.showCertificate = false;
-        } else {
-          this.handleBack();
-        }
-      });
-    });
   }
 
   ionViewDidEnter() {

@@ -24,9 +24,22 @@ class DatabaseSeeder extends Seeder
         );
 
         $student = User::updateOrCreate(
-            ['email' => 'karthik@gmail.com'],
+            ['phone' => '9876543210'],
             [
                 'name' => 'Karthik',
+                'email' => 'user@gmail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'user',
+                'phone' => '9876543210',
+                'status' => 'active',
+                'address' => '12 Gandhi Street, T. Nagar, Chennai - 600017'
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'karthik@gmail.com'],
+            [
+                'name' => 'Karthik S',
                 'password' => Hash::make('test123'),
                 'role' => 'user',
                 'phone' => '9876543212',
@@ -310,6 +323,8 @@ class DatabaseSeeder extends Seeder
                     'order_type'          => 'booking',
                     'razorpay_order_id'   => 'order_PgXKMnOQtest02',
                     'razorpay_payment_id' => 'pay_PgXKtest67890',
+                    'amount'              => 800.00,
+                    'currency'            => 'INR',
                     'status'              => 'Paid',
                     'description'         => 'Prashna Astrology Consultation',
                     'created_at'          => now()->subDays(3),
