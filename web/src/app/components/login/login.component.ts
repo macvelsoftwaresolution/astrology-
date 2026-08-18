@@ -307,7 +307,7 @@ export class LoginComponent {
     this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
         this.loading = false;
-        if (res.user.role === 'admin') {
+        if (res.user && (res.user.role === 'admin' || res.user.role === 'astrologer' || res.user.role === 'super_admin')) {
           this.router.navigate(['/admin']);
         }
       },

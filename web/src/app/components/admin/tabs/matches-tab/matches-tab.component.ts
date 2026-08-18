@@ -16,7 +16,7 @@ export class MatchesTabComponent implements OnInit {
   isLoading = false;
   selectedMatch: any = null;
   editingMatch: any = null;
-  matchStatusForm = { consultation_status: 'Pending', admin_notes: '' };
+  matchStatusForm: any = { admin_status: 'Pending', consultation_status: 'Pending', admin_notes: '' };
 
   constructor(
     private http: HttpClient,
@@ -57,8 +57,10 @@ export class MatchesTabComponent implements OnInit {
 
   openEditMatchStatus(match: any): void {
     this.editingMatch = match;
+    const status = match.admin_status || match.consultation_status || 'Pending';
     this.matchStatusForm = {
-      consultation_status: match.consultation_status || 'Pending',
+      admin_status: status,
+      consultation_status: status,
       admin_notes: match.admin_notes || ''
     };
   }

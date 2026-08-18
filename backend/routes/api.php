@@ -83,6 +83,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/dashboard-metrics', [SuperAdminController::class, 'getDashboardMetrics']);
     Route::get('/team',              [SuperAdminController::class, 'listAdmins']);
     Route::post('/team',             [SuperAdminController::class, 'createAdmin']);
+    Route::post('/create-admin',     [SuperAdminController::class, 'createAdmin']);
     Route::put('/team/{id}/toggle',  [SuperAdminController::class, 'toggleAdminStatus']);
 
     // LMS Courses CRUD
@@ -124,6 +125,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
 
     // User Profiles
     Route::get('/users',                            [UserProfileController::class, 'adminGetUsers']);
+    Route::delete('/users/{id}',                    [UserProfileController::class, 'deleteUser']);
 
     // Payment Transactions Ledger
     Route::get('/payment-transactions',             [UserProfileController::class, 'adminGetPayments']);

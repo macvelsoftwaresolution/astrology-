@@ -25,7 +25,12 @@ class CheckRole
             ], 401);
         }
 
-        if (!in_array($user->role, $roles)) {
+        $allowedRoles = $roles;
+        if (in_array('admin', $roles)) {
+            $allowedRoles = array_merge($allowedRoles, ['super_admin', 'astrologer']);
+        }
+
+        if (!in_array($user->role, $allowedRoles)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access Denied: You do not have permissions for this resource.',

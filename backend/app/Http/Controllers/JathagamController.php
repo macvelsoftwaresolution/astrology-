@@ -342,16 +342,14 @@ class JathagamController extends Controller
      */
     public function adminUpdateMatch(Request $request, $id)
     {
-        $request->validate([
-            'admin_status' => 'required|string',
-            'admin_notes'  => 'nullable|string'
-        ]);
+        $adminStatus = $request->input('admin_status') ?? $request->input('consultation_status') ?? 'Pending';
+        $adminNotes  = $request->input('admin_notes') ?? '';
 
         DB::table('marriage_matches')
             ->where('id', $id)
             ->update([
-                'admin_status' => $request->admin_status,
-                'admin_notes'  => $request->admin_notes,
+                'admin_status' => $adminStatus,
+                'admin_notes'  => $adminNotes,
                 'updated_at'   => now()
             ]);
 
