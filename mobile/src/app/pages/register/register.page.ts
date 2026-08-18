@@ -14,6 +14,7 @@ export class RegisterPage implements OnInit {
   mobileNumber: string = '';
   emailAddress: string = '';
   serviceType: 'astrology' | 'education' = 'astrology';
+  profilePicBase64: string = '';
 
   constructor(
     private router: Router,
@@ -30,6 +31,17 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profilePicBase64 = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   async onRegister() {
     if (!this.fullName || !this.mobileNumber || !this.emailAddress) {
       await this.showToast('தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்', 'warning');
@@ -41,7 +53,8 @@ export class RegisterPage implements OnInit {
       fullName: this.fullName,
       mobileNumber: this.mobileNumber,
       emailAddress: this.emailAddress,
-      password: defaultPwd // set default password based on service type
+      password: defaultPwd, // set default password based on service type
+      profileImage: this.profilePicBase64 || undefined
     };
 
     this.authService.register(user, this.serviceType).subscribe({
@@ -54,7 +67,12 @@ export class RegisterPage implements OnInit {
         }
       },
       error: async (err) => {
-        const msg = err.error?.message || 'இந்த அலைபேசி எண் / மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.';
+        let msg = 'இந்த அலைபேசி எண் / மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.';
+        if (err.status === 0) {
+          msg = 'சர்வர் தொடர்புகொள்ள முடியவில்லை (Network Error). உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.';
+        } else if (err.error?.message) {
+          msg = err.error.message;
+        }
         await this.showToast(msg, 'danger');
       }
     });

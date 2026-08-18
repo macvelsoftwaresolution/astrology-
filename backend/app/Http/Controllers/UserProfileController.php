@@ -122,8 +122,8 @@ class UserProfileController extends Controller
     public function adminGetUsers()
     {
         $users = DB::table('users')
-            ->where('role', 'user')
-            ->select('id', 'name', 'email', 'phone', 'status', 'jathagam_details', 'created_at')
+            ->select('id', 'name', 'email', 'phone', 'role', 'status', 'jathagam_details', 'created_at')
+            ->orderBy('id', 'desc')
             ->get()
             ->map(function ($u) {
                 $u->jathagam_details = $u->jathagam_details ? json_decode($u->jathagam_details) : null;
@@ -145,5 +145,18 @@ class UserProfileController extends Controller
             ->get();
 
         return response()->json(['payments' => $payments]);
+    }
+
+    /**
+     * Admin: Delete user account
+     */
+    public function deleteUser($id)
+    {
+        DB::table('users')->where('id', $id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'பயனர் கணக்கு நீக்கப்பட்டது.'
+        ]);
     }
 }

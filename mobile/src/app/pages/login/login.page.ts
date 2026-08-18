@@ -45,7 +45,12 @@ export class LoginPage implements OnInit {
         }
       },
       error: async (err) => {
-        const msg = err.error?.message || 'தவறான அலைபேசி எண் அல்லது கடவுச்சொல்';
+        let msg = 'தவறான அலைபேசி எண் அல்லது கடவுச்சொல்';
+        if (err.status === 0) {
+          msg = 'சர்வர் தொடர்புகொள்ள முடியவில்லை (Network Error). உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.';
+        } else if (err.error?.message) {
+          msg = err.error.message;
+        }
         await this.showToast(msg, 'danger');
       }
     });

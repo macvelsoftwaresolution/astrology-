@@ -343,9 +343,9 @@ export class ServicesTabComponent implements OnInit {
       status: targetStatus
     }, headers).subscribe({
       next: (res) => {
-        if (res.blocked_dates) {
+        if (this.selectedAstrologerForManage && res.blocked_dates) {
           this.selectedAstrologerForManage.blocked_dates = res.blocked_dates;
-          const matched = this.astrologersList.find(a => a.id === this.selectedAstrologerForManage.id);
+          const matched = this.astrologersList.find(a => a.id === this.selectedAstrologerForManage?.id);
           if (matched) matched.blocked_dates = res.blocked_dates;
         }
       }

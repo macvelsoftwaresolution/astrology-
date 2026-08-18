@@ -342,22 +342,32 @@ class JathagamController extends Controller
      */
     public function adminUpdateMatch(Request $request, $id)
     {
-        $request->validate([
-            'admin_status' => 'required|string',
-            'admin_notes'  => 'nullable|string'
-        ]);
+        $adminStatus = $request->input('admin_status') ?? $request->input('consultation_status') ?? 'Pending';
+        $adminNotes  = $request->input('admin_notes') ?? '';
 
         DB::table('marriage_matches')
             ->where('id', $id)
             ->update([
-                'admin_status' => $request->admin_status,
-                'admin_notes'  => $request->admin_notes,
+                'admin_status' => $adminStatus,
+                'admin_notes'  => $adminNotes,
                 'updated_at'   => now()
             ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Consultation status and notes updated successfully'
+        ]);
+    }
+
+    /**
+     * Admin: Delete a Marriage Match or Varan Search record
+     */
+    public function adminDeleteMatch($id)
+    {
+        DB::table('marriage_matches')->where('id', $id)->delete();
+        return response()->json([
+            'success' => true,
+            'message' => "கோரிக்கை (#{$id}) வெற்றிகரமாக நீக்கப்பட்டது (Record deleted successfully)."
         ]);
     }
 

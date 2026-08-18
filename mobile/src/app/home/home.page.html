@@ -1,28 +1,39 @@
 <!-- ================= FIXED STICKY TOP HEADER NAVBAR ================= -->
-<ion-header class="mobile-sticky-header ion-no-border" *ngIf="!activeServiceFlow">
-  <!-- 1. Home Header -->
-  <div class="app-header-bar" *ngIf="currentTab === 'home'">
-    <div class="profile-header">
-      <div class="header-titles">
-        <span class="welcome-txt">வணக்கம்,</span>
-        <h2 class="app-brand-name">ஆருத்ரா ஜோதிடம்</h2>
+<ion-header class="app-top-navbar ion-no-border">
+  <div class="top-navbar-content">
+    
+    <!-- Left Section: Back Button (when on subpage/tab) OR Gopuram Brand Icon (when on Home) -->
+    <div class="top-nav-left">
+      <!-- Back Button -->
+      <button 
+        *ngIf="canShowBackButton()" 
+        type="button"
+        class="top-nav-back-btn" 
+        (click)="goBackStep()"
+        title="Go Back">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+
+      <!-- Gopuram / Brand Icon when on Home -->
+      <div *ngIf="!canShowBackButton()" class="top-nav-brand-icon">
+        <span>{{ userInitial }}</span>
+      </div>
+
+      <!-- Title / Header Titles -->
+      <div class="top-nav-title-box">
+        <span *ngIf="currentTab === 'home' && !activeServiceFlow" class="top-nav-subtitle">வணக்கம்,</span>
+        <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
       </div>
     </div>
-    <div class="bell-icon"><i class="bi bi-bell-fill"></i></div>
-  </div>
 
-  <!-- 2. Services Header -->
-  <div class="app-header-bar" *ngIf="currentTab === 'services'">
-  </div>
+    <!-- Right Section: Notification & User Profile Badge -->
+    <div class="top-nav-right">
+      <div class="top-nav-action-btn bell-btn" (click)="selectTab('profile')" title="Notifications">
+        <i class="bi bi-bell-fill"></i>
+        <span class="notif-dot"></span>
+      </div>
+    </div>
 
-  <!-- 3. Matching Header -->
-  <div class="app-header-bar" *ngIf="currentTab === 'matching'">
-    <h2>திருமண பொருத்தம்</h2>
-  </div>
-
-  <!-- 4. Profile Header -->
-  <div class="app-header-bar" *ngIf="currentTab === 'profile'">
-    <h2>சுயவிவரம்</h2>
   </div>
 </ion-header>
 
@@ -42,13 +53,15 @@
 
     <!-- Hero Banner Slider -->
     <div class="home-hero-card" (click)="currentTab = 'services'">
-      <div class="hero-bg-image"></div>
+      <div class="hero-bg-image" [ngStyle]="{'background-image': 'url(' + heroBanners[currentBannerIndex].image + ')'}"></div>
       <div class="hero-content">
-        <div class="hero-badge">இன்றைய சிறப்பு</div>
-        <h2 class="hero-title">இன்றைய ராசி பலன்</h2>
-        <p class="hero-subtitle">உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்</p>
+        <div class="hero-badge">{{ heroBanners[currentBannerIndex].badge }}</div>
+        <h2 class="hero-title">{{ heroBanners[currentBannerIndex].title }}</h2>
+        <p class="hero-subtitle">{{ heroBanners[currentBannerIndex].subtitle }}</p>
         <div class="hero-dots">
-          <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+          <span class="dot" *ngFor="let banner of heroBanners; let i = index" 
+                [class.active]="i === currentBannerIndex"
+                (click)="$event.stopPropagation(); setBannerIndex(i)"></span>
         </div>
       </div>
     </div>

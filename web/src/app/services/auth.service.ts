@@ -6,7 +6,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'user' | 'astrologer' | 'super_admin' | string;
   phone?: string;
 }
 
@@ -65,7 +65,7 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.getUser();
-    return user?.role === 'admin';
+    return !!user && (user.role === 'admin' || user.role === 'astrologer' || user.role === 'super_admin');
   }
 
   getAuthHeaders() {

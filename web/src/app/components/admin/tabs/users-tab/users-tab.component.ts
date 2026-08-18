@@ -70,4 +70,36 @@ export class UsersTabComponent implements OnInit {
       error: () => alert('Failed to delete user.')
     });
   }
+
+  formatDynamicDate(rawDate: any): string {
+    if (!rawDate) {
+      const now = new Date();
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()} (${dayNames[now.getDay()]})`;
+    }
+    try {
+      const d = new Date(rawDate);
+      if (isNaN(d.getTime())) return String(rawDate);
+
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const dateNum = d.getDate();
+      const monthStr = monthNames[d.getMonth()];
+      const yearStr = d.getFullYear();
+      const dayStr = dayNames[d.getDay()];
+
+      let hours = d.getHours();
+      const minutes = d.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const timeStr = `${hours}:${minutes} ${ampm}`;
+
+      return `${dateNum} ${monthStr} ${yearStr} (${dayStr}) • ${timeStr}`;
+    } catch {
+      return String(rawDate);
+    }
+  }
 }

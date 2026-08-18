@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id?: number;
@@ -12,13 +13,14 @@ export interface User {
   email?: string;
   password?: string;
   role?: string;
+  profileImage?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -34,7 +36,10 @@ export class AuthService {
       tap(res => {
         if (res.success && res.token) {
           localStorage.setItem('auth_token', res.token);
-          localStorage.setItem('auth_user', JSON.stringify(res.user));
+          
+          // Merge local profileImage if backend doesn't support it yet
+          const userToSave = { ...res.user, profileImage: user.profileImage };
+          localStorage.setItem('auth_user', JSON.stringify(userToSave));
         }
       })
     );
@@ -69,6 +74,21 @@ export class AuthService {
   getCurrentUser(service: 'astrology' | 'education' = 'astrology'): User | null {
     const data = localStorage.getItem('auth_user');
     return data ? JSON.parse(data) : null;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('auth_token');
+  }
+
+  getAuthHeaders(): { headers: { [header: string]: string } } {
+    const token = this.getToken();
+    return {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      }
+    };
   }
 
   forgotPassword(mobileNumber: string, service: 'astrology' | 'education' = 'astrology'): Observable<any> {

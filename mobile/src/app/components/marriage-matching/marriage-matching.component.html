@@ -295,59 +295,271 @@
 <!-- OPTION 2: MATCHMAKING FLOW                     -->
 <!-- ============================================== -->
 
-<!-- Step 4: Matching Form -->
+<!-- ============================================== -->
+<!-- OPTION 2: MATCHMAKING FLOW (11 திருமணப் பொருத்தம்) -->
+<!-- ============================================== -->
+
+<!-- Step 4: Matching Input Form -->
 <div class="matching-form-card" *ngIf="serviceStep === 4">
   <div class="overlay-header-inline">
     <button class="btn-back" (click)="goBack()">◀</button>
-    <h2>திருமண பொருத்தம்</h2>
+    <h2>திருமணப் பொருத்தம்</h2>
   </div>
-  <div class="form-banner" style="margin-top:1rem;">ஜாதக பொருத்தம் அறிய இருபாலரின் விவரங்களை உள்ளிடவும்</div>
   
-  <!-- Girl Inputs -->
-  <div class="form-section-title">பெண் விவரங்கள் (Girl Details)</div>
-  <div class="input-row">
-    <label>ஜாதகி பெயர் (Name)</label>
-    <input type="text" [(ngModel)]="matchingForm.girlName" placeholder="பெண்ணின் பெயர்">
+  <div class="matching-header-badge">
+    <span class="badge-om">ஓம் நமச்சிவாய</span>
+    <h3>ஓம் பிரகஸ்பதி ஜோதிடாலயம்</h3>
+    <p>பெரியகுளம் • 11 திருமணப் பொருத்தப் படிவம்</p>
   </div>
+
+  <!-- Girl Inputs -->
+  <div class="form-section-title"><i class="bi bi-gender-female text-danger me-1"></i> பெண் விவரங்கள் (ஜாதகி)</div>
   <div class="input-grid">
     <div class="input-row">
-      <label>பெண் வயது (Age)</label>
-      <input type="number" [(ngModel)]="matchingForm.girlAge" placeholder="வயது">
+      <label>ஜாதகி பெயர் *</label>
+      <input type="text" [(ngModel)]="matchingForm.girlName" placeholder="பெண்ணின் பெயர்">
     </div>
     <div class="input-row">
-      <label>பெண் நட்சத்திரம்</label>
-      <input type="text" [(ngModel)]="matchingForm.girlStar" placeholder="நட்சத்திரம்">
+      <label>பெண் வயது</label>
+      <input type="number" [(ngModel)]="matchingForm.girlAge" placeholder="வயது">
+    </div>
+  </div>
+
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பெண் ராசி</label>
+      <select [(ngModel)]="matchingForm.girlRasi">
+        <option *ngFor="let r of rasis" [value]="r.name">{{ r.name }}</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>பெண் நட்சத்திரம் *</label>
+      <select [(ngModel)]="matchingForm.girlStar">
+        <option *ngFor="let s of starsList" [value]="s.star">{{ s.star }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பிறந்த தேதி</label>
+      <input type="date" [(ngModel)]="matchingForm.girlDob">
+    </div>
+    <div class="input-row">
+      <label>பிறந்த நேரம்</label>
+      <input type="time" [(ngModel)]="matchingForm.girlTob">
     </div>
   </div>
 
   <div class="form-divider"></div>
 
   <!-- Boy Inputs -->
-  <div class="form-section-title">ஆண் விவரங்கள் (Boy Details)</div>
-  <div class="input-row">
-    <label>ஜாதகர் பெயர் (Name)</label>
-    <input type="text" [(ngModel)]="matchingForm.boyName" placeholder="ஆணின் பெயர்">
-  </div>
+  <div class="form-section-title"><i class="bi bi-gender-male text-primary me-1"></i> ஆண் விவரங்கள் (ஜாதகர்)</div>
   <div class="input-grid">
     <div class="input-row">
-      <label>ஆண் வயது (Age)</label>
-      <input type="number" [(ngModel)]="matchingForm.boyAge" placeholder="வயது">
+      <label>ஜாதகர் பெயர் *</label>
+      <input type="text" [(ngModel)]="matchingForm.boyName" placeholder="ஆணின் பெயர்">
     </div>
     <div class="input-row">
-      <label>ஆண் நட்சத்திரம்</label>
-      <input type="text" [(ngModel)]="matchingForm.boyStar" placeholder="நட்சத்திரம்">
+      <label>ஆண் வயது</label>
+      <input type="number" [(ngModel)]="matchingForm.boyAge" placeholder="வயது">
     </div>
   </div>
 
-  <button (click)="sendMatchingToAdmin()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">அட்மினுக்கு அனுப்பவும்</button>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>ஆண் ராசி</label>
+      <select [(ngModel)]="matchingForm.boyRasi">
+        <option *ngFor="let r of rasis" [value]="r.name">{{ r.name }}</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>ஆண் நட்சத்திரம் *</label>
+      <select [(ngModel)]="matchingForm.boyStar">
+        <option *ngFor="let s of starsList" [value]="s.star">{{ s.star }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="input-grid">
+    <div class="input-row">
+      <label>பிறந்த தேதி</label>
+      <input type="date" [(ngModel)]="matchingForm.boyDob">
+    </div>
+    <div class="input-row">
+      <label>பிறந்த நேரம்</label>
+      <input type="time" [(ngModel)]="matchingForm.boyTob">
+    </div>
+  </div>
+
+  <button (click)="calculatePorutham()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
+    <span>11 பொருத்தங்கள் கணக்கிடுக ➔</span>
+  </button>
 </div>
 
-<!-- Step 5: Matching Success Admin Notified -->
-<div class="match-result-container" *ngIf="serviceStep === 5">
-  <div class="success-box">
-    <span class="success-icon">✅</span>
-    <h3>விவரங்கள் அனுப்பப்பட்டன</h3>
-    <p>ஆண், பெண் ஜாதக விவரங்கள் அட்மினுக்கு அனுப்பப்பட்டுள்ளன. பொருத்தம் பார்த்து முடிவுகள் விரைவில் தெரிவிக்கப்படும்.</p>
-    <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>
+<!-- Step 5: Traditional Matching Sheet Result (ஓம் பிரகஸ்பதி ஜோதிடாலயம் படிவம்) -->
+<div class="traditional-sheet-container" *ngIf="serviceStep === 5">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()">◀</button>
+    <h2>பொருத்தப் படிவம்</h2>
+  </div>
+
+  <div class="sheet-paper">
+    <!-- Center Header -->
+    <div class="sheet-header">
+      <div class="om-text">ஓம் நமச்சிவாய</div>
+      <h1 class="center-name">ஓம் பிரகஸ்பதி ஜோதிடாலயம்</h1>
+      <p class="center-addr">G.H. ரோடு, வள்ளுவர் சிலை அருகில், தென்கரை, பெரியகுளம் • Cell: 9566166963, 9442257639</p>
+      <p class="astro-qualification">ஜோதிட பேராசிரியர், "ஜோதிட ரத்னா" "ஜோதிட கலாநிதி" <strong>கரு.மதிவதனன்</strong> (B.A.Dip.Astro)</p>
+      <div class="sheet-main-title">திருமணப் பொருத்தம்</div>
+    </div>
+
+    <!-- Basic Details Table -->
+    <table class="astro-table basic-info-table">
+      <tbody>
+        <tr>
+          <td class="lbl">பெண் நட்சத்திரம் :</td>
+          <td class="val"><strong>{{ matchingForm.girlStar }} ({{ matchingForm.girlRasi }})</strong></td>
+          <td class="lbl">ஜாதகி பெயர் :</td>
+          <td class="val"><strong>{{ matchingForm.girlName }}</strong></td>
+        </tr>
+        <tr>
+          <td class="lbl">ஆண் நட்சத்திரம் :</td>
+          <td class="val"><strong>{{ matchingForm.boyStar }} ({{ matchingForm.boyRasi }})</strong></td>
+          <td class="lbl">ஜாதகர் பெயர் :</td>
+          <td class="val"><strong>{{ matchingForm.boyName }}</strong></td>
+        </tr>
+        <tr>
+          <td class="lbl">பெண் வயது :</td>
+          <td class="val">{{ matchingForm.girlAge ? matchingForm.girlAge + ' வயது' : '-' }}</td>
+          <td class="lbl">ஆண் வயது :</td>
+          <td class="val">{{ matchingForm.boyAge ? matchingForm.boyAge + ' வயது' : '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 11 Poruthams & Elements Side-by-Side Table -->
+    <table class="astro-table porutham-elements-table">
+      <thead>
+        <tr>
+          <th colspan="2" style="width: 50%;">11 திருமணப் பொருத்தங்கள்</th>
+          <th style="width: 25%;">அம்சங்கள்</th>
+          <th style="width: 12.5%;">பெண்</th>
+          <th style="width: 12.5%;">ஆண்</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of matchResult.poruthams; let i = index">
+          <td class="p-name">{{ p.no }}. {{ p.name }}</td>
+          <td class="p-status" [class.match-yes]="p.match" [class.match-no]="!p.match">
+            <span *ngIf="p.match">✔ சுபம்</span>
+            <span *ngIf="!p.match">✖ அசுபம்</span>
+          </td>
+          
+          <!-- Elements Right Column mapping (first 5 rows) -->
+          <ng-container *ngIf="i === 0">
+            <td class="el-title">மிருகம்</td>
+            <td class="el-val">{{ matchResult.girlElements?.mrugam }}</td>
+            <td class="el-val">{{ matchResult.boyElements?.mrugam }}</td>
+          </ng-container>
+          <ng-container *ngIf="i === 1">
+            <td class="el-title">பட்சி</td>
+            <td class="el-val">{{ matchResult.girlElements?.patchi }}</td>
+            <td class="el-val">{{ matchResult.boyElements?.patchi }}</td>
+          </ng-container>
+          <ng-container *ngIf="i === 2">
+            <td class="el-title">மரம்</td>
+            <td class="el-val">{{ matchResult.girlElements?.maram }}</td>
+            <td class="el-val">{{ matchResult.boyElements?.maram }}</td>
+          </ng-container>
+          <ng-container *ngIf="i === 3">
+            <td class="el-title">கணம்</td>
+            <td class="el-val">{{ matchResult.girlElements?.ganam }}</td>
+            <td class="el-val">{{ matchResult.boyElements?.ganam }}</td>
+          </ng-container>
+          <ng-container *ngIf="i === 4">
+            <td class="el-title">நாடி</td>
+            <td class="el-val">{{ matchResult.girlElements?.nadi }}</td>
+            <td class="el-val">{{ matchResult.boyElements?.nadi }}</td>
+          </ng-container>
+
+          <!-- Score & Summaries mapping (rows 5 to 10) -->
+          <ng-container *ngIf="i === 5">
+            <td class="el-title" colspan="3"><strong>மொத்தப் பொருத்தம் :</strong> {{ matchResult.totalMatches }} / 11</td>
+          </ng-container>
+          <ng-container *ngIf="i === 6">
+            <td class="el-title" colspan="3"><strong>ரஜ்ஜு நிலை :</strong> {{ matchResult.rajjuMatch ? '✔ சுப ரஜ்ஜு பொருத்தம்' : '✖ ஏக ரஜ்ஜு' }}</td>
+          </ng-container>
+          <ng-container *ngIf="i === 7">
+            <td class="el-title" colspan="3" rowspan="2"><strong>முக்கிய பொருத்தம் :</strong><br>{{ matchResult.keyMatchesText }}</td>
+          </ng-container>
+          <ng-container *ngIf="i === 9">
+            <td class="el-title" colspan="3" rowspan="2"><strong>முடிவு :</strong><br>{{ matchResult.verdictTitle }}</td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Jathaga Porutham 2, 5, 7 House Comparison -->
+    <div class="jathaga-comparison-block">
+      <table class="astro-table house-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">ஜாதகப் பொருத்தம் பெண்</th>
+            <th style="width: 50%;">ஜாதகப் பொருத்தம் ஆண்</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>2மிடம் :</strong> {{ matchResult.houseAnalysis.house2.girl }}</td>
+            <td><strong>2மிடம் :</strong> {{ matchResult.houseAnalysis.house2.boy }}</td>
+          </tr>
+          <tr>
+            <td><strong>5மிடம் :</strong> {{ matchResult.houseAnalysis.house5.girl }}</td>
+            <td><strong>5மிடம் :</strong> {{ matchResult.houseAnalysis.house5.boy }}</td>
+          </tr>
+          <tr>
+            <td><strong>7மிடம் :</strong> {{ matchResult.houseAnalysis.house7.girl }}</td>
+            <td><strong>7மிடம் :</strong> {{ matchResult.houseAnalysis.house7.boy }}</td>
+          </tr>
+          <tr>
+            <td><strong>குருபலம் :</strong> {{ matchResult.houseAnalysis.guruBalam.girl }}</td>
+            <td><strong>குருபலம் :</strong> {{ matchResult.houseAnalysis.guruBalam.boy }}</td>
+          </tr>
+          <tr>
+            <td><strong>தோஷ அமைவுகள் :</strong> {{ matchResult.houseAnalysis.dosham.girl }}</td>
+            <td><strong>தோஷ அமைவுகள் :</strong> {{ matchResult.houseAnalysis.dosham.boy }}</td>
+          </tr>
+          <tr>
+            <td><strong>திசா சந்தி :</strong> {{ matchResult.houseAnalysis.dasaSandhi.girl }}</td>
+            <td><strong>திசா சந்தி :</strong> {{ matchResult.houseAnalysis.dasaSandhi.boy }}</td>
+          </tr>
+          <tr class="analysis-conclusion-row">
+            <td colspan="2">
+              <strong>ஜோதிடர் ஆய்வு & முடிவு :</strong> {{ matchResult.verdictNotes }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sheet Footer -->
+    <div class="sheet-footer">
+      <div class="subham-txt">சுபம்</div>
+      <div class="matrimony-footer-brand">சிவசக்தி திருமண தகவல் மையம்</div>
+      <p>(ஓம் பிரகஸ்பதி ஜோதிடாலயம்) • G.H. ரோடு, வள்ளுவர் சிலை, தென்கரை பெரியகுளம்-626501</p>
+      <p class="free-reg-note">இங்கு அனைத்து ஜாதி இனத்தவருக்கும் ஆண், பெண் பொருத்தமான வரன்கள் உள்ளன • பதிவு இலவசம்</p>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="sheet-actions">
+    <button class="btn-app-gold" (click)="sendMatchingToAdmin()" [disabled]="submittingToAdmin || adminSubmittedSuccess">
+      <span *ngIf="!adminSubmittedSuccess"><i class="bi bi-send-fill me-1"></i> அட்மினுக்கு அனுப்பவும்</span>
+      <span *ngIf="adminSubmittedSuccess"><i class="bi bi-check-circle-fill me-1"></i> அட்மினுக்கு அனுப்பப்பட்டது</span>
+    </button>
+    <button class="btn-secondary-pill" (click)="serviceStep = 4">
+      <i class="bi bi-arrow-repeat me-1"></i> புதிய பொருத்தம்
+    </button>
   </div>
 </div>

@@ -72,7 +72,11 @@
                   <span class="muted" style="font-size:11px;">-</span>
                 }
               </td>
-              <td style="font-size:12px;color:#64748b;">{{ u.created_at | date:'dd MMM yyyy' }}</td>
+              <td style="font-size:12px;color:#475569;font-weight:600;">
+                <span style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 8px;border-radius:6px;">
+                  <i class="bi bi-calendar-event me-1" style="color:#b45309;"></i> {{ formatDynamicDate(u.created_at) }}
+                </span>
+              </td>
               <td>
                 <div style="display:flex;gap:6px;">
                   @if (u.jathagam_profile) {

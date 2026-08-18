@@ -35,10 +35,10 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $karthik = User::updateOrCreate(
+        User::updateOrCreate(
             ['email' => 'karthik@gmail.com'],
             [
-                'name' => 'Karthik',
+                'name' => 'Karthik S',
                 'password' => Hash::make('test123'),
                 'role' => 'user',
                 'phone' => '9876543212',
@@ -322,6 +322,8 @@ class DatabaseSeeder extends Seeder
                     'order_type'          => 'booking',
                     'razorpay_order_id'   => 'order_PgXKMnOQtest02',
                     'razorpay_payment_id' => 'pay_PgXKtest67890',
+                    'amount'              => 800.00,
+                    'currency'            => 'INR',
                     'status'              => 'Paid',
                     'description'         => 'Prashna Astrology Consultation',
                     'created_at'          => now()->subDays(3),

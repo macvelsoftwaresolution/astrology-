@@ -50,6 +50,38 @@ export class HomePage implements OnInit {
     }
   ];
 
+  get userInitial(): string {
+    const user = this.authService.getCurrentUser();
+    if (user && user.name) {
+      return user.name.charAt(0).toUpperCase();
+    }
+    return '🕉️';
+  }
+
+  // Hero Slider
+  heroBanners = [
+    {
+      image: 'assets/images/temple_sunrise.png',
+      badge: 'இன்றைய சிறப்பு',
+      title: 'இன்றைய ராசி பலன்',
+      subtitle: 'உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்'
+    },
+    {
+      image: 'assets/images/nataraja.png',
+      badge: 'புதிய சேவை',
+      title: 'திருமண பொருத்தம்',
+      subtitle: 'சிறந்த வாழ்க்கைத்துணையை தேர்ந்தெடுக்க'
+    },
+    {
+      image: 'assets/images/spiritual_education_bg.png',
+      badge: 'ஆன்மீகம்',
+      title: 'ஜாதகம் எழுதுதல்',
+      subtitle: 'துல்லியமான ஜாதக கணிப்பு'
+    }
+  ];
+  currentBannerIndex = 0;
+  private sliderInterval: any;
+
   // Forms Data Binding Models for the consultation flows
   horoscopeForm = {
     name: '',
@@ -137,6 +169,11 @@ export class HomePage implements OnInit {
     private backButtonService: BackButtonService
   ) {}
 
+  // Navigation History Stack for step-by-step ("line by line") back navigation
+  navHistory: Array<{ tab: 'home' | 'services' | 'matching' | 'profile'; flow: any; step: number }> = [
+    { tab: 'home', flow: null, step: 1 }
+  ];
+
   ionViewDidEnter() {
     this.backButtonService.registerHandler(this.customBackHandler);
   }
@@ -147,9 +184,45 @@ export class HomePage implements OnInit {
 
   ngOnDestroy() {
     this.backButtonService.unregisterHandler(this.customBackHandler);
+    this.stopSlider();
+  }
+
+  startSlider() {
+    this.sliderInterval = setInterval(() => {
+      this.currentBannerIndex = (this.currentBannerIndex + 1) % this.heroBanners.length;
+    }, 3000);
+  }
+
+  stopSlider() {
+    if (this.sliderInterval) {
+      clearInterval(this.sliderInterval);
+    }
+  }
+
+  setBannerIndex(index: number) {
+    this.currentBannerIndex = index;
+    this.stopSlider();
+    this.startSlider();
   }
 
   customBackHandler = () => {
+    return this.goBackStep();
+  };
+
+  handleOverlayBack() {
+    this.goBackStep();
+  }
+
+  private pushHistory() {
+    const current = { tab: this.currentTab, flow: this.activeServiceFlow, step: this.serviceStep };
+    const last = this.navHistory[this.navHistory.length - 1];
+    if (!last || last.tab !== current.tab || last.flow !== current.flow || last.step !== current.step) {
+      this.navHistory.push(current);
+    }
+  }
+
+  goBackStep(): boolean {
+    // 1. If in Rasi Palan component with detail view open, close detail first
     if (this.activeServiceFlow === 'rasi-palan') {
       if (this.rasiComponent && this.rasiComponent.handleBack()) {
         return true;
@@ -158,41 +231,56 @@ export class HomePage implements OnInit {
       return true;
     }
 
-    if (this.activeServiceFlow) {
-      if (this.serviceStep > 1 && this.serviceStep !== 4) {
-        this.prevStep();
-      } else {
-        this.closeServiceFlow();
+    // 2. Step-by-step history pop
+    if (this.navHistory.length > 1) {
+      this.navHistory.pop(); // remove current state
+      const prevState = this.navHistory[this.navHistory.length - 1];
+      if (prevState) {
+        this.currentTab = prevState.tab;
+        this.activeServiceFlow = prevState.flow;
+        this.serviceStep = prevState.step;
+        return true;
       }
-      return true;
     }
 
-    if (this.currentTab !== 'home') {
-      this.selectTab('home');
+    // 3. Sequential fallbacks
+    if (this.serviceStep > 1 && this.serviceStep !== 4) {
+      this.prevStep();
+      return true;
+    } else if (this.activeServiceFlow) {
+      this.closeServiceFlow();
+      return true;
+    } else if (this.currentTab !== 'home') {
+      this.currentTab = 'home';
+      this.navHistory = [{ tab: 'home', flow: null, step: 1 }];
       return true;
     }
 
     return false;
-  };
+  }
 
-  handleOverlayBack() {
-    if (this.activeServiceFlow === 'rasi-palan') {
-      if (this.rasiComponent && this.rasiComponent.handleBack()) {
-        return;
-      }
-      this.closeServiceFlow();
-      return;
-    }
+  getHeaderTitle(): string {
+    if (this.activeServiceFlow === 'horoscope') return 'ஜாதகம் எழுதுதல்';
+    if (this.activeServiceFlow === 'vastu') return 'வாஸ்து ஆலோசனைகள்';
+    if (this.activeServiceFlow === 'ramajayam') return 'குரு ராமஜெயம் (எண்கணிதம்)';
+    if (this.activeServiceFlow === 'srinivasan') return 'குரு ஸ்ரீநிவாசன் ஆலோசனை';
+    if (this.activeServiceFlow === 'rasi-palan') return 'இன்றைய ராசி பலன்';
 
-    if (this.serviceStep > 1 && this.serviceStep !== 4) {
-      this.prevStep();
-    } else {
-      this.closeServiceFlow();
+    switch (this.currentTab) {
+      case 'services': return 'ஜோதிட சேவைகள்';
+      case 'matching': return 'திருமண பொருத்தம்';
+      case 'profile': return 'சுயவிவரம்';
+      default: return 'ஆருத்ரா ஜோதிடம்';
     }
+  }
+
+  canShowBackButton(): boolean {
+    return this.activeServiceFlow !== null || this.currentTab !== 'home';
   }
 
   ngOnInit() {
     this.checkAuth();
+    this.startSlider();
   }
 
   ionViewWillEnter() {
@@ -207,30 +295,36 @@ export class HomePage implements OnInit {
 
   // Change Navigation tabs
   selectTab(tab: 'home' | 'services' | 'matching' | 'profile') {
+    if (this.currentTab === tab && !this.activeServiceFlow) return;
     this.currentTab = tab;
     this.activeServiceFlow = null;
     this.serviceStep = 1;
+    this.pushHistory();
   }
 
   // Open Service Screen Flow
   startServiceFlow(flowName: 'horoscope' | 'vastu' | 'ramajayam' | 'srinivasan' | 'rasi-palan') {
     this.activeServiceFlow = flowName;
     this.serviceStep = 1;
+    this.pushHistory();
   }
 
   closeServiceFlow() {
     this.activeServiceFlow = null;
     this.serviceStep = 1;
+    this.pushHistory();
   }
 
   // Form Submission step managers
   nextStep() {
     this.serviceStep++;
+    this.pushHistory();
   }
 
   prevStep() {
     if (this.serviceStep > 1) {
       this.serviceStep--;
+      this.pushHistory();
     }
   }
 

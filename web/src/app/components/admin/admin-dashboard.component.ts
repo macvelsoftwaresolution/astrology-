@@ -76,8 +76,6 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getUser();
-
-    // Check query params for initial tab (e.g. /admin?tab=services)
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
         this.currentTab = params['tab'];
