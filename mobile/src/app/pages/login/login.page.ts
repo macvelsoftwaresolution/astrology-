@@ -40,9 +40,9 @@ export class LoginPage implements OnInit {
       next: async (res) => {
         await this.showToast('வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
         if (this.serviceType === 'education') {
-          this.navCtrl.navigateRoot('/learn');
+          this.router.navigate(['/learn'], { replaceUrl: true });
         } else {
-          this.navCtrl.navigateRoot('/home');
+          this.router.navigate(['/home'], { replaceUrl: true });
         }
       },
       error: async (err) => {

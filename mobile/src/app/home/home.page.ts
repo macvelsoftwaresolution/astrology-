@@ -1,8 +1,8 @@
 import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
 import { ToastController } from '@ionic/angular';
-import { AuthService } from '../services/auth.service';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
 
 interface Order {
@@ -166,10 +166,11 @@ export class HomePage implements OnInit {
   constructor(
     private ngZone: NgZone,
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private backButtonService: BackButtonService,
     private toastController: ToastController
-  ) {}
+  ) { }
 
   // Navigation History Stack for step-by-step ("line by line") back navigation
   navHistory: Array<{ tab: 'home' | 'services' | 'matching' | 'profile'; flow: any; step: number }> = [
@@ -293,6 +294,15 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.checkAuth();
     this.startSlider();
+
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] && ['home', 'services', 'matching', 'profile'].includes(params['tab'])) {
+        this.currentTab = params['tab'];
+      }
+      if (params['flow']) {
+        this.activeServiceFlow = params['flow'];
+      }
+    });
   }
 
   ionViewWillEnter() {
@@ -312,6 +322,12 @@ export class HomePage implements OnInit {
     this.activeServiceFlow = null;
     this.serviceStep = 1;
     this.pushHistory();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab, flow: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   // Open Service Screen Flow
@@ -319,12 +335,24 @@ export class HomePage implements OnInit {
     this.activeServiceFlow = flowName;
     this.serviceStep = 1;
     this.pushHistory();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { flow: flowName },
+      queryParamsHandling: 'merge'
+    });
   }
 
   closeServiceFlow() {
     this.activeServiceFlow = null;
     this.serviceStep = 1;
     this.pushHistory();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { flow: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   // Form Submission step managers
