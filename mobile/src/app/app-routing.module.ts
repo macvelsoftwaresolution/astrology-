@@ -52,6 +52,10 @@ const routes: Routes = [
     redirectTo: 'splash',
     pathMatch: 'full'
   },
+  {
+    path: '**',
+    redirectTo: 'home'
+  }
 ];
 
 @NgModule({

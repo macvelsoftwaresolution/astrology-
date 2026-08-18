@@ -9,12 +9,12 @@ $color-white: #FFFFFF;
 
 .overlay-panel.rasi-palan-page {
   position: fixed;
-  top: 0;
+  top: 70px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 70px);
   background-color: $color-bg;
-  z-index: 1200;
+  z-index: 980;
   display: flex;
   flex-direction: column;
   animation: slideInUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -27,55 +27,13 @@ $color-white: #FFFFFF;
 }
 
 .overlay-header.rasi-header {
-  padding-top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 24px)) + 0.6rem);
-  padding-bottom: 0.85rem;
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  z-index: 20;
-  background-color: $color-bg;
-  border-bottom: 1px solid rgba($color-gold, 0.25);
-  box-shadow: 0 4px 15px rgba($color-maroon-dark, 0.08);
-  flex-shrink: 0;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-
-    .header-back-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-    }
-
-    .app-brand-name {
-      font-family: 'Noto Serif Tamil', serif;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: $color-maroon;
-      margin: 0;
-    }
-  }
-
-  .header-right {
-    .bell-icon {
-      font-size: 1.3rem;
-      color: $color-maroon;
-      cursor: pointer;
-    }
-  }
+  display: none;
 }
 
 .rasi-content-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 1.25rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 7.5rem) 1.25rem;
+  padding: 1.25rem 1.25rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 7.5rem) 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -83,18 +41,24 @@ $color-white: #FFFFFF;
 
 /* Title Section */
 .title-section {
+  padding-top: 0.5rem;
+
   .page-title {
-    font-family: 'Noto Serif Tamil', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-family: 'Noto Serif Tamil', 'Mukta Malar', serif;
+    font-size: 1.55rem;
+    font-weight: 800;
     color: $color-maroon;
-    margin: 0 0 0.25rem 0;
+    margin: 0 0 0.35rem 0;
+    line-height: 1.45;
+    padding-top: 4px;
+    padding-bottom: 2px;
+    overflow: visible;
   }
   .page-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: $color-text-muted;
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.45;
   }
 }
 
@@ -106,55 +70,71 @@ $color-white: #FFFFFF;
 }
 
 .period-tab {
-  background-color: #fffaf0;
-  border: 1px solid rgba($color-gold, 0.2);
-  border-radius: 12px;
-  padding: 1rem;
+  background-color: #FFFDF0;
+  border: 1.5px solid rgba($color-gold, 0.35);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
   position: relative;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba($color-maroon, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   .tab-icon {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
+    color: $color-maroon;
+    transition: color 0.2s ease;
   }
 
   .tab-label {
-    font-size: 0.95rem;
-    font-weight: bold;
+    font-family: 'Noto Serif Tamil', 'Mukta Malar', serif;
+    font-size: 1.02rem;
+    font-weight: 800;
     color: $color-maroon;
+    line-height: 1.45;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    overflow: visible;
+    transition: color 0.2s ease;
   }
 
   .tab-badge {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background-color: rgba($color-gold, 0.2);
-    color: $color-maroon;
-    font-size: 0.65rem;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    font-weight: bold;
+    background-color: #ECC876;
+    color: #4A0E17;
+    font-size: 0.68rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 800;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   &.active-tab {
-    background: linear-gradient(to bottom right, #fff4d1, #fde4a9);
-    border-color: rgba($color-gold, 0.4);
-    box-shadow: 0 4px 10px rgba($color-gold, 0.1);
-  }
-
-  &.dark-tab {
-    background-color: $color-maroon;
-    border-color: $color-maroon-dark;
+    background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+    border-color: #ECC876;
+    box-shadow: 0 6px 16px rgba(74, 14, 23, 0.3);
 
     .tab-icon {
-      color: $color-white;
+      color: #ECC876;
     }
-    
+
     .tab-label {
-      color: $color-white;
+      color: #FFFFFF;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
+
+    .tab-badge {
+      background-color: #ECC876;
+      color: #2A080C;
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
   }
 }
 
