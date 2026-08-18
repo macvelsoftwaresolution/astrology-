@@ -8,7 +8,7 @@
       <h2 class="app-brand-name">ஆருத்ரா</h2>
     </div>
     <div class="header-right">
-      <span class="bell-icon"><i class="bi bi-bell-fill"></i></span>
+      <span class="bell-icon" (click)="openNotifications()"><i class="bi bi-bell-fill"></i></span>
     </div>
   </div>
 
@@ -37,7 +37,7 @@
           <span class="tab-icon"><i class="bi bi-calendar-month-fill"></i></span>
           <span class="tab-label">மாதாந்திர</span>
         </div>
-        <div class="period-tab dark-tab" [class.active-tab-dark]="selectedRasiTab === 'yearly'" (click)="selectedRasiTab = 'yearly'">
+        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'yearly'" (click)="selectedRasiTab = 'yearly'">
           <span class="tab-icon"><i class="bi bi-star-fill"></i></span>
           <span class="tab-label">வருடாந்திர</span>
         </div>
@@ -112,33 +112,23 @@
         <div class="title-bar"></div>
         <h3>இன்றைய கணிப்பு</h3>
       </div>
+      <div class="section-title" *ngIf="isLoading">
+        <div class="title-bar"></div>
+        <h3>கணிப்பு ஏற்றப்படுகிறது... (Loading)</h3>
+      </div>
       
-      <div class="prediction-large-card">
-        <p>
-          இன்று {{ selectedRasi.name }} ராசிக்காரர்களுக்கு உற்சாகமான நாளாக இருக்கும். உங்கள் உழைப்பிற்கு ஏற்ற பலன் கிடைக்கும். குடும்பத்தில் மகிழ்ச்சி நிலவும். வியாபாரத்தில் புதிய வாய்ப்புகள் தேடி வரும்.
-        </p>
-        <p>
-          உத்தியோகத்தில் சக ஊழியர்களின் ஒத்துழைப்பு கிடைக்கும். வெளியூர் பயணங்கள் நற்பலனைத் தரும். ஆரோக்கியத்தில் கவனம் தேவை. மாணவர்களுக்கு கல்வியில் முன்னேற்றம் உண்டாகும்.
-        </p>
+      <div class="prediction-large-card" *ngIf="!isLoading && predictionData">
+        <p>{{ predictionData.prediction_text }}</p>
       </div>
 
-      <div class="section-title">
+      <div class="section-title" *ngIf="!isLoading && (predictionData?.video_url || predictionData?.audio_url)">
         <div class="title-bar"></div>
         <h3>காணொளி & ஒலி</h3>
       </div>
 
-      <!-- Video Player Placeholder -->
-      <div class="video-player-card">
-        <img src="assets/images/temple_sunrise.jpg" class="video-thumbnail">
-        <div class="play-button-overlay"><i class="bi bi-play-fill"></i></div>
-        <div class="video-info-overlay">
-          <span>{{ selectedRasi.name }} ராசி பலன்கள் - நேரலை</span>
-          <span>12:45 / 30:00</span>
-        </div>
-      </div>
 
-      <!-- Audio Player Placeholder -->
-      <div class="audio-player-detailed">
+      <!-- Audio Player -->
+      <div class="audio-player-detailed" *ngIf="!isLoading && predictionData?.audio_url">
         <div class="audio-icon-box"><i class="bi bi-mic-fill"></i></div>
         <div class="audio-info">
           <strong>தினசரி மந்திரம்</strong>
@@ -156,11 +146,12 @@
         </div>
       </div>
 
-      <!-- Bottom Action Buttons -->
-      <div class="detail-action-buttons">
-        <button class="btn-save"><i class="bi bi-bookmark-fill me-1"></i> சேமிக்க</button>
-        <button class="btn-share"><i class="bi bi-share-fill me-1"></i> பகிர்க</button>
+      <!-- Video Player (Moved Below Audio) -->
+      <div class="video-player-card" *ngIf="!isLoading && predictionData?.video_url" style="margin-top: 1.5rem;">
+        <video controls autoplay muted loop playsinline [src]="predictionData.video_url" width="100%" style="border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></video>
       </div>
+
+
       <!-- Empty space to fix scrolling issue -->
       <div style="height: 90px;"></div>
     </ng-container>

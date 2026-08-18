@@ -1,4 +1,7 @@
 import { Component, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-rasi-palan',
@@ -21,13 +24,42 @@ export class RasiPalanComponent implements OnDestroy {
   audioCurrentTime: string = '00:00';
   audioInterval: any;
 
+  predictionData: any = null;
+  isLoading: boolean = false;
+
+  constructor(private navCtrl: NavController, private http: HttpClient) {}
+
+  openNotifications() {
+    this.navCtrl.navigateForward('/notifications');
+  }
+
   selectRasi(rasi: any) {
     this.selectedRasi = rasi;
+    this.predictionData = null;
+    this.isLoading = true;
     this.stopAudio();
+    this.fetchPrediction(rasi.name);
+  }
+
+  fetchPrediction(rasiName: string) {
+    const today = new Date().toISOString().split('T')[0];
+    this.http.get<any[]>(`${environment.apiUrl}/rasi-palan?date=${today}&type=${this.selectedRasiTab}`).subscribe({
+      next: (res) => {
+        const found = res.find(r => r.rasi_name === rasiName);
+        if (found) {
+          this.predictionData = found;
+        }
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
   }
 
   closeDetail() {
     this.selectedRasi = null;
+    this.predictionData = null;
     this.stopAudio();
   }
 

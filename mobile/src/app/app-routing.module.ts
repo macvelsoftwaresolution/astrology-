@@ -21,25 +21,25 @@ import { ParaJathagamComponent } from './pages/jathagam/components/para-jathagam
 import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha/vastu-kanitha.component';
 
 const routes: Routes = [
-  { path: 'splash',           component: SplashPage },
-  { path: 'welcome',          component: WelcomePage },
-  { path: 'login',            component: LoginPage },
-  { path: 'register',         component: RegisterPage },
-  { path: 'forgot-password',  component: ForgotPasswordPage },
-  { path: 'learn',            component: LearnPage },
-  { path: 'profile',          component: ProfilePage },
+  { path: 'splash', component: SplashPage },
+  { path: 'welcome', component: WelcomePage },
+  { path: 'login', component: LoginPage },
+  { path: 'register', component: RegisterPage },
+  { path: 'forgot-password', component: ForgotPasswordPage },
+  { path: 'learn', component: LearnPage },
+  { path: 'profile', component: ProfilePage },
 
   // Jathagam Hub with child routes
   {
     path: 'jathagam',
     component: JathagamPage,
     children: [
-      { path: '',             redirectTo: 'rasi-palan', pathMatch: 'full' },
-      { path: 'rasi-palan',   component: RasiPalanComponent },
-      { path: 'matching',     component: MatchingComponent },
-      { path: 'my-jathagam',  component: MyJathagamComponent },
-      { path: 'para-jathagam',component: ParaJathagamComponent },
-      { path: 'vastu-kanitha',component: VastuKanithaComponent },
+      { path: '', redirectTo: 'rasi-palan', pathMatch: 'full' },
+      { path: 'rasi-palan', component: RasiPalanComponent },
+      { path: 'matching', component: MatchingComponent },
+      { path: 'my-jathagam', component: MyJathagamComponent },
+      { path: 'para-jathagam', component: ParaJathagamComponent },
+      { path: 'vastu-kanitha', component: VastuKanithaComponent },
     ]
   },
 
@@ -52,6 +52,24 @@ const routes: Routes = [
     redirectTo: 'splash',
     pathMatch: 'full'
   },
+  {
+    path: 'notifications',
+    loadChildren: () => import('./pages/notifications/notifications.module').then(m => m.NotificationsPageModule)
+  },
+
+  {
+    path: 'home',
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
+  },
+  {
+    path: '',
+    redirectTo: 'splash',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: 'home'
+  }
 ];
 
 @NgModule({

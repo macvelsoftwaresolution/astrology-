@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +18,8 @@ export class LoginPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private navCtrl: NavController
   ) { }
 
   ngOnInit() {
@@ -39,9 +40,9 @@ export class LoginPage implements OnInit {
       next: async (res) => {
         await this.showToast('வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
         if (this.serviceType === 'education') {
-          this.router.navigate(['/learn']);
+          this.router.navigate(['/learn'], { replaceUrl: true });
         } else {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home'], { replaceUrl: true });
         }
       },
       error: async (err) => {
