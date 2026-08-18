@@ -23,10 +23,11 @@ Route::post('/auth/register',         [AuthController::class, 'register']);
 Route::post('/auth/forgot-password',  [AuthController::class, 'forgotPassword']);
 
 // Public Astrology Data
-Route::get('/panchangam/today', [AstrologyController::class, 'getTodayPanchangam']);
-Route::get('/rasi-palan',       [JathagamController::class, 'getRasiPalan']);
-Route::get('/availability',     [AstrologyController::class, 'getAvailability']);
-Route::get('/public/courses',   [CourseController::class, 'index']);
+Route::get('/panchangam/today',     [AstrologyController::class, 'getTodayPanchangam']);
+Route::get('/rasi-palan',           [JathagamController::class, 'getRasiPalan']);
+Route::get('/availability',         [AstrologyController::class, 'getAvailability']);
+Route::get('/public/astrologers',   [AstrologyController::class, 'getAstrologers']);
+Route::get('/public/courses',       [CourseController::class, 'index']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
@@ -106,6 +107,12 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/availability',                     [AstrologyController::class, 'getAdminAvailability']);
     Route::post('/availability/toggle',             [AstrologyController::class, 'toggleDateAvailability']);
     Route::delete('/availability/{id}',             [AstrologyController::class, 'deleteAvailability']);
+    
+    // Astrologers Management & Personal Availability
+    Route::get('/astrologers',                                  [AstrologyController::class, 'getAstrologers']);
+    Route::put('/astrologers/{id}',                             [AstrologyController::class, 'updateAstrologer']);
+    Route::post('/astrologers/{id}/availability/toggle',        [AstrologyController::class, 'toggleAstrologerAvailability']);
+    Route::put('/astrologers/{id}/slots',                       [AstrologyController::class, 'updateAstrologerSlots']);
 
     // Rasi Palan Management (CRUD for all 12 rasis)
     Route::put('/rasi-palan',                       [AstrologyController::class, 'updateRasiPalan']);

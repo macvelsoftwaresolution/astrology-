@@ -1,0 +1,64 @@
+<div class="payments-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1><i class="bi bi-credit-card-2-front-fill" style="color:#d97706;margin-right:8px;"></i>Razorpay Payment Transactions & Audit Ledger</h1>
+      <p>Direct live ledger of student course enrollments, astrology dakshina bookings, and book sales.</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-xs-refresh" (click)="loadPayments()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i> Sync Ledger
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      <i class="bi bi-hourglass-split"></i> Loading payment transactions from database...
+    </div>
+  } @else {
+    <div class="card-box">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Txn ID</th>
+            <th>Customer</th>
+            <th>Category / Type</th>
+            <th>Amount (INR)</th>
+            <th>Razorpay Order ID</th>
+            <th>Payment ID</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of paymentTransactions; track p.id) {
+            <tr>
+              <td><strong>#{{ p.id }}</strong></td>
+              <td>
+                <div>{{ p.user_name || 'Customer' }}</div>
+                <small class="muted">{{ p.user_phone || '-' }}</small>
+              </td>
+              <td><span class="badge-role">{{ p.payment_type || 'Astrology Service' }}</span></td>
+              <td><strong style="color:#b45309;font-size:14px;">₹{{ p.amount }}</strong></td>
+              <td style="font-family:monospace;font-size:11px;color:#475569;">{{ p.razorpay_order_id || '-' }}</td>
+              <td style="font-family:monospace;font-size:11px;color:#2563eb;">{{ p.razorpay_payment_id || '-' }}</td>
+              <td>
+                <span class="status-pill" [ngClass]="(p.status || 'Paid').toLowerCase()">
+                  <i class="bi bi-check-circle-fill"></i> {{ p.status || 'Paid' }}
+                </span>
+              </td>
+              <td style="font-size:12px;color:#64748b;">{{ p.created_at | date:'dd MMM yyyy, hh:mm a' }}</td>
+            </tr>
+          }
+          @if (paymentTransactions.length === 0) {
+            <tr>
+              <td colspan="8" style="text-align:center;padding:24px;color:#64748b;">
+                No payment transactions found in database.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

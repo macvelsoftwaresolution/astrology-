@@ -1,28 +1,25 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService, User } from '../../services/auth.service';
 
-interface Metrics {
-  total_students: number;
-  total_admins: number;
-  total_courses: number;
-  total_bookings: number;
-  total_book_orders: number;
-  total_revenue: number;
-  revenue_breakdown: {
-    courses: number;
-    services: number;
-    books: number;
-  };
-}
+// Subcomponents
+import { OverviewTabComponent } from './tabs/overview-tab/overview-tab.component';
+import { TeamTabComponent } from './tabs/team-tab/team-tab.component';
+import { LmsTabComponent } from './tabs/lms-tab/lms-tab.component';
+import { CourierTabComponent } from './tabs/courier-tab/courier-tab.component';
+import { GradingTabComponent } from './tabs/grading-tab/grading-tab.component';
+import { ServicesTabComponent } from './tabs/services-tab/services-tab.component';
+import { RasiEditorTabComponent } from './tabs/rasi-editor-tab/rasi-editor-tab.component';
+import { MatchesTabComponent } from './tabs/matches-tab/matches-tab.component';
+import { PaymentsTabComponent } from './tabs/payments-tab/payments-tab.component';
+import { BroadcastTabComponent } from './tabs/broadcast-tab/broadcast-tab.component';
+import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, FormsModule],
   template: `
     <div class="dashboard-wrapper">
@@ -2949,13 +2946,31 @@ interface Metrics {
       }
     }
   `]
+=======
+  imports: [
+    CommonModule,
+    OverviewTabComponent,
+    TeamTabComponent,
+    LmsTabComponent,
+    CourierTabComponent,
+    GradingTabComponent,
+    ServicesTabComponent,
+    RasiEditorTabComponent,
+    MatchesTabComponent,
+    PaymentsTabComponent,
+    BroadcastTabComponent,
+    UsersTabComponent
+  ],
+  templateUrl: './admin-dashboard.component.html',
+  styleUrls: ['./admin-dashboard.component.css']
+>>>>>>> ed937e4ca91df866e421fa7b4b2a4f32408cf74a
 })
-
 export class AdminDashboardComponent implements OnInit {
   currentTab = 'overview';
   currentUser: User | null = null;
   mobileMenuOpen = false;
 
+<<<<<<< HEAD
   selectTab(tab: string): void {
     this.currentTab = tab;
     this.mobileMenuOpen = false;
@@ -3220,27 +3235,22 @@ export class AdminDashboardComponent implements OnInit {
     }, 0);
   }
 
+=======
+>>>>>>> ed937e4ca91df866e421fa7b4b2a4f32408cf74a
   constructor(
-    private http: HttpClient,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef
-  ) {
-    const initialTab = this.route.snapshot?.queryParams?.['tab'];
-    if (initialTab) {
-      this.currentTab = initialTab;
-    }
-  }
+  ) {}
 
   ngOnInit(): void {
-    if (typeof window === 'undefined') return;
-
     this.currentUser = this.authService.getUser();
     this.resetAllToDefaultsState();
 
+    // Check query params for initial tab (e.g. /admin?tab=services)
     this.route.queryParams.subscribe(params => {
+<<<<<<< HEAD
       const tab = params['tab'] || 'overview';
       this.currentTab = tab;
       this.loadActiveTabData(tab);
@@ -3745,114 +3755,22 @@ export class AdminDashboardComponent implements OnInit {
           errorMsg = err.error.errors[firstKey][0];
         }
         this.addAdminError = errorMsg;
+=======
+      if (params['tab']) {
+        this.currentTab = params['tab'];
+>>>>>>> ed937e4ca91df866e421fa7b4b2a4f32408cf74a
         this.cdr.detectChanges();
       }
     });
   }
 
-  toggleAdminStatus(id: number): void {
-    const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`http://127.0.0.1:8000/api/admin/team/${id}/toggle`, {}, headers).subscribe({
-      next: () => this.loadAllData()
-    });
-  }
-
-  createCourse(): void {
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/admin/courses', this.newCourse, headers).subscribe({
-      next: () => {
-        this.openCourseModal = false;
-        this.loadAllData();
-      }
-    });
-  }
-
-  deleteCourse(id: number): void {
-    if (!confirm('Are you sure you want to delete this course?')) return;
-    const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/courses/${id}`, headers).subscribe({
-      next: () => {
-        alert('Course deleted successfully!');
-        this.loadAllData();
-      },
-      error: () => {
-        alert('Failed to delete course.');
-      }
-    });
-  }
-
-  selectCourseForModule(courseId: number): void {
-    this.selectedCourseIdForModule = courseId;
-    this.openModuleModal = true;
-  }
-
-  addModule(): void {
-    if (!this.selectedCourseIdForModule || !this.newModuleTitle) return;
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/courses/${this.selectedCourseIdForModule}/modules`, { title: this.newModuleTitle }, headers).subscribe({
-      next: () => {
-        this.openModuleModal = false;
-        this.newModuleTitle = '';
-        this.loadAllData();
-      }
-    });
-  }
-
-  selectModuleForLesson(moduleId: number): void {
-    this.selectedModuleIdForLesson = moduleId;
-    this.openLessonModal = true;
-  }
-
-  addLesson(): void {
-    if (!this.selectedModuleIdForLesson || !this.newLesson.title) return;
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/modules/${this.selectedModuleIdForLesson}/lessons`, this.newLesson, headers).subscribe({
-      next: () => {
-        this.openLessonModal = false;
-        this.newLesson = { title: '', content_type: 'video', content_url: '', duration: '' };
-        this.loadAllData();
-      }
-    });
-  }
-
-  openCourierUpdate(order: any): void {
-    this.selectedOrderForCourier = order;
-    this.courierForm = {
-      status: order.status,
-      courier_partner: order.courier_partner || 'Blue Dart',
-      awb_number: order.awb_number || ''
-    };
-  }
-
-  saveCourierStatus(): void {
-    if (!this.selectedOrderForCourier) return;
-    const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`http://127.0.0.1:8000/api/admin/book-orders/${this.selectedOrderForCourier.id}/courier`, this.courierForm, headers).subscribe({
-      next: () => {
-        this.selectedOrderForCourier = null;
-        this.loadAllData();
-      }
-    });
-  }
-
-  openGradingModal(sub: any): void {
-    this.selectedSubmissionForGrading = sub;
-    this.gradingForm = {
-      score: sub.score || 85,
-      status: sub.status === 'Pending' ? 'Approved' : sub.status,
-      evaluator_notes: sub.evaluator_notes || ''
-    };
-  }
-
-  saveGrading(): void {
-    if (!this.selectedSubmissionForGrading) return;
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/submissions/${this.selectedSubmissionForGrading.id}/evaluate`, this.gradingForm, headers).subscribe({
-      next: (res) => {
-        alert(res.message + (res.certificate_issued ? ' E-Certificate issued successfully!' : ''));
-        this.selectedSubmissionForGrading = null;
-        this.loadAllData();
-      }
+  selectTab(tabName: string): void {
+    this.currentTab = tabName;
+    this.mobileMenuOpen = false;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tabName },
+      queryParamsHandling: 'merge'
     });
   }
 
@@ -3860,6 +3778,7 @@ export class AdminDashboardComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+<<<<<<< HEAD
 
   // === Dynamic Rasi Palan Management Engine Methods ===
 
@@ -4162,4 +4081,6 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
+=======
+>>>>>>> ed937e4ca91df866e421fa7b4b2a4f32408cf74a
 }

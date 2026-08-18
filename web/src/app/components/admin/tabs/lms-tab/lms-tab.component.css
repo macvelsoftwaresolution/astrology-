@@ -1,0 +1,4 @@
+/* LMS Course Studio specific styles */
+:host {
+  display: block;
+}

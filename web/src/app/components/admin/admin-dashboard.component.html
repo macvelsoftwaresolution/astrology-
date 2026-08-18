@@ -1,0 +1,130 @@
+<div class="dashboard-wrapper">
+  <!-- MOBILE TOPBAR WITH HAMBURGER MENU -->
+  <div class="mobile-topbar">
+    <div class="brand">
+      <i class="bi bi-stars" style="color: #d97706; font-size: 22px;"></i>
+      <h2>Astro Divine</h2>
+    </div>
+    <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
+      <i class="bi" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+      <span>{{ mobileMenuOpen ? ' Close' : ' Menu' }}</span>
+    </button>
+  </div>
+
+  <!-- SLEEK LEFT SIDEBAR (Desktop Fixed, Mobile Slide Drawer) -->
+  <aside class="sidebar" [class.mobile-open]="mobileMenuOpen">
+    <div class="brand">
+      <i class="bi bi-stars" style="color: #d97706; font-size: 24px;"></i>
+      <div style="flex:1">
+        <h2>Astro Divine</h2>
+        <span class="brand-sub">Management Engine</span>
+      </div>
+      <button class="drawer-close-btn" (click)="mobileMenuOpen = false">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <nav class="nav-menu">
+      <button [class.active]="currentTab === 'overview'" (click)="selectTab('overview')">
+        <i class="bi bi-grid-1x2-fill nav-icon"></i> Overview & Analytics
+      </button>
+      <button [class.active]="currentTab === 'team'" (click)="selectTab('team')">
+        <i class="bi bi-shield-lock-fill nav-icon"></i> Team & Astrologers
+      </button>
+      <button [class.active]="currentTab === 'lms'" (click)="selectTab('lms')">
+        <i class="bi bi-mortarboard-fill nav-icon"></i> Learn & Course Studio
+      </button>
+      <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
+        <i class="bi bi-box-seam-fill nav-icon"></i> Courier & Book Orders
+      </button>
+      <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
+        <i class="bi bi-award-fill nav-icon"></i> Exam Valuation & Certs
+      </button>
+      <button [class.active]="currentTab === 'services'" (click)="selectTab('services')">
+        <i class="bi bi-calendar2-check-fill nav-icon"></i> Appointment Bookings
+      </button>
+      <button [class.active]="currentTab === 'rasi-editor'" (click)="selectTab('rasi-editor')">
+        <i class="bi bi-sun-fill nav-icon"></i> Rasi Palan Editor
+      </button>
+      <button [class.active]="currentTab === 'matches'" (click)="selectTab('matches')">
+        <i class="bi bi-heart-fill nav-icon"></i> Marriage Match Log
+      </button>
+      <button [class.active]="currentTab === 'payments'" (click)="selectTab('payments')">
+        <i class="bi bi-credit-card-2-front-fill nav-icon"></i> Payment Transactions
+      </button>
+      <button [class.active]="currentTab === 'broadcast'" (click)="selectTab('broadcast')">
+        <i class="bi bi-megaphone-fill nav-icon"></i> Notify Users
+      </button>
+      <button [class.active]="currentTab === 'users'" (click)="selectTab('users')">
+        <i class="bi bi-people-fill nav-icon"></i> Registered Users
+      </button>
+    </nav>
+
+    <!-- USER PROFILE & LOGOUT -->
+    <div class="user-card">
+      <div class="user-info-row">
+        <div class="avatar">{{ currentUser?.name ? currentUser!.name.charAt(0) : 'A' }}</div>
+        <div class="u-details">
+          <span class="u-name">{{ currentUser?.name || 'Administrator' }}</span>
+          <span class="u-role">{{ currentUser?.role | uppercase }}</span>
+        </div>
+      </div>
+      <button class="btn-logout-full" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- BACKDROP FOR MOBILE DRAWER -->
+  @if (mobileMenuOpen) {
+    <div class="mobile-backdrop" (click)="mobileMenuOpen = false"></div>
+  }
+
+  <!-- MAIN DYNAMIC CONTENT PANEL -->
+  <main class="main-panel">
+    @if (currentTab === 'overview') {
+      <app-overview-tab (switchTab)="selectTab($event)"></app-overview-tab>
+    }
+
+    @if (currentTab === 'team') {
+      <app-team-tab></app-team-tab>
+    }
+
+    @if (currentTab === 'lms') {
+      <app-lms-tab></app-lms-tab>
+    }
+
+    @if (currentTab === 'courier') {
+      <app-courier-tab></app-courier-tab>
+    }
+
+    @if (currentTab === 'grading') {
+      <app-grading-tab></app-grading-tab>
+    }
+
+    @if (currentTab === 'services') {
+      <app-services-tab></app-services-tab>
+    }
+
+    @if (currentTab === 'rasi-editor') {
+      <app-rasi-editor-tab></app-rasi-editor-tab>
+    }
+
+    @if (currentTab === 'matches') {
+      <app-matches-tab></app-matches-tab>
+    }
+
+    @if (currentTab === 'payments') {
+      <app-payments-tab></app-payments-tab>
+    }
+
+    @if (currentTab === 'broadcast') {
+      <app-broadcast-tab></app-broadcast-tab>
+    }
+
+    @if (currentTab === 'users') {
+      <app-users-tab></app-users-tab>
+    }
+  </main>
+</div>

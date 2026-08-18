@@ -1,0 +1,157 @@
+<div class="users-container">
+  <div class="header-banner flex-between">
+    <div>
+      <h1><i class="bi bi-people-fill" style="color:#d97706;margin-right:8px;"></i>Registered Users & Jathagam Profiles</h1>
+      <p>Directory of registered users, saved birth charts, and platform activity.</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-xs-refresh" (click)="loadUsers()" title="Sync">
+        <i class="bi bi-arrow-repeat"></i> Sync Users
+      </button>
+    </div>
+  </div>
+
+  <!-- SEARCH CONTROLS -->
+  <div class="card-box" style="margin-bottom: 20px; padding: 12px 18px;">
+    <div style="position:relative;">
+      <i class="bi bi-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="userSearchQuery" 
+        placeholder="Search users by name, email, phone number, rasi..." 
+        class="ctrl"
+        style="padding-left:38px;"
+      />
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+      <i class="bi bi-hourglass-split"></i> Loading registered users from database...
+    </div>
+  } @else {
+    <div class="card-box">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Jathagam Profile</th>
+            <th>Registered Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of getFilteredUsers(); track u.id) {
+            <tr>
+              <td><strong>#{{ u.id }}</strong></td>
+              <td><strong>{{ u.name }}</strong></td>
+              <td>{{ u.email }}</td>
+              <td>
+                @if (u.phone) {
+                  <div class="phone-contact-row" style="display:flex;gap:4px;">
+                    <a [href]="'tel:' + u.phone" class="btn-tel-call">
+                      <i class="bi bi-telephone-fill"></i> {{ u.phone }}
+                    </a>
+                    <a [href]="'https://wa.me/91' + u.phone" target="_blank" class="btn-wa-link">
+                      <i class="bi bi-whatsapp"></i> WA
+                    </a>
+                  </div>
+                } @else {
+                  <span class="muted">-</span>
+                }
+              </td>
+              <td>
+                @if (u.jathagam_profile) {
+                  <span class="badge-role" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534;">
+                    <i class="bi bi-person-badge"></i> {{ u.jathagam_profile.rasi || 'ஜாதகம் உண்டு' }} &bull; {{ u.jathagam_profile.nakshatra || '' }}
+                  </span>
+                } @else {
+                  <span class="muted" style="font-size:11px;">Not Created</span>
+                }
+              </td>
+              <td style="font-size:12px;color:#64748b;">{{ u.created_at | date:'dd MMM yyyy' }}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  @if (u.jathagam_profile) {
+                    <button class="btn-sm" (click)="selectedUserForProfile = u">
+                      <i class="bi bi-eye-fill"></i> View Profile
+                    </button>
+                  }
+                  <button class="btn-sm danger" (click)="deleteUser(u.id)">
+                    <i class="bi bi-trash3-fill"></i> Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (getFilteredUsers().length === 0) {
+            <tr>
+              <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
+                No users match the search criteria.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- MODAL: USER JATHAGAM PROFILE VIEWER -->
+  @if (selectedUserForProfile) {
+    <div class="modal-overlay" (click)="selectedUserForProfile = null">
+      <div class="modal-box" style="max-width:540px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h3 style="margin:0;"><i class="bi bi-person-circle" style="color:#d97706;margin-right:6px;"></i>{{ selectedUserForProfile.name }} &mdash; ஜாதக சுயவிவரம்</h3>
+            <span style="font-size:12px;color:#64748b;">{{ selectedUserForProfile.email }} &bull; {{ selectedUserForProfile.phone }}</span>
+          </div>
+          <button class="close-btn" (click)="selectedUserForProfile = null"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div style="background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">ராசி (Rasi):</span>
+            <strong style="color:#b45309;font-size:14px;">{{ selectedUserForProfile.jathagam_profile?.rasi || '-' }}</strong>
+          </div>
+          <div style="background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">நட்சத்திரம் (Nakshatra):</span>
+            <strong style="color:#b45309;font-size:14px;">{{ selectedUserForProfile.jathagam_profile?.nakshatra || '-' }}</strong>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:#f8fafc;padding:8px 10px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">பிறந்த தேதி:</span>
+            <strong style="color:#0f172a;font-size:12px;">{{ selectedUserForProfile.jathagam_profile?.dob || '-' }}</strong>
+          </div>
+          <div style="background:#f8fafc;padding:8px 10px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">பிறந்த நேரம்:</span>
+            <strong style="color:#0f172a;font-size:12px;">{{ selectedUserForProfile.jathagam_profile?.tob || '-' }}</strong>
+          </div>
+          <div style="background:#f8fafc;padding:8px 10px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">பிறந்த இடம்:</span>
+            <strong style="color:#0f172a;font-size:12px;">{{ selectedUserForProfile.jathagam_profile?.pob || '-' }}</strong>
+          </div>
+        </div>
+
+        @if (selectedUserForProfile.jathagam_profile?.lagnam || selectedUserForProfile.jathagam_profile?.dasa_balance) {
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:10px 12px;border-radius:8px;margin-bottom:16px;">
+            <div style="font-size:12px;color:#1e3a8a;margin-bottom:4px;">
+              <strong>லக்னம்:</strong> {{ selectedUserForProfile.jathagam_profile?.lagnam || '-' }}
+            </div>
+            <div style="font-size:12px;color:#1e3a8a;">
+              <strong>திசை இருப்பு:</strong> {{ selectedUserForProfile.jathagam_profile?.dasa_balance || '-' }}
+            </div>
+          </div>
+        }
+
+        <div class="modal-btns">
+          <button type="button" class="btn-cancel" (click)="selectedUserForProfile = null">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

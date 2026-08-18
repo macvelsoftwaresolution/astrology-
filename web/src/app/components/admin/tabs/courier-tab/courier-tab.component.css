@@ -1,0 +1,4 @@
+/* Courier tab specific styles */
+:host {
+  display: block;
+}

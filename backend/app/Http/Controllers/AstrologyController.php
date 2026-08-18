@@ -229,6 +229,150 @@ class AstrologyController extends Controller
         return response()->json($bookings);
     }
 
+    private function parseJsonField($val)
+    {
+        if (is_array($val)) return $val;
+        if (is_string($val)) {
+            $decoded = json_decode($val, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return [];
+    }
+
+    // ================= ASTROLOGERS CRUD & AVAILABILITY =================
+
+    /**
+     * Get All Astrologers (Public & Admin)
+     */
+    public function getAstrologers(Request $request)
+    {
+        $astrologers = DB::table('astrologers')->orderBy('id', 'asc')->get();
+
+        $formatted = $astrologers->map(function ($a) {
+            $a->available_slots = $this->parseJsonField($a->available_slots);
+            $a->blocked_dates = $this->parseJsonField($a->blocked_dates);
+            return $a;
+        });
+
+        return response()->json([
+            'success' => true,
+            'astrologers' => $formatted
+        ]);
+    }
+
+    /**
+     * Admin: Update Astrologer Profile & Settings
+     */
+    public function updateAstrologer(Request $request, $id)
+    {
+        $astro = DB::table('astrologers')->where('id', $id)->first();
+        if (!$astro) {
+            return response()->json(['success' => false, 'message' => 'Astrologer not found'], 404);
+        }
+
+        $updateData = [
+            'name' => $request->input('name', $astro->name),
+            'role_title' => $request->input('role_title', $astro->role_title),
+            'experience' => $request->input('experience', $astro->experience),
+            'specialty' => $request->input('specialty', $astro->specialty),
+            'fee' => $request->input('fee', $astro->fee),
+            'phone' => $request->input('phone', $astro->phone),
+            'bio' => $request->input('bio', $astro->bio),
+            'status' => $request->input('status', $astro->status),
+            'rating' => $request->input('rating', $astro->rating),
+            'updated_at' => now()
+        ];
+
+        if ($request->has('available_slots')) {
+            $slots = is_array($request->available_slots) ? $request->available_slots : json_decode($request->available_slots, true);
+            $updateData['available_slots'] = json_encode($slots ?: []);
+        }
+
+        if ($request->has('blocked_dates')) {
+            $dates = is_array($request->blocked_dates) ? $request->blocked_dates : json_decode($request->blocked_dates, true);
+            $updateData['blocked_dates'] = json_encode($dates ?: []);
+        }
+
+        DB::table('astrologers')->where('id', $id)->update($updateData);
+
+        $updated = DB::table('astrologers')->where('id', $id)->first();
+        $updated->available_slots = $this->parseJsonField($updated->available_slots);
+        $updated->blocked_dates = $this->parseJsonField($updated->blocked_dates);
+
+        return response()->json([
+            'success' => true,
+            'message' => "ஜோதிடர் ({$updated->name}) விவரங்கள் வெற்றிகரமாக சேமிக்கப்பட்டது.",
+            'astrologer' => $updated
+        ]);
+    }
+
+    /**
+     * Admin: Toggle Astrologer Specific Date Availability (Free / Blocked)
+     */
+    public function toggleAstrologerAvailability(Request $request, $id)
+    {
+        $request->validate([
+            'date' => 'required',
+            'status' => 'required|string' // 'busy' / 'blocked' or 'available' / 'free'
+        ]);
+
+        $astro = DB::table('astrologers')->where('id', $id)->first();
+        if (!$astro) {
+            return response()->json(['success' => false, 'message' => 'Astrologer not found'], 404);
+        }
+
+        $date = date('Y-m-d', strtotime($request->date));
+        $targetStatus = strtolower($request->status);
+        $blockedDates = $this->parseJsonField($astro->blocked_dates) ?: [];
+
+        if ($targetStatus === 'busy' || $targetStatus === 'blocked') {
+            if (!in_array($date, $blockedDates)) {
+                $blockedDates[] = $date;
+            }
+        } else {
+            $blockedDates = array_values(array_filter($blockedDates, fn($d) => $d !== $date));
+        }
+
+        sort($blockedDates);
+
+        DB::table('astrologers')->where('id', $id)->update([
+            'blocked_dates' => json_encode($blockedDates),
+            'updated_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "தேதி ({$date}) " . ($targetStatus === 'busy' || $targetStatus === 'blocked' ? 'விடுப்பு நாளாக முடக்கப்பட்டது' : 'முன்பதிவுக்கு திறக்கப்பட்டது'),
+            'blocked_dates' => $blockedDates
+        ]);
+    }
+
+    /**
+     * Admin: Update Available Consultation Timing Slots for Astrologer
+     */
+    public function updateAstrologerSlots(Request $request, $id)
+    {
+        $request->validate([
+            'slots' => 'required|array'
+        ]);
+
+        $astro = DB::table('astrologers')->where('id', $id)->first();
+        if (!$astro) {
+            return response()->json(['success' => false, 'message' => 'Astrologer not found'], 404);
+        }
+
+        DB::table('astrologers')->where('id', $id)->update([
+            'available_slots' => json_encode($request->slots),
+            'updated_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ஆலோசனை நேரப் பிரிவுகள் (Timing Slots) வெற்றிகரமாக சேமிக்கப்பட்டது.',
+            'available_slots' => $request->slots
+        ]);
+    }
+
     /**
      * Admin: Get all Astrologer Availability & Blocked Dates
      */
