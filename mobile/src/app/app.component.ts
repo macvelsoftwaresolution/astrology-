@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App } from '@capacitor/app';
-import { NavController } from '@ionic/angular';
+import { NavController, Platform, IonRouterOutlet } from '@ionic/angular';
 import { BackButtonService } from './services/back-button.service';
 
 @Component({
@@ -16,32 +16,42 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private router: Router,
     private navCtrl: NavController,
+    private platform: Platform,
     private backButtonService: BackButtonService
-  ) {}
+  ) {
+    this.initializeApp();
+  }
 
-  async ngOnInit() {
-    try {
-      await StatusBar.setStyle({ style: Style.Light });
-      await StatusBar.setBackgroundColor({ color: '#FAF6E8' });
-    } catch (e) {
-      console.log('StatusBar not available in browser', e);
-    }
+  initializeApp() {
+    this.platform.ready().then(() => {
+      this.platform.backButton.subscribeWithPriority(10, (processNextHandler) => {
+        this.ngZone.run(() => {
+          // Try page-specific back handlers first
+          const handled = this.backButtonService.handleBack();
+          if (handled) {
+            return;
+          }
 
-    App.addListener('backButton', ({ canGoBack }) => {
-      this.ngZone.run(() => {
-        // Try page-specific back handlers first
-        const handled = this.backButtonService.handleBack();
-        if (handled) {
-          return;
-        }
-
-        // Standard history back navigation when no custom overlay page handler intercepted it
-        if (canGoBack) {
-          this.navCtrl.back();
-        } else {
-          App.exitApp();
-        }
+          // If we are at root paths, exit
+          if (this.router.url === '/home' || this.router.url === '/welcome') {
+            App.exitApp();
+          } else {
+            // Standard history back navigation
+            this.navCtrl.back();
+          }
+        });
       });
     });
+  }
+
+  async ngOnInit() {
+    if (this.platform.is('capacitor')) {
+      try {
+        await StatusBar.setStyle({ style: Style.Light });
+        await StatusBar.setBackgroundColor({ color: '#FAF6E8' });
+      } catch (e) {
+        console.log('StatusBar not available in browser', e);
+      }
+    }
   }
 }

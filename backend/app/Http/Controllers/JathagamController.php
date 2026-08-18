@@ -360,6 +360,18 @@ class JathagamController extends Controller
     }
 
     /**
+     * Admin: Delete a Marriage Match or Varan Search record
+     */
+    public function adminDeleteMatch($id)
+    {
+        DB::table('marriage_matches')->where('id', $id)->delete();
+        return response()->json([
+            'success' => true,
+            'message' => "கோரிக்கை (#{$id}) வெற்றிகரமாக நீக்கப்பட்டது (Record deleted successfully)."
+        ]);
+    }
+
+    /**
      * Submit Single Profile Varan Search (வரன் தேடல் - Looking for Bride / Groom)
      */
     public function submitVaranSearch(Request $request)

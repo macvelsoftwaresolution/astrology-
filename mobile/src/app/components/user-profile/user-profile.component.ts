@@ -71,7 +71,8 @@ export class UserProfileComponent implements OnInit {
     pob: 'சென்னை, தமிழ்நாடு',
     rasi: 'மேஷம்',
     star: 'அஸ்வினி',
-    gothram: 'சிவ கோத்திரம்'
+    gothram: 'சிவ கோத்திரம்',
+    profileImageUrl: ''
   };
 
   editForm = { ...this.personDetails };
@@ -90,6 +91,7 @@ export class UserProfileComponent implements OnInit {
       if (this.currentUser.fullName) this.personDetails.name = this.currentUser.fullName;
       if (this.currentUser.emailAddress) this.personDetails.email = this.currentUser.emailAddress;
       if (this.currentUser.mobileNumber) this.personDetails.phone = this.currentUser.mobileNumber;
+      if (this.currentUser.profileImage) this.personDetails.profileImageUrl = this.currentUser.profileImage;
     }
     this.editForm = { ...this.personDetails };
   }
@@ -99,10 +101,28 @@ export class UserProfileComponent implements OnInit {
     this.showEditModal = true;
   }
 
+  onProfilePicSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.editForm.profileImageUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   saveProfile() {
     this.personDetails = { ...this.editForm };
     this.showEditModal = false;
     this.isSavedNotification = true;
+    
+    // Save updated profile image back to auth_user in local storage
+    if (this.currentUser) {
+      this.currentUser.profileImage = this.personDetails.profileImageUrl;
+      localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+    }
+
     setTimeout(() => {
       this.isSavedNotification = false;
     }, 3000);
