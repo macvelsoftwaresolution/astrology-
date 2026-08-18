@@ -1,14 +1,37 @@
 <div class="dashboard-wrapper">
-  <!-- MOBILE TOPBAR WITH HAMBURGER MENU -->
+  <!-- MOBILE TOPBAR WITH HAMBURGER MENU & LANG TOGGLE -->
   <div class="mobile-topbar">
     <div class="brand">
       <i class="bi bi-stars" style="color: #d97706; font-size: 22px;"></i>
-      <h2>Astro Divine</h2>
+      <h2>{{ 'brand.name' | translate }}</h2>
     </div>
-    <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
-      <i class="bi" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
-      <span>{{ mobileMenuOpen ? ' Close' : ' Menu' }}</span>
-    </button>
+
+    <div style="display:flex;align-items:center;gap:8px;">
+      <!-- Mobile Language Switcher -->
+      <div class="lang-switcher-container" style="margin:0;">
+        <button 
+          type="button" 
+          class="lang-pill" 
+          [class.active]="translationService.currentLanguage() === 'ta'" 
+          (click)="setLanguage('ta')"
+        >
+          தமிழ்
+        </button>
+        <button 
+          type="button" 
+          class="lang-pill" 
+          [class.active]="translationService.currentLanguage() === 'en'" 
+          (click)="setLanguage('en')"
+        >
+          EN
+        </button>
+      </div>
+
+      <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
+        <i class="bi" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+        <span>{{ mobileMenuOpen ? ('nav.close' | translate) : ('nav.menu' | translate) }}</span>
+      </button>
+    </div>
   </div>
 
   <!-- SLEEK LEFT SIDEBAR (Desktop Fixed, Mobile Slide Drawer) -->
@@ -16,63 +39,91 @@
     <div class="brand">
       <i class="bi bi-stars" style="color: #d97706; font-size: 24px;"></i>
       <div style="flex:1">
-        <h2>Astro Divine</h2>
-        <span class="brand-sub">Management Engine</span>
+        <h2>{{ 'brand.name' | translate }}</h2>
+        <span class="brand-sub">{{ 'brand.subtitle' | translate }}</span>
       </div>
       <button class="drawer-close-btn" (click)="mobileMenuOpen = false">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
 
+    <!-- LANGUAGE SWITCHER TOGGLE (Tamil / English) -->
+    <div class="lang-switcher-container">
+      <button 
+        type="button" 
+        class="lang-pill" 
+        [class.active]="translationService.currentLanguage() === 'ta'" 
+        (click)="setLanguage('ta')"
+        title="தமிழ் மொழி"
+      >
+        🇮🇳 தமிழ்
+      </button>
+      <button 
+        type="button" 
+        class="lang-pill" 
+        [class.active]="translationService.currentLanguage() === 'en'" 
+        (click)="setLanguage('en')"
+        title="English Language"
+      >
+        🇬🇧 English
+      </button>
+    </div>
+
     <nav class="nav-menu">
       <button [class.active]="currentTab === 'overview'" (click)="selectTab('overview')">
-        <i class="bi bi-grid-1x2-fill nav-icon"></i> Overview & Analytics
+        <i class="bi bi-grid-1x2-fill nav-icon"></i> {{ 'nav.overview' | translate }}
       </button>
       <button [class.active]="currentTab === 'team'" (click)="selectTab('team')">
-        <i class="bi bi-shield-lock-fill nav-icon"></i> Team & Astrologers
+        <i class="bi bi-shield-lock-fill nav-icon"></i> {{ 'nav.team' | translate }}
       </button>
       <button [class.active]="currentTab === 'lms'" (click)="selectTab('lms')">
-        <i class="bi bi-mortarboard-fill nav-icon"></i> Learn & Course Studio
+        <i class="bi bi-mortarboard-fill nav-icon"></i> {{ 'nav.lms' | translate }}
       </button>
       <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
-        <i class="bi bi-box-seam-fill nav-icon"></i> Courier & Book Orders
+        <i class="bi bi-box-seam-fill nav-icon"></i> {{ 'nav.courier' | translate }}
       </button>
       <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
-        <i class="bi bi-award-fill nav-icon"></i> Exam Valuation & Certs
+        <i class="bi bi-award-fill nav-icon"></i> {{ 'nav.grading' | translate }}
       </button>
       <button [class.active]="currentTab === 'services'" (click)="selectTab('services')">
-        <i class="bi bi-calendar2-check-fill nav-icon"></i> Appointment Bookings
+        <i class="bi bi-calendar2-check-fill nav-icon"></i> {{ 'nav.services' | translate }}
       </button>
       <button [class.active]="currentTab === 'rasi-editor'" (click)="selectTab('rasi-editor')">
-        <i class="bi bi-sun-fill nav-icon"></i> Rasi Palan Editor
+        <i class="bi bi-sun-fill nav-icon"></i> {{ 'nav.rasi_editor' | translate }}
       </button>
       <button [class.active]="currentTab === 'matches'" (click)="selectTab('matches')">
-        <i class="bi bi-heart-fill nav-icon"></i> Marriage Match Log
+        <i class="bi bi-heart-fill nav-icon"></i> {{ 'nav.matches' | translate }}
       </button>
       <button [class.active]="currentTab === 'payments'" (click)="selectTab('payments')">
-        <i class="bi bi-credit-card-2-front-fill nav-icon"></i> Payment Transactions
+        <i class="bi bi-credit-card-2-front-fill nav-icon"></i> {{ 'nav.payments' | translate }}
       </button>
       <button [class.active]="currentTab === 'broadcast'" (click)="selectTab('broadcast')">
-        <i class="bi bi-megaphone-fill nav-icon"></i> Notify Users
+        <i class="bi bi-megaphone-fill nav-icon"></i> {{ 'nav.broadcast' | translate }}
       </button>
       <button [class.active]="currentTab === 'users'" (click)="selectTab('users')">
-        <i class="bi bi-people-fill nav-icon"></i> Registered Users
+        <i class="bi bi-people-fill nav-icon"></i> {{ 'nav.users' | translate }}
       </button>
     </nav>
 
     <!-- USER PROFILE & LOGOUT -->
     <div class="user-card">
-      <div class="user-info-row">
+      <div class="user-info-row" (click)="openAdminProfileModal()" style="cursor:pointer;" title="சுயவிவரத்தைத் திருத்துக">
         <div class="avatar">{{ currentUser?.name ? currentUser!.name.charAt(0) : 'A' }}</div>
         <div class="u-details">
           <span class="u-name">{{ currentUser?.name || 'Administrator' }}</span>
-          <span class="u-role">{{ currentUser?.role | uppercase }}</span>
+          <span class="u-role">{{ currentUser?.role | uppercase }} &bull; <i class="bi bi-pencil-square" style="color:#d97706;font-size:10px;"></i> Edit</span>
         </div>
       </div>
-      <button class="btn-logout-full" (click)="logout()">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>Sign Out</span>
-      </button>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-edit-profile" (click)="openAdminProfileModal()" [title]="'user.profile' | translate">
+          <i class="bi bi-person-gear"></i>
+          <span>{{ 'user.profile' | translate }}</span>
+        </button>
+        <button class="btn-logout-full" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>{{ 'user.signOut' | translate }}</span>
+        </button>
+      </div>
     </div>
   </aside>
 
@@ -127,4 +178,97 @@
       <app-users-tab></app-users-tab>
     }
   </main>
+
+  <!-- ADMIN PROFILE EDIT MODAL -->
+  @if (adminProfileModalOpen) {
+    <div class="modal-overlay" (click)="adminProfileModalOpen = false">
+      <div class="modal-box" style="max-width:480px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="modal-avatar-lg">
+              {{ currentUser?.name ? currentUser!.name.charAt(0) : 'A' }}
+            </div>
+            <div>
+              <h3 style="margin:0;font-size:17px;color:#0f172a;"><i class="bi bi-person-gear" style="color:#d97706;margin-right:6px;"></i>{{ 'user.editProfile' | translate }}</h3>
+              <span style="font-size:12px;color:#64748b;">{{ 'user.saveProfile' | translate }}</span>
+            </div>
+          </div>
+          <button class="close-btn" (click)="adminProfileModalOpen = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        @if (adminProfileSuccessMsg) {
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+            <i class="bi bi-check-circle-fill"></i> {{ adminProfileSuccessMsg }}
+          </div>
+        }
+
+        @if (adminProfileErrMsg) {
+          <div style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ adminProfileErrMsg }}
+          </div>
+        }
+
+        <form (ngSubmit)="saveAdminProfile()">
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:4px;">
+              <i class="bi bi-person-fill" style="color:#d97706;"></i> {{ 'user.fullName' | translate }} *
+            </label>
+            <input 
+              [(ngModel)]="adminProfileForm.name" 
+              name="adm_name" 
+              required 
+              class="field-input" 
+              placeholder="Admin Name"
+            />
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:4px;">
+              <i class="bi bi-envelope-fill" style="color:#d97706;"></i> {{ 'user.email' | translate }} *
+            </label>
+            <input 
+              type="email" 
+              [(ngModel)]="adminProfileForm.email" 
+              name="adm_email" 
+              required 
+              class="field-input" 
+              placeholder="admin@astrodivine.com"
+            />
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:4px;">
+              <i class="bi bi-telephone-fill" style="color:#d97706;"></i> {{ 'user.phone' | translate }}
+            </label>
+            <input 
+              [(ngModel)]="adminProfileForm.phone" 
+              name="adm_phone" 
+              class="field-input" 
+              placeholder="9876543210"
+            />
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:4px;">
+              <i class="bi bi-key-fill" style="color:#d97706;"></i> {{ 'user.newPassword' | translate }}
+            </label>
+            <input 
+              type="password" 
+              [(ngModel)]="adminProfileForm.new_password" 
+              name="adm_pass" 
+              class="field-input" 
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid #e2e8f0;padding-top:14px;">
+            <button type="button" class="btn-cancel" (click)="adminProfileModalOpen = false">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-primary" [disabled]="adminProfileSaving">
+              <i class="bi bi-floppy2-fill"></i> {{ adminProfileSaving ? ('common.saving' | translate) : ('common.save' | translate) }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
 </div>

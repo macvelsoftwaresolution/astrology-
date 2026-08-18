@@ -110,7 +110,9 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     
     // Astrologers Management & Personal Availability
     Route::get('/astrologers',                                  [AstrologyController::class, 'getAstrologers']);
+    Route::post('/astrologers',                                 [AstrologyController::class, 'createAstrologer']);
     Route::put('/astrologers/{id}',                             [AstrologyController::class, 'updateAstrologer']);
+    Route::delete('/astrologers/{id}',                          [AstrologyController::class, 'deleteAstrologer']);
     Route::post('/astrologers/{id}/availability/toggle',        [AstrologyController::class, 'toggleAstrologerAvailability']);
     Route::put('/astrologers/{id}/slots',                       [AstrologyController::class, 'updateAstrologerSlots']);
 

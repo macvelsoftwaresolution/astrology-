@@ -1,32 +1,32 @@
 <div class="grading-container">
   <div class="header-banner flex-between">
     <div>
-      <h1><i class="bi bi-award-fill" style="color:#d97706;margin-right:8px;"></i>Student Exam Valuation & Certification Center</h1>
-      <p>Evaluate final student astrology exam answer sheets and auto-issue verified completion certificates.</p>
+      <h1><i class="bi bi-award-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'grading.title' | translate }}</h1>
+      <p>{{ 'grading.subtitle' | translate }}</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-xs-refresh" (click)="loadSubmissions()" title="Sync">
-        <i class="bi bi-arrow-repeat"></i> Sync Exams
+      <button class="btn-xs-refresh" (click)="loadSubmissions()" [title]="'common.refresh' | translate">
+        <i class="bi bi-arrow-repeat"></i> {{ 'common.refresh' | translate }}
       </button>
     </div>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      <i class="bi bi-hourglass-split"></i> Loading exam submissions from database...
+      <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
     </div>
   } @else {
     <div class="card-box">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Student</th>
-            <th>Course</th>
-            <th>Exam Submission</th>
-            <th>Score</th>
-            <th>Notes</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{ 'grading.student' | translate }}</th>
+            <th>{{ 'grading.examTitle' | translate }}</th>
+            <th>{{ 'grading.submissions' | translate }}</th>
+            <th>{{ 'grading.score' | translate }}</th>
+            <th>{{ 'grading.feedback' | translate }}</th>
+            <th>{{ 'common.status' | translate }}</th>
+            <th>{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@
               <td>{{ sub.course_title }}</td>
               <td>
                 <a [href]="sub.submission_url" target="_blank" class="pdf-link">
-                  <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:4px;"></i> View Answer Sheet
+                  <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:4px;"></i> {{ 'common.view' | translate }}
                 </a>
               </td>
               <td>
@@ -56,7 +56,7 @@
               </td>
               <td>
                 <button class="btn-sm" (click)="openGradingModal(sub)">
-                  <i class="bi bi-pencil-square"></i> Grade Exam
+                  <i class="bi bi-pencil-square"></i> {{ 'grading.evaluate' | translate }}
                 </button>
               </td>
             </tr>
@@ -64,7 +64,7 @@
           @if (submissions.length === 0) {
             <tr>
               <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
-                No pending exam submissions.
+                {{ 'common.noRecords' | translate }}
               </td>
             </tr>
           }
@@ -78,29 +78,29 @@
     <div class="modal-overlay" (click)="selectedSubmissionForGrading = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-award" style="color:#d97706;margin-right:6px;"></i>Grade & Verify Student Exam</h3>
+          <h3><i class="bi bi-award" style="color:#d97706;margin-right:6px;"></i>{{ 'grading.modalTitle' | translate }}</h3>
           <button class="close-btn" (click)="selectedSubmissionForGrading = null"><i class="bi bi-x-lg"></i></button>
         </div>
-        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">Student: <strong style="color:#0f172a;">{{ selectedSubmissionForGrading.student_name }}</strong></p>
+        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">{{ 'grading.student' | translate }}: <strong style="color:#0f172a;">{{ selectedSubmissionForGrading.student_name }}</strong></p>
         <form (ngSubmit)="saveGrading()">
           <div class="form-group">
-            <label>Marks / Score (Out of 100) *</label>
+            <label>{{ 'grading.marksAwarded' | translate }}</label>
             <input type="number" [(ngModel)]="gradingForm.score" name="gscore" required class="ctrl"/>
           </div>
           <div class="form-group">
-            <label>Approval Status</label>
+            <label>{{ 'grading.certStatus' | translate }}</label>
             <select [(ngModel)]="gradingForm.status" name="gstatus" class="ctrl">
-              <option value="Approved">Approved (Issue E-Certificate if Score ≥ 60)</option>
+              <option value="Approved">Approved (Score ≥ 60)</option>
               <option value="Rejected">Rejected</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Evaluator Notes</label>
-            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gnotes" rows="2" class="ctrl" placeholder="Provide feedback to student..."></textarea>
+            <label>{{ 'grading.feedback' | translate }}</label>
+            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gnotes" rows="2" class="ctrl" placeholder="Notes..."></textarea>
           </div>
           <div class="modal-btns">
-            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel">Cancel</button>
-            <button type="submit" class="btn-primary">Submit Grade & Auto-Issue Certificate</button>
+            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-primary">{{ 'grading.issueCert' | translate }}</button>
           </div>
         </form>
       </div>

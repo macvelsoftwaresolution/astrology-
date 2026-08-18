@@ -53,6 +53,12 @@ export class AuthService {
     return data ? JSON.parse(data) : null;
   }
 
+  setUser(user: User): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_data', JSON.stringify(user));
+    }
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }

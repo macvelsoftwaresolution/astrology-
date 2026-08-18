@@ -1,700 +1,869 @@
 <div class="services-container">
-  <!-- Minimal Header Banner -->
-  <div class="header-banner flex-between" style="margin-bottom: 20px;">
-    <div>
-      <h1 style="font-size: 22px;"><i class="bi bi-calendar2-check-fill" style="color:#d97706;margin-right:8px;"></i>முன்பதிவுகள் & தலைமை ஜோதிடர்கள்</h1>
-      <p style="font-size: 13px;">ஜோதிடர்கள் மேலாண்மை மற்றும் வாடிக்கையாளர் முன்பதிவுகள்</p>
-    </div>
-    
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button 
-        type="button" 
-        class="btn-primary" 
-        (click)="openManualBookingModal()"
-        style="padding: 8px 16px; font-size: 13px;"
-      >
-        <i class="bi bi-plus-circle-fill"></i> புதிய முன்பதிவு
-      </button>
-      <button 
-        type="button" 
-        class="btn-xs-refresh" 
-        (click)="loadAllServicesData()" 
-        title="Sync Live Data"
-        style="padding: 8px 12px;"
-      >
-        <i class="bi bi-arrow-repeat"></i> புதுப்பி
-      </button>
-    </div>
-  </div>
 
-  <!-- TOP SECTION: 3 CHIEF ASTROLOGERS (CLEAN & MINIMAL) -->
-  <div style="margin-bottom: 22px;">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px;">
-      @for (astro of astrologersList; track astro.id) {
-        <div 
-          class="astro-clean-card"
-          (click)="openAstrologerManageModal(astro)"
+  <!-- =========================================================
+       VIEW 1: DEFAULT MAIN SERVICES & APPOINTMENT BOOKINGS VIEW
+       ========================================================= -->
+  @if (!selectedAstrologerForManage) {
+    <!-- Header Banner -->
+    <div class="header-banner flex-between" style="margin-bottom: 20px;">
+      <div>
+        <h1 style="font-size: 22px;"><i class="bi bi-calendar2-check-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'services.title' | translate }}</h1>
+        <p style="font-size: 13px;">{{ 'services.subtitle' | translate }}</p>
+      </div>
+      
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button 
+          type="button" 
+          class="btn-primary" 
+          (click)="openNewAstrologerModal()"
+          style="padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);"
         >
-          <div class="astro-card-top">
-            <div class="astro-avatar-clean">
-              {{ astro.name.charAt(0) }}
-            </div>
-            <div class="astro-meta-clean">
-              <h4 class="astro-name-clean">{{ astro.name }}</h4>
-              <span class="astro-role-clean">{{ astro.role_title }}</span>
-            </div>
-            <span 
-              class="astro-status-clean"
-              [class.is-leave]="astro.status !== 'Available'"
-            >
-              <i class="bi" [ngClass]="astro.status === 'Available' ? 'bi-check-circle-fill' : 'bi-dash-circle-fill'"></i>
-              {{ astro.status === 'Available' ? ' Available' : ' விடுப்பு' }}
-            </span>
-          </div>
+          <i class="bi bi-person-plus-fill"></i> {{ 'services.addAstrologer' | translate }}
+        </button>
 
-          <div class="astro-badges-clean">
-            <span class="badge-fee"><i class="bi bi-currency-rupee"></i>{{ astro.fee }}</span>
-            <span class="badge-slots"><i class="bi bi-clock-fill"></i> {{ (astro.available_slots || []).length }} நேரங்கள்</span>
-            <span class="badge-leave"><i class="bi bi-calendar-x-fill"></i> {{ (astro.blocked_dates || []).length }} விடுப்பு</span>
-          </div>
+        <button 
+          type="button" 
+          class="btn-primary" 
+          (click)="openManualBookingModal()"
+          style="padding: 8px 16px; font-size: 13px;"
+        >
+          <i class="bi bi-plus-circle-fill"></i> {{ 'services.newBooking' | translate }}
+        </button>
 
-          <button 
-            type="button" 
-            class="btn-primary btn-manage-clean"
-            (click)="openAstrologerManageModal(astro); $event.stopPropagation()"
+        <button 
+          type="button" 
+          class="btn-xs-refresh" 
+          (click)="loadAllServicesData()" 
+          title="Sync Live Data"
+          style="padding: 8px 12px;"
+        >
+          <i class="bi bi-arrow-repeat"></i> {{ 'common.refresh' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ASTROLOGERS GRID (CRUD & MANAGEMENT) -->
+    <div style="margin-bottom: 24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="margin:0;font-size:16px;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:8px;">
+          <i class="bi bi-people-fill" style="color:#d97706;"></i> {{ 'services.astrologersList' | translate }} ({{ astrologersList.length }})
+        </h3>
+        <button 
+          type="button" 
+          (click)="openNewAstrologerModal()"
+          style="font-size:12px;font-weight:700;color:#059669;background:#ecfdf5;border:1px solid #a7f3d0;padding:5px 12px;border-radius:8px;cursor:pointer;"
+        >
+          {{ 'services.addAstrologerBtn' | translate }}
+        </button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(290px, 1fr));gap:14px;">
+        @for (astro of astrologersList; track astro.id) {
+          <div 
+            class="astro-clean-card"
+            (click)="openAstrologerManageModal(astro)"
           >
-            <i class="bi bi-gear-fill"></i> அமைப்புகள் & காலண்டர் <i class="bi bi-arrow-right"></i>
+            <div class="astro-card-top">
+              <div class="astro-avatar-clean">
+                @if (astro.avatar_url) {
+                  <img [src]="astro.avatar_url" alt="{{ astro.name }}" class="astro-avatar-img"/>
+                } @else {
+                  <span>{{ astro.name.charAt(0) }}</span>
+                }
+              </div>
+              <div class="astro-meta-clean">
+                <h4 class="astro-name-clean">{{ astro.name }}</h4>
+                <span class="astro-role-clean">{{ astro.role_title }}</span>
+              </div>
+              <span 
+                class="astro-status-clean"
+                [class.is-leave]="astro.status !== 'Available'"
+              >
+                <i class="bi" [ngClass]="astro.status === 'Available' ? 'bi-check-circle-fill' : 'bi-dash-circle-fill'"></i>
+                {{ astro.status === 'Available' ? ' Available' : ' Leave' }}
+              </span>
+            </div>
+
+            <div class="astro-badges-clean">
+              <span class="badge-fee"><i class="bi bi-currency-rupee"></i>{{ astro.fee }}</span>
+              <span class="badge-slots"><i class="bi bi-clock-fill"></i> {{ (astro.available_slots || []).length }}</span>
+              <span class="badge-leave"><i class="bi bi-calendar-x-fill"></i> {{ (astro.blocked_dates || []).length }}</span>
+            </div>
+
+            <div class="astro-card-actions">
+              <button 
+                type="button" 
+                class="btn-primary btn-manage-clean"
+                (click)="openAstrologerManageModal(astro); $event.stopPropagation()"
+              >
+                <i class="bi bi-gear-fill"></i> {{ 'services.editAstrologer' | translate }} <i class="bi bi-arrow-right"></i>
+              </button>
+              <button 
+                type="button" 
+                class="btn-delete-card"
+                (click)="deleteAstrologer(astro, $event)"
+                [title]="'services.deleteAstrologer' | translate"
+              >
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- TOP 5 KPI STATS -->
+    <div class="metrics-grid" style="margin-bottom:18px;">
+      <div class="metric-card gold">
+        <div style="font-size:12px;color:#64748b;font-weight:600;"><i class="bi bi-journal-bookmark-fill" style="margin-right:4px;"></i>{{ 'services.totalBookings' | translate }}</div>
+        <div class="metric-value" style="font-size:22px;margin:4px 0 0 0;font-weight:800;color:#0f172a;">{{ serviceBookings.length }}</div>
+      </div>
+
+      <div class="metric-card gold">
+        <div style="font-size:12px;color:#b45309;font-weight:600;"><i class="bi bi-hourglass-split" style="margin-right:4px;"></i>{{ 'services.pending' | translate }}</div>
+        <div class="metric-value" style="font-size:22px;color:#b45309;margin:4px 0 0 0;font-weight:800;">{{ getBookingCount('Pending') }}</div>
+      </div>
+
+      <div class="metric-card blue">
+        <div style="font-size:12px;color:#1d4ed8;font-weight:600;"><i class="bi bi-telephone-outbound-fill" style="margin-right:4px;"></i>{{ 'services.inProgress' | translate }}</div>
+        <div class="metric-value" style="font-size:22px;color:#1d4ed8;margin:4px 0 0 0;font-weight:800;">{{ getBookingCount('In-Progress') }}</div>
+      </div>
+
+      <div class="metric-card green">
+        <div style="font-size:12px;color:#15803d;font-weight:600;"><i class="bi bi-check-circle-fill" style="margin-right:4px;"></i>{{ 'services.completed' | translate }}</div>
+        <div class="metric-value" style="font-size:22px;color:#15803d;margin:4px 0 0 0;font-weight:800;">{{ getBookingCount('Completed') }}</div>
+      </div>
+
+      <div class="metric-card purple">
+        <div style="font-size:12px;color:#7e22ce;font-weight:600;"><i class="bi bi-cash-stack" style="margin-right:4px;"></i>{{ 'services.totalRevenue' | translate }}</div>
+        <div class="metric-value" style="font-size:22px;color:#7e22ce;margin:4px 0 0 0;font-weight:800;">₹{{ getTotalBookingRevenue() | number }}</div>
+      </div>
+    </div>
+
+    <!-- CLIENT BOOKINGS LIST PANEL -->
+    <div class="card-box">
+      <!-- Filter Tabs + Search -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div class="rasi-type-bar" style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button [class.active]="bookingFilterStatus === 'all'" (click)="bookingFilterStatus = 'all'">
+            {{ 'common.all' | translate }} ({{ serviceBookings.length }})
           </button>
+          <button [class.active]="bookingFilterStatus === 'Pending'" (click)="bookingFilterStatus = 'Pending'">
+            <i class="bi bi-hourglass-split"></i> {{ 'services.pending' | translate }} ({{ getBookingCount('Pending') }})
+          </button>
+          <button [class.active]="bookingFilterStatus === 'In-Progress'" (click)="bookingFilterStatus = 'In-Progress'">
+            <i class="bi bi-telephone-outbound"></i> {{ 'services.inProgress' | translate }} ({{ getBookingCount('In-Progress') }})
+          </button>
+          <button [class.active]="bookingFilterStatus === 'Completed'" (click)="bookingFilterStatus = 'Completed'">
+            <i class="bi bi-check2-circle"></i> {{ 'services.completed' | translate }} ({{ getBookingCount('Completed') }})
+          </button>
+        </div>
+
+        <div style="width:100%;max-width:240px;">
+          <input 
+            type="text" 
+            [(ngModel)]="bookingSearchQuery" 
+            [placeholder]="'common.search' | translate" 
+            class="ctrl-sm"
+          />
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      @if (getFilteredBookings().length === 0) {
+        <div style="text-align:center;padding:40px 20px;">
+          <div style="font-size:36px;margin-bottom:8px;color:#cbd5e1;"><i class="bi bi-calendar2-x"></i></div>
+          <h3 style="color:#0f172a;margin:0 0 4px;font-size:16px;">{{ 'common.noRecords' | translate }}</h3>
+          <p class="muted" style="margin:0 0 14px;font-size:12px;">
+            {{ 'services.subtitle' | translate }}
+          </p>
+          <button class="btn-primary btn-sm" (click)="openManualBookingModal()">
+            <i class="bi bi-plus-circle-fill"></i> {{ 'services.newBooking' | translate }}
+          </button>
+        </div>
+      } @else {
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="width:100%;">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>{{ 'services.client' | translate }}</th>
+                <th>{{ 'services.name' | translate }}</th>
+                <th>{{ 'services.serviceType' | translate }}</th>
+                <th>{{ 'services.fee' | translate }}</th>
+                <th>{{ 'services.preferredDate' | translate }}</th>
+                <th>{{ 'common.status' | translate }}</th>
+                <th>{{ 'services.bookingDate' | translate }}</th>
+                <th style="text-align:center;">{{ 'common.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of getFilteredBookings(); track b.id) {
+                <tr>
+                  <td><strong style="font-family:monospace;color:#0f172a;">#{{ b.id }}</strong></td>
+                  <td>
+                    <div style="font-weight:700;color:#0f172a;font-size:14px;">{{ b.user_name }}</div>
+                    <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:6px;align-items:center;">
+                      <a [href]="'tel:' + b.user_phone" class="btn-tel-call" [title]="'services.call' | translate">
+                        <i class="bi bi-telephone-fill"></i> {{ b.user_phone }}
+                      </a>
+                      <a [href]="'https://wa.me/91' + b.user_phone" target="_blank" class="btn-wa-link" [title]="'services.whatsapp' | translate">
+                        <i class="bi bi-whatsapp"></i> WA
+                      </a>
+                    </div>
+                  </td>
+                  <td>
+                    @if (b.details?.astrologer_name) {
+                      <span style="font-weight:700;color:#0f172a;font-size:12px;display:inline-flex;align-items:center;gap:4px;background:#fef3c7;border:1px solid #fde68a;padding:3px 8px;border-radius:6px;">
+                        <i class="bi bi-person-badge-fill" style="color:#d97706;"></i> {{ b.details.astrologer_name }}
+                      </span>
+                    } @else {
+                      <span class="muted" style="font-size:12px;">Chief Astrologer</span>
+                    }
+                  </td>
+                  <td><span class="badge-role" style="font-size:11px;">{{ b.service_type }}</span></td>
+                  <td><strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong></td>
+                  <td>
+                    @if (b.details?.preferred_date) {
+                      <div>
+                        <div style="font-size:12px;color:#1d4ed8;font-weight:700;">
+                          <i class="bi bi-calendar-event"></i> {{ b.details.preferred_date }}
+                        </div>
+                        @if (b.details?.time_slot) {
+                          <small class="muted"><i class="bi bi-clock"></i> {{ b.details.time_slot }}</small>
+                        }
+                      </div>
+                    } @else {
+                      <span class="muted">-</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="status-pill" [ngClass]="(b.status || 'Pending').toLowerCase()">
+                      {{ b.status === 'Completed' ? 'Completed' : (b.status === 'In-Progress' ? 'In-Progress' : 'Pending') }}
+                    </span>
+                  </td>
+                  <td style="font-size:12px;color:#64748b;">{{ b.created_at | date:'dd MMM yyyy' }}</td>
+                  <td>
+                    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+                      <button 
+                        class="btn-sm"
+                        style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:700;padding:5px 10px;font-size:11px;border-radius:6px;cursor:pointer;"
+                        (click)="openViewBookingModal(b)"
+                        [title]="'common.details' | translate"
+                      >
+                        <i class="bi bi-eye-fill"></i> {{ 'common.details' | translate }}
+                      </button>
+                      <button 
+                        class="btn-primary btn-sm"
+                        style="padding:5px 10px;font-size:11px;border-radius:6px;"
+                        (click)="openFulfillModal(b)"
+                        [title]="'common.status' | translate"
+                      >
+                        <i class="bi bi-check2-circle"></i> {{ 'common.status' | translate }}
+                      </button>
+                      <button 
+                        class="btn-sm danger"
+                        style="padding:5px 8px;font-size:11px;border-radius:6px;"
+                        (click)="deleteBooking(b.id)"
+                        [title]="'common.delete' | translate"
+                      >
+                        <i class="bi bi-trash3-fill"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
       }
     </div>
-  </div>
+  }
 
-  <!-- TOP 5 KPI STATS -->
-  <div class="metrics-grid" style="margin-bottom:18px;">
-    <div class="metric-card gold">
-      <div style="font-size:12px;color:#64748b;font-weight:600;"><i class="bi bi-journal-bookmark-fill" style="margin-right:4px;"></i>மொத்த முன்பதிவு</div>
-      <div class="metric-value" style="font-size:22px;margin:4px 0 0 0;font-weight:800;color:#0f172a;">{{ serviceBookings.length }}</div>
-    </div>
-
-    <div class="metric-card gold">
-      <div style="font-size:12px;color:#b45309;font-weight:600;"><i class="bi bi-hourglass-split" style="margin-right:4px;"></i>காத்திருப்பவை</div>
-      <div class="metric-value" style="font-size:22px;color:#b45309;margin:4px 0 0 0;font-weight:800;">{{ getBookingCount('Pending') }}</div>
-    </div>
-
-    <div class="metric-card blue">
-      <div style="font-size:12px;color:#1d4ed8;font-weight:600;"><i class="bi bi-telephone-outbound-fill" style="margin-right:4px;"></i>பேசப்படுகிறது</div>
-      <div class="metric-value" style="font-size:22px;color:#1d4ed8;margin:4px 0 0 0;font-weight:800;">{{ getBookingCount('In-Progress') }}</div>
-    </div>
-
-    <div class="metric-card green">
-      <div style="font-size:12px;color:#15803d;font-weight:600;"><i class="bi bi-check-circle-fill" style="margin-right:4px;"></i>முடிந்தது</div>
-      <div class="metric-value" style="font-size:22px;color:#15803d;margin:4px 0 0 0;font-weight:800;">{{ getBookingCount('Completed') }}</div>
-    </div>
-
-    <div class="metric-card purple">
-      <div style="font-size:12px;color:#7e22ce;font-weight:600;"><i class="bi bi-cash-stack" style="margin-right:4px;"></i>மொத்த வருவாய்</div>
-      <div class="metric-value" style="font-size:22px;color:#7e22ce;margin:4px 0 0 0;font-weight:800;">₹{{ getTotalBookingRevenue() | number }}</div>
-    </div>
-  </div>
-
-  <!-- CLIENT BOOKINGS LIST PANEL -->
-  <div class="card-box">
-    <!-- Filter Tabs + Search -->
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-      <div class="rasi-type-bar" style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button [class.active]="bookingFilterStatus === 'all'" (click)="bookingFilterStatus = 'all'">
-          அனைத்தும் ({{ serviceBookings.length }})
-        </button>
-        <button [class.active]="bookingFilterStatus === 'Pending'" (click)="bookingFilterStatus = 'Pending'">
-          <i class="bi bi-hourglass-split"></i> புதியவை ({{ getBookingCount('Pending') }})
-        </button>
-        <button [class.active]="bookingFilterStatus === 'In-Progress'" (click)="bookingFilterStatus = 'In-Progress'">
-          <i class="bi bi-telephone-outbound"></i> பேசப்படுகிறது ({{ getBookingCount('In-Progress') }})
-        </button>
-        <button [class.active]="bookingFilterStatus === 'Completed'" (click)="bookingFilterStatus = 'Completed'">
-          <i class="bi bi-check2-circle"></i> முடிந்தது ({{ getBookingCount('Completed') }})
-        </button>
-      </div>
-
-      <div style="width:100%;max-width:240px;">
-        <input 
-          type="text" 
-          [(ngModel)]="bookingSearchQuery" 
-          placeholder="பெயர் / எண் தேடுக..." 
-          class="ctrl-sm"
-        />
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    @if (getFilteredBookings().length === 0) {
-      <div style="text-align:center;padding:40px 20px;">
-        <div style="font-size:36px;margin-bottom:8px;color:#cbd5e1;"><i class="bi bi-calendar2-x"></i></div>
-        <h3 style="color:#0f172a;margin:0 0 4px;font-size:16px;">முன்பதிவுகள் எதுவும் இல்லை</h3>
-        <p class="muted" style="margin:0 0 14px;font-size:12px;">
-          பயனர்கள் முன்பதிவு செய்யும் போது இங்கு விவரங்கள் தோன்றும்.
-        </p>
-        <button class="btn-primary btn-sm" (click)="openManualBookingModal()">
-          <i class="bi bi-plus-circle-fill"></i> புதிய முன்பதிவு
-        </button>
-      </div>
-    } @else {
-      <div style="overflow-x:auto;">
-        <table class="data-table" style="width:100%;">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>பயனர் & தொடர்பு</th>
-              <th>ஜோதிடர்</th>
-              <th>சேவை</th>
-              <th>கட்டணம்</th>
-              <th>விரும்பிய தேதி / நேரம்</th>
-              <th>நிலை</th>
-              <th>பதிவு தேதி</th>
-              <th style="text-align:center;">செயல்கள்</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (b of getFilteredBookings(); track b.id) {
-              <tr>
-                <td><strong style="font-family:monospace;color:#0f172a;">#{{ b.id }}</strong></td>
-                <td>
-                  <div style="font-weight:700;color:#0f172a;font-size:14px;">{{ b.user_name }}</div>
-                  <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:6px;align-items:center;">
-                    <a [href]="'tel:' + b.user_phone" class="btn-tel-call" title="Call">
-                      <i class="bi bi-telephone-fill"></i> {{ b.user_phone }}
-                    </a>
-                    <a [href]="'https://wa.me/91' + b.user_phone" target="_blank" class="btn-wa-link" title="WhatsApp">
-                      <i class="bi bi-whatsapp"></i> WA
-                    </a>
-                  </div>
-                </td>
-                <td>
-                  @if (b.details?.astrologer_name) {
-                    <span style="font-weight:700;color:#0f172a;font-size:12px;display:inline-flex;align-items:center;gap:4px;background:#fef3c7;border:1px solid #fde68a;padding:3px 8px;border-radius:6px;">
-                      <i class="bi bi-person-badge-fill" style="color:#d97706;"></i> {{ b.details.astrologer_name }}
-                    </span>
-                  } @else {
-                    <span class="muted" style="font-size:12px;">முதன்மை ஜோதிடர்</span>
-                  }
-                </td>
-                <td><span class="badge-role" style="font-size:11px;">{{ b.service_type }}</span></td>
-                <td><strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong></td>
-                <td>
-                  @if (b.details?.preferred_date) {
-                    <div>
-                      <div style="font-size:12px;color:#1d4ed8;font-weight:700;">
-                        <i class="bi bi-calendar-event"></i> {{ b.details.preferred_date }}
-                      </div>
-                      @if (b.details?.time_slot) {
-                        <small class="muted"><i class="bi bi-clock"></i> {{ b.details.time_slot }}</small>
-                      }
-                    </div>
-                  } @else {
-                    <span class="muted">-</span>
-                  }
-                </td>
-                <td>
-                  <span class="status-pill" [ngClass]="(b.status || 'Pending').toLowerCase()">
-                    {{ b.status === 'Completed' ? 'Completed' : (b.status === 'In-Progress' ? 'In-Progress' : 'Pending') }}
-                  </span>
-                </td>
-                <td style="font-size:12px;color:#64748b;">{{ b.created_at | date:'dd MMM yyyy' }}</td>
-                <td>
-                  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-                    <button 
-                      class="btn-sm"
-                      style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:700;padding:5px 10px;font-size:11px;border-radius:6px;cursor:pointer;"
-                      (click)="openViewBookingModal(b)"
-                      title="விவரங்கள்"
-                    >
-                      <i class="bi bi-eye-fill"></i> விவரங்கள்
-                    </button>
-                    <button 
-                      class="btn-primary btn-sm"
-                      style="padding:5px 10px;font-size:11px;border-radius:6px;"
-                      (click)="openFulfillModal(b)"
-                      title="நிலை மாற்றம்"
-                    >
-                      <i class="bi bi-check2-circle"></i> நிலை
-                    </button>
-                    <button 
-                      class="btn-sm danger"
-                      style="padding:5px 8px;font-size:11px;border-radius:6px;"
-                      (click)="deleteBooking(b.id)"
-                      title="நீக்கு"
-                    >
-                      <i class="bi bi-trash3-fill"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  </div>
-
-  <!-- ASTROLOGER DEDICATED MANAGEMENT & CALENDAR STUDIO MODAL (LARGE POPUP CARD) -->
+  <!-- =========================================================
+       VIEW 2: DEDICATED FULL-PAGE ASTROLOGER MANAGEMENT STUDIO
+       ========================================================= -->
   @if (selectedAstrologerForManage) {
-    <div class="modal-overlay" (click)="selectedAstrologerForManage = null">
-      <div class="modal-box modal-box-large" (click)="$event.stopPropagation()">
-        
-        <!-- STUDIO HEADER WITH ASTROLOGER OVERVIEW -->
-        <div class="studio-header">
-          <div class="studio-profile-left">
-            <div class="studio-avatar-lg">
-              {{ selectedAstrologerForManage.name.charAt(0) }}
-            </div>
-            <div>
-              <h3 class="studio-title-main">{{ selectedAstrologerForManage.name }} &mdash; அமைப்புகள்</h3>
-              <div class="studio-sub-meta">
-                <span>{{ selectedAstrologerForManage.role_title || 'தலைமை ஜோதிடர்' }}</span>
-                <span>&bull;</span>
-                <span style="color:#b45309;font-weight:700;">தட்சிணை: ₹{{ selectedAstrologerForManage.fee }}</span>
-              </div>
-            </div>
-          </div>
+    <div class="studio-fullpage-container">
+      
+      <!-- 1. TOP NAVIGATION / ACTION BAR -->
+      <div class="studio-top-nav">
+        <button 
+          type="button" 
+          class="btn-back-clean" 
+          (click)="selectedAstrologerForManage = null"
+        >
+          <i class="bi bi-arrow-left"></i> {{ 'common.back' | translate }}
+        </button>
 
-          <div class="studio-pills-bar">
-            <span class="chip-stat gold">
-              <i class="bi bi-star-fill" style="color:#f59e0b;margin-right:4px;"></i>{{ selectedAstrologerForManage.rating || 4.95 }}
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          @if (astrologerSuccessMsg) {
+            <span class="save-success-pill">
+              <i class="bi bi-check2-circle"></i> {{ astrologerSuccessMsg }}
             </span>
-            <span class="chip-stat">
-              <i class="bi bi-patch-check-fill" style="color:#2563eb;margin-right:4px;"></i>{{ selectedAstrologerForManage.consultation_count || 1500 }}+ ஆலோசனைகள்
-            </span>
-            <button class="close-btn" (click)="selectedAstrologerForManage = null" title="Close"><i class="bi bi-x-lg"></i></button>
-          </div>
-        </div>
-
-        <!-- LARGE SUB-TABS SWITCHER -->
-        <div class="astro-modal-tabs-lg">
-          <button 
-            class="astro-tab-btn-lg"
-            [class.active]="astrologerManageTab === 'profile'" 
-            (click)="astrologerManageTab = 'profile'"
-          >
-            <i class="bi bi-person-circle"></i> முழு சுயவிவரம் & கட்டணம் (Profile & Pricing)
-          </button>
-          <button 
-            class="astro-tab-btn-lg"
-            [class.active]="astrologerManageTab === 'slots'" 
-            (click)="astrologerManageTab = 'slots'"
-          >
-            <i class="bi bi-clock-history"></i> ஆலோசனை நேரங்கள் (Time Slots - {{ (selectedAstrologerForManage.available_slots || []).length }})
-          </button>
-          <button 
-            class="astro-tab-btn-lg"
-            [class.active]="astrologerManageTab === 'calendar'" 
-            (click)="astrologerManageTab = 'calendar'; generateAstrologerMonthCalendar();"
-          >
-            <i class="bi bi-calendar3"></i> 1-மாத விடுப்பு காலண்டர் (Availability Grid)
-          </button>
-        </div>
-
-        <!-- SCROLLABLE STUDIO BODY -->
-        <div class="studio-body">
-
-          <!-- TAB 1: COMPLETE ELABORATE PROFILE & DAKSHINA FEE -->
-          @if (astrologerManageTab === 'profile') {
-            <div>
-              <div class="form-grid-2-lg">
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-person-fill" style="color:#d97706;"></i> ஜோதிடரின் முழுப் பெயர் (Full Name) *
-                  </label>
-                  <input 
-                    [(ngModel)]="selectedAstrologerForManage.name" 
-                    class="field-input-lg" 
-                    placeholder="எ.கா: குரு ஸ்ரீநிவாசன்"
-                  />
-                </div>
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-award-fill" style="color:#d97706;"></i> பதவி & சிறப்புப் பட்டம் (Role / Designation) *
-                  </label>
-                  <input 
-                    [(ngModel)]="selectedAstrologerForManage.role_title" 
-                    class="field-input-lg" 
-                    placeholder="எ.கா: தலைமை வேத ஜோதிடர்"
-                  />
-                </div>
-              </div>
-
-              <div class="form-grid-3-lg">
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-cash" style="color:#d97706;"></i> ஆலோசனை தட்சிணை (Fee ₹) *
-                  </label>
-                  <input 
-                    type="number" 
-                    [(ngModel)]="selectedAstrologerForManage.fee" 
-                    class="field-input-lg"
-                  />
-                </div>
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-hourglass" style="color:#d97706;"></i> அனுபவக் காலம் (Experience)
-                  </label>
-                  <input 
-                    [(ngModel)]="selectedAstrologerForManage.experience" 
-                    class="field-input-lg" 
-                    placeholder="எ.கா: 25+ ஆண்டுகள்"
-                  />
-                </div>
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-activity" style="color:#d97706;"></i> தற்போதைய நிலை (Status)
-                  </label>
-                  <select [(ngModel)]="selectedAstrologerForManage.status" class="field-input-lg">
-                    <option value="Available">🟢 Available (முன்பதிவுக்கு தயார்)</option>
-                    <option value="On Leave">🔴 On Leave (விடுப்பில் உள்ளார்)</option>
-                    <option value="Busy">🟡 Busy (ஆலோசனையில் உள்ளார்)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-grid-3-lg">
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-telephone-fill" style="color:#d97706;"></i> நேரடி தொடர்பு எண் (Phone)
-                  </label>
-                  <input 
-                    [(ngModel)]="selectedAstrologerForManage.phone" 
-                    class="field-input-lg" 
-                    placeholder="9876543210"
-                  />
-                </div>
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-star-fill" style="color:#d97706;"></i> ரேட்டிங் (Rating: 1.0 - 5.0)
-                  </label>
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    max="5.0" 
-                    [(ngModel)]="selectedAstrologerForManage.rating" 
-                    class="field-input-lg"
-                  />
-                </div>
-                <div class="field-group-lg" style="margin:0;">
-                  <label class="field-lbl-lg">
-                    <i class="bi bi-people-fill" style="color:#d97706;"></i> மொத்த ஆலோசனைகள்
-                  </label>
-                  <input 
-                    type="number" 
-                    [(ngModel)]="selectedAstrologerForManage.consultation_count" 
-                    class="field-input-lg"
-                  />
-                </div>
-              </div>
-
-              <div class="field-group-lg">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-stars" style="color:#d97706;"></i> சிறப்பு நிபுணத்துவம் & ஆய்வுத் துறைகள் (Specializations)
-                </label>
-                <input 
-                  [(ngModel)]="selectedAstrologerForManage.specialty" 
-                  class="field-input-lg" 
-                  placeholder="எ.கா: துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், பிரசன்ன ஜோதிடம், வாஸ்து சாஸ்திரம்"
-                />
-              </div>
-
-              <div class="field-group-lg" style="margin-bottom:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-journal-text" style="color:#d97706;"></i> முழுமையான சுயவிவரக் குறிப்பு (Detailed Biography & Heritage)
-                </label>
-                <textarea 
-                  [(ngModel)]="selectedAstrologerForManage.bio" 
-                  rows="3" 
-                  class="field-input-lg" 
-                  placeholder="ஜோதிடரின் பாரம்பரிய அனுபவம், ஆன்மீகக் கல்வி மற்றும் சாதனை விவரங்கள்..."
-                ></textarea>
-              </div>
-            </div>
           }
 
-          <!-- TAB 2: INTERACTIVE TIME SLOTS STUDIO -->
-          @if (astrologerManageTab === 'slots') {
-            <div>
-              <!-- Quick Suggestions Bar -->
-              <div style="background:#f8fafc;padding:16px;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:18px;">
-                <label class="field-lbl-lg" style="margin-bottom:10px;">
-                  <i class="bi bi-lightning-charge-fill" style="color:#d97706;"></i> பரிந்துரைக்கப்பட்ட நேரப் பிரிவுகள் (1-Click Quick Add):
+          @if (!isCreatingNewAstrologer && selectedAstrologerForManage.id) {
+            <button 
+              type="button" 
+              class="btn-danger-outline" 
+              (click)="deleteAstrologer(selectedAstrologerForManage)"
+            >
+              <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
+            </button>
+          }
+
+          <button 
+            type="button" 
+            class="btn-primary" 
+            (click)="saveAstrologerFullProfile()"
+            [disabled]="astrologerSaving"
+            style="padding:10px 24px;font-size:13px;font-weight:800;border-radius:10px;"
+          >
+            <i class="bi bi-floppy2-fill"></i> {{ astrologerSaving ? ('common.saving' | translate) : (isCreatingNewAstrologer ? ('services.addAstrologer' | translate) : ('common.save' | translate)) }}
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. HERO ASTROLOGER OVERVIEW BANNER -->
+      <div class="studio-hero-banner">
+        <div class="studio-profile-left">
+          <div class="studio-avatar-lg">
+            @if (selectedAstrologerForManage.avatar_url) {
+              <img [src]="selectedAstrologerForManage.avatar_url" alt="{{ selectedAstrologerForManage.name }}" class="studio-avatar-img"/>
+            } @else {
+              <span>{{ selectedAstrologerForManage.name ? selectedAstrologerForManage.name.charAt(0) : '+' }}</span>
+            }
+          </div>
+          <div>
+            <h2 class="studio-title-main">
+              {{ isCreatingNewAstrologer ? ('services.addAstrologer' | translate) : selectedAstrologerForManage.name }}
+            </h2>
+            <div class="studio-sub-meta">
+              <span style="font-weight:700;color:#0f172a;">{{ selectedAstrologerForManage.role_title || 'Chief Astrologer' }}</span>
+              <span>&bull;</span>
+              <span style="color:#b45309;font-weight:800;">{{ 'services.fee' | translate }}: ₹{{ selectedAstrologerForManage.fee }}</span>
+              <span>&bull;</span>
+              <span>{{ 'services.experience' | translate }}: {{ selectedAstrologerForManage.experience || '10+ Years' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="studio-pills-bar">
+          <span class="chip-stat gold">
+            <i class="bi bi-star-fill" style="color:#f59e0b;margin-right:6px;"></i>{{ selectedAstrologerForManage.rating || 4.90 }} {{ 'services.rating' | translate }}
+          </span>
+          <span class="chip-stat">
+            <i class="bi bi-patch-check-fill" style="color:#2563eb;margin-right:6px;"></i>{{ selectedAstrologerForManage.consultation_count || 0 }}+ {{ 'services.consultations' | translate }}
+          </span>
+          <span 
+            class="chip-stat"
+            [style.color]="selectedAstrologerForManage.status === 'Available' ? '#166534' : '#991b1b'"
+            [style.background]="selectedAstrologerForManage.status === 'Available' ? '#f0fdf4' : '#fef2f2'"
+            [style.border-color]="selectedAstrologerForManage.status === 'Available' ? '#bbf7d0' : '#fecaca'"
+          >
+            <i class="bi" [ngClass]="selectedAstrologerForManage.status === 'Available' ? 'bi-check-circle-fill' : 'bi-dash-circle-fill'" style="margin-right:6px;"></i>
+            {{ selectedAstrologerForManage.status === 'Available' ? 'Available' : 'Leave' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- 3. STUDIO TABS SWITCHER -->
+      <div class="astro-modal-tabs-lg">
+        <button 
+          class="astro-tab-btn-lg"
+          [class.active]="astrologerManageTab === 'profile'" 
+          (click)="astrologerManageTab = 'profile'"
+        >
+          <i class="bi bi-person-circle"></i> {{ 'services.tabProfile' | translate }}
+        </button>
+        <button 
+          class="astro-tab-btn-lg"
+          [class.active]="astrologerManageTab === 'slots'" 
+          (click)="astrologerManageTab = 'slots'"
+        >
+          <i class="bi bi-clock-history"></i> {{ 'services.tabSlots' | translate }} ({{ (selectedAstrologerForManage.available_slots || []).length }})
+        </button>
+        <button 
+          class="astro-tab-btn-lg"
+          [class.active]="astrologerManageTab === 'calendar'" 
+          (click)="astrologerManageTab = 'calendar'; generateAstrologerMonthCalendar();"
+        >
+          <i class="bi bi-calendar3"></i> {{ 'services.tabCalendar' | translate }}
+        </button>
+      </div>
+
+      <!-- 4. ACTIVE TAB CONTENT CARD -->
+      <div class="studio-content-card">
+
+        <!-- TAB 1: PROFILE & PHOTO -->
+        @if (astrologerManageTab === 'profile') {
+          <div>
+            <!-- PHOTO / AVATAR BOX -->
+            <div class="avatar-studio-box">
+              <div class="avatar-preview-wrapper">
+                <div class="avatar-preview-lg">
+                  @if (selectedAstrologerForManage.avatar_url) {
+                    <img [src]="selectedAstrologerForManage.avatar_url" alt="Profile" class="avatar-img-fit"/>
+                  } @else {
+                    <i [class]="selectedAstrologerForManage.avatar_icon || 'bi bi-person-fill'"></i>
+                  }
+                </div>
+              </div>
+
+              <div class="avatar-controls-right">
+                <label class="field-lbl-lg" style="margin-bottom:6px;">
+                  <i class="bi bi-image" style="color:#d97706;"></i> {{ 'services.avatar' | translate }}:
                 </label>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-                  @for (qSlot of quickSlotsList; track qSlot) {
-                    <button 
-                      type="button" 
-                      class="quick-slot-pill"
-                      (click)="addQuickSlot(qSlot)"
-                      [disabled]="(selectedAstrologerForManage.available_slots || []).includes(qSlot)"
-                    >
-                      + {{ qSlot }}
+                
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+                  <label class="btn-primary" style="padding:7px 14px;font-size:12px;cursor:pointer;margin:0;display:inline-flex;align-items:center;gap:6px;">
+                    <i class="bi bi-upload"></i> {{ 'services.uploadPhoto' | translate }}
+                    <input type="file" (change)="onAstrologerPhotoSelected($event)" accept="image/*" style="display:none;"/>
+                  </label>
+
+                  @if (selectedAstrologerForManage.avatar_url) {
+                    <button type="button" class="btn-slot-del" (click)="removeAstrologerPhoto()" style="padding:7px 12px;font-size:12px;">
+                      <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
                     </button>
                   }
                 </div>
 
-                <label class="field-lbl-lg" style="margin-bottom:8px;">
-                  <i class="bi bi-plus-circle" style="color:#d97706;"></i> தனிப்பயன் புதிய ஆலோசனை நேரம் சேர்க்க (Custom Slot):
-                </label>
-                <div style="display:flex;gap:10px;">
+                <!-- Direct URL input -->
+                <div style="margin-bottom:10px;">
                   <input 
-                    [(ngModel)]="newSlotInput" 
-                    placeholder="எ.கா: 10:00 AM - 11:00 AM அல்லது 04:30 PM - 05:30 PM" 
+                    [(ngModel)]="selectedAstrologerForManage.avatar_url" 
                     class="field-input-lg" 
-                    style="flex:1;"
-                    (keyup.enter)="addAstrologerSlot()"
+                    style="padding:8px 12px;font-size:12px;"
+                    placeholder="URL (https://...)"
                   />
-                  <button 
-                    type="button" 
-                    class="btn-primary" 
-                    style="padding:0 24px;font-size:13px;border-radius:12px;"
-                    (click)="addAstrologerSlot()"
-                  >
-                    + சேர்
-                  </button>
                 </div>
-              </div>
 
-              <!-- Active Slots List (2-Column Grid) -->
-              <div>
-                <label class="field-lbl-lg" style="margin-bottom:12px;">
-                  <i class="bi bi-clock-fill" style="color:#d97706;"></i> தற்போது இயங்கும் ஆலோசனை நேரங்கள் ({{ (selectedAstrologerForManage.available_slots || []).length }} நேரப் பிரிவுகள்):
-                </label>
-                <div class="slots-grid-2col">
-                  @for (slot of selectedAstrologerForManage.available_slots; track slot; let idx = $index) {
-                    <div class="slot-item-card-lg">
-                      <span class="slot-time-text-lg">
-                        <i class="bi bi-clock-fill" style="color:#d97706;"></i> {{ slot }}
-                      </span>
+                <!-- Preset Avatar Icons -->
+                <div>
+                  <span style="font-size:11px;color:#64748b;font-weight:600;display:block;margin-bottom:6px;">{{ 'services.presetIcons' | translate }}:</span>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    @for (pIcon of presetAvatarIcons; track pIcon) {
                       <button 
                         type="button" 
-                        class="btn-slot-del"
-                        (click)="removeAstrologerSlot(idx)"
-                        title="நீக்கு"
+                        class="preset-icon-pill" 
+                        [class.active]="selectedAstrologerForManage.avatar_icon === pIcon && !selectedAstrologerForManage.avatar_url"
+                        (click)="selectPresetAvatar(pIcon); removeAstrologerPhoto()"
+                        [title]="pIcon"
                       >
-                        <i class="bi bi-trash3-fill"></i> நீக்கு
+                        <i [class]="pIcon"></i>
                       </button>
-                    </div>
-                  }
-                  @if (!selectedAstrologerForManage.available_slots || selectedAstrologerForManage.available_slots.length === 0) {
-                    <div style="grid-column:1 / -1;text-align:center;padding:24px;color:#64748b;font-size:13px;background:#f8fafc;border-radius:12px;">
-                      நேரப் பிரிவுகள் எதுவும் சேர்க்கப்படவில்லை. மேலே உள்ள நேரங்களைத் தேர்ந்தெடுக்கவும்.
-                    </div>
-                  }
+                    }
+                  </div>
                 </div>
               </div>
             </div>
-          }
 
-          <!-- TAB 3: SPATIOUS 1-MONTH LEAVE & AVAILABILITY CALENDAR -->
-          @if (astrologerManageTab === 'calendar') {
-            <div>
-              <div class="cal-nav-bar" style="padding:12px 18px;margin-bottom:16px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <button 
-                    type="button" 
-                    (click)="prevAstrologerMonth()" 
-                    style="background:#fff;border:1px solid #cbd5e1;padding:8px 14px;font-size:13px;font-weight:800;cursor:pointer;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05);"
-                  >
-                    <i class="bi bi-chevron-left"></i>
-                  </button>
-                  <strong style="font-size:15px;color:#0f172a;padding:0 10px;">
-                    {{ getAstrologerMonthNameTamil() }}
-                  </strong>
-                  <button 
-                    type="button" 
-                    (click)="nextAstrologerMonth()" 
-                    style="background:#fff;border:1px solid #cbd5e1;padding:8px 14px;font-size:13px;font-weight:800;cursor:pointer;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05);"
-                  >
-                    <i class="bi bi-chevron-right"></i>
-                  </button>
-                  <button 
-                    type="button" 
-                    (click)="jumpToAstrologerTodayMonth()" 
-                    style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:700;padding:7px 12px;border-radius:10px;cursor:pointer;margin-left:6px;"
-                  >
-                    இன்று
-                  </button>
-                </div>
-
-                <!-- Stats summary -->
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:12px;font-weight:700;color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;padding:5px 10px;border-radius:8px;">
-                    🟢 கிடைக்கும்: {{ astrologerCalendarDays.length - getBlockedDaysCount() }} நாட்கள்
-                  </span>
-                  <span style="font-size:12px;font-weight:700;color:#991b1b;background:#fef2f2;border:1px solid #fecaca;padding:5px 10px;border-radius:8px;">
-                    🔴 விடுப்பு: {{ getBlockedDaysCount() }} நாட்கள்
-                  </span>
-                </div>
+            <!-- Basic Info Fields -->
+            <div class="form-grid-2-lg">
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-person-fill" style="color:#d97706;"></i> {{ 'services.name' | translate }} *
+                </label>
+                <input 
+                  [(ngModel)]="selectedAstrologerForManage.name" 
+                  class="field-input-lg" 
+                  placeholder="Guru Srinivasan"
+                />
               </div>
-
-              <!-- 7-Days Column Header -->
-              <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:8px;text-align:center;margin-bottom:8px;">
-                <div style="padding:8px 4px;font-size:12px;font-weight:800;color:#dc2626;background:#fef2f2;border-radius:8px;">ஞாயிறு</div>
-                <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">திங்கள்</div>
-                <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">செவ்வாய்</div>
-                <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">புதன்</div>
-                <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">வியாழன்</div>
-                <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">வெள்ளி</div>
-                <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">சனி</div>
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-award-fill" style="color:#d97706;"></i> {{ 'services.roleTitle' | translate }} *
+                </label>
+                <input 
+                  [(ngModel)]="selectedAstrologerForManage.role_title" 
+                  class="field-input-lg" 
+                  placeholder="Chief Vedic Astrologer"
+                />
               </div>
+            </div>
 
-              <!-- 1-Month Matrix (Spacious Tiles) -->
-              <div class="cal-matrix-lg">
-                @for (day of astrologerCalendarDays; track day.date) {
-                  <div 
-                    class="month-cal-cell-lg"
-                    [class.other-month]="!day.isCurrentMonth"
-                    [class.is-today]="day.isToday"
-                    [class.cell-free]="day.isCurrentMonth && !day.isBlocked"
-                    [class.cell-busy]="day.isCurrentMonth && day.isBlocked"
-                    (click)="day.isCurrentMonth && toggleAstrologerDate(day.date, day.isBlocked ? 'available' : 'busy')"
+            <div class="form-grid-3-lg">
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-cash" style="color:#d97706;"></i> {{ 'services.fee' | translate }} *
+                </label>
+                <input 
+                  type="number" 
+                  [(ngModel)]="selectedAstrologerForManage.fee" 
+                  class="field-input-lg"
+                />
+              </div>
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-hourglass" style="color:#d97706;"></i> {{ 'services.experience' | translate }}
+                </label>
+                <input 
+                  [(ngModel)]="selectedAstrologerForManage.experience" 
+                  class="field-input-lg" 
+                  placeholder="20+ Years"
+                />
+              </div>
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-activity" style="color:#d97706;"></i> {{ 'services.status' | translate }}
+                </label>
+                <select [(ngModel)]="selectedAstrologerForManage.status" class="field-input-lg">
+                  <option value="Available">🟢 Available</option>
+                  <option value="On Leave">🔴 On Leave</option>
+                  <option value="Busy">🟡 Busy</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid-3-lg">
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-telephone-fill" style="color:#d97706;"></i> {{ 'services.phone' | translate }}
+                </label>
+                <input 
+                  [(ngModel)]="selectedAstrologerForManage.phone" 
+                  class="field-input-lg" 
+                  placeholder="9876543210"
+                />
+              </div>
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-star-fill" style="color:#d97706;"></i> {{ 'services.rating' | translate }}
+                </label>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  max="5.0" 
+                  [(ngModel)]="selectedAstrologerForManage.rating" 
+                  class="field-input-lg"
+                />
+              </div>
+              <div class="field-group-lg" style="margin:0;">
+                <label class="field-lbl-lg">
+                  <i class="bi bi-people-fill" style="color:#d97706;"></i> {{ 'services.consultations' | translate }}
+                </label>
+                <input 
+                  type="number" 
+                  [(ngModel)]="selectedAstrologerForManage.consultation_count" 
+                  class="field-input-lg"
+                />
+              </div>
+            </div>
+
+            <div class="field-group-lg">
+              <label class="field-lbl-lg">
+                <i class="bi bi-stars" style="color:#d97706;"></i> {{ 'services.specialty' | translate }}
+              </label>
+              <input 
+                [(ngModel)]="selectedAstrologerForManage.specialty" 
+                class="field-input-lg" 
+                placeholder="Vedic Horoscope Reading, Marriage Compatibility, Vastu"
+              />
+            </div>
+
+            <div class="field-group-lg" style="margin-bottom:0;">
+              <label class="field-lbl-lg">
+                <i class="bi bi-journal-text" style="color:#d97706;"></i> {{ 'services.bio' | translate }}
+              </label>
+              <textarea 
+                [(ngModel)]="selectedAstrologerForManage.bio" 
+                rows="3" 
+                class="field-input-lg" 
+                placeholder="Detailed heritage, education and achievements..."
+              ></textarea>
+            </div>
+          </div>
+        }
+
+        <!-- TAB 2: TIME SLOTS STUDIO -->
+        @if (astrologerManageTab === 'slots') {
+          <div>
+            <!-- Quick Suggestions Bar -->
+            <div style="background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:20px;">
+              <label class="field-lbl-lg" style="margin-bottom:10px;">
+                <i class="bi bi-lightning-charge-fill" style="color:#d97706;"></i> {{ 'services.quickSlots' | translate }}:
+              </label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+                @for (qSlot of quickSlotsList; track qSlot) {
+                  <button 
+                    type="button" 
+                    class="quick-slot-pill"
+                    (click)="addQuickSlot(qSlot)"
+                    [disabled]="(selectedAstrologerForManage.available_slots || []).includes(qSlot)"
                   >
-                    <div class="cell-top-row">
-                      <span class="cal-day-num" [class.text-sunday]="day.dayOfWeek === 0" style="font-size:13px;">{{ day.dayNumber }}</span>
-                      @if (day.isToday) {
-                        <span class="cal-today-badge">இன்று</span>
-                      }
-                    </div>
-                    @if (day.isCurrentMonth) {
-                      <div class="cell-bottom-row">
-                        <span class="cal-status-pill" [class.pill-free]="!day.isBlocked" [class.pill-busy]="day.isBlocked" style="font-size:10px;padding:2px 6px;">
-                          {{ day.isBlocked ? '🔴 விடுப்பு' : '🟢 Free' }}
-                        </span>
-                      </div>
-                    }
-                  </div>
+                    + {{ qSlot }}
+                  </button>
                 }
               </div>
 
-              <!-- Batch Actions Bar -->
-              <div style="display:flex;gap:10px;margin-top:16px;">
+              <label class="field-lbl-lg" style="margin-bottom:8px;">
+                <i class="bi bi-plus-circle" style="color:#d97706;"></i> {{ 'services.addSlot' | translate }}:
+              </label>
+              <div style="display:flex;gap:10px;">
+                <input 
+                  [(ngModel)]="newSlotInput" 
+                  placeholder="e.g. 10:00 AM - 11:00 AM" 
+                  class="field-input-lg" 
+                  style="flex:1;"
+                  (keyup.enter)="addAstrologerSlot()"
+                />
                 <button 
                   type="button" 
-                  (click)="blockAllSundaysForAstrologer()"
-                  style="background:#fff1f2;border:1.5px solid #fecdd3;color:#9f1239;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;"
+                  class="btn-primary" 
+                  style="padding:0 24px;font-size:13px;border-radius:10px;font-weight:700;"
+                  (click)="addAstrologerSlot()"
                 >
-                  <i class="bi bi-x-circle-fill"></i> அனைத்து ஞாயிறுகளையும் முடக்கு
-                </button>
-                <button 
-                  type="button" 
-                  (click)="unblockAllDaysForAstrologer()"
-                  style="background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;"
-                >
-                  <i class="bi bi-check-circle-fill"></i> அனைத்து நாட்களையும் திற
+                  <i class="bi bi-plus-lg"></i> {{ 'common.save' | translate }}
                 </button>
               </div>
             </div>
-          }
 
-        </div>
+            <!-- Active Slots List -->
+            <div>
+              <label class="field-lbl-lg" style="margin-bottom:14px;">
+                <i class="bi bi-clock-fill" style="color:#d97706;"></i> {{ 'services.activeSlots' | translate }} ({{ (selectedAstrologerForManage.available_slots || []).length }}):
+              </label>
+              <div class="slots-grid-2col">
+                @for (slot of selectedAstrologerForManage.available_slots; track slot; let idx = $index) {
+                  <div class="slot-item-card-lg">
+                    <span class="slot-time-text-lg">
+                      <i class="bi bi-clock-fill" style="color:#d97706;"></i> {{ slot }}
+                    </span>
+                    <button 
+                      type="button" 
+                      class="btn-slot-del"
+                      (click)="removeAstrologerSlot(idx)"
+                      [title]="'common.delete' | translate"
+                    >
+                      <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
+                    </button>
+                  </div>
+                }
+                @if (!selectedAstrologerForManage.available_slots || selectedAstrologerForManage.available_slots.length === 0) {
+                  <div style="grid-column:1 / -1;text-align:center;padding:28px;color:#64748b;font-size:13px;background:#f8fafc;border-radius:14px;border:1px dashed #cbd5e1;">
+                    {{ 'common.noRecords' | translate }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
 
-        <!-- STUDIO FOOTER WITH SAVE STATUS -->
-        <div class="studio-footer">
+        <!-- TAB 3: LEAVE & AVAILABILITY CALENDAR -->
+        @if (astrologerManageTab === 'calendar') {
           <div>
-            @if (astrologerSuccessMsg) {
-              <span style="font-size:13px;color:#15803d;font-weight:800;display:flex;align-items:center;gap:6px;">
-                <i class="bi bi-check2-circle"></i> {{ astrologerSuccessMsg }}
-              </span>
-            } @else {
-              <span style="font-size:12px;color:#64748b;">எல்லா மாற்றங்களையும் சேமிக்க 'சேமி' பட்டனை அழுத்தவும்.</span>
-            }
-          </div>
+            <div class="cal-nav-bar" style="padding:14px 18px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <button 
+                  type="button" 
+                  (click)="prevAstrologerMonth()" 
+                  style="background:#fff;border:1px solid #cbd5e1;padding:6px 14px;font-size:13px;font-weight:800;cursor:border;border-radius:8px;"
+                >
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <strong style="font-size:15px;color:#0f172a;padding:0 8px;">
+                  {{ getAstrologerMonthNameTamil() }}
+                </strong>
+                <button 
+                  type="button" 
+                  (click)="nextAstrologerMonth()" 
+                  style="background:#fff;border:1px solid #cbd5e1;padding:6px 14px;font-size:13px;font-weight:800;cursor:border;border-radius:8px;"
+                >
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+                <button 
+                  type="button" 
+                  (click)="jumpToAstrologerTodayMonth()" 
+                  style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;margin-left:6px;"
+                >
+                  {{ 'common.today' | translate }}
+                </button>
+              </div>
 
-          <div style="display:flex;gap:12px;">
-            <button 
-              type="button" 
-              class="btn-cancel" 
-              (click)="selectedAstrologerForManage = null" 
-              style="padding:11px 22px;border-radius:12px;font-size:13px;font-weight:700;"
-            >
-              <i class="bi bi-x-lg"></i> ரத்து செய் (Cancel)
-            </button>
-            <button 
-              type="button" 
-              class="btn-primary" 
-              (click)="saveAstrologerFullProfile()"
-              [disabled]="astrologerSaving"
-              style="padding:11px 26px;border-radius:12px;font-size:13px;font-weight:800;"
-            >
-              <i class="bi bi-floppy2-fill"></i> {{ astrologerSaving ? 'சேமிக்கப்படுகிறது...' : 'முழு விவரங்களையும் சேமி (Save All Changes)' }}
-            </button>
+              <!-- Stats summary -->
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:12px;font-weight:700;color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;padding:5px 10px;border-radius:8px;">
+                  🟢 Available: {{ astrologerCalendarDays.length - getBlockedDaysCount() }}
+                </span>
+                <span style="font-size:12px;font-weight:700;color:#991b1b;background:#fef2f2;border:1px solid #fecaca;padding:5px 10px;border-radius:8px;">
+                  🔴 Leave: {{ getBlockedDaysCount() }}
+                </span>
+              </div>
+            </div>
+
+            <!-- 7-Days Column Header -->
+            <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:8px;text-align:center;margin-bottom:8px;">
+              <div style="padding:8px 4px;font-size:12px;font-weight:800;color:#dc2626;background:#fef2f2;border-radius:8px;">Sun</div>
+              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Mon</div>
+              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Tue</div>
+              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Wed</div>
+              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Thu</div>
+              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Fri</div>
+              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Sat</div>
+            </div>
+
+            <!-- 1-Month Matrix -->
+            <div class="cal-matrix-lg">
+              @for (day of astrologerCalendarDays; track day.date) {
+                <div 
+                  class="month-cal-cell-lg"
+                  [class.other-month]="!day.isCurrentMonth"
+                  [class.is-today]="day.isToday"
+                  [class.cell-free]="day.isCurrentMonth && !day.isBlocked"
+                  [class.cell-busy]="day.isCurrentMonth && day.isBlocked"
+                  (click)="day.isCurrentMonth && toggleAstrologerDate(day.date, day.isBlocked ? 'available' : 'busy')"
+                >
+                  <div class="cell-top-row">
+                    <span class="cal-day-num" [class.text-sunday]="day.dayOfWeek === 0" style="font-size:14px;font-weight:800;">{{ day.dayNumber }}</span>
+                    @if (day.isToday) {
+                      <span class="cal-today-badge">Today</span>
+                    }
+                  </div>
+                  @if (day.isCurrentMonth) {
+                    <div class="cell-bottom-row">
+                      <span class="cal-status-pill" [class.pill-free]="!day.isBlocked" [class.pill-busy]="day.isBlocked" style="font-size:11px;padding:3px 8px;">
+                        {{ day.isBlocked ? '🔴 Leave' : '🟢 Free' }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Batch Actions Bar -->
+            <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+              <button 
+                type="button" 
+                (click)="blockAllSundaysForAstrologer()"
+                style="background:#fff1f2;border:1.5px solid #fecdd3;color:#9f1239;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;"
+              >
+                <i class="bi bi-x-circle-fill"></i> {{ 'services.blockSundays' | translate }}
+              </button>
+              <button 
+                type="button" 
+                (click)="unblockAllDaysForAstrologer()"
+                style="background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;"
+              >
+                <i class="bi bi-check-circle-fill"></i> {{ 'services.unblockAll' | translate }}
+              </button>
+            </div>
           </div>
-        </div>
+        }
 
       </div>
+
+      <!-- 5. STUDIO FOOTER -->
+      <div class="studio-footer">
+        <div>
+          @if (astrologerSuccessMsg) {
+            <span style="font-size:13px;color:#15803d;font-weight:800;display:flex;align-items:center;gap:6px;">
+              <i class="bi bi-check2-circle"></i> {{ astrologerSuccessMsg }}
+            </span>
+          }
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button 
+            type="button" 
+            class="btn-cancel" 
+            (click)="selectedAstrologerForManage = null" 
+            style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;"
+          >
+            <i class="bi bi-arrow-left"></i> {{ 'common.back' | translate }}
+          </button>
+
+          @if (!isCreatingNewAstrologer && selectedAstrologerForManage.id) {
+            <button 
+              type="button" 
+              class="btn-danger-outline" 
+              (click)="deleteAstrologer(selectedAstrologerForManage)"
+              style="padding:10px 18px;border-radius:10px;font-size:13px;"
+            >
+              <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
+            </button>
+          }
+
+          <button 
+            type="button" 
+            class="btn-primary" 
+            (click)="saveAstrologerFullProfile()"
+            [disabled]="astrologerSaving"
+            style="padding:10px 24px;border-radius:10px;font-size:13px;font-weight:800;"
+          >
+            <i class="bi bi-floppy2-fill"></i> {{ astrologerSaving ? ('common.saving' | translate) : (isCreatingNewAstrologer ? ('services.addAstrologer' | translate) : ('common.save' | translate)) }}
+          </button>
+        </div>
+      </div>
+
     </div>
   }
 
   <!-- BOOKING FULL DETAILS VIEW MODAL -->
   @if (selectedBookingForView) {
     <div class="modal-overlay" (click)="selectedBookingForView = null">
-      <div class="modal-box" style="max-width:580px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+      <div class="modal-box" style="max-width:560px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <h3 style="margin:0;color:#0f172a;font-size:17px;"><i class="bi bi-calendar2-check" style="color:#d97706;margin-right:6px;"></i>முன்பதிவு முழு விவரங்கள்</h3>
-            <span style="font-size:12px;color:#64748b;">முன்பதிவு ID: #{{ selectedBookingForView.id }} &bull; தேதி: {{ selectedBookingForView.created_at | date:'dd MMM yyyy' }}</span>
+            <h3 style="margin:0;color:#0f172a;font-size:16px;"><i class="bi bi-calendar2-check" style="color:#d97706;margin-right:6px;"></i>{{ 'services.title' | translate }} {{ 'common.details' | translate }}</h3>
+            <span style="font-size:12px;color:#64748b;">ID: #{{ selectedBookingForView.id }} &bull; {{ selectedBookingForView.created_at | date:'dd MMM yyyy' }}</span>
           </div>
           <button class="close-btn" (click)="selectedBookingForView = null"><i class="bi bi-x-lg"></i></button>
         </div>
 
         <!-- Contact Card -->
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:12px 16px;border-radius:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:12px 14px;border-radius:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
           <div>
-            <span style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;display:block;">வாடிக்கையாளர் தொடர்பு:</span>
-            <strong style="font-size:15px;color:#0f172a;">{{ selectedBookingForView.user_name }}</strong>
-            <span style="font-size:13px;color:#166534;margin-left:8px;font-weight:600;">({{ selectedBookingForView.user_phone }})</span>
+            <span style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;display:block;">{{ 'services.client' | translate }}:</span>
+            <strong style="font-size:14px;color:#0f172a;">{{ selectedBookingForView.user_name }}</strong>
+            <span style="font-size:12px;color:#166534;margin-left:6px;font-weight:600;">({{ selectedBookingForView.user_phone }})</span>
           </div>
-          <div style="display:flex;gap:8px;">
-            <a [href]="'tel:' + selectedBookingForView.user_phone" class="btn-primary" style="padding:7px 14px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-              <i class="bi bi-telephone-fill"></i> Call Client
+          <div style="display:flex;gap:6px;">
+            <a [href]="'tel:' + selectedBookingForView.user_phone" class="btn-primary" style="padding:6px 12px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+              <i class="bi bi-telephone-fill"></i> {{ 'services.call' | translate }}
             </a>
-            <a [href]="'https://wa.me/91' + selectedBookingForView.user_phone" target="_blank" style="padding:7px 14px;font-size:12px;text-decoration:none;background:#25d366;color:#fff;font-weight:700;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">
-              <i class="bi bi-whatsapp"></i> WhatsApp
+            <a [href]="'https://wa.me/91' + selectedBookingForView.user_phone" target="_blank" style="padding:6px 12px;font-size:12px;text-decoration:none;background:#25d366;color:#fff;font-weight:700;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">
+              <i class="bi bi-whatsapp"></i> {{ 'services.whatsapp' | translate }}
             </a>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-          <div style="background:#f8fafc;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;">
-            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">சேவை வகை:</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div style="background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">{{ 'services.serviceType' | translate }}:</span>
             <strong style="font-size:13px;color:#0f172a;">{{ selectedBookingForView.service_type }}</strong>
           </div>
-          <div style="background:#f8fafc;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;">
-            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">தட்சிணை / கட்டணம்:</span>
-            <strong style="font-size:15px;color:#b45309;">₹{{ selectedBookingForView.price }}</strong>
+          <div style="background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">{{ 'services.fee' | translate }}:</span>
+            <strong style="font-size:14px;color:#b45309;">₹{{ selectedBookingForView.price }}</strong>
           </div>
         </div>
 
         <!-- Appointment Date & Slot -->
-        <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:12px 14px;border-radius:10px;margin-bottom:14px;">
-          <span style="font-size:11px;color:#1d4ed8;font-weight:700;text-transform:uppercase;display:block;">ஆலோசனை தேதி & நேரம்:</span>
-          <div style="font-size:14px;font-weight:800;color:#1e3a8a;margin-top:2px;">
-            <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.details?.preferred_date || 'தேதி குறிப்பிடப்படவில்லை' }}
-            <span *ngIf="selectedBookingForView.details?.time_slot" style="color:#2563eb;font-weight:600;margin-left:8px;">
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:10px 12px;border-radius:8px;margin-bottom:12px;">
+          <span style="font-size:11px;color:#1d4ed8;font-weight:700;display:block;">{{ 'services.preferredDate' | translate }}:</span>
+          <div style="font-size:13px;font-weight:800;color:#1e3a8a;margin-top:2px;">
+            <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.details?.preferred_date || '-' }}
+            <span *ngIf="selectedBookingForView.details?.time_slot" style="color:#2563eb;font-weight:600;margin-left:6px;">
               <i class="bi bi-clock"></i> {{ selectedBookingForView.details.time_slot }}
             </span>
           </div>
         </div>
 
         <!-- Birth Details -->
-        <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;background:#ffffff;">
-          <span style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:6px;">ஜாதக கணிப்புக்கான பிறந்த விவரங்கள்:</span>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;">
+        <div style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:12px;background:#ffffff;">
+          <span style="font-size:11px;color:#64748b;font-weight:700;display:block;margin-bottom:6px;">Birth Details:</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:12px;">
             <div>
-              <span class="muted" style="display:block;">பிறந்த தேதி:</span>
+              <span class="muted" style="display:block;font-size:11px;">DOB:</span>
               <strong style="color:#0f172a;">{{ selectedBookingForView.details?.dob || '-' }}</strong>
             </div>
             <div>
-              <span class="muted" style="display:block;">பிறந்த நேரம்:</span>
+              <span class="muted" style="display:block;font-size:11px;">TOB:</span>
               <strong style="color:#0f172a;">{{ selectedBookingForView.details?.tob || '-' }}</strong>
             </div>
             <div>
-              <span class="muted" style="display:block;">பிறந்த இடம்:</span>
+              <span class="muted" style="display:block;font-size:11px;">POB:</span>
               <strong style="color:#0f172a;">{{ selectedBookingForView.details?.pob || '-' }}</strong>
             </div>
           </div>
@@ -702,16 +871,16 @@
 
         <!-- Queries -->
         @if (selectedBookingForView.details?.query) {
-          <div style="border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:12px 14px;margin-bottom:16px;">
-            <span style="font-size:11px;color:#92400e;font-weight:700;display:block;margin-bottom:4px;">வாடிக்கையாளரின் கேள்விகள் / குறிப்புகள்:</span>
-            <p style="margin:0;font-size:13px;color:#78350f;line-height:1.4;">{{ selectedBookingForView.details.query }}</p>
+          <div style="border:1px solid #fde68a;background:#fffbeb;border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+            <span style="font-size:11px;color:#92400e;font-weight:700;display:block;margin-bottom:2px;">Query / Notes:</span>
+            <p style="margin:0;font-size:12px;color:#78350f;line-height:1.4;">{{ selectedBookingForView.details.query }}</p>
           </div>
         }
 
         <div class="modal-btns">
-          <button type="button" class="btn-cancel" (click)="selectedBookingForView = null">மூடு (Close)</button>
+          <button type="button" class="btn-cancel" (click)="selectedBookingForView = null">{{ 'common.close' | translate }}</button>
           <button type="button" class="btn-primary" (click)="openFulfillModal(selectedBookingForView); selectedBookingForView = null">
-            <i class="bi bi-check2-circle"></i> நிலை மாற்றம் செய்க
+            <i class="bi bi-check2-circle"></i> {{ 'common.status' | translate }}
           </button>
         </div>
       </div>
@@ -723,32 +892,32 @@
     <div class="modal-overlay" (click)="selectedBookingForFulfill = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-check2-square" style="color:#d97706;margin-right:6px;"></i>முன்பதிவு நிலை மாற்றம் & ஜாதக PDF</h3>
+          <h3><i class="bi bi-check2-square" style="color:#d97706;margin-right:6px;"></i>{{ 'common.status' | translate }}</h3>
           <button class="close-btn" (click)="selectedBookingForFulfill = null"><i class="bi bi-x-lg"></i></button>
         </div>
         <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">
-          வாடிக்கையாளர்: <strong style="color:#0f172a;">{{ selectedBookingForFulfill.user_name }}</strong> (#{{ selectedBookingForFulfill.id }})
+          {{ 'services.client' | translate }}: <strong style="color:#0f172a;">{{ selectedBookingForFulfill.user_name }}</strong> (#{{ selectedBookingForFulfill.id }})
         </p>
 
         <form (ngSubmit)="submitFulfill()">
           <div class="form-group">
-            <label>ஆலோசனை நிலை (Status) *</label>
+            <label>{{ 'common.status' | translate }} *</label>
             <select [(ngModel)]="fulfillForm.status" name="f_status" class="ctrl">
-              <option value="Pending">Pending (புதிய முன்பதிவு)</option>
-              <option value="In-Progress">In-Progress (தொலைபேசியில் பேசப்படுகிறது)</option>
-              <option value="Completed">Completed (ஆலோசனை நிறைவடைந்தது)</option>
+              <option value="Pending">Pending</option>
+              <option value="In-Progress">In-Progress</option>
+              <option value="Completed">Completed</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>ஜாதக கணிப்பு அறிக்கை PDF இணைப்பு (Cloud URL):</label>
-            <input [(ngModel)]="fulfillForm.chart_url" name="f_url" class="ctrl" placeholder="https://cdn.astrodivine.com/charts/kundali-101.pdf"/>
+            <label>PDF URL:</label>
+            <input [(ngModel)]="fulfillForm.chart_url" name="f_url" class="ctrl" placeholder="https://..."/>
           </div>
 
           <div class="modal-btns">
-            <button type="button" class="btn-cancel" (click)="selectedBookingForFulfill = null">Cancel</button>
+            <button type="button" class="btn-cancel" (click)="selectedBookingForFulfill = null">{{ 'common.cancel' | translate }}</button>
             <button type="submit" class="btn-primary">
-              <i class="bi bi-floppy2-fill"></i> சேமி (Save Status)
+              <i class="bi bi-floppy2-fill"></i> {{ 'common.save' | translate }}
             </button>
           </div>
         </form>
@@ -759,69 +928,69 @@
   <!-- MODAL: MANUAL BOOKING -->
   @if (manualBookingModalOpen) {
     <div class="modal-overlay" (click)="manualBookingModalOpen = false">
-      <div class="modal-box" style="max-width:540px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+      <div class="modal-box" style="max-width:520px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-plus-circle-fill" style="color:#d97706;margin-right:6px;"></i>நேரடி முன்பதிவு சேர்த்தல் (Manual Booking)</h3>
+          <h3><i class="bi bi-plus-circle-fill" style="color:#d97706;margin-right:6px;"></i>{{ 'services.newBooking' | translate }}</h3>
           <button class="close-btn" (click)="manualBookingModalOpen = false"><i class="bi bi-x-lg"></i></button>
         </div>
 
         <form (ngSubmit)="submitManualBooking()">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
             <div class="form-group" style="margin:0;">
-              <label>வாடிக்கையாளர் பெயர் *</label>
-              <input [(ngModel)]="manualBookingForm.user_name" name="b_name" required placeholder="பெயர்" class="ctrl"/>
+              <label>{{ 'services.client' | translate }} *</label>
+              <input [(ngModel)]="manualBookingForm.user_name" name="b_name" required placeholder="Name" class="ctrl"/>
             </div>
             <div class="form-group" style="margin:0;">
-              <label>தொலைபேசி எண் *</label>
-              <input [(ngModel)]="manualBookingForm.user_phone" name="b_phone" required placeholder="10 இலக்க எண்" class="ctrl"/>
+              <label>{{ 'services.phone' | translate }} *</label>
+              <input [(ngModel)]="manualBookingForm.user_phone" name="b_phone" required placeholder="Phone" class="ctrl"/>
             </div>
           </div>
 
           <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px;">
             <div class="form-group" style="margin:0;">
-              <label>சேவை வகை *</label>
+              <label>{{ 'services.serviceType' | translate }} *</label>
               <select [(ngModel)]="manualBookingForm.service_type" name="b_stype" class="ctrl">
-                <option value="Full Jathagam Reading & Porutham Matching">துல்லிய ஜாதகக் கணிப்பு</option>
-                <option value="Live Phone Astrology Consultation">நேரடி ஜோதிட ஆலோசனை</option>
-                <option value="Marriage Compatibility Porutham">திருமணப் பொருத்தம்</option>
-                <option value="Numerology & Lucky Name Analysis">நியூமராலஜி அதிர்ஷ்டப் பெயர்</option>
+                <option value="Full Jathagam Reading & Porutham Matching">Full Jathagam Reading</option>
+                <option value="Live Phone Astrology Consultation">Live Consultation</option>
+                <option value="Marriage Compatibility Porutham">Marriage Matching</option>
+                <option value="Numerology & Lucky Name Analysis">Numerology Analysis</option>
               </select>
             </div>
             <div class="form-group" style="margin:0;">
-              <label>கட்டணம் (₹) *</label>
+              <label>{{ 'services.fee' | translate }} *</label>
               <input type="number" [(ngModel)]="manualBookingForm.price" name="b_price" class="ctrl"/>
             </div>
           </div>
 
           <div class="form-group">
-            <label>விரும்பிய ஆலோசனை தேதி</label>
+            <label>{{ 'services.preferredDate' | translate }}</label>
             <input type="date" [(ngModel)]="manualBookingForm.booking_date" name="b_date" class="ctrl"/>
           </div>
 
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
             <div>
-              <label style="font-size:11px;font-weight:600;color:#334155;">பிறந்த தேதி</label>
+              <label style="font-size:11px;font-weight:600;color:#334155;">DOB</label>
               <input type="date" [(ngModel)]="manualBookingForm.dob" name="b_dob" class="ctrl" style="padding:6px;"/>
             </div>
             <div>
-              <label style="font-size:11px;font-weight:600;color:#334155;">பிறந்த நேரம்</label>
-              <input [(ngModel)]="manualBookingForm.tob" name="b_tob" placeholder="நேரம் (10:30 AM)" class="ctrl"/>
+              <label style="font-size:11px;font-weight:600;color:#334155;">TOB</label>
+              <input [(ngModel)]="manualBookingForm.tob" name="b_tob" placeholder="10:30 AM" class="ctrl"/>
             </div>
             <div>
-              <label style="font-size:11px;font-weight:600;color:#334155;">பிறந்த இடம்</label>
-              <input [(ngModel)]="manualBookingForm.pob" name="b_pob" placeholder="இடம் (சென்னை)" class="ctrl"/>
+              <label style="font-size:11px;font-weight:600;color:#334155;">POB</label>
+              <input [(ngModel)]="manualBookingForm.pob" name="b_pob" placeholder="Chennai" class="ctrl"/>
             </div>
           </div>
 
           <div class="form-group">
-            <label>கேள்விகள் / குறிப்பு (Client Query):</label>
-            <textarea [(ngModel)]="manualBookingForm.query" name="b_query" class="ctrl" rows="2" placeholder="வாடிக்கையாளரின் கேள்விகள்..."></textarea>
+            <label>Query:</label>
+            <textarea [(ngModel)]="manualBookingForm.query" name="b_query" class="ctrl" rows="2" placeholder="Client query..."></textarea>
           </div>
 
           <div class="modal-btns">
-            <button type="button" class="btn-cancel" (click)="manualBookingModalOpen = false">Cancel</button>
+            <button type="button" class="btn-cancel" (click)="manualBookingModalOpen = false">{{ 'common.cancel' | translate }}</button>
             <button type="submit" class="btn-primary">
-              <i class="bi bi-check-lg"></i> பதிவு செய் (Submit Booking)
+              <i class="bi bi-check-lg"></i> {{ 'common.save' | translate }}
             </button>
           </div>
         </form>

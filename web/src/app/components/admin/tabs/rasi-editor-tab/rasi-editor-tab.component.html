@@ -1,18 +1,18 @@
 <div class="rasi-container">
   <div class="header-banner flex-between">
     <div>
-      <h1><i class="bi bi-sun-fill" style="color:#d97706;margin-right:8px;"></i>Rasi Palan Management Engine</h1>
-      <p>Dynamic live synchronization for all 12 Rasis. Any changes published here reflect immediately on the user side /zodiac page and mobile app.</p>
+      <h1><i class="bi bi-sun-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'rasi_editor.title' | translate }}</h1>
+      <p>{{ 'rasi_editor.subtitle' | translate }}</p>
     </div>
     <div class="header-actions-group">
       <button class="btn-secondary-ed" (click)="resetAllToDefaults()" title="Reset to standard defaults">
-        <i class="bi bi-arrow-counterclockwise"></i> Reset All Defaults
+        <i class="bi bi-arrow-counterclockwise"></i> Reset Defaults
       </button>
       <button class="btn-primary" (click)="publishRasiPalan()" [disabled]="rasiPublishing">
         @if (rasiPublishing) {
-          <span><i class="bi bi-hourglass-split"></i> Publishing...</span>
+          <span><i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}</span>
         } @else {
-          <span><i class="bi bi-megaphone-fill"></i> Publish All Predictions</span>
+          <span><i class="bi bi-megaphone-fill"></i> {{ 'rasi_editor.saveAllRasis' | translate }}</span>
         }
       </button>
     </div>
@@ -32,21 +32,21 @@
         <button 
           [class.active]="rasiEditorType === t.val" 
           (click)="changeRasiType(t.val)">
-          {{ t.label }} ({{ t.tamilLabel }})
+          {{ t.label }}
         </button>
       }
     </div>
 
     <div class="rasi-date-filter">
-      <label><i class="bi bi-calendar-event"></i> Target Date:</label>
+      <label><i class="bi bi-calendar-event"></i> {{ 'services.preferredDate' | translate }}:</label>
       <input 
         type="date" 
         [(ngModel)]="selectedRasiDate" 
         (change)="loadRasiPredictions()" 
         class="date-input-ctrl"
       />
-      <button class="btn-xs-refresh" (click)="loadRasiPredictions()" title="Refresh from Database">
-        <i class="bi bi-arrow-repeat"></i> Sync
+      <button class="btn-xs-refresh" (click)="loadRasiPredictions()" [title]="'common.refresh' | translate">
+        <i class="bi bi-arrow-repeat"></i> {{ 'common.refresh' | translate }}
       </button>
     </div>
   </div>
@@ -54,7 +54,7 @@
   <!-- Loading Indicator -->
   @if (rasiPredictionsLoading) {
     <div class="center-loader-box">
-      <p><i class="bi bi-hourglass-split"></i> Loading Rasi Palan predictions from database...</p>
+      <p><i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}</p>
     </div>
   } @else {
     <!-- 12 Rasi Editor Cards Grid -->
@@ -70,29 +70,29 @@
               </div>
             </div>
             <div class="card-top-actions">
-              <button class="btn-card-save" (click)="saveSingleRasi(i)" title="Save only this Rasi">
-                <i class="bi bi-floppy2-fill"></i> Save
+              <button class="btn-card-save" (click)="saveSingleRasi(i)" title="Save">
+                <i class="bi bi-floppy2-fill"></i> {{ 'common.save' | translate }}
               </button>
             </div>
           </div>
 
           <div class="form-group-rasi">
             <div class="textarea-header">
-              <label>{{ r.name }} {{ rasiEditorType | titlecase }} பலன் (Prediction Text):</label>
+              <label>{{ r.name }} {{ rasiEditorType | titlecase }} Prediction:</label>
               <span class="char-count">{{ (rasiPredictions[i]?.prediction_text || '').length }} chars</span>
             </div>
             <textarea
               [(ngModel)]="rasiPredictions[i].prediction_text"
               class="rasi-textarea"
               rows="4"
-              [placeholder]="r.name + ' (' + r.englishName + ') ராசிக்கான ' + rasiEditorType + ' பலன் உள்ளிடவும்...'"
+              [placeholder]="r.name + ' (' + r.englishName + ') ...'"
             ></textarea>
           </div>
 
           <!-- Multimedia Integration: Audio & Video -->
           <div class="media-input-box audio-box">
             <label class="media-lbl">
-              <i class="bi bi-mic-fill" style="color:#f59e0b;"></i> ஆடியோ விளக்கம் URL (Audio URL):
+              <i class="bi bi-mic-fill" style="color:#f59e0b;"></i> Audio URL:
             </label>
             <div class="media-input-row">
               <input
@@ -105,7 +105,7 @@
                   type="button"
                   class="btn-audio-test"
                   (click)="testAudio(rasiPredictions[i].audio_url)"
-                  title="Play audio preview"
+                  title="Play"
                 >
                   <i class="bi bi-play-fill"></i> Play
                 </button>
@@ -115,20 +115,20 @@
 
           <div class="media-input-box video-box">
             <label class="media-lbl video-lbl">
-              <i class="bi bi-camera-video-fill" style="color:#2563eb;"></i> வீடியோ விளக்கம் URL (YouTube / Video URL):
+              <i class="bi bi-camera-video-fill" style="color:#2563eb;"></i> Video URL:
             </label>
             <div class="media-input-row">
               <input
                 [(ngModel)]="rasiPredictions[i].video_url"
                 class="ctrl-sm"
-                placeholder="https://www.youtube.com/watch?v=... or MP4 URL"
+                placeholder="https://www.youtube.com/watch?v=..."
               />
               @if (rasiPredictions[i]?.video_url) {
                 <button
                   type="button"
                   class="btn-video-test"
                   (click)="openVideoPreview(rasiPredictions[i].video_url, r.name + ' - ' + rasiEditorType)"
-                  title="Preview video modal"
+                  title="Preview"
                 >
                   <i class="bi bi-play-fill"></i> Preview
                 </button>
@@ -138,7 +138,7 @@
 
           <div class="card-footer-mini">
             <button class="btn-link-reset" (click)="resetRasiToDefault(i)">
-              Standard Default மீட்டமை
+              Default Reset
             </button>
             <span class="status-dot-live"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live Sync</span>
           </div>
@@ -150,36 +150,36 @@
   <!-- PANCHANGAM LIVE EDITOR -->
   <div class="card-box" style="margin-top: 28px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="margin:0;"><i class="bi bi-calendar-date-fill" style="color:#d97706;margin-right:6px;"></i>இன்றைய பஞ்சாங்கம் (Panchangam Editor)</h3>
-      <span class="status active"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live on User App</span>
+      <h3 style="margin:0;"><i class="bi bi-calendar-date-fill" style="color:#d97706;margin-right:6px;"></i>{{ 'rasi_editor.todayPanchangam' | translate }}</h3>
+      <span class="status active"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live on App</span>
     </div>
     
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;margin-bottom:16px;">
       <div class="form-group" style="margin:0;">
-        <label>திதி (Thithi):</label>
+        <label>{{ 'rasi_editor.thithi' | translate }}:</label>
         <input [(ngModel)]="panchangamForm.thithi" class="ctrl"/>
       </div>
       <div class="form-group" style="margin:0;">
-        <label>நட்சத்திரம் (Star):</label>
+        <label>{{ 'rasi_editor.nakshatra' | translate }}:</label>
         <input [(ngModel)]="panchangamForm.star" class="ctrl"/>
       </div>
       <div class="form-group" style="margin:0;">
-        <label>ராகு காலம் (Rahu Kalam):</label>
+        <label>{{ 'rasi_editor.rahukalam' | translate }}:</label>
         <input [(ngModel)]="panchangamForm.rahukalam" class="ctrl"/>
       </div>
       <div class="form-group" style="margin:0;">
-        <label>எமகண்டம் (Yamagandam):</label>
+        <label>{{ 'rasi_editor.yamagandam' | translate }}:</label>
         <input [(ngModel)]="panchangamForm.yamagandam" class="ctrl"/>
       </div>
       <div class="form-group" style="margin:0;">
-        <label>நல்ல நேரம் (Nalla Neram):</label>
+        <label>Nalla Neram:</label>
         <input [(ngModel)]="panchangamForm.nalla_neram" class="ctrl"/>
       </div>
     </div>
 
     <div style="display:flex;justify-content:flex-end;">
       <button class="btn-primary" (click)="savePanchangam()">
-        <i class="bi bi-floppy2-fill"></i> Update Today's Panchangam
+        <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
       </button>
     </div>
   </div>
@@ -189,7 +189,7 @@
     <div class="modal-overlay" (click)="closeVideoPreview()">
       <div class="modal-box video-modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-camera-video-fill" style="color:#d97706;margin-right:6px;"></i>{{ previewVideoTitle }} - வீடியோ முன்னோட்டம் (Video Preview)</h3>
+          <h3><i class="bi bi-camera-video-fill" style="color:#d97706;margin-right:6px;"></i>{{ previewVideoTitle }} - Preview</h3>
           <button class="close-btn" (click)="closeVideoPreview()"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="video-preview-body" style="margin: 16px 0;">
@@ -211,7 +211,7 @@
           }
         </div>
         <div class="modal-btns">
-          <button type="button" (click)="closeVideoPreview()" class="btn-primary">Done</button>
+          <button type="button" (click)="closeVideoPreview()" class="btn-primary">{{ 'common.close' | translate }}</button>
         </div>
       </div>
     </div>

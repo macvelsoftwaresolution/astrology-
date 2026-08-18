@@ -261,6 +261,63 @@ class AstrologyController extends Controller
     }
 
     /**
+     * Admin: Create New Astrologer
+     */
+    public function createAstrologer(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'role_title' => 'nullable|string|max:255',
+            'fee' => 'nullable|numeric',
+        ]);
+
+        $defaultSlots = [
+            '10:00 AM - 11:00 AM',
+            '11:30 AM - 12:30 PM',
+            '03:30 PM - 04:30 PM',
+            '05:00 PM - 06:00 PM',
+            '06:30 PM - 07:30 PM'
+        ];
+
+        $slots = $request->has('available_slots') 
+            ? (is_array($request->available_slots) ? $request->available_slots : json_decode($request->available_slots, true)) 
+            : $defaultSlots;
+
+        $blockedDates = $request->has('blocked_dates') 
+            ? (is_array($request->blocked_dates) ? $request->blocked_dates : json_decode($request->blocked_dates, true)) 
+            : [];
+
+        $id = DB::table('astrologers')->insertGetId([
+            'name' => $request->input('name'),
+            'role_title' => $request->input('role_title', 'வேத ஜோதிடர்'),
+            'experience' => $request->input('experience', '10+ ஆண்டுகள்'),
+            'specialty' => $request->input('specialty', 'ஜாதகக் கணிப்பு, திருமணப் பொருத்தம்'),
+            'fee' => $request->input('fee', 499.00),
+            'phone' => $request->input('phone', ''),
+            'bio' => $request->input('bio', ''),
+            'avatar_icon' => $request->input('avatar_icon', 'bi bi-person-fill'),
+            'avatar_url' => $request->input('avatar_url', null),
+            'available_slots' => json_encode($slots ?: []),
+            'blocked_dates' => json_encode($blockedDates ?: []),
+            'status' => $request->input('status', 'Available'),
+            'rating' => $request->input('rating', 4.90),
+            'consultation_count' => $request->input('consultation_count', 0),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $newAstro = DB::table('astrologers')->where('id', $id)->first();
+        $newAstro->available_slots = $this->parseJsonField($newAstro->available_slots);
+        $newAstro->blocked_dates = $this->parseJsonField($newAstro->blocked_dates);
+
+        return response()->json([
+            'success' => true,
+            'message' => "ஜோதிடர் ({$newAstro->name}) வெற்றிகரமாக சேர்க்கப்பட்டார்.",
+            'astrologer' => $newAstro
+        ], 201);
+    }
+
+    /**
      * Admin: Update Astrologer Profile & Settings
      */
     public function updateAstrologer(Request $request, $id)
@@ -280,6 +337,9 @@ class AstrologyController extends Controller
             'bio' => $request->input('bio', $astro->bio),
             'status' => $request->input('status', $astro->status),
             'rating' => $request->input('rating', $astro->rating),
+            'consultation_count' => $request->input('consultation_count', $astro->consultation_count ?? 500),
+            'avatar_url' => $request->input('avatar_url', $astro->avatar_url ?? null),
+            'avatar_icon' => $request->input('avatar_icon', $astro->avatar_icon ?? 'bi bi-person-fill'),
             'updated_at' => now()
         ];
 
@@ -303,6 +363,24 @@ class AstrologyController extends Controller
             'success' => true,
             'message' => "ஜோதிடர் ({$updated->name}) விவரங்கள் வெற்றிகரமாக சேமிக்கப்பட்டது.",
             'astrologer' => $updated
+        ]);
+    }
+
+    /**
+     * Admin: Delete Astrologer
+     */
+    public function deleteAstrologer($id)
+    {
+        $astro = DB::table('astrologers')->where('id', $id)->first();
+        if (!$astro) {
+            return response()->json(['success' => false, 'message' => 'Astrologer not found'], 404);
+        }
+
+        DB::table('astrologers')->where('id', $id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "ஜோதிடர் ({$astro->name}) வெற்றிகரமாக நீக்கப்பட்டார்."
         ]);
     }
 

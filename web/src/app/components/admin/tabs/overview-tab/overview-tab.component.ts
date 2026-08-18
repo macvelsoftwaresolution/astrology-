@@ -17,10 +17,12 @@ export interface Metrics {
   };
 }
 
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+
 @Component({
   selector: 'app-overview-tab',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './overview-tab.component.html',
   styleUrls: ['../../admin-dashboard.component.css', './overview-tab.component.css']
 })

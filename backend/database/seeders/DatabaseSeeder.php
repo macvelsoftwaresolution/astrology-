@@ -24,6 +24,18 @@ class DatabaseSeeder extends Seeder
         );
 
         $student = User::updateOrCreate(
+            ['phone' => '9876543210'],
+            [
+                'name' => 'Demo User',
+                'email' => 'user@gmail.com',
+                'password' => Hash::make('123456'),
+                'role' => 'user',
+                'status' => 'active',
+                'address' => '12 Gandhi Street, T. Nagar, Chennai - 600017'
+            ]
+        );
+
+        $karthik = User::updateOrCreate(
             ['email' => 'karthik@gmail.com'],
             [
                 'name' => 'Karthik',

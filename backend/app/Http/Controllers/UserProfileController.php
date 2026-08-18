@@ -39,6 +39,7 @@ class UserProfileController extends Controller
 
         $validated = $request->validate([
             'name'             => 'sometimes|string|max:255',
+            'email'            => 'sometimes|email|max:255',
             'phone'            => 'sometimes|string|max:20',
             'address'          => 'sometimes|nullable|string',
             'avatar_url'       => 'sometimes|nullable|string',
@@ -50,6 +51,13 @@ class UserProfileController extends Controller
         }
 
         $user->fill($validated);
+
+        if ($request->filled('new_password')) {
+            $request->validate([
+                'new_password' => 'min:6'
+            ]);
+            $user->password = Hash::make($request->input('new_password'));
+        }
 
         if ($user->isDirty()) {
             $user->save();

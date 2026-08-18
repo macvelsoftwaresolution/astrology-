@@ -1,19 +1,19 @@
 <div class="matches-container">
   <div class="header-banner flex-between">
     <div>
-      <h1><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:8px;"></i>திருமணப் பொருத்தம் & வரன் தேடல் பதிவுகள் (Marriage Match Logs)</h1>
-      <p>பயனர்கள் கணித்த 10 திருமணப் பொருத்தங்களின் முடிவுகள் மற்றும் தொலைபேசி ஆலோசனை நிலைகள்.</p>
+      <h1><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:8px;"></i>{{ 'matches.title' | translate }}</h1>
+      <p>{{ 'matches.subtitle' | translate }}</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-xs-refresh" (click)="loadMatches()" title="Sync">
-        <i class="bi bi-arrow-repeat"></i> Sync Logs
+      <button class="btn-xs-refresh" (click)="loadMatches()" [title]="'common.refresh' | translate">
+        <i class="bi bi-arrow-repeat"></i> {{ 'common.refresh' | translate }}
       </button>
     </div>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      <i class="bi bi-hourglass-split"></i> Loading marriage match logs from database...
+      <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
     </div>
   } @else {
     <div class="card-box">
@@ -21,13 +21,13 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>மணமகன் விவரம் (Boy)</th>
-            <th>மணமகள் விவரம் (Girl)</th>
-            <th>பொருத்தம் (Score)</th>
-            <th>முடிவு (Verdict)</th>
-            <th>ஆலோசனை நிலை</th>
-            <th>பதிவு தேதி</th>
-            <th>செயல்கள்</th>
+            <th>{{ 'matches.boyDetails' | translate }}</th>
+            <th>{{ 'matches.girlDetails' | translate }}</th>
+            <th>{{ 'matches.points' | translate }}</th>
+            <th>Verdict</th>
+            <th>{{ 'common.status' | translate }}</th>
+            <th>{{ 'services.bookingDate' | translate }}</th>
+            <th>{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -59,7 +59,7 @@
               </td>
               <td>
                 <strong [style.color]="m.match_score >= 6 ? '#059669' : '#dc2626'">
-                  {{ m.verdict || (m.match_score >= 6 ? 'பொருத்தம் உண்டு' : 'பொருத்தம் குறைவு') }}
+                  {{ m.verdict || (m.match_score >= 6 ? 'Match Approved' : 'Low Match') }}
                 </strong>
               </td>
               <td>
@@ -76,10 +76,10 @@
               <td>
                 <div style="display:flex;gap:6px;">
                   <button class="btn-sm" (click)="selectedMatch = m">
-                    <i class="bi bi-list-check"></i> 10 பொருத்தங்கள்
+                    <i class="bi bi-list-check"></i> {{ 'matches.viewReport' | translate }}
                   </button>
                   <button class="btn-sm" (click)="openEditMatchStatus(m)">
-                    <i class="bi bi-pencil"></i> நிலை
+                    <i class="bi bi-pencil"></i> {{ 'common.status' | translate }}
                   </button>
                 </div>
               </td>
@@ -88,7 +88,7 @@
           @if (marriageMatches.length === 0) {
             <tr>
               <td colspan="8" style="text-align:center;padding:24px;color:#64748b;">
-                திருமணப் பொருத்த பதிவுகள் எதுவும் இல்லை.
+                {{ 'common.noRecords' | translate }}
               </td>
             </tr>
           }
@@ -104,7 +104,7 @@
         <div class="modal-header">
           <div>
             <h3 style="margin:0;"><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:6px;"></i>{{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
-            <span style="font-size:12px;color:#64748b;">10 விதமான திருமணப் பொருத்த முடிவுகள்</span>
+            <span style="font-size:12px;color:#64748b;">10 Porutham Analysis Report</span>
           </div>
           <button class="close-btn" (click)="selectedMatch = null"><i class="bi bi-x-lg"></i></button>
         </div>
@@ -114,7 +114,7 @@
             {{ selectedMatch.match_score }} / 10
           </div>
           <div>
-            <div class="match-verdict">முடிவு: {{ selectedMatch.verdict }}</div>
+            <div class="match-verdict">{{ selectedMatch.verdict }}</div>
             <small class="muted">
               {{ selectedMatch.boy_rasi }} ({{ selectedMatch.boy_nakshatra }}) &bull; {{ selectedMatch.girl_rasi }} ({{ selectedMatch.girl_nakshatra }})
             </small>
@@ -127,14 +127,14 @@
               <span>{{ item.name }} ({{ item.tamil_name || item.name }})</span>
               <strong [class.match-yes]="item.match" [class.match-no]="!item.match">
                 <i class="bi" [ngClass]="item.match ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
-                {{ item.match ? ' பொருத்தம் உண்டு' : ' பொருத்தம் இல்லை' }}
+                {{ item.match ? ' Matched' : ' Not Matched' }}
               </strong>
             </div>
           }
         </div>
 
         <div class="modal-btns" style="margin-top:18px;">
-          <button type="button" class="btn-cancel" (click)="selectedMatch = null">மூடு (Close)</button>
+          <button type="button" class="btn-cancel" (click)="selectedMatch = null">{{ 'common.close' | translate }}</button>
         </div>
       </div>
     </div>
@@ -145,27 +145,31 @@
     <div class="modal-overlay" (click)="editingMatch = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-pencil-square" style="color:#d97706;margin-right:6px;"></i>ஆலோசனை நிலை & குறிப்புகள் புதுப்பித்தல்</h3>
+          <h3><i class="bi bi-pencil-square" style="color:#d97706;margin-right:6px;"></i>{{ 'common.status' | translate }}</h3>
           <button class="close-btn" (click)="editingMatch = null"><i class="bi bi-x-lg"></i></button>
         </div>
+        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">
+          {{ editingMatch.boy_name }} & {{ editingMatch.girl_name }} (#{{ editingMatch.id }})
+        </p>
+
         <form (ngSubmit)="saveMatchStatus()">
           <div class="form-group">
-            <label>ஆலோசனை நிலை (Consultation Status)</label>
+            <label>{{ 'common.status' | translate }}</label>
             <select [(ngModel)]="matchStatusForm.consultation_status" name="m_cstatus" class="ctrl">
-              <option value="Pending">Pending (புதிய பதிவு)</option>
-              <option value="In-Progress">In-Progress (பேசப்படுகிறது)</option>
-              <option value="Completed">Completed (முடிவடைந்தது)</option>
+              <option value="Pending">Pending</option>
+              <option value="In-Progress">In-Progress</option>
+              <option value="Completed">Completed</option>
             </select>
           </div>
+
           <div class="form-group">
-            <label>ஜோதிடர் குறிப்பு / வரன் பரிந்துரைகள் (Admin Notes)</label>
-            <textarea [(ngModel)]="matchStatusForm.admin_notes" name="m_anotes" rows="3" class="ctrl" placeholder="வாடிக்கையாளருக்கு தெரிவிக்கப்பட்ட தகவல்கள்..."></textarea>
+            <label>Notes / Feedback</label>
+            <textarea [(ngModel)]="matchStatusForm.admin_notes" name="m_anotes" rows="3" class="ctrl" placeholder="Notes..."></textarea>
           </div>
+
           <div class="modal-btns">
-            <button type="button" class="btn-cancel" (click)="editingMatch = null">Cancel</button>
-            <button type="submit" class="btn-primary">
-              <i class="bi bi-floppy2-fill"></i> சேமி (Save Notes)
-            </button>
+            <button type="button" class="btn-cancel" (click)="editingMatch = null">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-primary">{{ 'common.save' | translate }}</button>
           </div>
         </form>
       </div>
