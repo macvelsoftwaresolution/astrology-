@@ -1,111 +1,240 @@
 <div class="rasi-container">
-  <div class="header-banner flex-between">
-    <div>
-      <h1><i class="bi bi-sun-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'rasi_editor.title' | translate }}</h1>
-      <p>{{ 'rasi_editor.subtitle' | translate }}</p>
-    </div>
-    <div class="header-actions-group">
-      <button class="btn-secondary-ed" (click)="resetAllToDefaults()" title="Reset to standard defaults">
-        <i class="bi bi-arrow-counterclockwise"></i> Reset Defaults
-      </button>
-      <button class="btn-primary" (click)="publishRasiPalan()" [disabled]="rasiPublishing">
-        @if (rasiPublishing) {
-          <span><i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}</span>
-        } @else {
-          <span><i class="bi bi-megaphone-fill"></i> {{ 'rasi_editor.saveAllRasis' | translate }}</span>
-        }
-      </button>
-    </div>
-  </div>
 
-  <!-- Notification Toast / Alert -->
-  @if (rasiSaveSuccessMsg) {
-    <div class="alert-success-banner">
-      <i class="bi bi-check-circle-fill"></i> {{ rasiSaveSuccessMsg }}
+  <!-- =========================================================
+       VIEW 1: 12 RASI CARDS DIRECTORY & PANCHANGAM VIEW
+       ========================================================= -->
+  @if (selectedRasiIndex === null) {
+    <!-- Header Banner in a clean Div Card -->
+    <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-sun-fill" style="color:#d97706;"></i>{{ 'rasi_editor.title' | translate }}
+        </h1>
+        <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'rasi_editor.subtitle' | translate }}</p>
+      </div>
+      <div class="header-actions-group" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn-secondary-ed" (click)="resetAllToDefaults()" title="Reset to standard defaults">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset Defaults
+        </button>
+        <button class="btn-primary" (click)="publishRasiPalan()" [disabled]="rasiPublishing">
+          @if (rasiPublishing) {
+            <span><i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}</span>
+          } @else {
+            <span><i class="bi bi-megaphone-fill"></i> {{ 'rasi_editor.saveAllRasis' | translate }}</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Toast / Alert -->
+    @if (rasiSaveSuccessMsg) {
+      <div class="alert-success-banner">
+        <i class="bi bi-check-circle-fill"></i> {{ rasiSaveSuccessMsg }}
+      </div>
+    }
+
+    <!-- Tab Type & Date Selector Bar -->
+    <div class="rasi-controls-bar">
+      <div class="rasi-type-bar">
+        @for (t of rasiTypes; track t.val) {
+          <button 
+            [class.active]="rasiEditorType === t.val" 
+            (click)="changeRasiType(t.val)">
+            {{ t.label }}
+          </button>
+        }
+      </div>
+
+      <div class="rasi-date-filter">
+        <label><i class="bi bi-calendar-event"></i> {{ 'services.preferredDate' | translate }}:</label>
+        <input 
+          type="date" 
+          [(ngModel)]="selectedRasiDate" 
+          (change)="loadRasiPredictions()" 
+          class="date-input-ctrl"
+        />
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    @if (rasiPredictionsLoading) {
+      <div class="center-loader-box">
+        <p><i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}</p>
+      </div>
+    } @else {
+      <!-- 12 RASI ULTRA-CLEAN CARDS (ONLY ICON, NAME, EDIT BUTTON) -->
+      <div class="rasi-clean-grid">
+        @for (r of rasiEditorList; track r.name; let i = $index) {
+          <div 
+            class="rasi-simple-card" 
+            (click)="openRasiEditor(i)"
+            role="button"
+            tabindex="0"
+          >
+            <div class="rasi-icon-circle">{{ r.symbol }}</div>
+            <div class="rasi-name-info">
+              <h3 class="rasi-tamil-txt">{{ r.name }}</h3>
+              <span class="rasi-eng-txt">{{ r.englishName }}</span>
+            </div>
+            <button 
+              type="button" 
+              class="btn-rasi-edit-action"
+              (click)="openRasiEditor(i); $event.stopPropagation()"
+            >
+              <i class="bi bi-pencil-fill"></i> Edit
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- PANCHANGAM LIVE EDITOR -->
+    <div class="card-box" style="margin-top: 28px; padding: 24px 28px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9;">
+        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-calendar-date-fill" style="color: #d97706;"></i>
+          {{ 'rasi_editor.todayPanchangam' | translate }}
+        </h3>
+        <span class="chip-stat" style="color: #166534; background: #f0fdf4; border-color: #bbf7d0;">
+          <i class="bi bi-circle-fill" style="font-size: 7px; color: #16a34a;"></i> Live on App
+        </span>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px;">
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.thithi' | translate }}:</label>
+          <input [(ngModel)]="panchangamForm.thithi" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.nakshatra' | translate }}:</label>
+          <input [(ngModel)]="panchangamForm.star" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.rahukalam' | translate }}:</label>
+          <input [(ngModel)]="panchangamForm.rahukalam" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.yamagandam' | translate }}:</label>
+          <input [(ngModel)]="panchangamForm.yamagandam" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.nallaNeram' | translate }}:</label>
+        <input [(ngModel)]="panchangamForm.nalla_neram" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+      </div>
+
+      <button class="btn-primary" (click)="savePanchangam()" style="padding: 10px 24px; font-size: 13.5px; font-weight: 800; border-radius: 10px;">
+        <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
+      </button>
     </div>
   }
 
-  <!-- Tab Type & Date Selector Bar -->
-  <div class="rasi-controls-bar">
-    <div class="rasi-type-bar">
-      @for (t of rasiTypes; track t.val) {
+  <!-- =========================================================
+       VIEW 2: DEDICATED SINGLE RASI DETAILS STUDIO
+       ========================================================= -->
+  @if (selectedRasiIndex !== null) {
+    <div class="rasi-studio-container">
+      
+      <!-- TOP ACTION BAR IN A CLEAN CARD -->
+      <div class="card-box studio-top-bar">
         <button 
-          [class.active]="rasiEditorType === t.val" 
-          (click)="changeRasiType(t.val)">
-          {{ t.label }}
+          type="button" 
+          class="btn-back-clean" 
+          (click)="closeRasiEditor()"
+        >
+          <i class="bi bi-arrow-left"></i> Back
         </button>
+
+        <!-- PREV / NEXT RASI SWITCHER -->
+        <div class="rasi-studio-nav-pill">
+          <button type="button" class="btn-nav-cycle" (click)="prevRasi()" title="Previous Rasi">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="rasi-cycle-symbol">{{ rasiEditorList[selectedRasiIndex].symbol }}</span>
+          <span class="rasi-cycle-label">
+            {{ rasiEditorList[selectedRasiIndex].name }} ({{ rasiEditorList[selectedRasiIndex].englishName }})
+          </span>
+          <button type="button" class="btn-nav-cycle" (click)="nextRasi()" title="Next Rasi">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Toast within Studio -->
+      @if (rasiSaveSuccessMsg) {
+        <div class="alert-success-banner" style="margin-bottom: 20px;">
+          <i class="bi bi-check-circle-fill"></i> {{ rasiSaveSuccessMsg }}
+        </div>
       }
-    </div>
 
-    <div class="rasi-date-filter">
-      <label><i class="bi bi-calendar-event"></i> {{ 'services.preferredDate' | translate }}:</label>
-      <input 
-        type="date" 
-        [(ngModel)]="selectedRasiDate" 
-        (change)="loadRasiPredictions()" 
-        class="date-input-ctrl"
-      />
-      <button class="btn-xs-refresh" (click)="loadRasiPredictions()" [title]="'common.refresh' | translate">
-        <i class="bi bi-arrow-repeat"></i> {{ 'common.refresh' | translate }}
-      </button>
-    </div>
-  </div>
+      <!-- MAIN UNIFIED FORM CARD -->
+      <div class="card-box studio-main-card">
+        
+        <!-- HEADER IDENTITY ROW -->
+        <div class="rasi-studio-header-row">
+          <div class="rasi-studio-symbol-circle">
+            {{ rasiEditorList[selectedRasiIndex].symbol }}
+          </div>
+          <div class="rasi-studio-header-meta">
+            <h2 class="rasi-studio-title">
+              {{ rasiEditorList[selectedRasiIndex].name }} ({{ rasiEditorList[selectedRasiIndex].englishName }})
+            </h2>
+            <div class="rasi-studio-badges">
+              <span class="chip-stat gold">
+                <i class="bi bi-calendar3"></i> {{ selectedRasiDate }}
+              </span>
+              <span class="chip-stat">
+                <i class="bi bi-stars"></i> {{ rasiEditorType | titlecase }} பலன்
+              </span>
+              <span class="chip-stat">
+                <i class="bi bi-clock-history"></i> {{ rasiEditorList[selectedRasiIndex].dates }}
+              </span>
+            </div>
+          </div>
+        </div>
 
-  <!-- Loading Indicator -->
-  @if (rasiPredictionsLoading) {
-    <div class="center-loader-box">
-      <p><i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}</p>
-    </div>
-  } @else {
-    <!-- 12 Rasi Editor Cards Grid -->
-    <div class="rasi-editor-grid">
-      @for (r of rasiEditorList; track r.name; let i = $index) {
-        <div class="rasi-editor-card">
-          <div class="rasi-ed-header">
-            <div class="rasi-left-meta">
-              <span class="rasi-symbol-ed">{{ r.symbol }}</span>
-              <div class="rasi-title-group">
-                <strong class="rasi-tamil-title">{{ r.name }}</strong>
-                <span class="rasi-eng-sub">{{ r.englishName }} &bull; {{ r.dates }}</span>
+        <!-- 1. PREDICTION CONTENT TEXTAREA -->
+        <div class="studio-section-block">
+          <div class="studio-field-header">
+            <label class="studio-field-lbl">
+              <i class="bi bi-pencil-square" style="color: #d97706;"></i>
+              {{ rasiEditorList[selectedRasiIndex].name }} பலன் விவரம் (Prediction Content):
+            </label>
+            <span class="char-count-badge">
+              {{ (rasiPredictions[selectedRasiIndex]?.prediction_text || '').length }} எழுத்துக்கள் (chars)
+            </span>
+          </div>
+          <textarea
+            [(ngModel)]="rasiPredictions[selectedRasiIndex].prediction_text"
+            class="rasi-studio-textarea"
+            placeholder="இங்கு பலன்களை உள்ளிடவும்..."
+          ></textarea>
+        </div>
+
+        <!-- 2. MULTIMEDIA SECTION: AUDIO & VIDEO (EQUAL HEIGHT & WIDTH) -->
+        <div class="media-equal-grid">
+          <!-- AUDIO CARD -->
+          <div class="media-card-uniform">
+            <div class="media-card-header">
+              <div class="media-icon-badge audio"><i class="bi bi-mic-fill"></i></div>
+              <div>
+                <h4 class="media-card-title">Audio Link (MP3 URL)</h4>
+                <span class="media-card-subtitle">Daily voice prediction podcast</span>
               </div>
             </div>
-            <div class="card-top-actions">
-              <button class="btn-card-save" (click)="saveSingleRasi(i)" title="Save">
-                <i class="bi bi-floppy2-fill"></i> {{ 'common.save' | translate }}
-              </button>
-            </div>
-          </div>
-
-          <div class="form-group-rasi">
-            <div class="textarea-header">
-              <label>{{ r.name }} {{ rasiEditorType | titlecase }} Prediction:</label>
-              <span class="char-count">{{ (rasiPredictions[i]?.prediction_text || '').length }} chars</span>
-            </div>
-            <textarea
-              [(ngModel)]="rasiPredictions[i].prediction_text"
-              class="rasi-textarea"
-              rows="4"
-              [placeholder]="r.name + ' (' + r.englishName + ') ...'"
-            ></textarea>
-          </div>
-
-          <!-- Multimedia Integration: Audio & Video -->
-          <div class="media-input-box audio-box">
-            <label class="media-lbl">
-              <i class="bi bi-mic-fill" style="color:#f59e0b;"></i> Audio URL:
-            </label>
             <div class="media-input-row">
               <input
-                [(ngModel)]="rasiPredictions[i].audio_url"
-                class="ctrl-sm"
-                placeholder="https://cdn.astrodivine.com/audio/daily-mesham.mp3"
+                [(ngModel)]="rasiPredictions[selectedRasiIndex].audio_url"
+                class="media-field-input"
+                placeholder="https://cdn.astrodivine.com/audio/mesham.mp3"
               />
-              @if (rasiPredictions[i]?.audio_url) {
+              @if (rasiPredictions[selectedRasiIndex]?.audio_url) {
                 <button
                   type="button"
-                  class="btn-audio-test"
-                  (click)="testAudio(rasiPredictions[i].audio_url)"
-                  title="Play"
+                  class="btn-media-btn audio"
+                  (click)="testAudio(rasiPredictions[selectedRasiIndex].audio_url)"
+                  title="Play Audio"
                 >
                   <i class="bi bi-play-fill"></i> Play
                 </button>
@@ -113,107 +242,79 @@
             </div>
           </div>
 
-          <div class="media-input-box video-box">
-            <label class="media-lbl video-lbl">
-              <i class="bi bi-camera-video-fill" style="color:#2563eb;"></i> Video URL:
-            </label>
+          <!-- VIDEO CARD -->
+          <div class="media-card-uniform">
+            <div class="media-card-header">
+              <div class="media-icon-badge video"><i class="bi bi-camera-video-fill"></i></div>
+              <div>
+                <h4 class="media-card-title">Video Link (YouTube URL)</h4>
+                <span class="media-card-subtitle">Daily video horoscope stream</span>
+              </div>
+            </div>
             <div class="media-input-row">
               <input
-                [(ngModel)]="rasiPredictions[i].video_url"
-                class="ctrl-sm"
+                [(ngModel)]="rasiPredictions[selectedRasiIndex].video_url"
+                class="media-field-input"
                 placeholder="https://www.youtube.com/watch?v=..."
               />
-              @if (rasiPredictions[i]?.video_url) {
+              @if (rasiPredictions[selectedRasiIndex]?.video_url) {
                 <button
                   type="button"
-                  class="btn-video-test"
-                  (click)="openVideoPreview(rasiPredictions[i].video_url, r.name + ' - ' + rasiEditorType)"
-                  title="Preview"
+                  class="btn-media-btn video"
+                  (click)="openVideoPreview(rasiPredictions[selectedRasiIndex].video_url, rasiEditorList[selectedRasiIndex].name + ' - ' + rasiEditorType)"
+                  title="Preview Video"
                 >
-                  <i class="bi bi-play-fill"></i> Preview
+                  <i class="bi bi-eye-fill"></i> Preview
                 </button>
               }
             </div>
           </div>
-
-          <div class="card-footer-mini">
-            <button class="btn-link-reset" (click)="resetRasiToDefault(i)">
-              Default Reset
-            </button>
-            <span class="status-dot-live"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live Sync</span>
-          </div>
         </div>
-      }
+
+        <!-- FOOTER ACTIONS (SAVE BUTTON AT BOTTOM RIGHT) -->
+        <div class="studio-footer-bar">
+          <button class="btn-link-reset" (click)="resetRasiToDefault(selectedRasiIndex)">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset to Default Template Text
+          </button>
+
+          <button 
+            type="button" 
+            class="btn-primary btn-save-studio" 
+            (click)="saveSingleRasi(selectedRasiIndex)"
+          >
+            <i class="bi bi-floppy2-fill"></i> Save Prediction
+          </button>
+        </div>
+
+      </div>
+
     </div>
   }
-
-  <!-- PANCHANGAM LIVE EDITOR -->
-  <div class="card-box" style="margin-top: 28px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="margin:0;"><i class="bi bi-calendar-date-fill" style="color:#d97706;margin-right:6px;"></i>{{ 'rasi_editor.todayPanchangam' | translate }}</h3>
-      <span class="status active"><i class="bi bi-circle-fill" style="font-size:8px;"></i> Live on App</span>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;margin-bottom:16px;">
-      <div class="form-group" style="margin:0;">
-        <label>{{ 'rasi_editor.thithi' | translate }}:</label>
-        <input [(ngModel)]="panchangamForm.thithi" class="ctrl"/>
-      </div>
-      <div class="form-group" style="margin:0;">
-        <label>{{ 'rasi_editor.nakshatra' | translate }}:</label>
-        <input [(ngModel)]="panchangamForm.star" class="ctrl"/>
-      </div>
-      <div class="form-group" style="margin:0;">
-        <label>{{ 'rasi_editor.rahukalam' | translate }}:</label>
-        <input [(ngModel)]="panchangamForm.rahukalam" class="ctrl"/>
-      </div>
-      <div class="form-group" style="margin:0;">
-        <label>{{ 'rasi_editor.yamagandam' | translate }}:</label>
-        <input [(ngModel)]="panchangamForm.yamagandam" class="ctrl"/>
-      </div>
-      <div class="form-group" style="margin:0;">
-        <label>Nalla Neram:</label>
-        <input [(ngModel)]="panchangamForm.nalla_neram" class="ctrl"/>
-      </div>
-    </div>
-
-    <div style="display:flex;justify-content:flex-end;">
-      <button class="btn-primary" (click)="savePanchangam()">
-        <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
-      </button>
-    </div>
-  </div>
 
   <!-- VIDEO PREVIEW MODAL -->
   @if (previewVideoModal) {
     <div class="modal-overlay" (click)="closeVideoPreview()">
-      <div class="modal-box video-modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-box" style="max-width:680px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-camera-video-fill" style="color:#d97706;margin-right:6px;"></i>{{ previewVideoTitle }} - Preview</h3>
+          <h3 style="margin:0;color:#0f172a;font-size:16px;"><i class="bi bi-play-circle-fill" style="color:#d97706;margin-right:6px;"></i>{{ previewVideoTitle }}</h3>
           <button class="close-btn" (click)="closeVideoPreview()"><i class="bi bi-x-lg"></i></button>
         </div>
-        <div class="video-preview-body" style="margin: 16px 0;">
+        <div style="padding:16px;">
           @if (previewVideoSafeUrl) {
-            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000;">
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
               <iframe 
                 [src]="previewVideoSafeUrl" 
-                title="Video Preview" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;">
-              </iframe>
+              ></iframe>
             </div>
           } @else {
-            <div style="text-align: center;">
-              <video [src]="previewVideoUrl" controls style="width: 100%; max-height: 320px; border-radius: 12px; background: #000;"></video>
-            </div>
+            <p style="color:#64748b;font-size:14px;word-break:break-all;">Direct link: <a [href]="previewVideoUrl" target="_blank">{{ previewVideoUrl }}</a></p>
           }
-        </div>
-        <div class="modal-btns">
-          <button type="button" (click)="closeVideoPreview()" class="btn-primary">{{ 'common.close' | translate }}</button>
         </div>
       </div>
     </div>
   }
+
 </div>

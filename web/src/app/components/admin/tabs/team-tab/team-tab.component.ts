@@ -25,7 +25,9 @@ export class TeamTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadTeam();
+    if (typeof window !== 'undefined') {
+      this.loadTeam();
+    }
   }
 
   loadTeam(): void {

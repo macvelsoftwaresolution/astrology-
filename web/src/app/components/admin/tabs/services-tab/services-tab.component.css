@@ -2,6 +2,121 @@
    ASTROLOGER MANAGEMENT & BOOKINGS STUDIO STYLES
    ========================================================= */
 
+.header-banner-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.view-segment-container {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.view-segment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-segment-pill:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.view-segment-pill.active {
+  background: #ffffff;
+  color: #b45309;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #fde68a;
+}
+
+/* + ADD NEW ASTROLOGER CARD */
+.astro-add-card {
+  min-height: 180px;
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 24px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.astro-add-card:hover {
+  border-color: #d97706;
+  background: #fffbeb;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.12);
+}
+
+.add-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.add-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fde68a;
+  transition: all 0.2s ease;
+}
+
+.astro-add-card:hover .add-icon-circle {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.add-card-title {
+  margin: 4px 0 0 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  transition: color 0.2s;
+}
+
+.astro-add-card:hover .add-card-title {
+  color: #b45309;
+}
+
+.add-card-desc {
+  margin: 0;
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
 .astro-clean-card {
   margin: 0;
   background: #ffffff;
@@ -624,5 +739,70 @@
   border-color: #d97706;
   color: #b45309;
   box-shadow: 0 2px 6px rgba(217, 119, 6, 0.2);
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE RULES FOR SERVICES & ASTROLOGERS TAB
+   ========================================================= */
+@media (max-width: 768px) {
+  .studio-hero-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 16px;
+    gap: 14px;
+  }
+
+  .studio-profile-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .studio-title-main {
+    font-size: 18px;
+  }
+
+  .astro-modal-tabs-lg {
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px;
+  }
+
+  .astro-tab-btn-lg {
+    min-width: unset;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .studio-content-card {
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
+
+  .form-grid-2-lg,
+  .form-grid-3-lg {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .month-cal-head,
+  .month-cal-grid-lg {
+    gap: 4px;
+  }
+
+  .month-cal-cell-lg {
+    min-height: 52px;
+    padding: 4px;
+  }
+
+  .month-cal-cell-lg .cal-day-num {
+    font-size: 11px;
+  }
+
+  .slot-chip {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
 }
 

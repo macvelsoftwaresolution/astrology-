@@ -19,6 +19,27 @@ export class RasiEditorTabComponent implements OnInit {
   rasiPredictionsLoading = false;
   rasiPublishing = false;
   rasiSaveSuccessMsg = '';
+  selectedRasiIndex: number | null = null;
+
+  openRasiEditor(index: number): void {
+    this.selectedRasiIndex = index;
+  }
+
+  closeRasiEditor(): void {
+    this.selectedRasiIndex = null;
+  }
+
+  nextRasi(): void {
+    if (this.selectedRasiIndex !== null) {
+      this.selectedRasiIndex = (this.selectedRasiIndex + 1) % this.rasiEditorList.length;
+    }
+  }
+
+  prevRasi(): void {
+    if (this.selectedRasiIndex !== null) {
+      this.selectedRasiIndex = (this.selectedRasiIndex - 1 + this.rasiEditorList.length) % this.rasiEditorList.length;
+    }
+  }
 
   rasiTypes = [
     { val: 'daily', label: 'Daily', tamilLabel: 'தினசரி' },
@@ -86,20 +107,23 @@ export class RasiEditorTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadRasiPredictions();
-    this.loadPanchangam();
+    if (typeof window !== 'undefined') {
+      this.loadRasiPredictions();
+      this.loadPanchangam();
+    }
   }
 
   loadRasiPredictions(): void {
     this.rasiPredictionsLoading = true;
     this.http.get<any>(`http://127.0.0.1:8000/api/rasi-palan?type=${this.rasiEditorType}&date=${this.selectedRasiDate}`).subscribe({
       next: (res) => {
-        if (res && res.palans && Array.isArray(res.palans) && res.palans.length > 0) {
+        const list = res?.predictions || res?.palans || [];
+        if (Array.isArray(list) && list.length > 0) {
           this.rasiPredictions = this.rasiEditorList.map(r => {
-            const found = res.palans.find((p: any) => p.rasi_name === r.name);
+            const found = list.find((p: any) => p.rasi_name === r.name);
             return {
               rasi_name: r.name,
-              prediction_text: found?.prediction_text || this.defaultRasiPredictions[r.name] || '',
+              prediction_text: found?.prediction_text || '',
               audio_url: found?.audio_url || '',
               video_url: found?.video_url || ''
             };
@@ -107,7 +131,7 @@ export class RasiEditorTabComponent implements OnInit {
         } else {
           this.rasiPredictions = this.rasiEditorList.map(r => ({
             rasi_name: r.name,
-            prediction_text: this.defaultRasiPredictions[r.name] || '',
+            prediction_text: '',
             audio_url: '',
             video_url: ''
           }));
@@ -147,7 +171,9 @@ export class RasiEditorTabComponent implements OnInit {
     const payload = {
       predictions: [item],
       tab_type: this.rasiEditorType,
-      prediction_date: this.selectedRasiDate
+      type: this.rasiEditorType,
+      prediction_date: this.selectedRasiDate,
+      date: this.selectedRasiDate
     };
 
     this.http.put<any>('http://127.0.0.1:8000/api/admin/rasi-palan', payload, headers).subscribe({
@@ -168,7 +194,9 @@ export class RasiEditorTabComponent implements OnInit {
     const payload = {
       predictions: this.rasiPredictions,
       tab_type: this.rasiEditorType,
-      prediction_date: this.selectedRasiDate
+      type: this.rasiEditorType,
+      prediction_date: this.selectedRasiDate,
+      date: this.selectedRasiDate
     };
 
     this.http.put<any>('http://127.0.0.1:8000/api/admin/rasi-palan', payload, headers).subscribe({
@@ -190,10 +218,7 @@ export class RasiEditorTabComponent implements OnInit {
   }
 
   resetRasiToDefault(index: number): void {
-    const rasiName = this.rasiEditorList[index]?.name;
-    if (rasiName && this.defaultRasiPredictions[rasiName]) {
-      this.rasiPredictions[index].prediction_text = this.defaultRasiPredictions[rasiName];
-    }
+    this.loadRasiPredictions();
   }
 
   resetAllToDefaults(): void {

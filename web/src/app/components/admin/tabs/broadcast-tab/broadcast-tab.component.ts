@@ -33,7 +33,9 @@ export class BroadcastTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadNotificationStatus();
+    if (typeof window !== 'undefined') {
+      this.loadNotificationStatus();
+    }
   }
 
   loadNotificationStatus(): void {

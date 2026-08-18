@@ -596,35 +596,35 @@ class AstrologyController extends Controller
      */
     public function updateRasiPalan(Request $request)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'type' => 'required|string',
-            'predictions' => 'required|array'
-        ]);
+        $date = $request->input('date') ?? $request->input('prediction_date') ?? date('Y-m-d');
+        $type = $request->input('type') ?? $request->input('tab_type') ?? 'daily';
+        $predictions = $request->input('predictions') ?? [];
 
         try {
-            foreach ($request->predictions as $p) {
+            foreach ($predictions as $p) {
                 if (empty($p['rasi_name'])) continue;
 
                 $existing = DB::table('rasi_palans')
-                    ->where('prediction_date', $request->date)
+                    ->where('prediction_date', $date)
                     ->where('rasi_name', $p['rasi_name'])
-                    ->where('tab_type', $request->type)
+                    ->where('tab_type', $type)
                     ->first();
 
                 if ($existing) {
                     DB::table('rasi_palans')->where('id', $existing->id)->update([
                         'prediction_text' => (string) ($p['prediction_text'] ?? ''),
                         'audio_url'       => $p['audio_url'] ?? null,
+                        'video_url'       => $p['video_url'] ?? null,
                         'updated_at'      => now()
                     ]);
                 } else {
                     DB::table('rasi_palans')->insert([
-                        'prediction_date' => $request->date,
+                        'prediction_date' => $date,
                         'rasi_name'       => $p['rasi_name'],
-                        'tab_type'        => $request->type,
+                        'tab_type'        => $type,
                         'prediction_text' => (string) ($p['prediction_text'] ?? ''),
                         'audio_url'       => $p['audio_url'] ?? null,
+                        'video_url'       => $p['video_url'] ?? null,
                         'created_at'      => now(),
                         'updated_at'      => now()
                     ]);

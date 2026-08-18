@@ -26,7 +26,9 @@ export class MatchesTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadMatches();
+    if (typeof window !== 'undefined') {
+      this.loadMatches();
+    }
   }
 
   loadMatches(): void {

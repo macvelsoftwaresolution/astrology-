@@ -22,7 +22,9 @@ export class PaymentsTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadPayments();
+    if (typeof window !== 'undefined') {
+      this.loadPayments();
+    }
   }
 
   loadPayments(): void {

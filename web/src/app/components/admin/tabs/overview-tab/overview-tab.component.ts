@@ -40,8 +40,10 @@ export class OverviewTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadMetrics();
-    this.loadTeamList();
+    if (typeof window !== 'undefined') {
+      this.loadMetrics();
+      this.loadTeamList();
+    }
   }
 
   loadMetrics(): void {

@@ -84,6 +84,7 @@ export class ServicesTabComponent implements OnInit {
     'bi bi-stars'
   ];
 
+  activeView: 'bookings' | 'astrologers' = 'bookings';
   astrologersList: any[] = [...this.defaultAstrologers];
   selectedAstrologerForManage: any = null;
   isCreatingNewAstrologer = false;
@@ -123,7 +124,9 @@ export class ServicesTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAllServicesData();
+    if (typeof window !== 'undefined') {
+      this.loadAllServicesData();
+    }
   }
 
   loadAllServicesData(): void {

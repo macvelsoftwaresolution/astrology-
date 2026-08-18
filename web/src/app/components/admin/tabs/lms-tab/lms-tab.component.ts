@@ -44,7 +44,9 @@ export class LmsTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCourses();
+    if (typeof window !== 'undefined') {
+      this.loadCourses();
+    }
   }
 
   loadCourses(): void {

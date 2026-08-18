@@ -25,7 +25,9 @@ export class UsersTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadUsers();
+    if (typeof window !== 'undefined') {
+      this.loadUsers();
+    }
   }
 
   loadUsers(): void {

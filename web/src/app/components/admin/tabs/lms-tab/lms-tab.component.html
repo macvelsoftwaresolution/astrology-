@@ -1,15 +1,15 @@
 <div class="lms-container">
-  <div class="header-banner flex-between">
+  <!-- Header Banner in a clean Div Card -->
+  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
     <div>
-      <h1><i class="bi bi-mortarboard-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'lms.title' | translate }}</h1>
-      <p>{{ 'lms.subtitle' | translate }}</p>
+      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-mortarboard-fill" style="color:#d97706;"></i>{{ 'lms.title' | translate }}
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'lms.subtitle' | translate }}</p>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
       <button class="btn-primary" (click)="openNewCourseWizard()">
         <i class="bi bi-stars"></i> {{ 'lms.launchWizard' | translate }}
-      </button>
-      <button class="btn-xs-refresh" (click)="loadCourses()" [title]="'common.refresh' | translate">
-        <i class="bi bi-arrow-repeat"></i>
       </button>
     </div>
   </div>
