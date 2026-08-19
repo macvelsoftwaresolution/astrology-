@@ -62,7 +62,7 @@
         <p><i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}</p>
       </div>
     } @else {
-      <!-- 12 RASI ULTRA-CLEAN CARDS (ONLY ICON, NAME, EDIT BUTTON) -->
+      <!-- 12 RASI ULTRA-CLEAN CARDS (ONLY ICON & TAMIL NAME) -->
       <div class="rasi-clean-grid">
         @for (r of rasiEditorList; track r.name; let i = $index) {
           <div 
@@ -74,15 +74,7 @@
             <div class="rasi-icon-circle">{{ r.symbol }}</div>
             <div class="rasi-name-info">
               <h3 class="rasi-tamil-txt">{{ r.name }}</h3>
-              <span class="rasi-eng-txt">{{ r.englishName }}</span>
             </div>
-            <button 
-              type="button" 
-              class="btn-rasi-edit-action"
-              (click)="openRasiEditor(i); $event.stopPropagation()"
-            >
-              <i class="bi bi-pencil-fill"></i> Edit
-            </button>
           </div>
         }
       </div>

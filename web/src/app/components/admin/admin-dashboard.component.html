@@ -171,23 +171,17 @@
 
     <!-- USER PROFILE & LOGOUT -->
     <div class="user-card">
-      <div class="user-info-row" (click)="openAdminProfileModal()" style="cursor:pointer;" title="சுயவிவரத்தைத் திருத்துக">
+      <div class="user-info-row">
         <div class="avatar">{{ currentUser?.name ? currentUser!.name.charAt(0) : 'A' }}</div>
         <div class="u-details">
-          <span class="u-name">{{ currentUser?.name || 'Administrator' }}</span>
-          <span class="u-role">{{ currentUser?.role | uppercase }} &bull; <i class="bi bi-pencil-square" style="color:#d97706;font-size:10px;"></i> Edit</span>
+          <span class="u-name">{{ currentUser?.name || 'Admin' }}</span>
+          <span class="u-role">{{ currentUser?.role | uppercase }}</span>
         </div>
       </div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn-edit-profile" (click)="openAdminProfileModal()" [title]="'user.profile' | translate">
-          <i class="bi bi-person-gear"></i>
-          <span>{{ 'user.profile' | translate }}</span>
-        </button>
-        <button class="btn-logout-full" (click)="logout()">
-          <i class="bi bi-box-arrow-right"></i>
-          <span>{{ 'user.signOut' | translate }}</span>
-        </button>
-      </div>
+      <button class="btn-logout-full" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>{{ 'user.signOut' | translate }}</span>
+      </button>
     </div>
   </aside>
 

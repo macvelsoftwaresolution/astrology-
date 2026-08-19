@@ -177,7 +177,7 @@ export class RasiPalanComponent implements OnInit {
   load() {
     this.loading = true;
     const today = new Date().toISOString().split('T')[0];
-    this.http.get<any>(`http://127.0.0.1:8000/api/rasi-palan?date=${today}&type=${this.activeType}`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/rasi-palan?date=${today}&type=${this.activeType}`).subscribe({
       next: res => { this.predictions = res.predictions; this.loading = false; },
       error: () => { this.loading = false; }
     });

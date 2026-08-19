@@ -32,13 +32,11 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Clean & Premium Mobile Typography Setup
+ * Universal Astrological Typography Setup (Noto Serif Tamil)
  * ---------------------------------------------------------------------------- */
-html, body, ion-app, ion-content, ion-header, ion-footer, ion-toolbar, button, input, select, textarea {
-  font-family: 'Outfit', 'Mukta Malar', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  letter-spacing: normal !important;
-}
-
-h1, h2, h3, .app-brand-name, .tamil-title, .section-heading, .user-name {
-  font-family: 'Noto Serif Tamil', 'Outfit', serif !important;
+html, body, ion-app, ion-content, ion-header, ion-footer, ion-toolbar, ion-title,
+button, input, select, textarea, p, span, div, strong, small, label,
+h1, h2, h3, h4, h5, h6, .app-brand-name, .tamil-title, .section-heading, .user-name {
+  font-family: 'Noto Serif Tamil', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif !important;
+  letter-spacing: normal;
 }

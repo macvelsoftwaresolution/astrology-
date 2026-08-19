@@ -51,6 +51,14 @@ export class TeamTabComponent implements OnInit {
   astrologerSuccessMsg = '';
   isUploadingAstrologerAvatar = false;
 
+  predefinedCategories: string[] = [
+    'ஜாதகம் எழுதுதல்',
+    'வாஸ்து சாஸ்திரம்',
+    'எண்கணிதம் / நியூமராலஜி'
+  ];
+  customCategoryMode = false;
+  customCategoryInput = '';
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
@@ -139,12 +147,28 @@ export class TeamTabComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  onCategorySelectChange(event: any): void {
+    const val = event.target.value;
+    if (val === '__NEW__') {
+      this.customCategoryMode = true;
+      this.customCategoryInput = '';
+    } else {
+      this.customCategoryMode = false;
+      if (this.selectedAstrologerForManage) {
+        this.selectedAstrologerForManage.category = val;
+      }
+    }
+  }
+
   openNewAstrologerModal(): void {
     this.isCreatingNewAstrologer = true;
+    this.customCategoryMode = false;
+    this.customCategoryInput = '';
     this.selectedAstrologerForManage = {
       id: null,
       name: '',
-      role_title: 'வேத ஜோதிடர்',
+      category: 'ஜாதகம் எழுதுதல்',
+      role_title: 'தலைமை வேத ஜோதிடர்',
       experience: '10+ ஆண்டுகள்',
       specialty: 'துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம்',
       fee: 499,
@@ -173,8 +197,11 @@ export class TeamTabComponent implements OnInit {
 
   openAstrologerManageModal(astro: any): void {
     this.isCreatingNewAstrologer = false;
+    this.customCategoryMode = !!(astro.category && !this.predefinedCategories.includes(astro.category));
+    this.customCategoryInput = this.customCategoryMode ? astro.category : '';
     this.selectedAstrologerForManage = {
       ...astro,
+      category: astro.category || 'ஜாதகம் எழுதுதல்',
       available_slots: Array.isArray(astro.available_slots) ? [...astro.available_slots] : [],
       blocked_dates: Array.isArray(astro.blocked_dates) ? [...astro.blocked_dates] : []
     };
@@ -432,6 +459,9 @@ export class TeamTabComponent implements OnInit {
     if (!this.selectedAstrologerForManage.name || !this.selectedAstrologerForManage.name.trim()) {
       alert('தயவுசெய்து ஜோதிடரின் பெயரை உள்ளிடவும்.');
       return;
+    }
+    if (this.customCategoryMode && this.customCategoryInput.trim()) {
+      this.selectedAstrologerForManage.category = this.customCategoryInput.trim();
     }
     this.astrologerSaving = true;
     const headers = this.authService.getAuthHeaders();

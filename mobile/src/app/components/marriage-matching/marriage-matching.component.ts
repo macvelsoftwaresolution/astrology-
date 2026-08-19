@@ -154,7 +154,7 @@ export class MarriageMatchingComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const user = this.authService.getCurrentUser();
@@ -281,15 +281,15 @@ export class MarriageMatchingComponent implements OnInit {
     const payload = {
       request_type: 'pair_match',
       girl_name: this.matchingForm.girlName,
-      girl_dob: this.matchingForm.girlDob || '1998-05-15',
-      girl_tob: this.matchingForm.girlTob || '10:30 AM',
-      girl_pob: this.matchingForm.girlPob || 'சென்னை',
+      girl_dob: this.matchingForm.girlDob || null,
+      girl_tob: this.matchingForm.girlTob || null,
+      girl_pob: this.matchingForm.girlPob || null,
       girl_rasi: this.matchingForm.girlRasi,
       girl_nakshatra: this.matchingForm.girlStar,
       boy_name: this.matchingForm.boyName,
-      boy_dob: this.matchingForm.boyDob || '1995-08-20',
-      boy_tob: this.matchingForm.boyTob || '06:45 AM',
-      boy_pob: this.matchingForm.boyPob || 'மதுரை',
+      boy_dob: this.matchingForm.boyDob || null,
+      boy_tob: this.matchingForm.boyTob || null,
+      boy_pob: this.matchingForm.boyPob || null,
       boy_rasi: this.matchingForm.boyRasi,
       boy_nakshatra: this.matchingForm.boyStar,
       requester_phone: this.matchingForm.requesterPhone || '9876543210',
@@ -300,14 +300,14 @@ export class MarriageMatchingComponent implements OnInit {
     };
 
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/jathagam/match', payload, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/jathagam/match`, payload, headers).subscribe({
       next: () => {
         this.submittingToAdmin = false;
         this.adminSubmittedSuccess = true;
       },
       error: () => {
         this.submittingToAdmin = false;
-        this.adminSubmittedSuccess = true; // graceful fallback
+        this.adminSubmittedSuccess = true;
       }
     });
   }
