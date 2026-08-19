@@ -29,9 +29,11 @@
 
     <!-- Right Section: Notification & User Profile Badge -->
     <div class="top-nav-right">
-      <div class="top-nav-action-btn bell-btn" (click)="showNotificationToast()" title="Notifications">
+      <div class="top-nav-action-btn bell-btn" (click)="openNotifications()" title="Notifications">
         <i class="bi bi-bell-fill"></i>
-        <span class="notif-dot"></span>
+        @if (unreadNotificationsCount > 0) {
+          <span class="notif-badge-count">{{ unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount }}</span>
+        }
       </div>
     </div>
 

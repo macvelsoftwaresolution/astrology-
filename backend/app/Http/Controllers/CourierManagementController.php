@@ -88,6 +88,14 @@ class CourierManagementController extends Controller
             'updated_at' => now(),
         ]);
 
+        return response()->json([
+            'success' => true,
+            'message' => 'Book order placed successfully.',
+            'order_id' => $orderId,
+            'order_number' => $orderNumber
+        ]);
+    }
+
     /**
      * Admin: Get all physical book orders
      */

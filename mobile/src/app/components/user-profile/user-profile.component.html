@@ -245,8 +245,10 @@
                     <strong>{{ order.service }}</strong>
                     <span class="status-dot" [class.dot-pending]="order.status === 'Pending'">{{ order.status === 'Pending' ? 'நிலுவையில்' : 'முடிந்தது' }}</span>
                   </div>
-                  <p class="oh-desc"><strong>விவரங்கள்:</strong> {{ order.details }}</p>
-                  <p class="oh-desc"><strong>நபர்:</strong> {{ order.person.name }} (DOB: {{ order.person.dob }})</p>
+                  <p class="oh-desc"><strong>விவரங்கள்:</strong> {{ order.details || 'ஆன்லைன் ஜோதிட சேவை' }}</p>
+                  @if (order.person?.name) {
+                    <p class="oh-desc"><strong>நபர்:</strong> {{ order.person.name }} {{ order.person.dob ? '(பிறந்த தேதி: ' + order.person.dob + ')' : '' }}</p>
+                  }
                   <div class="oh-footer">
                     <span>தேதி: {{ order.date }}</span>
                     <strong>₹{{ order.price }}</strong>

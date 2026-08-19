@@ -279,14 +279,22 @@ export class HomePage implements OnInit {
     return this.activeServiceFlow !== null || this.currentTab !== 'home';
   }
 
-  async showNotificationToast() {
-    const toast = await this.toastController.create({
-      message: 'புதிய அறிவிப்புகள் ஏதுமில்லை',
-      duration: 2000,
-      color: 'dark',
-      position: 'bottom'
+  unreadNotificationsCount: number = 0;
+
+  openNotifications() {
+    this.router.navigate(['/notifications']);
+  }
+
+  loadNotificationsCount() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    const headers = { headers: { Authorization: `Bearer ${token}` } };
+    this.http.get<any>(`${environment.apiUrl}/user/notifications`, headers).subscribe({
+      next: (res) => {
+        this.unreadNotificationsCount = res.unread_count || 0;
+      },
+      error: () => {}
     });
-    await toast.present();
   }
 
   ngOnInit() {
@@ -296,6 +304,7 @@ export class HomePage implements OnInit {
     this.loadPanchangam();
     this.loadAstrologers();
     this.loadUserOrders();
+    this.loadNotificationsCount();
 
     this.route.queryParams.subscribe(params => {
       if (params['tab'] && ['home', 'services', 'matching', 'profile'].includes(params['tab'])) {
@@ -313,6 +322,7 @@ export class HomePage implements OnInit {
     this.loadPanchangam();
     this.loadAstrologers();
     this.loadUserOrders();
+    this.loadNotificationsCount();
   }
 
   loadBanners() {

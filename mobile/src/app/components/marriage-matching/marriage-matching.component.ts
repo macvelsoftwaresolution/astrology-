@@ -245,8 +245,7 @@ export class MarriageMatchingComponent implements OnInit {
       { no: 7, name: 'இராசி அதிபதி பொருத்தம்', desc: 'கிரக நட்பு, சமாதானம்', match: rasiAthipathiMatch, points: rasiAthipathiMatch ? 1 : 0 },
       { no: 8, name: 'வசியப் பொருத்தம்', desc: 'அன்யோன்யம், ஈர்ப்பு', match: vasiyaMatch, points: vasiyaMatch ? 1 : 0 },
       { no: 9, name: 'ரஜ்ஜுப் பொருத்தம்', desc: 'மாங்கல்ய பலம் (அதி முக்கியம்)', match: rajjuMatch, points: rajjuMatch ? 1 : 0 },
-      { no: 10, name: 'வேதைப் பொருத்தம்', desc: 'துன்பமின்மை, பகையற்ற நிலை', match: vedhaiMatch, points: vedhaiMatch ? 1 : 0 },
-      { no: 11, name: 'நாடிப் பொருத்தம்', desc: 'மரபணு சுப நிலை, ஆரோக்கியம்', match: nadiMatch, points: nadiMatch ? 1 : 0 }
+      { no: 10, name: 'வேதைப் பொருத்தம்', desc: 'துன்பமின்மை, பகையற்ற நிலை', match: vedhaiMatch, points: vedhaiMatch ? 1 : 0 }
     ];
 
     this.matchResult.poruthams = list;
@@ -262,15 +261,15 @@ export class MarriageMatchingComponent implements OnInit {
     if (rasiMatch) matchedKeyNames.push('ராசி');
     this.matchResult.keyMatchesText = matchedKeyNames.join(', ') + ' பொருத்தங்கள் சுபமாக உள்ளன.';
 
-    if (this.matchResult.totalMatches >= 8 && rajjuMatch) {
+    if (this.matchResult.totalMatches >= 7 && rajjuMatch) {
       this.matchResult.verdictTitle = '🟢 மிக உன்னதமான பொருத்தம் (100% திருமணம் செய்யலாம்)';
-      this.matchResult.verdictNotes = '11-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் உள்ளன. ரஜ்ஜு பொருத்தம் மிகச் சுபமாக உள்ளதால் தாராளமாகத் திருமணம் நிச்சயிக்கலாம்.';
-    } else if (this.matchResult.totalMatches >= 6 && rajjuMatch) {
+      this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் உள்ளன. ரஜ்ஜு பொருத்தம் மிகச் சுபமாக உள்ளதால் தாராளமாகத் திருமணம் நிச்சயிக்கலாம்.';
+    } else if (this.matchResult.totalMatches >= 5 && rajjuMatch) {
       this.matchResult.verdictTitle = '🟢 நல்ல பொருத்தம் (திருமணம் செய்யலாம்)';
-      this.matchResult.verdictNotes = '11-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் உள்ளன. முக்கிய பொருத்தங்கள் உள்ளதால் திருமணம் செய்யலாம்.';
+      this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் உள்ளன. முக்கிய பொருத்தங்கள் உள்ளதால் திருமணம் செய்யலாம்.';
     } else {
       this.matchResult.verdictTitle = '🟡 சுமாரான பொருத்தம் (ஜோதிட பரிகாரம் தேவை)';
-      this.matchResult.verdictNotes = '11-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் மட்டுமே உள்ளன. குலதெய்வப் பிரார்த்தனை செய்து முடிவெடுக்கலாம்.';
+      this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் மட்டுமே உள்ளன. குலதெய்வப் பிரார்த்தனை செய்து முடிவெடுக்கலாம்.';
     }
 
     this.serviceStep = 5; // Show Traditional Result Sheet
@@ -295,7 +294,9 @@ export class MarriageMatchingComponent implements OnInit {
       boy_nakshatra: this.matchingForm.boyStar,
       requester_phone: this.matchingForm.requesterPhone || '9876543210',
       match_score: this.matchResult.totalMatches || 8,
-      match_status: 'Pending'
+      match_status: this.matchResult.totalMatches >= 6 ? 'Match' : 'Low Match',
+      match_details: this.matchResult.poruthams || [],
+      verdict: this.matchResult.verdictTitle || ''
     };
 
     const headers = this.authService.getAuthHeaders();

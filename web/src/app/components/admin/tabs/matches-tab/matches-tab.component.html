@@ -98,40 +98,52 @@
   <!-- MODAL: 10 PORUTHAM BREAKDOWN -->
   @if (selectedMatch) {
     <div class="modal-overlay" (click)="selectedMatch = null">
-      <div class="modal-box" style="max-width:540px;max-height:85vh;overflow-y:auto;" (click)="$event.stopPropagation()">
-        <div class="modal-header">
+      <div class="match-modal-box" (click)="$event.stopPropagation()">
+        <!-- Fixed Header -->
+        <div class="match-modal-header">
           <div>
-            <h3 style="margin:0;"><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:6px;"></i>{{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
-            <span style="font-size:12px;color:#64748b;">10 Porutham Analysis Report</span>
+            <h3><i class="bi bi-heart-fill" style="color:#e11d48;"></i>{{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
+            <span style="font-size:12px;color:#64748b;font-weight:500;">10 பொருத்தங்கள் பகுப்பாய்வு அறிக்கை (10 Poruthams Report)</span>
           </div>
-          <button class="close-btn" (click)="selectedMatch = null"><i class="bi bi-x-lg"></i></button>
+          <button class="close-btn" (click)="selectedMatch = null" title="Close"><i class="bi bi-x-lg"></i></button>
         </div>
 
-        <div class="match-score-row">
-          <div class="big-score-badge" [ngClass]="selectedMatch.match_score >= 6 ? 'good' : 'bad'">
-            {{ selectedMatch.match_score }} / 10
-          </div>
-          <div>
-            <div class="match-verdict">{{ selectedMatch.verdict }}</div>
-            <small class="muted">
-              {{ selectedMatch.boy_rasi }} ({{ selectedMatch.boy_nakshatra }}) &bull; {{ selectedMatch.girl_rasi }} ({{ selectedMatch.girl_nakshatra }})
-            </small>
-          </div>
-        </div>
-
-        <div class="breakdown-table">
-          @for (item of getMatchDetailsArray(selectedMatch.match_details); track item.name) {
-            <div class="breakdown-row">
-              <span>{{ item.name }} ({{ item.tamil_name || item.name }})</span>
-              <strong [class.match-yes]="item.match" [class.match-no]="!item.match">
-                <i class="bi" [ngClass]="item.match ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
-                {{ item.match ? ' Matched' : ' Not Matched' }}
-              </strong>
+        <!-- Scrollable Body -->
+        <div class="match-modal-body">
+          <!-- Top Score Card -->
+          <div class="match-score-card">
+            <div class="match-score-badge-large" [ngClass]="selectedMatch.match_score >= 6 ? 'good' : 'bad'">
+              {{ selectedMatch.match_score }} / 10
             </div>
-          }
+            <div>
+              <div class="match-verdict-title">{{ selectedMatch.verdict || (selectedMatch.match_score >= 6 ? 'நல்ல பொருத்தம்' : 'சுமாரான பொருத்தம்') }}</div>
+              <small class="muted" style="font-size:12px;display:block;">
+                {{ selectedMatch.boy_rasi }} ({{ selectedMatch.boy_nakshatra }}) &bull; {{ selectedMatch.girl_rasi }} ({{ selectedMatch.girl_nakshatra }})
+              </small>
+            </div>
+          </div>
+
+          <!-- 10 Porutham Cards List -->
+          <div class="match-items-list">
+            @for (item of getMatchDetailsArray(selectedMatch.match_details); track item.name) {
+              <div class="match-item-card" [class.is-matched]="item.match" [class.is-unmatched]="!item.match">
+                <div>
+                  <strong style="color:#0f172a;font-size:13px;display:block;">{{ item.tamil_name }}</strong>
+                  <small class="muted" style="font-size:11px;display:block;color:#64748b;margin-top:1px;">
+                    {{ item.name }} {{ item.desc ? '• ' + item.desc : '' }}
+                  </small>
+                </div>
+                <div class="match-status-tag" [class.yes]="item.match" [class.no]="!item.match">
+                  <i class="bi" [ngClass]="item.match ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  {{ item.match ? 'பொருத்தம் உண்டு (Matched)' : 'பொருத்தம் இல்லை (Not Matched)' }}
+                </div>
+              </div>
+            }
+          </div>
         </div>
 
-        <div class="modal-btns" style="margin-top:18px;">
+        <!-- Fixed Footer -->
+        <div class="match-modal-footer">
           <button type="button" class="btn-cancel" (click)="selectedMatch = null">{{ 'common.close' | translate }}</button>
         </div>
       </div>

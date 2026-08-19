@@ -13,6 +13,10 @@ export class RegisterPage implements OnInit {
   fullName: string = '';
   mobileNumber: string = '';
   emailAddress: string = '';
+  password: string = '';
+  confirmPassword: string = '';
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
   serviceType: 'astrology' | 'education' = 'astrology';
   profilePicBase64: string = '';
 
@@ -44,17 +48,26 @@ export class RegisterPage implements OnInit {
   }
 
   async onRegister() {
-    if (!this.fullName || !this.mobileNumber || !this.emailAddress) {
+    if (!this.fullName || !this.mobileNumber || !this.emailAddress || !this.password) {
       await this.showToast('தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்', 'warning');
       return;
     }
 
-    const defaultPwd = this.serviceType === 'education' ? '654321' : '123456';
+    if (this.password.length < 6) {
+      await this.showToast('கடவுச்சொல் குறைந்தது 6 எழுத்துக்கள் இருக்க வேண்டும்', 'warning');
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      await this.showToast('கடவுச்சொற்கள் பொருந்தவில்லை (Passwords do not match)', 'warning');
+      return;
+    }
+
     const user: User = {
       fullName: this.fullName,
       mobileNumber: this.mobileNumber,
       emailAddress: this.emailAddress,
-      password: defaultPwd, // set default password based on service type
+      password: this.password,
       profileImage: this.profilePicBase64 || undefined
     };
 
@@ -68,9 +81,18 @@ export class RegisterPage implements OnInit {
         }
       },
       error: async (err) => {
+        console.error('Registration error details:', err.error);
         let msg = 'இந்த அலைபேசி எண் / மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.';
         if (err.status === 0) {
           msg = 'சர்வர் தொடர்புகொள்ள முடியவில்லை (Network Error). உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.';
+        } else if (err.error?.errors) {
+          const firstKey = Object.keys(err.error.errors)[0];
+          const errorDetail = err.error.errors[firstKey][0];
+          if (firstKey === 'email' && errorDetail.includes('taken')) {
+            msg = 'இந்த மின்னஞ்சல் முகவரி ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது. தயவுசெய்து உள்நுழையவும்.';
+          } else {
+            msg = errorDetail;
+          }
         } else if (err.error?.message) {
           msg = err.error.message;
         }

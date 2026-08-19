@@ -150,6 +150,25 @@ $color-white: #FFFFFF;
         background-color: #dc2626;
         border: 1.5px solid #ffffff;
       }
+
+      .notif-badge-count {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        background: #dc2626;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        min-width: 17px;
+        height: 17px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 3px;
+        border: 1.5px solid #ffffff;
+        box-shadow: 0 1px 4px rgba(220, 38, 38, 0.4);
+      }
     }
 
     .avatar-mini-img {
