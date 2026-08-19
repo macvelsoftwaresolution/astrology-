@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 
@@ -8,103 +8,72 @@ import { environment } from '../../../../../environments/environment';
   styleUrls: ['./quiz.component.scss'],
   standalone: false
 })
-export class LearnQuizComponent {
+export class LearnQuizComponent implements OnInit {
+  @Input() exam: any;
   @Output() close = new EventEmitter<void>();
 
   quizSubmitted: boolean = false;
   currentQuestionIndex: number = 0;
   selectedOption: string | null = null;
+  fillupAnswer: string = '';
   quizScore: number = 0;
   quizPassed: boolean = false;
   correctAnswersCount: number = 0;
+  
+  quizQuestions: any[] = [];
 
   constructor(private http: HttpClient) {}
 
-  quizQuestions = [
-    {
-      question: 'சூரியன் மேஷ ராசியில் உச்சம் பெறும் போது அதன் ஆதிக்கம் எந்த பாவத்தில் வலுவாக இருக்கும்?',
-      options: [
-        { code: 'A', text: 'லக்ன பாவம் (முதல் வீடு)' },
-        { code: 'B', text: 'பத்தாம் பாவம் (தொழில் ஸ்தானம்)' },
-        { code: 'C', text: 'ஐந்தாம் பாவம் (பூர்வ புண்ணியம்)' },
-        { code: 'D', text: 'ஏழாம் பாவம் (களத்திர ஸ்தானம்)' }
-      ],
-      answer: 'A'
-    },
-    {
-      question: 'ஒன்பது கோள்களில் மிக மெதுவாக நகரும் கோள் எது?',
-      options: [
-        { code: 'A', text: 'செவ்வாய்' },
-        { code: 'B', text: 'சனி' },
-        { code: 'C', text: 'புதன்' },
-        { code: 'D', text: 'வியாழன்' }
-      ],
-      answer: 'B'
-    },
-    {
-      question: 'ஜோதிடத்தில் மொத்தம் எத்தனை ராசிகள் உள்ளன?',
-      options: [
-        { code: 'A', text: '9' },
-        { code: 'B', text: '27' },
-        { code: 'C', text: '12' },
-        { code: 'D', text: '108' }
-      ],
-      answer: 'C'
-    },
-    {
-      question: 'பஞ்சாங்கத்தில் காலத்தைக் குறிக்கும் ஐந்து உறுப்புகள் எவை?',
-      options: [
-        { code: 'A', text: 'நிலம், நீர், நெருப்பு, காற்று, ஆகாயம்' },
-        { code: 'B', text: 'வாரம், திதி, நட்சத்திரம், யோகம், கரணம்' },
-        { code: 'C', text: 'சூரியன், சந்திரன், செவ்வாய், புதன், குரு' },
-        { code: 'D', text: 'மேஷம், ரிஷபம், மிதுனம், கடகம், சிம்மம்' }
-      ],
-      answer: 'B'
-    },
-    {
-      question: 'களத்திர காரகன் என்று அழைக்கப்படும் கோள் எது?',
-      options: [
-        { code: 'A', text: 'சுக்கிரன்' },
-        { code: 'B', text: 'செவ்வாய்' },
-        { code: 'C', text: 'சந்திரன்' },
-        { code: 'D', text: 'சூரியன்' }
-      ],
-      answer: 'A'
-    },
-    {
-      question: 'குரு பகவானின் ஆதிக்கத்திற்குரிய சிறந்த ராசி எது?',
-      options: [
-        { code: 'A', text: 'மேஷம்' },
-        { code: 'B', text: 'தனுசு' },
-        { code: 'C', text: 'ரிஷபம்' },
-        { code: 'D', text: 'மிதுனம்' }
-      ],
-      answer: 'B'
+  ngOnInit() {
+    if (this.exam && this.exam.questions) {
+      this.quizQuestions = this.exam.questions.map((q: any) => ({
+        id: q.id,
+        type: q.type || 'mcq',
+        question: q.question_text,
+        options: q.options || [],
+        answer: q.correct_answer,
+        marks: q.marks || 1
+      }));
     }
-  ];
+  }
 
-  selectOption(optCode: string) {
-    this.selectedOption = optCode;
+  selectOption(opt: string) {
+    this.selectedOption = opt;
   }
 
   submitAnswer() {
-    if (!this.selectedOption) return;
+    const currentQ = this.quizQuestions[this.currentQuestionIndex];
+    let isCorrect = false;
 
-    if (this.selectedOption === this.quizQuestions[this.currentQuestionIndex].answer) {
-      this.correctAnswersCount++;
+    if (currentQ.type === 'mcq') {
+      if (!this.selectedOption) return;
+      isCorrect = this.selectedOption === currentQ.answer;
+    } else if (currentQ.type === 'fillup') {
+      if (!this.fillupAnswer.trim()) return;
+      isCorrect = this.fillupAnswer.trim().toLowerCase() === currentQ.answer.toLowerCase();
+    }
+
+    if (isCorrect) {
+      this.correctAnswersCount += currentQ.marks;
     }
 
     if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
       this.currentQuestionIndex++;
       this.selectedOption = null;
+      this.fillupAnswer = '';
     } else {
-      this.quizScore = Math.round((this.correctAnswersCount / this.quizQuestions.length) * 100);
+      const totalPossibleMarks = this.quizQuestions.reduce((sum, q) => sum + q.marks, 0);
+      this.quizScore = totalPossibleMarks > 0 
+        ? Math.round((this.correctAnswersCount / totalPossibleMarks) * 100) 
+        : 0;
+        
       this.quizSubmitted = true;
-      this.quizPassed = this.quizScore >= 60; // Pass mark set to 60%
+      const passMark = this.exam?.pass_mark || 60;
+      this.quizPassed = this.quizScore >= passMark;
 
       // Submit to database API
       const payload = {
-        course_id: 1,
+        course_id: this.exam?.course_id || 1, // Fallback
         submission_type: 'online_quiz',
         score: this.quizScore
       };

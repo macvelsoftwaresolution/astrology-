@@ -1,18 +1,19 @@
 <div class="lms-container">
-  <!-- Header Banner in a clean Div Card -->
-  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-    <div>
-      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-mortarboard-fill" style="color:#d97706;"></i>{{ 'lms.title' | translate }}
-      </h1>
-      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'lms.subtitle' | translate }}</p>
+  @if (activeView === 'dashboard') {
+    <!-- Header Banner in a clean Div Card -->
+    <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-mortarboard-fill" style="color:#d97706;"></i>{{ 'lms.title' | translate }}
+        </h1>
+        <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'lms.subtitle' | translate }}</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn-primary" (click)="openNewCourseWizard()">
+          <i class="bi bi-stars"></i> {{ 'lms.launchWizard' | translate }}
+        </button>
+      </div>
     </div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <button class="btn-primary" (click)="openNewCourseWizard()">
-        <i class="bi bi-stars"></i> {{ 'lms.launchWizard' | translate }}
-      </button>
-    </div>
-  </div>
 
   <!-- SEARCH & FILTER CONTROLS -->
   <div class="card-box" style="margin-bottom: 24px; padding: 14px 20px;">
@@ -162,7 +163,49 @@
           }
         </div>
       </div>
+      <!-- EXAMS SECTION -->
+      <div class="card-box" style="margin-top:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+              <i class="bi bi-ui-checks-grid" style="color:#8b5cf6;"></i> தேர்வுகள் (Exams & Quizzes)
+            </h3>
+            <span style="font-size:12px;color:#64748b;">மாணவர்களுக்கான தேர்வுகள்</span>
+          </div>
+          <button class="btn-sm" style="background:#8b5cf6;color:#fff;border:none;" (click)="openNewExamWizard()">
+            <i class="bi bi-plus-lg"></i> புதிய தேர்வு சேர்க்க
+          </button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:14px;">
+          @for (ex of exams; track ex.id) {
+            <div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <h4 style="margin:0 0 6px 0;font-size:15px;color:#0f172a;font-weight:700;">{{ ex.title }}</h4>
+                <div style="display:flex;gap:12px;font-size:12px;color:#64748b;margin-bottom:12px;">
+                  <span><i class="bi bi-clock me-1"></i>{{ ex.duration }} mins</span>
+                  <span><i class="bi bi-star-fill text-warning me-1"></i>{{ ex.total_marks }} Marks</span>
+                </div>
+                <div style="font-size:12px;color:#059669;font-weight:600;margin-bottom:8px;">
+                  Pass Mark: {{ ex.pass_mark }}
+                </div>
+                <div style="font-size:12px;color:#475569;">
+                  Questions: <span style="font-weight:700;color:#2563eb;">{{ ex.questions?.length || 0 }}</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:12px;border-top:1px solid #f1f5f9;padding-top:10px;">
+                <button class="btn-xs" style="background:#f1f5f9;color:#475569;" (click)="manageExamQuestions(ex)"><i class="bi bi-pencil me-1"></i>Manage</button>
+                <button class="btn-xs danger" (click)="deleteExam(ex.id)"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+          }
+          @if (exams.length === 0) {
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">தேர்வுகள் ஏதுமில்லை.</div>
+          }
+        </div>
+      </div>
     </div>
+  }
   }
 
   <!-- MODAL: ADD / EDIT SEMINAR -->
@@ -376,15 +419,15 @@
   }
 
   <!-- COURSE STUDIO WIZARD MODAL -->
-  @if (openCourseWizardModal) {
-    <div class="modal-overlay" (click)="openCourseWizardModal = false">
+  @if (activeView === 'course-studio') {
+    <div class="modal-overlay" (click)="cancelCourseWizard()">
       <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
             <h3 style="margin:0;"><i class="bi bi-magic" style="color:#d97706;margin-right:6px;"></i>{{ 'lms.launchWizard' | translate }}</h3>
             <span style="font-size:12px;color:#64748b;">Step {{ wizardStep }} of 2</span>
           </div>
-          <button class="close-btn" (click)="openCourseWizardModal = false"><i class="bi bi-x-lg"></i></button>
+          <button class="close-btn" (click)="cancelCourseWizard()"><i class="bi bi-x-lg"></i></button>
         </div>
 
         @if (wizardStep === 1) {
@@ -432,7 +475,7 @@
               </div>
             </div>
             <div class="modal-btns">
-              <button type="button" class="btn-cancel" (click)="openCourseWizardModal = false">{{ 'common.cancel' | translate }}</button>
+              <button type="button" class="btn-cancel" (click)="cancelCourseWizard()">{{ 'common.cancel' | translate }}</button>
               <button type="button" class="btn-primary" (click)="wizardStep = 2">Next: Build Modules ➔</button>
             </div>
           </div>
@@ -468,6 +511,160 @@
             </div>
           </div>
         }
+      </div>
+    </div>
+  }
+  <!-- FULL PAGE EXAM STUDIO -->
+  @if (selectedCategory && activeView === 'exam-studio' && activeExamWizard) {
+    <div style="background: #fff; min-height: calc(100vh - 100px); padding: 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+      <!-- Page Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
+        <div>
+          <button class="btn-xs" style="background: #f1f5f9; color: #475569; border: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; margin-bottom: 16px;" (click)="cancelExamWizard()">
+            <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+          </button>
+          <h2 style="margin:0; font-size: 28px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-ui-checks-grid" style="color:#8b5cf6;"></i> Exam Studio
+          </h2>
+          <span style="font-size:14px; color:#64748b; font-weight: 500;">Create or edit your {{ selectedCategory }} exam, and add questions all in one place.</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px;">
+        <!-- Left Column: Exam Details -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">1. Exam Details</h3>
+            <button type="button" class="btn-xs" style="background: #8b5cf6; color: #fff; border: none; font-weight: 600;" (click)="saveExamDetails()">
+              <i class="bi bi-check2"></i> Save Details
+            </button>
+          </div>
+          <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+            <div class="form-group">
+              <label style="font-weight: 600;">தேர்வின் தலைப்பு (Title) *</label>
+              <input type="text" [(ngModel)]="activeExamWizard.title" class="ctrl" placeholder="எ.கா. அடிப்படைகள் தேர்வு 1"/>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="form-group">
+                <label style="font-weight: 600;">கால அளவு (நிமிடங்கள்)</label>
+                <input type="number" [(ngModel)]="activeExamWizard.duration" class="ctrl" placeholder="30"/>
+              </div>
+              <div class="form-group">
+                <label style="font-weight: 600;">மொத்த மதிப்பெண்கள்</label>
+                <input type="number" [(ngModel)]="activeExamWizard.total_marks" class="ctrl" placeholder="100"/>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 16px;">
+              <label style="font-weight: 600;">Course Level</label>
+              <select [(ngModel)]="activeExamWizard.level" class="ctrl" disabled style="background: #e2e8f0; font-weight: 700;">
+                <option [value]="selectedCategory">{{ selectedCategory }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Questions Builder -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">2. Questions Builder</h3>
+            @if (activeExamWizard.id) {
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <label class="btn-xs" style="background: #10b981; color: #fff; cursor: pointer; margin: 0; padding: 6px 12px; border-radius: 6px; font-weight: 600;">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> Upload PDF Questions
+                  <input type="file" accept="application/pdf" (change)="importQuestionsFromPdf($event)" style="display:none;" />
+                </label>
+                @if (isImportingPdf) {
+                  <span style="font-size: 12px; color: #10b981; font-weight: 600;"><i class="bi bi-hourglass-split"></i> Importing...</span>
+                }
+              </div>
+            } @else {
+              <span style="font-size: 12px; color: #64748b;">Save Exam Details first to add questions.</span>
+            }
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- LIST OF QUESTIONS -->
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              @if (activeExamWizard.questions && activeExamWizard.questions.length > 0) {
+                <h4 style="margin: 10px 0 0;font-size:15px; color: #475569;">சேர்க்கப்பட்ட வினாக்கள் ({{ activeExamWizard.questions.length }})</h4>
+              }
+              @for (q of activeExamWizard.questions; track q.id; let i = $index) {
+                <div style="border:1px solid #e2e8f0;padding:16px;border-radius:12px;background:#f8fafc;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                      <strong style="font-size:14px; color: #0f172a;">{{ i + 1 }}. {{ q.question_text }}</strong>
+                      <span style="font-size:10px;background:#e2e8f0;color:#475569;padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:700;">{{ q.type | uppercase }}</span>
+                    </div>
+                    <button class="btn-xs danger" (click)="deleteQuestion(q.id)"><i class="bi bi-trash"></i></button>
+                  </div>
+                  
+                  @if (q.type === 'mcq') {
+                    <div style="display:flex;gap:10px;margin-top:12px;font-size:13px;color:#64748b;">
+                      @for (opt of q.options; track opt) {
+                        <span style="background:#fff;padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;">{{ opt }}</span>
+                      }
+                    </div>
+                  }
+                  
+                  <div style="margin-top:12px;font-size:13px;color:#059669;font-weight:700; background: #ecfdf5; padding: 8px 12px; border-radius: 6px; display: inline-block;">
+                    ✓ விடை: {{ q.correct_answer }} ({{ q.marks }} Marks)
+                  </div>
+                </div>
+              }
+              @if (!activeExamWizard.questions || activeExamWizard.questions.length === 0) {
+                <div style="text-align:center;color:#64748b;font-size:14px;padding:30px; border: 2px dashed #e2e8f0; border-radius: 12px;">
+                  <i class="bi bi-question-square" style="font-size: 24px; color: #cbd5e1; display: block; margin-bottom: 10px;"></i>
+                  கேள்விகள் ஏதுமில்லை.
+                </div>
+              }
+            </div>
+
+            <!-- ADD QUESTION FORM -->
+            <div style="border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+              <h4 style="margin:0 0 16px;font-size:16px; color: #334155;">புதிய வினா சேர்க்க (Add Question)</h4>
+              
+              <div style="margin-bottom:12px;">
+                <label style="font-size:13px;font-weight:600;">கேள்வி வகை (Type)</label>
+                <select [(ngModel)]="newQuestion.type" class="ctrl" style="background: #f8fafc;">
+                  <option value="mcq">பலவுள் தெரிவு வினா (MCQ)</option>
+                  <option value="fillup">கோடிட்ட இடங்களை நிரப்புக (Fill-up)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <label style="font-size:13px;font-weight:600;">கேள்வி (Question)</label>
+                <textarea [(ngModel)]="newQuestion.question_text" class="ctrl" rows="2" style="background: #f8fafc;"></textarea>
+              </div>
+
+              @if (newQuestion.type === 'mcq') {
+                <div style="margin-bottom:12px;">
+                  <label style="font-size:13px;font-weight:600;">Options (A, B, C, D)</label>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <input type="text" [(ngModel)]="newQuestion.options[0]" class="ctrl" placeholder="Option A" style="background: #f8fafc;"/>
+                    <input type="text" [(ngModel)]="newQuestion.options[1]" class="ctrl" placeholder="Option B" style="background: #f8fafc;"/>
+                    <input type="text" [(ngModel)]="newQuestion.options[2]" class="ctrl" placeholder="Option C" style="background: #f8fafc;"/>
+                    <input type="text" [(ngModel)]="newQuestion.options[3]" class="ctrl" placeholder="Option D" style="background: #f8fafc;"/>
+                  </div>
+                </div>
+              }
+
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px;">
+                <div>
+                  <label style="font-size:13px;font-weight:600;">சரியான விடை (Correct Answer)</label>
+                  <input type="text" [(ngModel)]="newQuestion.correct_answer" class="ctrl" placeholder="{{ newQuestion.type === 'mcq' ? 'e.g. Option A' : 'Exact answer text' }}" style="background: #f8fafc;"/>
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;">மதிப்பெண்</label>
+                  <input type="number" [(ngModel)]="newQuestion.marks" class="ctrl" placeholder="1" style="background: #f8fafc;"/>
+                </div>
+              </div>
+
+              <button class="btn-sm" style="background:#8b5cf6;color:#fff;border:none; width: 100%; justify-content: center;" (click)="saveQuestion()">
+                <i class="bi bi-floppy"></i> வினாவை சேமி (Save Question)
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   }

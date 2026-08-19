@@ -14,9 +14,19 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
 })
 export class CourierTabComponent implements OnInit {
   bookOrders: any[] = [];
+  books: any[] = [];
+  buyersList: any[] = [];
   isLoading = false;
+  isBooksLoading = false;
+  
   selectedOrderForCourier: any = null;
   courierForm = { status: 'Shipped', courier_partner: 'Blue Dart', awb_number: '' };
+
+  showAddBookModal = false;
+  newBookForm = { title: '', author: '', price: '', description: '' };
+
+  selectedBookForBuyers: any = null;
+  isLoadingBuyers = false;
 
   constructor(
     private http: HttpClient,
@@ -27,6 +37,7 @@ export class CourierTabComponent implements OnInit {
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       this.loadOrders();
+      this.loadBooks();
     }
   }
 
@@ -41,6 +52,57 @@ export class CourierTabComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadBooks(): void {
+    this.isBooksLoading = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>('http://127.0.0.1:8000/api/admin/books', headers).subscribe({
+      next: (res) => {
+        this.books = res.books || [];
+        this.isBooksLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isBooksLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  saveBook(): void {
+    if (!this.newBookForm.title || !this.newBookForm.price) {
+      alert('Title and Price are required.');
+      return;
+    }
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>('http://127.0.0.1:8000/api/admin/books', this.newBookForm, headers).subscribe({
+      next: (res) => {
+        alert(res.message || 'Book added successfully!');
+        this.showAddBookModal = false;
+        this.newBookForm = { title: '', author: '', price: '', description: '' };
+        this.loadBooks();
+      },
+      error: () => alert('Failed to add book.')
+    });
+  }
+
+  viewBuyers(book: any): void {
+    this.selectedBookForBuyers = book;
+    this.isLoadingBuyers = true;
+    this.buyersList = [];
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`http://127.0.0.1:8000/api/admin/books/${book.id}/buyers`, headers).subscribe({
+      next: (res) => {
+        this.buyersList = res.buyers || [];
+        this.isLoadingBuyers = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingBuyers = false;
         this.cdr.detectChanges();
       }
     });

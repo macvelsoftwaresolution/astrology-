@@ -12,32 +12,7 @@ class CourierManagementController extends Controller
      */
     public function getPublicBooks()
     {
-        $books = [
-            [
-                'id' => 'book-1',
-                'title' => 'ஜோதிட ரகசியங்கள் (Secrets of Astrology)',
-                'author' => 'முனைவர் அருள்செல்வன்',
-                'price' => 499.00,
-                'cover_image' => 'assets/images/astro_service_bg.png',
-                'description' => 'ஜோதிட அடிப்படைகள் மற்றும் நவகிரக ரகசியங்கள் அடங்கிய முழுமையான கையேடு.'
-            ],
-            [
-                'id' => 'book-2',
-                'title' => 'வாஸ்து சாஸ்திர முழு விளக்கம் (Complete Vastu Sastra)',
-                'author' => 'சுவாமி நாகலிங்கம்',
-                'price' => 599.00,
-                'cover_image' => 'assets/images/temple_sunrise.png',
-                'description' => 'வீடு, மனை, தொழிற்சாலை வாஸ்து அமைப்புகளை சுலபமாக கணக்கிட உதவும் நூல்.'
-            ],
-            [
-                'id' => 'book-3',
-                'title' => 'வேதங்கள் மற்றும் உபநிடதங்கள் (Vedas & Upanishads)',
-                'author' => 'யோகி ஜெயராம்',
-                'price' => 699.00,
-                'cover_image' => 'assets/images/spiritual_education_bg.png',
-                'description' => 'வேத ஆன்மீக தத்துவங்கள் மற்றும் ஆன்ம சாதனை வழிமுறைகள்.'
-            ]
-        ];
+        $books = DB::table('books')->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'success' => true,
@@ -88,6 +63,13 @@ class CourierManagementController extends Controller
             'updated_at' => now(),
         ]);
 
+        return response()->json([
+            'success' => true,
+            'message' => 'Book order placed successfully',
+            'order_number' => $orderNumber
+        ]);
+    }
+
     /**
      * Admin: Get all physical book orders
      */
@@ -97,8 +79,9 @@ class CourierManagementController extends Controller
             ->leftJoin('users', 'book_orders.student_id', '=', 'users.id')
             ->select(
                 'book_orders.*',
-                'users.name as student_name',
-                'users.email as student_email'
+                'users.name as user_name',
+                'users.email as student_email',
+                'users.phone as user_phone'
             )
             ->orderBy('book_orders.created_at', 'desc')
             ->get();
@@ -130,6 +113,77 @@ class CourierManagementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Courier status updated successfully.'
+        ]);
+    }
+
+    public function getAdminBooks()
+    {
+        $books = DB::table('books')->orderBy('created_at', 'desc')->get();
+        return response()->json([
+            'success' => true,
+            'books' => $books
+        ]);
+    }
+
+    public function saveBook(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string',
+            'author' => 'nullable|string',
+            'price' => 'required|numeric',
+            'description' => 'nullable|string',
+        ]);
+
+        $id = DB::table('books')->insertGetId([
+            'title' => $request->title,
+            'author' => $request->author,
+            'price' => $request->price,
+            'description' => $request->description,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Book added successfully',
+            'book' => DB::table('books')->find($id)
+        ]);
+    }
+
+    public function deleteBook($id)
+    {
+        DB::table('books')->where('id', $id)->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Book deleted successfully'
+        ]);
+    }
+
+    public function getBookBuyers($id)
+    {
+        $book = DB::table('books')->find($id);
+        if (!$book) return response()->json(['success' => false, 'message' => 'Book not found'], 404);
+
+        $buyers = DB::table('book_orders')
+            ->leftJoin('users', 'book_orders.student_id', '=', 'users.id')
+            ->where('book_orders.book_title', $book->title)
+            ->select('users.name', 'users.email', 'book_orders.phone', 'book_orders.order_number', 'book_orders.created_at', 'book_orders.status')
+            ->get();
+
+        return response()->json(['success' => true, 'buyers' => $buyers]);
+    }
+
+    public function getMyBookOrders(Request $request)
+    {
+        $user = $request->user();
+        $orders = DB::table('book_orders')
+            ->where('student_id', $user ? $user->id : 1) // fallback to 1 if no auth for test
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'orders' => $orders
         ]);
     }
 }

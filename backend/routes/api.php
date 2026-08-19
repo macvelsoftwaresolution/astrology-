@@ -36,6 +36,7 @@ Route::get('/public/books',         [CourierManagementController::class, 'getPub
 Route::get('/public/banners',       [SuperAdminController::class, 'getPublicBanners']);
 Route::get('/public/seminars',      [SuperAdminController::class, 'getPublicSeminars']);
 Route::get('/public/materials',     [SuperAdminController::class, 'getPublicMaterials']);
+Route::get('/public/exams/{level}', [\App\Http\Controllers\ExamController::class, 'getExams']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
@@ -73,6 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Appointment Booking History
     Route::get('/user/bookings', [UserProfileController::class, 'getMyBookings']);
+    
+    // My Book Orders
+    Route::get('/user/book-orders', [CourierManagementController::class, 'getMyBookOrders']);
 
     // Payment History
     Route::get('/user/payments', [UserProfileController::class, 'getPaymentHistory']);
@@ -104,9 +108,18 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     // LMS Courses CRUD
     Route::get('/courses',                          [CourseController::class, 'index']);
     Route::post('/courses',                         [CourseController::class, 'store']);
+    Route::put('/courses/{courseId}',               [CourseController::class, 'update']);
     Route::post('/courses/{courseId}/modules',      [CourseController::class, 'addModule']);
     Route::post('/modules/{moduleId}/lessons',      [CourseController::class, 'addLesson']);
     Route::delete('/courses/{id}',                  [CourseController::class, 'destroy']);
+
+    // Exams & Quizzes
+    Route::post('/exams',                           [App\Http\Controllers\ExamController::class, 'storeExam']);
+    Route::put('/exams/{id}',                       [App\Http\Controllers\ExamController::class, 'updateExam']);
+    Route::delete('/exams/{id}',                    [App\Http\Controllers\ExamController::class, 'destroyExam']);
+    Route::post('/exams/{examId}/questions',        [App\Http\Controllers\ExamController::class, 'storeQuestion']);
+    Route::delete('/questions/{id}',                [App\Http\Controllers\ExamController::class, 'destroyQuestion']);
+    Route::post('/exams/{examId}/import-pdf',       [App\Http\Controllers\ExamController::class, 'importPdf']);
 
     // Student Exam Submissions & Grading
     Route::get('/submissions',                      [GradingController::class, 'getSubmissions']);
@@ -115,6 +128,12 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     // Book Orders & Courier
     Route::get('/book-orders',                      [CourierManagementController::class, 'getOrders']);
     Route::put('/book-orders/{id}/courier',         [CourierManagementController::class, 'updateCourierStatus']);
+    
+    // Books Inventory
+    Route::get('/books',                            [CourierManagementController::class, 'getAdminBooks']);
+    Route::post('/books',                           [CourierManagementController::class, 'saveBook']);
+    Route::delete('/books/{id}',                    [CourierManagementController::class, 'deleteBook']);
+    Route::get('/books/{id}/buyers',                [CourierManagementController::class, 'getBookBuyers']);
 
     // Astrology Appointment Bookings & Astrologer Availability
     Route::get('/bookings',                         [AstrologyController::class, 'getAdminBookings']);

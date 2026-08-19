@@ -84,10 +84,103 @@ class CourseController extends Controller
             'updated_at' => now(),
         ]);
 
+        if ($request->has('modules') && is_array($request->modules)) {
+            foreach ($request->modules as $index => $mod) {
+                $newModuleId = DB::table('syllabus_modules')->insertGetId([
+                    'course_id' => $courseId,
+                    'title' => $mod['title'] ?? 'Module',
+                    'order_index' => $index + 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                if (isset($mod['lessons']) && is_array($mod['lessons'])) {
+                    foreach ($mod['lessons'] as $lIndex => $les) {
+                        DB::table('lessons')->insert([
+                            'module_id' => $newModuleId,
+                            'title' => $les['title'] ?? 'Lesson',
+                            'content_type' => $les['content_type'] ?? 'video',
+                            'content_url' => $les['content_url'] ?? '',
+                            'duration' => $les['duration'] ?? null,
+                            'description' => $les['description'] ?? null,
+                            'order_index' => $lIndex + 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+            }
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Course created successfully.',
             'course_id' => $courseId
+        ]);
+    }
+
+    /**
+     * Update an existing course
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'category' => 'required|string',
+            'level' => 'required|string',
+            'thumbnail' => 'nullable|string',
+        ]);
+
+        DB::table('courses')->where('id', $id)->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'price' => $request->price,
+            'category' => $request->category,
+            'level' => $request->level,
+            'thumbnail' => $request->thumbnail ?? 'https://images.unsplash.com/photo-1532968961962-8a0cb3a2d4f5?q=80&w=800',
+            'updated_at' => now(),
+        ]);
+
+        if ($request->has('modules') && is_array($request->modules)) {
+            // Delete old modules & lessons to recreate them
+            $moduleIds = DB::table('syllabus_modules')->where('course_id', $id)->pluck('id');
+            if ($moduleIds->isNotEmpty()) {
+                DB::table('lessons')->whereIn('module_id', $moduleIds)->delete();
+                DB::table('syllabus_modules')->where('course_id', $id)->delete();
+            }
+
+            foreach ($request->modules as $index => $mod) {
+                $newModuleId = DB::table('syllabus_modules')->insertGetId([
+                    'course_id' => $id,
+                    'title' => $mod['title'] ?? 'Module',
+                    'order_index' => $index + 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                if (isset($mod['lessons']) && is_array($mod['lessons'])) {
+                    foreach ($mod['lessons'] as $lIndex => $les) {
+                        DB::table('lessons')->insert([
+                            'module_id' => $newModuleId,
+                            'title' => $les['title'] ?? 'Lesson',
+                            'content_type' => $les['content_type'] ?? 'video',
+                            'content_url' => $les['content_url'] ?? '',
+                            'duration' => $les['duration'] ?? null,
+                            'description' => $les['description'] ?? null,
+                            'order_index' => $lIndex + 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course updated successfully.'
         ]);
     }
 

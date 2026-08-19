@@ -9,6 +9,58 @@
     </div>
   </div>
 
+  <!-- BOOKS INVENTORY SECTION -->
+  <div class="card-box" style="margin-bottom: 24px;">
+    <div style="display:flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e2e8f0;">
+      <h2 style="margin: 0; font-size: 16px; color: #0f172a;">Books Inventory</h2>
+      <button class="btn-primary" (click)="showAddBookModal = true">
+        <i class="bi bi-plus-lg"></i> Add Book
+      </button>
+    </div>
+    
+    @if (isBooksLoading) {
+      <div style="text-align:center;padding:20px;color:#b45309;font-size:14px;font-weight:600;">
+        <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
+      </div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price (₹)</th>
+            <th>Added On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (book of books; track book.id) {
+            <tr>
+              <td><strong>{{ book.title }}</strong></td>
+              <td>{{ book.author || '-' }}</td>
+              <td>₹{{ book.price }}</td>
+              <td>{{ book.created_at | date:'mediumDate' }}</td>
+              <td>
+                <button class="btn-sm" (click)="viewBuyers(book)">
+                  <i class="bi bi-people-fill"></i> View Buyers
+                </button>
+              </td>
+            </tr>
+          }
+          @if (books.length === 0) {
+            <tr>
+              <td colspan="5" style="text-align:center;padding:24px;color:#64748b;">
+                No books found.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  <!-- ORDERS SECTION -->
+  <h2 style="margin: 0 0 16px 0; font-size: 16px; color: #0f172a;">Recent Orders</h2>
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
       <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
@@ -66,6 +118,94 @@
           }
         </tbody>
       </table>
+    </div>
+  }
+
+  <!-- MODAL: ADD BOOK -->
+  @if (showAddBookModal) {
+    <div class="modal-overlay" (click)="showAddBookModal = false">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3><i class="bi bi-book" style="color:#d97706;margin-right:6px;"></i> Add New Book</h3>
+          <button class="close-btn" (click)="showAddBookModal = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form (ngSubmit)="saveBook()">
+          <div class="form-group">
+            <label>Title *</label>
+            <input [(ngModel)]="newBookForm.title" name="btitle" required class="ctrl" placeholder="e.g. Astrology for Beginners"/>
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input [(ngModel)]="newBookForm.author" name="bauthor" class="ctrl" placeholder="e.g. Astro Team"/>
+          </div>
+          <div class="form-group">
+            <label>Price (₹) *</label>
+            <input type="number" [(ngModel)]="newBookForm.price" name="bprice" required class="ctrl" placeholder="e.g. 500"/>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea [(ngModel)]="newBookForm.description" name="bdesc" class="ctrl" rows="3" placeholder="Brief description..."></textarea>
+          </div>
+          <div class="modal-btns">
+            <button type="button" (click)="showAddBookModal = false" class="btn-cancel">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-primary">Save Book</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: VIEW BUYERS -->
+  @if (selectedBookForBuyers) {
+    <div class="modal-overlay" (click)="selectedBookForBuyers = null">
+      <div class="modal-box" style="max-width: 600px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3><i class="bi bi-people-fill" style="color:#2563eb;margin-right:6px;"></i> Buyers: {{ selectedBookForBuyers.title }}</h3>
+          <button class="close-btn" (click)="selectedBookForBuyers = null"><i class="bi bi-x-lg"></i></button>
+        </div>
+        @if (isLoadingBuyers) {
+          <div style="text-align:center;padding:20px;color:#2563eb;">
+            <i class="bi bi-arrow-repeat spin"></i> Loading buyers...
+          </div>
+        } @else {
+          <div style="max-height: 400px; overflow-y: auto;">
+            <table class="data-table" style="margin-bottom: 0;">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Order #</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (buyer of buyersList; track buyer.order_number) {
+                  <tr>
+                    <td>
+                      <div><strong>{{ buyer.name }}</strong></div>
+                      <small class="muted">{{ buyer.email }} | {{ buyer.phone }}</small>
+                    </td>
+                    <td>{{ buyer.order_number }}</td>
+                    <td>
+                      <span class="status-pill" [ngClass]="(buyer.status || 'Processing').toLowerCase()">
+                        {{ buyer.status }}
+                      </span>
+                    </td>
+                    <td>{{ buyer.created_at | date:'shortDate' }}</td>
+                  </tr>
+                }
+                @if (buyersList.length === 0) {
+                  <tr>
+                    <td colspan="4" style="text-align:center;padding:24px;color:#64748b;">
+                      No buyers yet for this book.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
     </div>
   }
 

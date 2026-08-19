@@ -13,7 +13,7 @@ import { environment } from '../../../../../environments/environment';
 export class LearnDashboardComponent implements OnInit {
   @Input() enrollForm: any;
   @Output() logout = new EventEmitter<void>();
-  @Output() startQuiz = new EventEmitter<void>();
+  @Output() startQuiz = new EventEmitter<any>();
   @Output() viewCertificate = new EventEmitter<void>();
 
   @Input() dashboardTab: 'home' | 'lessons' | 'library' | 'profile' = 'home';
@@ -46,6 +46,16 @@ export class LearnDashboardComponent implements OnInit {
   // Checkout modal states
   activeBookCheckout = false;
   selectedCheckoutBook: Book | null = null;
+  checkoutForm = {
+    name: '',
+    phone: '',
+    address: ''
+  };
+
+  // My Orders State
+  myBookOrders: any[] = [];
+  showMyOrdersModal = false;
+  isLoadingOrders = false;
 
   constructor(
     private toastController: ToastController,
@@ -57,6 +67,46 @@ export class LearnDashboardComponent implements OnInit {
     this.loadBooks();
     this.loadSeminars();
     this.loadMaterials();
+    this.loadExams();
+  }
+
+  loadMyBookOrders() {
+    this.isLoadingOrders = true;
+    this.http.get<any>(`${environment.apiUrl}/user/book-orders`).subscribe({
+      next: (res) => {
+        if (res && res.orders) {
+          this.myBookOrders = res.orders;
+        }
+        this.isLoadingOrders = false;
+      },
+      error: () => {
+        this.isLoadingOrders = false;
+      }
+    });
+  }
+
+  openMyOrders() {
+    this.showMyOrdersModal = true;
+    this.loadMyBookOrders();
+  }
+
+  closeMyOrders() {
+    this.showMyOrdersModal = false;
+  }
+
+  // Exams List (Dynamic from DB)
+  exams: any[] = [];
+
+  loadExams() {
+    const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
+    this.http.get<any>(`${environment.apiUrl}/public/exams/${userLevel}`).subscribe({
+      next: (res) => {
+        if (res && res.exams) {
+          this.exams = res.exams;
+        }
+      },
+      error: () => {}
+    });
   }
 
   loadSeminars() {
@@ -68,7 +118,8 @@ export class LearnDashboardComponent implements OnInit {
             speaker: s.speaker,
             date: s.date_text,
             time: s.time_text,
-            status: s.status || 'upcoming'
+            status: s.status || 'upcoming',
+            join_url: s.join_url
           }));
         }
       },
@@ -95,9 +146,17 @@ export class LearnDashboardComponent implements OnInit {
     this.http.get<any>(`${environment.apiUrl}/public/courses`).subscribe({
       next: (res) => {
         if (res && res.courses && Array.isArray(res.courses) && res.courses.length > 0) {
-          const firstCourse = res.courses[0];
-          if (firstCourse && firstCourse.modules && Array.isArray(firstCourse.modules)) {
-            this.chapters = firstCourse.modules.map((m: any, idx: number) => ({
+          // Find course matching the enrolled level
+          const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
+          let activeCourse = res.courses.find((c: any) => c.level && c.level.toUpperCase() === userLevel);
+          
+          if (!activeCourse) {
+            // Fallback to first course if no match
+            activeCourse = res.courses[0];
+          }
+
+          if (activeCourse && activeCourse.modules && Array.isArray(activeCourse.modules)) {
+            this.chapters = activeCourse.modules.map((m: any, idx: number) => ({
               title: m.title || `அத்தியாயம் ${idx + 1}`,
               progress: idx === 0 ? 100 : (idx === 1 ? 60 : 0),
               completed: idx === 0,
@@ -105,9 +164,12 @@ export class LearnDashboardComponent implements OnInit {
               lessons: (m.lessons || []).map((l: any, lIdx: number) => ({
                 title: l.title || `பாடம் ${lIdx + 1}`,
                 duration: l.duration || '15:00 நிமிடங்கள்',
-                completed: idx === 0,
+                completed: idx === 0, // Mock progress
                 videoUrl: l.content_url || '',
-                audioUrl: l.content_url || ''
+                audioUrl: l.content_url || '',
+                description: l.description || '',
+                type: l.content_type || 'video',
+                url: l.content_url || ''
               }))
             }));
           }
@@ -142,15 +204,31 @@ export class LearnDashboardComponent implements OnInit {
   initiateBuyBook(book: Book) {
     this.selectedCheckoutBook = book;
     this.activeBookCheckout = true;
+    this.checkoutForm = {
+      name: this.enrollForm?.fullName || '',
+      phone: '',
+      address: ''
+    };
   }
 
   async confirmCheckoutPayment() {
     if (this.selectedCheckoutBook) {
+      if (!this.checkoutForm.name || !this.checkoutForm.phone || !this.checkoutForm.address) {
+        const toast = await this.toastController.create({
+          message: 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).',
+          duration: 2500,
+          color: 'warning',
+          position: 'bottom'
+        });
+        await toast.present();
+        return;
+      }
+
       const orderPayload = {
         book_title: this.selectedCheckoutBook.title,
         price: this.selectedCheckoutBook.price,
-        shipping_address: this.enrollForm?.fullName ? `${this.enrollForm.fullName}, தமிழ்நாடு` : 'மாணவர் முகவரி, தமிழ்நாடு',
-        phone: '9876543210'
+        shipping_address: this.checkoutForm.address,
+        phone: this.checkoutForm.phone
       };
 
       this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload).subscribe({
@@ -191,20 +269,24 @@ export class LearnDashboardComponent implements OnInit {
     this.selectedCheckoutBook = null;
   }
 
-  async downloadPDF(fileName: string) {
+  async downloadPDF(fileName: string, url?: string) {
     const toast = await this.toastController.create({
-      message: `${fileName} - PDF வெற்றிகரமாக தரவிறக்கப்பட்டது!`,
+      message: `${fileName} - PDF தரவிறக்கப்படுகிறது...`,
       duration: 2500,
       color: 'success',
       position: 'bottom'
     });
     await toast.present();
 
-    // Trigger basic simulated download
-    const link = document.createElement('a');
-    link.href = 'data:application/pdf;base64,JVBERi0xLjQKJVRleHQgRG93bmxvYWQgRGVtbw==';
-    link.download = `${fileName}.pdf`;
-    link.click();
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      // Trigger basic simulated download
+      const link = document.createElement('a');
+      link.href = 'data:application/pdf;base64,JVBERi0xLjQKJVRleHQgRG93bmxvYWQgRGVtbw==';
+      link.download = `${fileName}.pdf`;
+      link.click();
+    }
   }
 
   setTab(tab: 'home' | 'lessons' | 'library' | 'profile') {
@@ -245,11 +327,26 @@ export class LearnDashboardComponent implements OnInit {
       instructor: 'ஜெக சீனிவாசன்',
       views: '12.8k',
       duration: lesson.duration,
-      description: `இப்பாடம் ${lesson.title} பற்றிய விரிவான விளக்கங்களை வழங்குகிறது. ஜோதிடத்தின் நுணுக்கங்களை எளிய முறையில் கற்றுக்கொள்ள இந்த வகுப்பு உதவும்.`
+      description: lesson.description || `இப்பாடம் ${lesson.title} பற்றிய விரிவான விளக்கங்களை வழங்குகிறது.`
     };
+    
+    // Add custom properties for handling different content types
+    (this.selectedLesson as any).type = lesson.type;
+    (this.selectedLesson as any).url = lesson.url;
+
     this.currentLessonView = 'detail';
     this.currentLessonViewChange.emit('detail');
-    this.playVideo();
+
+    if (lesson.type === 'live') {
+      window.open(lesson.url, '_blank');
+      this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success');
+    } else if (lesson.type === 'pdf') {
+      this.downloadPDF(lesson.title, lesson.url);
+    } else if (lesson.type === 'audio') {
+      this.showToast('ஒலி பாடம் பிளே செய்யப்படுகிறது...', 'success');
+    } else {
+      this.playVideo();
+    }
   }
 
   goToAudio() {
@@ -257,6 +354,15 @@ export class LearnDashboardComponent implements OnInit {
     this.currentLessonView = 'detail';
     this.currentLessonViewChange.emit('detail');
     this.playVideo();
+  }
+
+  openMeeting(url?: string) {
+    if (url) {
+      window.open(url, '_blank');
+      this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success');
+    } else {
+      this.openMockGoogleMeet();
+    }
   }
 
   openMockGoogleMeet() {

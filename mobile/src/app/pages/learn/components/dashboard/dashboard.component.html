@@ -37,14 +37,21 @@
       <h3>தேர்வுகள்</h3>
       <span class="subheader-badge">அனைத்தும்</span>
     </div>
-    <div class="quick-exam-card" (click)="goToExams()">
-      <div class="qe-icon">📝</div>
-      <div class="qe-details">
-        <strong>அடிப்படைகள் தேர்வு 1</strong>
-        <span>20 கேள்விகள் • 30 நிமிடங்கள்</span>
+    @for (ex of exams; track ex.id) {
+      <div class="quick-exam-card" (click)="startQuiz.emit(ex)">
+        <div class="qe-icon">📝</div>
+        <div class="qe-details">
+          <strong>{{ ex.title }}</strong>
+          <span>{{ ex.questions?.length || 0 }} கேள்விகள் • {{ ex.duration }} நிமிடங்கள்</span>
+        </div>
+        <span class="qe-arrow">▶</span>
       </div>
-      <span class="qe-arrow">▶</span>
-    </div>
+    }
+    @if (exams.length === 0) {
+      <div style="text-align:center;color:#64748b;font-size:13px;padding:10px;">
+        தேர்வுகள் ஏதுமில்லை.
+      </div>
+    }
     <!-- Audio Lessons -->
     <div class="db-section-header" style="margin-top: 1.5rem;">
       <h3>ஒலி பாடங்கள்</h3>
@@ -62,7 +69,7 @@
     </div>
     <div class="webinar-scroller">
       @for (s of seminars; track s) {
-        <div class="webinar-card" [class.live]="s.status === 'live'" (click)="s.status === 'live' ? openMockGoogleMeet() : null">
+        <div class="webinar-card" [class.live]="s.status === 'live'" (click)="openMeeting(s.join_url)">
           @if (s.status === 'live') {
             <span class="web-status-badge">நேரலை</span>
           }
@@ -70,7 +77,7 @@
           <span class="web-speaker">👤 {{ s.speaker }}</span>
           <span class="web-date">📅 {{ s.date }} • {{ s.time }}</span>
           @if (s.status === 'live') {
-            <button class="web-btn" (click)="openMockGoogleMeet(); $event.stopPropagation()">சேர்</button>
+            <button class="web-btn" (click)="openMeeting(s.join_url); $event.stopPropagation()">சேர்</button>
           }
           @if (s.status === 'past') {
             <button class="web-btn past" (click)="$event.stopPropagation()">மீண்டும் பார்க்க</button>
@@ -84,7 +91,7 @@
     </div>
     <div class="pdf-notes-grid">
       @for (p of pdfNotes; track p) {
-        <div class="pdf-note-card" (click)="downloadPDF(p.title)">
+        <div class="pdf-note-card" (click)="downloadPDF(p.title, p.url)">
           <span class="pdf-icon">📄</span>
           <h4>{{ p.title }}</h4>
           <span>{{ p.pages }}</span>
@@ -187,10 +194,16 @@
                   <div class="lessons-sub-list">
                     @for (l of c.lessons; track l) {
                       <div class="lesson-sub-item" [class.completed]="l.completed" (click)="selectCourseLesson(l); $event.stopPropagation()">
-                        <span class="status-circle">{{ l.completed ? '✓' : '○' }}</span>
+                        <span class="status-circle">
+                          @if (l.type === 'video') { 🎥 }
+                          @if (l.type === 'audio') { 🎧 }
+                          @if (l.type === 'pdf') { 📄 }
+                          @if (l.type === 'live') { 🔴 }
+                          @if (l.type === 'image') { 🖼️ }
+                        </span>
                         <div class="l-details">
                           <h4>{{ l.title }}</h4>
-                          <span>{{ l.duration }}</span>
+                          <span>{{ l.type | uppercase }} • {{ l.duration || 'N/A' }}</span>
                         </div>
                         @if (!l.completed) {
                           <span class="lock-icon">🔒</span>
@@ -321,6 +334,11 @@
         <span class="tile-text">சேமித்த நூல்கள்</span>
         <span class="tile-arrow">➔</span>
       </div>
+      <div class="modern-option-tile" (click)="openMyOrders()">
+        <span class="tile-icon">📦</span>
+        <span class="tile-text">புத்தக ஆர்டர்கள் & நிலை</span>
+        <span class="tile-arrow">➔</span>
+      </div>
       <div class="modern-option-tile" (click)="openDiary()">
         <span class="tile-icon">📓</span>
         <span class="tile-text">ஆன்மீக நாட்குறிப்பு</span>
@@ -369,6 +387,20 @@
           <span>ஆசிரியர்: {{ selectedCheckoutBook.author }}</span>
           <span class="checkout-price">தொகை: ₹{{ selectedCheckoutBook.price }}</span>
         </div>
+        
+        <div class="checkout-form-group">
+          <label>முழு பெயர் (Name) *</label>
+          <input type="text" [(ngModel)]="checkoutForm.name" placeholder="உங்கள் பெயர்" class="checkout-input">
+        </div>
+        <div class="checkout-form-group">
+          <label>அலைபேசி எண் (Mobile) *</label>
+          <input type="tel" [(ngModel)]="checkoutForm.phone" placeholder="9876543210" class="checkout-input">
+        </div>
+        <div class="checkout-form-group">
+          <label>முழு முகவரி (Address) *</label>
+          <textarea [(ngModel)]="checkoutForm.address" placeholder="கதவு எண், தெரு, ஊர், பின்கோடு..." class="checkout-input" rows="3"></textarea>
+        </div>
+
         <div class="payment-methods-box">
           <p>பணம் செலுத்தும் முறை தேர்வு செய்யவும்:</p>
           <div class="pay-method-option active">
@@ -376,6 +408,46 @@
           </div>
         </div>
         <button class="confirm-pay-btn" (click)="confirmCheckoutPayment()">கட்டணத்தை உறுதி செய்க</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- My Orders Modal Overlay -->
+@if (showMyOrdersModal) {
+  <div class="checkout-modal-overlay">
+    <div class="checkout-modal-card" style="max-height: 80vh; overflow-y: auto;">
+      <div class="checkout-modal-header">
+        <h3>எனது ஆர்டர்கள் (My Orders)</h3>
+        <button class="close-checkout-btn" (click)="closeMyOrders()">×</button>
+      </div>
+      <div class="checkout-modal-body">
+        @if (isLoadingOrders) {
+          <div style="text-align: center; padding: 20px; color: #4a0404;">ஏற்றப்படுகிறது...</div>
+        } @else {
+          @for (order of myBookOrders; track order.id) {
+            <div style="border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px; padding: 12px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.5);">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <strong style="color: #4a0404; font-size: 14px;">{{ order.book_title }}</strong>
+                <span style="font-size: 12px; color: #64748b;">{{ order.created_at | date:'shortDate' }}</span>
+              </div>
+              <div style="font-size: 13px; color: #1a1a1a; margin-bottom: 4px;">ஆர்டர் எண்: <strong>{{ order.order_number }}</strong></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                <span style="font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: bold; background: #fff3cd; color: #856404;">
+                  {{ order.status }}
+                </span>
+                @if (order.awb_number) {
+                  <span style="font-size: 12px; color: #2563eb; font-weight: bold;">AWB: {{ order.awb_number }} ({{ order.courier_partner }})</span>
+                }
+              </div>
+            </div>
+          }
+          @if (myBookOrders.length === 0) {
+            <div style="text-align: center; padding: 20px; color: #64748b; font-size: 14px;">
+              நீங்கள் இன்னும் எந்த புத்தகமும் வாங்கவில்லை.
+            </div>
+          }
+        }
       </div>
     </div>
   </div>

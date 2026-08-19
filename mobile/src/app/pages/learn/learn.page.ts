@@ -15,6 +15,9 @@ export interface Chapter {
     completed: boolean;
     audioUrl?: string;
     videoUrl?: string;
+    description?: string;
+    type?: string;
+    url?: string;
   }[];
   isOpen?: boolean;
 }
@@ -34,6 +37,7 @@ export interface Seminar {
   date: string;
   time: string;
   status: 'live' | 'upcoming' | 'past';
+  join_url?: string;
 }
 
 @Component({
@@ -44,7 +48,7 @@ export interface Seminar {
 })
 export class LearnPage implements OnInit {
   currentScreen: 'intro' | 'rules' | 'enroll' | 'payment' | 'post-payment-login' | 'dashboard' = 'intro';
-  activeQuiz: boolean = false;
+  activeQuiz: any = null;
   showCertificate: boolean = false;
 
   dashboardTab: 'home' | 'lessons' | 'library' | 'profile' = 'home';
@@ -99,7 +103,7 @@ export class LearnPage implements OnInit {
 
   customBackHandler = () => {
     if (this.activeQuiz) {
-      this.activeQuiz = false;
+      this.activeQuiz = null;
       return true;
     }
     if (this.showCertificate) {

@@ -1527,3 +1527,28 @@ $color-orange: #F49320;
     }
   }
 }
+
+.checkout-form-group {
+  margin-bottom: 1rem;
+  label {
+    display: block;
+    font-size: 0.8rem;
+    color: #4a0404;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .checkout-input {
+    width: 100%;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #1a1a1a;
+    outline: none;
+    &:focus {
+      border-color: #4a0404;
+      background-color: #fff;
+    }
+  }
+}

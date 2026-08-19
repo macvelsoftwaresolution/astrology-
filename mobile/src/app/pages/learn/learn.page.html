@@ -73,14 +73,14 @@
       [(dashboardTab)]="dashboardTab"
       [(currentLessonView)]="currentLessonView"
       (logout)="logoutCourse()"
-      (startQuiz)="activeQuiz = true"
+      (startQuiz)="activeQuiz = $event"
       (viewCertificate)="showCertificate = true">
     </app-learn-dashboard>
   }
 
   <!-- Overlays -->
   @if (activeQuiz) {
-    <app-learn-quiz (close)="activeQuiz = false"></app-learn-quiz>
+    <app-learn-quiz [exam]="activeQuiz" (close)="activeQuiz = null"></app-learn-quiz>
   }
   @if (showCertificate) {
     <app-learn-certificate [enrollForm]="enrollForm" (close)="showCertificate = false"></app-learn-certificate>
