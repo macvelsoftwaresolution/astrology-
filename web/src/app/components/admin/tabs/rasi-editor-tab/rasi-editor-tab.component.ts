@@ -63,34 +63,19 @@ export class RasiEditorTabComponent implements OnInit {
     { name: 'மீனம்', symbol: '♓', englishName: 'Pisces', dates: 'Feb 19 - Mar 20' }
   ];
 
-  defaultRasiPredictions: Record<string, string> = {
-    'மேஷம்': 'இன்று உங்களுக்கு சுப பலன்கள் அதிகரிக்கும். தொட்ட காரியங்கள் அனைத்தும் வெற்றியடையும்.',
-    'ரிஷபம்': 'இன்று தனலாபம் உண்டு. குடும்பத்தில் மகிழ்ச்சியும் அமைதியும் நிலவும்.',
-    'மிதுனம்': 'தொழிலில் புதிய வாய்ப்புகள் தேடி வரும். நண்பர்களின் ஆதரவு கிடைக்கும்.',
-    'கடகம்': 'மனதில் தெளிவும் உற்சாகமும் பிறக்கும். புதிய முயற்சிகள் கைகூடும்.',
-    'சிம்மம்': 'தொழிலில் நல்ல முன்னேற்றம் காணப்படும். சுப நிகழ்ச்சிகள் திட்டமிடுவீர்கள்.',
-    'கன்னி': 'அலுவலகத்தில் உங்களின் உழைப்பிற்கு நல்ல அங்கீகாரம் கிடைக்கும்.',
-    'துலாம்': 'பயணங்களால் நன்மைகள் விளையும். பணப்புழக்கம் தாராளமாக இருக்கும்.',
-    'விருச்சிகம்': 'ஆரோக்கியத்தில் கவனம் தேவை. காரியங்களில் சிந்தித்து செயல்படவும்.',
-    'தனுசு': 'தொழில் விரிவாக்க சிந்தனை மேலோங்கும். நல்ல லாபம் கிட்டும்.',
-    'மகரம்': 'உறவினர்களின் ஆதரவு கிடைக்கும். தடைபட்ட காரியங்கள் நிவர்த்தியாகும்.',
-    'கும்பம்': 'சுப செய்தி வந்து சேரும். எதிர்பார்த்த தனவரவு உண்டாகும்.',
-    'மீனம்': 'ஆன்மீக சிந்தனை மேலோங்கும். புதிய மனிதர்களின் நட்பு கிடைக்கும்.'
-  };
-
   rasiPredictions: { rasi_name: string; prediction_text: string; audio_url: string; video_url: string }[] = this.rasiEditorList.map(r => ({
     rasi_name: r.name,
-    prediction_text: this.defaultRasiPredictions[r.name] || '',
+    prediction_text: '',
     audio_url: '',
     video_url: ''
   }));
 
   panchangamForm = {
-    thithi: 'சுக்ல பக்ஷ துவாதசி (Shukla Paksha Dvadasi)',
-    star: 'திருவோணம் (Thiruvonam)',
-    rahukalam: '07:30 AM - 09:00 AM',
-    yamagandam: '01:30 PM - 03:00 PM',
-    nalla_neram: '09:15 AM - 10:15 AM & 04:45 PM - 05:45 PM'
+    thithi: '',
+    star: '',
+    rahukalam: '',
+    yamagandam: '',
+    nalla_neram: ''
   };
 
   // Video Preview Modal
@@ -222,13 +207,7 @@ export class RasiEditorTabComponent implements OnInit {
   }
 
   resetAllToDefaults(): void {
-    if (!confirm('Are you sure you want to reset all 12 Rasi predictions to default template text?')) return;
-    this.rasiPredictions = this.rasiEditorList.map(r => ({
-      rasi_name: r.name,
-      prediction_text: this.defaultRasiPredictions[r.name] || '',
-      audio_url: '',
-      video_url: ''
-    }));
+    this.loadRasiPredictions();
   }
 
   savePanchangam(): void {
@@ -242,6 +221,73 @@ export class RasiEditorTabComponent implements OnInit {
       next: (res) => alert(res.message || 'Panchangam updated successfully!'),
       error: () => alert('Failed to update Panchangam.')
     });
+  }
+
+  isUploadingRasiAudio = false;
+  isUploadingRasiVideo = false;
+
+  uploadRasiAudio(event: any, index: number): void {
+    const file = event.target?.files?.[0];
+    if (!file || index === null || !this.rasiPredictions[index]) return;
+
+    this.isUploadingRasiAudio = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'audio');
+
+    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.rasiPredictions[index]) {
+          this.rasiPredictions[index].audio_url = res.url;
+        }
+        this.isUploadingRasiAudio = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Audio upload failed.');
+        this.isUploadingRasiAudio = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  uploadRasiVideo(event: any, index: number): void {
+    const file = event.target?.files?.[0];
+    if (!file || index === null || !this.rasiPredictions[index]) return;
+
+    this.isUploadingRasiVideo = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'videos');
+
+    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.rasiPredictions[index]) {
+          this.rasiPredictions[index].video_url = res.url;
+        }
+        this.isUploadingRasiVideo = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Video upload failed.');
+        this.isUploadingRasiVideo = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  removeRasiAudio(index: number): void {
+    if (index !== null && this.rasiPredictions[index]) {
+      this.rasiPredictions[index].audio_url = '';
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeRasiVideo(index: number): void {
+    if (index !== null && this.rasiPredictions[index]) {
+      this.rasiPredictions[index].video_url = '';
+      this.cdr.detectChanges();
+    }
   }
 
   testAudio(url: string): void {

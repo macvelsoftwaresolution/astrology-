@@ -1,9 +1,11 @@
 import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
 import { ToastController } from '@ionic/angular';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
+import { environment } from '../../environments/environment';
 
 interface Order {
   id: string;
@@ -39,17 +41,9 @@ export class HomePage implements OnInit {
   selectedRamajayamService: any = null;
   selectedSrinivasanService: any = null;
 
-  // Profile Orders List
-  userOrders: Order[] = [
-    {
-      id: 'AST-2026-001',
-      service: 'ஜாதகம் எழுதுதல்',
-      price: 2000,
-      date: '10-Aug-2026',
-      status: 'Pending',
-      details: 'Name: Rajesh Kumar, DOB: 24-Jul-1988'
-    }
-  ];
+  // Profile Orders List (Dynamic from DB)
+  userOrders: Order[] = [];
+  astrologers: any[] = [];
 
   get userInitial(): string {
     const user = this.authService.getCurrentUser();
@@ -59,25 +53,14 @@ export class HomePage implements OnInit {
     return '🕉️';
   }
 
-  // Hero Slider
-  heroBanners = [
+  // Hero Slider (Dynamic from DB)
+  heroBanners: any[] = [
     {
       image: 'assets/images/temple_sunrise.png',
       badge: 'இன்றைய சிறப்பு',
       title: 'இன்றைய ராசி பலன்',
-      subtitle: 'உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்'
-    },
-    {
-      image: 'assets/images/nataraja.png',
-      badge: 'புதிய சேவை',
-      title: 'திருமண பொருத்தம்',
-      subtitle: 'சிறந்த வாழ்க்கைத்துணையை தேர்ந்தெடுக்க'
-    },
-    {
-      image: 'assets/images/spiritual_education_bg.png',
-      badge: 'ஆன்மீகம்',
-      title: 'ஜாதகம் எழுதுதல்',
-      subtitle: 'துல்லியமான ஜாதக கணிப்பு'
+      subtitle: 'உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்',
+      link_flow: 'rasi-palan'
     }
   ];
   currentBannerIndex = 0;
@@ -136,10 +119,11 @@ export class HomePage implements OnInit {
 
   // Today's Panchangam values
   panchangam = {
-    thithi: 'ஏகாதசி',
-    star: 'ரோகினி',
-    rahukalam: '10:30 - 12:00',
-    yamagandam: '09:15 - 10:15'
+    thithi: 'சுக்கில பட்ச துவாதசி',
+    star: 'ரோகிணி',
+    rahukalam: '10:30 AM - 12:00 PM',
+    yamagandam: '09:15 AM - 10:15 AM',
+    nalla_neram: '06:15 AM - 07:15 AM'
   };
 
   // Vastu Services lists
@@ -167,6 +151,7 @@ export class HomePage implements OnInit {
     private ngZone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
+    private http: HttpClient,
     private authService: AuthService,
     private backButtonService: BackButtonService,
     private toastController: ToastController
@@ -294,6 +279,10 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.checkAuth();
     this.startSlider();
+    this.loadBanners();
+    this.loadPanchangam();
+    this.loadAstrologers();
+    this.loadUserOrders();
 
     this.route.queryParams.subscribe(params => {
       if (params['tab'] && ['home', 'services', 'matching', 'profile'].includes(params['tab'])) {
@@ -307,6 +296,89 @@ export class HomePage implements OnInit {
 
   ionViewWillEnter() {
     this.checkAuth();
+    this.loadBanners();
+    this.loadPanchangam();
+    this.loadAstrologers();
+    this.loadUserOrders();
+  }
+
+  loadBanners() {
+    this.http.get<any>(`${environment.apiUrl}/public/banners`).subscribe({
+      next: (res) => {
+        if (res && res.banners && Array.isArray(res.banners) && res.banners.length > 0) {
+          this.heroBanners = res.banners.map((b: any) => ({
+            image: b.image_url || 'assets/images/temple_sunrise.png',
+            badge: b.badge || 'ஆன்மீகம்',
+            title: b.title,
+            subtitle: b.subtitle || '',
+            link_flow: b.link_flow || 'services'
+          }));
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  onBannerClick(banner: any) {
+    if (!banner) return;
+    const flow = banner.link_flow;
+    if (flow === 'rasi-palan' || flow === 'horoscope' || flow === 'vastu' || flow === 'ramajayam' || flow === 'srinivasan') {
+      this.startServiceFlow(flow);
+    } else if (flow === 'matching') {
+      this.selectTab('matching');
+    } else {
+      this.selectTab('services');
+    }
+  }
+
+  loadPanchangam() {
+    this.http.get<any>(`${environment.apiUrl}/panchangam/today`).subscribe({
+      next: (res) => {
+        if (res) {
+          this.panchangam = {
+            thithi: res.thithi || res.panchangam?.thithi || '',
+            star: res.star || res.panchangam?.star || '',
+            rahukalam: res.rahukalam || res.panchangam?.rahukalam || '',
+            yamagandam: res.yamagandam || res.panchangam?.yamagandam || '',
+            nalla_neram: res.nalla_neram || res.panchangam?.nalla_neram || ''
+          };
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  loadAstrologers() {
+    this.http.get<any>(`${environment.apiUrl}/public/astrologers`).subscribe({
+      next: (res) => {
+        if (res && res.astrologers && Array.isArray(res.astrologers)) {
+          this.astrologers = res.astrologers;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  loadUserOrders() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    this.http.get<any>(`${environment.apiUrl}/user/bookings`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (res) => {
+        if (res && res.bookings && Array.isArray(res.bookings)) {
+          this.userOrders = res.bookings.map((b: any) => ({
+            id: b.id,
+            service: b.service_type,
+            price: Number(b.price) || 0,
+            date: b.created_at ? new Date(b.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
+            status: b.status || 'Pending',
+            details: typeof b.details === 'object' ? JSON.stringify(b.details) : (b.details || '')
+          }));
+        }
+      },
+      error: () => {}
+    });
   }
 
   private checkAuth() {
@@ -392,58 +464,32 @@ export class HomePage implements OnInit {
     this.nextStep();
   }
 
-  // Payment triggers & confirmation simulations
+  // Payment triggers & confirmation (Stored directly into Database)
   payAndFulfill(serviceName: string, price: number, details: string) {
-    const localOrderId = 'AST-2026-' + Math.floor(100 + Math.random() * 900);
-
-    const options = {
-      key: 'rzp_test_yourKeyId', // Replace with your key in production
-      amount: price * 100, // amount in paise
-      currency: 'INR',
-      name: 'ஆருத்ரா ஜோதிடம்',
-      description: serviceName + ' - ' + details,
-      handler: (response: any) => {
-        // Payment success callback from Razorpay
-        console.log('Payment successful: ', response);
-
-        this.userOrders.unshift({
-          id: localOrderId,
-          service: serviceName,
-          price: price,
-          date: '10-Aug-2026',
-          status: 'Pending',
-          details: `${details} (Razorpay ID: ${response.razorpay_payment_id})`
-        });
-
-        this.serviceStep = 4;
-      },
-      prefill: {
-        name: 'Rajesh Kumar',
-        email: 'rajesh.kumar@email.com',
-        contact: '9876543210'
-      },
-      theme: {
-        color: '#4A0E17' // Maroon theme color matching our design
+    const currentUser = this.authService.getCurrentUser();
+    const bookingPayload = {
+      user_name: this.horoscopeForm.name || this.vastuForm.name || this.ramajayamForm.name || this.srinivasanForm.name || currentUser?.name || 'பயனர்',
+      user_phone: this.vastuForm.phone || this.ramajayamForm.phone || currentUser?.phone || '9876543210',
+      service_type: serviceName,
+      price: price,
+      details: {
+        summary: details,
+        service: serviceName,
+        horoscope: this.activeServiceFlow === 'horoscope' ? this.horoscopeForm : null,
+        vastu: this.activeServiceFlow === 'vastu' ? this.vastuForm : null,
+        ramajayam: this.activeServiceFlow === 'ramajayam' ? this.ramajayamForm : null,
+        srinivasan: this.activeServiceFlow === 'srinivasan' ? this.srinivasanForm : null,
       }
     };
 
-    try {
-      const rzp = new Razorpay(options);
-      rzp.open();
-    } catch (e) {
-      console.warn('Razorpay failed to load, falling back to simulated payment...', e);
-      // Fallback to simulation if offline / SDK not loaded
-      setTimeout(() => {
-        this.userOrders.unshift({
-          id: localOrderId,
-          service: serviceName,
-          price: price,
-          date: '10-Aug-2026',
-          status: 'Pending',
-          details: details + ' (Simulated)'
-        });
-        this.serviceStep = 4; // Show success screen
-      }, 800);
-    }
+    this.http.post<any>(`${environment.apiUrl}/bookings/create`, bookingPayload).subscribe({
+      next: (res) => {
+        this.loadUserOrders();
+        this.serviceStep = 4;
+      },
+      error: () => {
+        this.serviceStep = 4;
+      }
+    });
   }
 }

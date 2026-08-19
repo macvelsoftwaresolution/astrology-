@@ -198,7 +198,7 @@ export class MyJathagamComponent implements OnInit {
     const token = localStorage.getItem('auth_token');
     if (!token) return;
     this.loading = true;
-    this.http.get<any>('http://127.0.0.1:8000/api/user/jathagam', {
+    this.http.get<any>(`${environment.apiUrl}/user/jathagam`, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: res => { this.saved = res.jathagam_details; this.loading = false; },
@@ -222,7 +222,7 @@ export class MyJathagamComponent implements OnInit {
     if (!token) { this.errorMsg = 'உள்நுழைவு செய்யவும்.'; return; }
     this.saving = true;
     this.errorMsg = '';
-    this.http.post<any>('http://127.0.0.1:8000/api/user/jathagam', this.form, {
+    this.http.post<any>(`${environment.apiUrl}/user/jathagam`, this.form, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: res => {

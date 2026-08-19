@@ -14,6 +14,8 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
 })
 export class LmsTabComponent implements OnInit {
   courses: any[] = [];
+  seminars: any[] = [];
+  materials: any[] = [];
   isLoading = false;
 
   // Search & Filter
@@ -37,6 +39,13 @@ export class LmsTabComponent implements OnInit {
   selectedModuleIdForLesson: number | null = null;
   newLesson = { title: '', content_type: 'video', content_url: '', duration: '' };
 
+  // Seminar & Material Modals
+  openSeminarModal = false;
+  editingSeminar: any = null;
+
+  openMaterialModal = false;
+  editingMaterial: any = null;
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
@@ -46,6 +55,8 @@ export class LmsTabComponent implements OnInit {
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       this.loadCourses();
+      this.loadSeminars();
+      this.loadMaterials();
     }
   }
 
@@ -62,6 +73,200 @@ export class LmsTabComponent implements OnInit {
         this.isLoading = false;
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  loadSeminars(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>('http://127.0.0.1:8000/api/admin/seminars', headers).subscribe({
+      next: (res) => {
+        this.seminars = res.seminars || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  loadMaterials(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>('http://127.0.0.1:8000/api/admin/materials', headers).subscribe({
+      next: (res) => {
+        this.materials = res.materials || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  openNewSeminar(): void {
+    this.editingSeminar = {
+      id: null,
+      title: '',
+      speaker: '',
+      date_text: 'இன்று',
+      time_text: 'மாலை 06:00 - 07:30',
+      status: 'upcoming',
+      join_url: ''
+    };
+    this.openSeminarModal = true;
+  }
+
+  editSeminar(seminar: any): void {
+    this.editingSeminar = { ...seminar };
+    this.openSeminarModal = true;
+  }
+
+  saveSeminar(): void {
+    if (!this.editingSeminar.title || !this.editingSeminar.speaker) {
+      alert('Title and Speaker are required.');
+      return;
+    }
+    const headers = this.authService.getAuthHeaders();
+    const url = this.editingSeminar.id
+      ? `http://127.0.0.1:8000/api/admin/seminars/${this.editingSeminar.id}`
+      : 'http://127.0.0.1:8000/api/admin/seminars';
+
+    const req = this.editingSeminar.id
+      ? this.http.put<any>(url, this.editingSeminar, headers)
+      : this.http.post<any>(url, this.editingSeminar, headers);
+
+    req.subscribe({
+      next: () => {
+        this.openSeminarModal = false;
+        this.loadSeminars();
+      },
+      error: () => alert('Failed to save seminar.')
+    });
+  }
+
+  deleteSeminar(id: number): void {
+    if (!confirm('Are you sure you want to delete this seminar?')) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/seminars/${id}`, headers).subscribe({
+      next: () => this.loadSeminars(),
+      error: () => alert('Failed to delete seminar.')
+    });
+  }
+
+  openNewMaterial(): void {
+    this.editingMaterial = {
+      id: null,
+      course_id: 1,
+      title: '',
+      file_url: '',
+      pages_text: '20 பக்கங்கள்'
+    };
+    this.openMaterialModal = true;
+  }
+
+  isUploadingThumbnail = false;
+  isUploadingLessonFile = false;
+  isUploadingMaterial = false;
+
+  uploadCourseThumbnail(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingThumbnail = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'courses');
+
+    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          this.newCourse.thumbnail = res.url;
+        }
+        this.isUploadingThumbnail = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Thumbnail upload failed.');
+        this.isUploadingThumbnail = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  uploadLessonFile(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingLessonFile = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'lessons');
+
+    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          this.newLesson.content_url = res.url;
+        }
+        this.isUploadingLessonFile = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Lesson file upload failed.');
+        this.isUploadingLessonFile = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  uploadMaterialPdf(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingMaterial = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'notes');
+
+    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.editingMaterial) {
+          this.editingMaterial.file_url = res.url;
+        }
+        this.isUploadingMaterial = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('PDF upload failed.');
+        this.isUploadingMaterial = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  saveMaterial(): void {
+    if (!this.editingMaterial.title) {
+      alert('Material title is required.');
+      return;
+    }
+    const headers = this.authService.getAuthHeaders();
+    const url = this.editingMaterial.id
+      ? `http://127.0.0.1:8000/api/admin/materials/${this.editingMaterial.id}`
+      : 'http://127.0.0.1:8000/api/admin/materials';
+
+    const req = this.editingMaterial.id
+      ? this.http.put<any>(url, this.editingMaterial, headers)
+      : this.http.post<any>(url, this.editingMaterial, headers);
+
+    req.subscribe({
+      next: () => {
+        this.openMaterialModal = false;
+        this.loadMaterials();
+      },
+      error: () => alert('Failed to save study material.')
+    });
+  }
+
+  deleteMaterial(id: number): void {
+    if (!confirm('Are you sure you want to delete this study material?')) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/materials/${id}`, headers).subscribe({
+      next: () => this.loadMaterials(),
+      error: () => alert('Failed to delete material.')
     });
   }
 

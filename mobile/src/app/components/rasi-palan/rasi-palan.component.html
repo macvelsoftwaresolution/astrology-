@@ -24,20 +24,20 @@
 
       <!-- Tabs Section -->
       <div class="period-tabs-grid">
-        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'daily'" (click)="selectedRasiTab = 'daily'">
+        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'daily'" (click)="setTab('daily')">
           <span class="tab-icon"><i class="bi bi-brightness-high-fill"></i></span>
           <div class="tab-badge" *ngIf="selectedRasiTab === 'daily'">இன்று</div>
           <span class="tab-label">தினசரி</span>
         </div>
-        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'weekly'" (click)="selectedRasiTab = 'weekly'">
+        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'weekly'" (click)="setTab('weekly')">
           <span class="tab-icon"><i class="bi bi-calendar-event-fill"></i></span>
           <span class="tab-label">வாராந்திர</span>
         </div>
-        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'monthly'" (click)="selectedRasiTab = 'monthly'">
+        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'monthly'" (click)="setTab('monthly')">
           <span class="tab-icon"><i class="bi bi-calendar-month-fill"></i></span>
           <span class="tab-label">மாதாந்திர</span>
         </div>
-        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'yearly'" (click)="selectedRasiTab = 'yearly'">
+        <div class="period-tab" [class.active-tab]="selectedRasiTab === 'yearly'" (click)="setTab('yearly')">
           <span class="tab-icon"><i class="bi bi-star-fill"></i></span>
           <span class="tab-label">வருடாந்திர</span>
         </div>

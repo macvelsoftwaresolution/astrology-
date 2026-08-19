@@ -412,5 +412,128 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        // 11. Seed App Banners
+        if (DB::table('app_banners')->count() === 0) {
+            DB::table('app_banners')->insert([
+                [
+                    'title' => 'இன்றைய ராசி பலன்',
+                    'subtitle' => 'உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்',
+                    'badge' => 'இன்றைய சிறப்பு',
+                    'image_url' => 'assets/images/temple_sunrise.png',
+                    'link_flow' => 'rasi-palan',
+                    'is_active' => true,
+                    'sort_order' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'title' => 'திருமண பொருத்தம்',
+                    'subtitle' => 'சிறந்த வாழ்க்கைத்துணையை தேர்ந்தெடுக்க',
+                    'badge' => 'புதிய சேவை',
+                    'image_url' => 'assets/images/nataraja.png',
+                    'link_flow' => 'matching',
+                    'is_active' => true,
+                    'sort_order' => 2,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'title' => 'ஜாதகம் எழுதுதல்',
+                    'subtitle' => 'துல்லியமான ஜாதக கணிப்பு',
+                    'badge' => 'ஆன்மீகம்',
+                    'image_url' => 'assets/images/spiritual_education_bg.png',
+                    'link_flow' => 'horoscope',
+                    'is_active' => true,
+                    'sort_order' => 3,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            ]);
+        }
+
+        // 12. Seed Seminars
+        if (DB::table('seminars')->count() === 0) {
+            DB::table('seminars')->insert([
+                [
+                    'title' => 'சிறப்பு கருத்தரங்கம்: வாஸ்து சாஸ்திரம்',
+                    'speaker' => 'குரு சீனிவாசன் (வேத நிபுணர்)',
+                    'date_text' => 'இன்று',
+                    'time_text' => 'மாலை 06:00 - 07:30',
+                    'status' => 'live',
+                    'join_url' => 'https://meet.google.com/xyz',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'title' => 'ஜோதிடத்தின் அடிப்படைகள்',
+                    'speaker' => 'யோக குரு ராகவன்',
+                    'date_text' => 'ஞாயிறு, செப் 24',
+                    'time_text' => 'மாலை 04:00 - 05:30',
+                    'status' => 'upcoming',
+                    'join_url' => null,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'title' => 'தியானத்தின் ஆற்றல்',
+                    'speaker' => 'முனைவர் அருண் மொழி',
+                    'date_text' => 'செப் 10, 2023',
+                    'time_text' => 'முடிந்தது',
+                    'status' => 'past',
+                    'join_url' => null,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'title' => 'உணவே மருந்து - சித்த மருத்துவம்',
+                    'speaker' => 'சித்தர் விவேக்',
+                    'date_text' => 'செப் 03, 2023',
+                    'time_text' => 'முடிந்தது',
+                    'status' => 'past',
+                    'join_url' => null,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            ]);
+        }
+
+        // 13. Seed Course Materials / PDF Notes
+        if (DB::table('course_materials')->count() === 0) {
+            DB::table('course_materials')->insert([
+                [
+                    'course_id' => 1,
+                    'title' => 'ராசி பலன் குறிப்பு & கணித முறைகள்',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'pages_text' => '45 பக்கங்கள்',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'course_id' => 1,
+                    'title' => 'பஞ்சாங்க விளக்கம் & திதி கணிதம்',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'pages_text' => '25 பக்கங்கள்',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'course_id' => 1,
+                    'title' => 'நவகிரக நிலைகள் & பார்வை பலன்கள்',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'pages_text' => '12 பக்கங்கள்',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'course_id' => 1,
+                    'title' => 'யோக விளக்கங்கள் & பரிகாரங்கள்',
+                    'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'pages_text' => '34 பக்கங்கள்',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            ]);
+        }
     }
 }

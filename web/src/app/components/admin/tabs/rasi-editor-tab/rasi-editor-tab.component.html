@@ -214,60 +214,118 @@
 
         <!-- 2. MULTIMEDIA SECTION: AUDIO & VIDEO (EQUAL HEIGHT & WIDTH) -->
         <div class="media-equal-grid">
-          <!-- AUDIO CARD -->
+          <!-- AUDIO UPLOAD CARD -->
           <div class="media-card-uniform">
             <div class="media-card-header">
               <div class="media-icon-badge audio"><i class="bi bi-mic-fill"></i></div>
               <div>
-                <h4 class="media-card-title">Audio Link (MP3 URL)</h4>
-                <span class="media-card-subtitle">Daily voice prediction podcast</span>
+                <h4 class="media-card-title">ஆடியோ பதிவேற்றம் (Audio File Upload)</h4>
+                <span class="media-card-subtitle">MP3 / WAV குரல் பதிவு கோப்பு</span>
               </div>
             </div>
-            <div class="media-input-row">
-              <input
-                [(ngModel)]="rasiPredictions[selectedRasiIndex].audio_url"
-                class="media-field-input"
-                placeholder="https://cdn.astrodivine.com/audio/mesham.mp3"
-              />
-              @if (rasiPredictions[selectedRasiIndex]?.audio_url) {
+
+            @if (!rasiPredictions[selectedRasiIndex]?.audio_url) {
+              <div class="file-upload-dropzone">
+                <input
+                  #audioFileInput
+                  type="file"
+                  accept="audio/*"
+                  (change)="uploadRasiAudio($event, selectedRasiIndex)"
+                  style="display:none;"
+                />
                 <button
                   type="button"
-                  class="btn-media-btn audio"
-                  (click)="testAudio(rasiPredictions[selectedRasiIndex].audio_url)"
-                  title="Play Audio"
+                  class="btn-upload-trigger audio-theme"
+                  (click)="audioFileInput.click()"
+                  [disabled]="isUploadingRasiAudio"
                 >
-                  <i class="bi bi-play-fill"></i> Play
+                  <i class="bi bi-cloud-arrow-up-fill"></i>
+                  <span>{{ isUploadingRasiAudio ? 'ஆடியோ பதிவேற்றப்படுகிறது...' : 'ஆடியோ கோப்பை தேர்வு செய்க (Upload MP3)' }}</span>
                 </button>
-              }
-            </div>
+                @if (isUploadingRasiAudio) {
+                  <div class="upload-progress-text">
+                    <i class="bi bi-hourglass-split"></i> சேமிக்கப்படுகிறது...
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="uploaded-file-banner audio-active">
+                <div class="file-info-left">
+                  <span class="file-ready-tag"><i class="bi bi-check-circle-fill"></i> ஆடியோ தயார்</span>
+                  <audio controls [src]="rasiPredictions[selectedRasiIndex].audio_url" class="mini-audio-player"></audio>
+                </div>
+                <div class="file-actions-right">
+                  <button
+                    type="button"
+                    class="btn-icon-action delete"
+                    (click)="removeRasiAudio(selectedRasiIndex)"
+                    title="Remove Audio"
+                  >
+                    <i class="bi bi-trash3-fill"></i> நீக்கு
+                  </button>
+                </div>
+              </div>
+            }
           </div>
 
-          <!-- VIDEO CARD -->
+          <!-- VIDEO UPLOAD CARD -->
           <div class="media-card-uniform">
             <div class="media-card-header">
               <div class="media-icon-badge video"><i class="bi bi-camera-video-fill"></i></div>
               <div>
-                <h4 class="media-card-title">Video Link (YouTube URL)</h4>
-                <span class="media-card-subtitle">Daily video horoscope stream</span>
+                <h4 class="media-card-title">வீடியோ பதிவேற்றம் (Video File Upload)</h4>
+                <span class="media-card-subtitle">MP4 / WebM வீடியோ கோப்பு</span>
               </div>
             </div>
-            <div class="media-input-row">
-              <input
-                [(ngModel)]="rasiPredictions[selectedRasiIndex].video_url"
-                class="media-field-input"
-                placeholder="https://www.youtube.com/watch?v=..."
-              />
-              @if (rasiPredictions[selectedRasiIndex]?.video_url) {
+
+            @if (!rasiPredictions[selectedRasiIndex]?.video_url) {
+              <div class="file-upload-dropzone">
+                <input
+                  #videoFileInput
+                  type="file"
+                  accept="video/*"
+                  (change)="uploadRasiVideo($event, selectedRasiIndex)"
+                  style="display:none;"
+                />
                 <button
                   type="button"
-                  class="btn-media-btn video"
-                  (click)="openVideoPreview(rasiPredictions[selectedRasiIndex].video_url, rasiEditorList[selectedRasiIndex].name + ' - ' + rasiEditorType)"
-                  title="Preview Video"
+                  class="btn-upload-trigger video-theme"
+                  (click)="videoFileInput.click()"
+                  [disabled]="isUploadingRasiVideo"
                 >
-                  <i class="bi bi-eye-fill"></i> Preview
+                  <i class="bi bi-cloud-arrow-up-fill"></i>
+                  <span>{{ isUploadingRasiVideo ? 'வீடியோ பதிவேற்றப்படுகிறது...' : 'வீடியோ கோப்பை தேர்வு செய்க (Upload MP4)' }}</span>
                 </button>
-              }
-            </div>
+                @if (isUploadingRasiVideo) {
+                  <div class="upload-progress-text">
+                    <i class="bi bi-hourglass-split"></i> சேமிக்கப்படுகிறது...
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="uploaded-file-banner video-active">
+                <div class="file-info-left">
+                  <span class="file-ready-tag"><i class="bi bi-check-circle-fill"></i> வீடியோ தயார்</span>
+                  <button
+                    type="button"
+                    class="btn-preview-video-pill"
+                    (click)="openVideoPreview(rasiPredictions[selectedRasiIndex].video_url, rasiEditorList[selectedRasiIndex].name + ' - ' + rasiEditorType)"
+                  >
+                    <i class="bi bi-play-circle-fill"></i> வீடியோவை பார்க்க (Play Video)
+                  </button>
+                </div>
+                <div class="file-actions-right">
+                  <button
+                    type="button"
+                    class="btn-icon-action delete"
+                    (click)="removeRasiVideo(selectedRasiIndex)"
+                    title="Remove Video"
+                  >
+                    <i class="bi bi-trash3-fill"></i> நீக்கு
+                  </button>
+                </div>
+              </div>
+            }
           </div>
         </div>
 

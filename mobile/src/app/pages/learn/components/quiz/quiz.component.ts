@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-learn-quiz',
@@ -15,6 +17,8 @@ export class LearnQuizComponent {
   quizScore: number = 0;
   quizPassed: boolean = false;
   correctAnswersCount: number = 0;
+
+  constructor(private http: HttpClient) {}
 
   quizQuestions = [
     {
@@ -97,6 +101,17 @@ export class LearnQuizComponent {
       this.quizScore = Math.round((this.correctAnswersCount / this.quizQuestions.length) * 100);
       this.quizSubmitted = true;
       this.quizPassed = this.quizScore >= 60; // Pass mark set to 60%
+
+      // Submit to database API
+      const payload = {
+        course_id: 1,
+        submission_type: 'online_quiz',
+        score: this.quizScore
+      };
+      this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload).subscribe({
+        next: () => {},
+        error: () => {}
+      });
     }
   }
 }

@@ -52,12 +52,12 @@
     </div>
 
     <!-- Hero Banner Slider -->
-    <div class="home-hero-card" (click)="currentTab = 'services'">
-      <div class="hero-bg-image" [ngStyle]="{'background-image': 'url(' + heroBanners[currentBannerIndex].image + ')'}"></div>
+    <div class="home-hero-card" (click)="onBannerClick(heroBanners[currentBannerIndex])">
+      <div class="hero-bg-image" [ngStyle]="{'background-image': 'url(' + (heroBanners[currentBannerIndex]?.image || 'assets/images/temple_sunrise.png') + ')'}"></div>
       <div class="hero-content">
-        <div class="hero-badge">{{ heroBanners[currentBannerIndex].badge }}</div>
-        <h2 class="hero-title">{{ heroBanners[currentBannerIndex].title }}</h2>
-        <p class="hero-subtitle">{{ heroBanners[currentBannerIndex].subtitle }}</p>
+        <div class="hero-badge">{{ heroBanners[currentBannerIndex]?.badge }}</div>
+        <h2 class="hero-title">{{ heroBanners[currentBannerIndex]?.title }}</h2>
+        <p class="hero-subtitle">{{ heroBanners[currentBannerIndex]?.subtitle }}</p>
         <div class="hero-dots">
           <span class="dot" *ngFor="let banner of heroBanners; let i = index" 
                 [class.active]="i === currentBannerIndex"

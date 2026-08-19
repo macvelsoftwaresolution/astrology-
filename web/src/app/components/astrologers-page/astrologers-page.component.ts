@@ -93,51 +93,21 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: '../landing/landing.component.css'
 })
 export class AstrologersPageComponent implements OnInit {
-  defaultAstrologers = [
-    {
-      name: 'குரு ஸ்ரீநிவாசன்',
-      role_title: 'தலைமை வேத ஜோதிடர்',
-      experience: '25+ ஆண்டுகள் அனுபவம்',
-      specialty: 'துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், பிரசன்ன ஜோதிடம்',
-      fee: 999,
-      status: 'Available',
-      bio: 'வேத ஜோதிடக் கலை பாரம்பரிய குடும்பத்தைச் சேர்ந்தவர். ஆயிரக்கணக்கான குடும்பங்களுக்கு துல்லியமான வழிகாட்டுதல் வழங்கியுள்ளார்.',
-      avatar_icon: 'bi bi-person-fill'
-    },
-    {
-      name: 'குரு ராமஜெயம்',
-      role_title: 'முதுநிலை பிரசன்ன & வாஸ்து நிபுணர்',
-      experience: '18+ ஆண்டுகள் அனுபவம்',
-      specialty: 'கேள்வி ஜோதிடம், வாஸ்து சாஸ்திரம், தோஷ நிவாரணப் பரிகாரங்கள்',
-      fee: 799,
-      status: 'Available',
-      bio: 'பிரசன்ன ஜோதிடம் மற்றும் வாஸ்து சாஸ்திரத்தில் ஆழமான ஞானம் கொண்டவர். எளிய பரிகாரங்கள் மூலம் தீர்வு வழங்குபவர்.',
-      avatar_icon: 'bi bi-person-bounding-box'
-    },
-    {
-      name: 'குரு மீனாட்சி சுந்தரம்',
-      role_title: 'நாடி & நியூமராலஜி வல்லுநர்',
-      experience: '15+ ஆண்டுகள் அனுபவம்',
-      specialty: 'நாடி ஜோதிடம், நியூமராலஜி பெயர் அதிர்ஷ்டம், தொழில் & வியாபார யோகம்',
-      fee: 599,
-      status: 'Available',
-      bio: 'நாடி சுவடி வாசிப்பு மற்றும் எண்கணிதத்தில் (Numerology) தேர்ச்சி பெற்றவர். தொழில் மற்றும் வியாபார வெற்றிக்கு ஆலோசனை தருபவர்.',
-      avatar_icon: 'bi bi-person-badge'
-    }
-  ];
-
-  astrologers: any[] = [...this.defaultAstrologers];
+  astrologers: any[] = [];
+  isLoading = true;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
       next: (res) => {
-        if (res.astrologers && res.astrologers.length > 0) {
-          this.astrologers = res.astrologers;
-        }
+        this.astrologers = res.astrologers || [];
+        this.isLoading = false;
       },
-      error: () => {}
+      error: () => {
+        this.astrologers = [];
+        this.isLoading = false;
+      }
     });
   }
 }

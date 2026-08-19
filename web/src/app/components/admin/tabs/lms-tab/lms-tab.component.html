@@ -91,6 +91,165 @@
           </button>
         </div>
       }
+      <div class="card-box" style="margin-top:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+              <i class="bi bi-broadcast" style="color:#d97706;"></i> நேரலை கருத்தரங்குகள் (Live & Upcoming Seminars)
+            </h3>
+            <span style="font-size:12px;color:#64748b;">மாணவர்களுக்கான சிறப்பு இணையவழி கருத்தரங்குகள்</span>
+          </div>
+          <button class="btn-sm gold" (click)="openNewSeminar()">
+            <i class="bi bi-plus-lg"></i> புதிய கருத்தரங்கம் சேர்க்க
+          </button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:14px;">
+          @for (s of seminars; track s.id) {
+            <div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span [style.background]="s.status === 'live' ? '#ef4444' : (s.status === 'upcoming' ? '#3b82f6' : '#64748b')" style="color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;">
+                    {{ s.status }}
+                  </span>
+                  <span style="font-size:11px;color:#64748b;"><i class="bi bi-calendar-event me-1"></i>{{ s.date_text }}</span>
+                </div>
+                <h4 style="margin:0 0 4px 0;font-size:14px;color:#0f172a;font-weight:700;">{{ s.title }}</h4>
+                <p style="margin:0 0 6px 0;font-size:12px;color:#b45309;font-weight:600;"><i class="bi bi-person-badge me-1"></i>{{ s.speaker }}</p>
+                <div style="font-size:11px;color:#64748b;"><i class="bi bi-clock me-1"></i>{{ s.time_text }}</div>
+              </div>
+              <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:12px;border-top:1px solid #f1f5f9;padding-top:10px;">
+                <button class="btn-xs" (click)="editSeminar(s)"><i class="bi bi-pencil"></i> Edit</button>
+                <button class="btn-xs danger" (click)="deleteSeminar(s.id)"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+          }
+          @if (seminars.length === 0) {
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">கருத்தரங்குகள் ஏதுமில்லை.</div>
+          }
+        </div>
+      </div>
+
+      <!-- STUDY MATERIALS SECTION -->
+      <div class="card-box" style="margin-top:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+              <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;"></i> ஜோதிடக் குறிப்புகள் & பாடப் புத்தகங்கள் (PDF Notes)
+            </h3>
+            <span style="font-size:12px;color:#64748b;">மாணவர்கள் பதிவிறக்கம் செய்யக்கூடிய குறிப்பேடுகள்</span>
+          </div>
+          <button class="btn-sm" (click)="openNewMaterial()">
+            <i class="bi bi-plus-lg"></i> புதிய குறிப்பு சேர்க்க
+          </button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:12px;">
+          @for (m of materials; track m.id) {
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px;background:#fff;display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="font-size:24px;color:#dc2626;"><i class="bi bi-file-earmark-pdf"></i></div>
+                <div>
+                  <h5 style="margin:0;font-size:13px;color:#0f172a;font-weight:700;">{{ m.title }}</h5>
+                  <small style="color:#64748b;">{{ m.pages_text }}</small>
+                </div>
+              </div>
+              <button class="btn-xs danger" (click)="deleteMaterial(m.id)" title="Delete"><i class="bi bi-trash"></i></button>
+            </div>
+          }
+          @if (materials.length === 0) {
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">குறிப்புகள் ஏதுமில்லை.</div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: ADD / EDIT SEMINAR -->
+  @if (openSeminarModal && editingSeminar) {
+    <div class="modal-overlay" (click)="openSeminarModal = false">
+      <div class="modal-box" style="max-width:480px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 style="margin:0;"><i class="bi bi-broadcast" style="color:#d97706;margin-right:6px;"></i>{{ editingSeminar.id ? 'கருத்தரங்கம் திருத்து' : 'புதிய கருத்தரங்கம்' }}</h3>
+          <button class="close-btn" (click)="openSeminarModal = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin:14px 0;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">தலைப்பு *</label>
+            <input type="text" [(ngModel)]="editingSeminar.title" class="ctrl" placeholder="எ.கா. வாஸ்து சாஸ்திர சிறப்பு வகுப்பு"/>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">வழங்குபவர் (Speaker) *</label>
+            <input type="text" [(ngModel)]="editingSeminar.speaker" class="ctrl" placeholder="எ.கா. குரு சீனிவாசன்"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">தேதி</label>
+              <input type="text" [(ngModel)]="editingSeminar.date_text" class="ctrl" placeholder="இன்று / ஞாயிறு, செப் 24"/>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">நேரம்</label>
+              <input type="text" [(ngModel)]="editingSeminar.time_text" class="ctrl" placeholder="மாலை 06:00 - 07:30"/>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Status</label>
+            <select [(ngModel)]="editingSeminar.status" class="ctrl">
+              <option value="live">நேரலை (Live)</option>
+              <option value="upcoming">வரவிருப்பது (Upcoming)</option>
+              <option value="past">முடிந்தது (Past)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet / Zoom URL)</label>
+            <input type="text" [(ngModel)]="editingSeminar.join_url" class="ctrl" placeholder="https://meet.google.com/..."/>
+          </div>
+        </div>
+        <div class="modal-btns">
+          <button type="button" class="btn-cancel" (click)="openSeminarModal = false">ரத்து</button>
+          <button type="button" class="btn-primary" (click)="saveSeminar()"><i class="bi bi-check2"></i> சேமி</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: ADD / EDIT STUDY MATERIAL -->
+  @if (openMaterialModal && editingMaterial) {
+    <div class="modal-overlay" (click)="openMaterialModal = false">
+      <div class="modal-box" style="max-width:440px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 style="margin:0;"><i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:6px;"></i>புதிய குறிப்பேடு சேர்க்க</h3>
+          <button class="close-btn" (click)="openMaterialModal = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin:14px 0;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">குறிப்பின் பெயர் (Title) *</label>
+            <input type="text" [(ngModel)]="editingMaterial.title" class="ctrl" placeholder="எ.கா. ராசி பலன் குறிப்பு"/>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">பக்கங்கள் (Pages Text)</label>
+            <input type="text" [(ngModel)]="editingMaterial.pages_text" class="ctrl" placeholder="45 பக்கங்கள்"/>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">PDF கோப்பு பதிவேற்றம் (Upload PDF File) *</label>
+            <input type="file" accept=".pdf,application/pdf" (change)="uploadMaterialPdf($event)" class="ctrl" style="padding:6px;"/>
+            @if (isUploadingMaterial) {
+              <span style="font-size:11px;color:#dc2626;font-weight:600;margin-top:4px;display:block;">
+                <i class="bi bi-hourglass-split"></i> PDF பதிவேற்றப்படுகிறது...
+              </span>
+            }
+            @if (editingMaterial.file_url) {
+              <div style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
+                <i class="bi bi-check-circle-fill"></i> கோப்பு பதிவேற்றப்பட்டது
+              </div>
+            }
+          </div>
+        </div>
+        <div class="modal-btns">
+          <button type="button" class="btn-cancel" (click)="openMaterialModal = false">ரத்து</button>
+          <button type="button" class="btn-primary" (click)="saveMaterial()"><i class="bi bi-check2"></i> சேமி</button>
+        </div>
+      </div>
     </div>
   }
 
@@ -190,8 +349,18 @@
             </select>
           </div>
           <div class="form-group">
-            <label>{{ 'lms.contentUrl' | translate }}</label>
-            <input [(ngModel)]="newLesson.content_url" name="lurl" required placeholder="https://cdn.astrodivine.com/video/sun.mp4" class="ctrl"/>
+            <label>பாடம் / வீடியோ / ஆடியோ கோப்பு பதிவேற்றம் (Upload Lesson File)</label>
+            <input type="file" (change)="uploadLessonFile($event)" class="ctrl" style="padding:6px;"/>
+            @if (isUploadingLessonFile) {
+              <span style="font-size:11px;color:#2563eb;font-weight:600;margin-top:4px;display:block;">
+                <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
+              </span>
+            }
+            @if (newLesson.content_url) {
+              <div style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
+                <i class="bi bi-check-circle-fill"></i> கோப்பு பதிவேற்றப்பட்டது
+              </div>
+            }
           </div>
           <div class="form-group">
             <label>{{ 'lms.duration' | translate }}</label>
@@ -247,8 +416,20 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Thumbnail Image URL</label>
-              <input [(ngModel)]="newCourse.thumbnail" class="ctrl" placeholder="https://images.unsplash.com/..."/>
+              <label>பாடப் படம் பதிவேற்றம் (Upload Course Thumbnail Image)</label>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                @if (newCourse.thumbnail) {
+                  <img [src]="newCourse.thumbnail" alt="Thumbnail Preview" style="width:80px;height:50px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1;"/>
+                }
+                <div style="flex:1;min-width:180px;">
+                  <input type="file" accept="image/*" (change)="uploadCourseThumbnail($event)" class="ctrl" style="padding:6px;"/>
+                  @if (isUploadingThumbnail) {
+                    <span style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;display:block;">
+                      <i class="bi bi-hourglass-split"></i> படம் பதிவேற்றப்படுகிறது...
+                    </span>
+                  }
+                </div>
+              </div>
             </div>
             <div class="modal-btns">
               <button type="button" class="btn-cancel" (click)="openCourseWizardModal = false">{{ 'common.cancel' | translate }}</button>

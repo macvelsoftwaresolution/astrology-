@@ -87,4 +87,62 @@ class GradingController extends Controller
             'certificate' => $certificate
         ]);
     }
+
+    /**
+     * User/Student: Submit Exam Answers (PDF or Courier Tracking)
+     */
+    public function submitExam(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required',
+            'submission_type' => 'required|in:pdf_upload,physical_courier,online_quiz',
+            'pdf_url' => 'nullable|string',
+            'courier_tracking_no' => 'nullable|string',
+            'courier_name' => 'nullable|string',
+            'score' => 'nullable|integer',
+        ]);
+
+        $user = $request->user();
+        $studentId = $user ? $user->id : 1;
+
+        $submissionId = DB::table('student_submissions')->insertGetId([
+            'student_id' => $studentId,
+            'course_id' => $request->course_id,
+            'submission_type' => $request->submission_type,
+            'pdf_url' => $request->pdf_url,
+            'courier_tracking_no' => $request->courier_tracking_no,
+            'courier_name' => $request->courier_name,
+            'score' => $request->score,
+            'status' => $request->submission_type === 'online_quiz' && $request->score >= 60 ? 'Approved' : 'Pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.',
+            'submission_id' => $submissionId
+        ]);
+    }
+
+    /**
+     * User/Student: Get My Certificates & Submissions
+     */
+    public function getMyCertificates(Request $request)
+    {
+        $user = $request->user();
+        $studentId = $user ? $user->id : 1;
+
+        $certificates = DB::table('certificates')
+            ->where('student_id', $studentId)
+            ->join('courses', 'certificates.course_id', '=', 'courses.id')
+            ->select('certificates.*', 'courses.title as course_title')
+            ->orderBy('certificates.created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'certificates' => $certificates
+        ]);
+    }
 }

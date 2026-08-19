@@ -1,751 +1,183 @@
 <div class="services-container">
 
-  <!-- =========================================================
-       VIEW 1: DEFAULT MAIN SERVICES & APPOINTMENT BOOKINGS VIEW
-       ========================================================= -->
-  @if (!selectedAstrologerForManage) {
-    <!-- Header Banner in a clean Div Card with ample spacing -->
-    <div class="card-box header-banner-card" style="margin-bottom: 26px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-      <div>
-        <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-calendar2-check-fill" style="color:#d97706;"></i>{{ 'services.title' | translate }}
-        </h1>
-        <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'services.subtitle' | translate }}</p>
+  <!-- Header Banner in a clean Div Card -->
+  <div class="card-box header-banner-card" style="margin-bottom: 26px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-calendar2-check-fill" style="color:#d97706;"></i>{{ 'services.title' | translate }}
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'services.subtitle' | translate }}</p>
+    </div>
+
+    <div>
+      <button 
+        type="button" 
+        class="btn-primary"
+        (click)="openManualBookingModal()"
+      >
+        <i class="bi bi-plus-lg"></i> {{ 'services.newBooking' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- TOP 4 KPI STATS -->
+  <div class="metrics-grid" style="margin-bottom:24px;">
+    <div class="metric-card gold">
+      <div class="lbl"><i class="bi bi-journal-bookmark-fill" style="margin-right:4px;"></i>{{ 'services.totalBookings' | translate }}</div>
+      <div class="val">{{ serviceBookings.length }}</div>
+    </div>
+
+    <div class="metric-card gold">
+      <div class="lbl"><i class="bi bi-hourglass-split" style="margin-right:4px;"></i>{{ 'services.pending' | translate }}</div>
+      <div class="val" style="color:#b45309;">{{ getBookingCount('Pending') }}</div>
+    </div>
+
+    <div class="metric-card blue">
+      <div class="lbl"><i class="bi bi-telephone-outbound-fill" style="margin-right:4px;"></i>{{ 'services.inProgress' | translate }}</div>
+      <div class="val" style="color:#1d4ed8;">{{ getBookingCount('In-Progress') }}</div>
+    </div>
+
+    <div class="metric-card green">
+      <div class="lbl"><i class="bi bi-check-circle-fill" style="margin-right:4px;"></i>{{ 'services.completed' | translate }}</div>
+      <div class="val" style="color:#15803d;">{{ getBookingCount('Completed') }}</div>
+    </div>
+  </div>
+
+  <!-- CLIENT BOOKINGS LIST PANEL -->
+  <div class="card-box">
+    <!-- Filter Tabs + Search -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="rasi-type-bar" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button [class.active]="bookingFilterStatus === 'all'" (click)="bookingFilterStatus = 'all'">
+          {{ 'common.all' | translate }} ({{ serviceBookings.length }})
+        </button>
+        <button [class.active]="bookingFilterStatus === 'Pending'" (click)="bookingFilterStatus = 'Pending'">
+          <i class="bi bi-hourglass-split"></i> {{ 'services.pending' | translate }} ({{ getBookingCount('Pending') }})
+        </button>
+        <button [class.active]="bookingFilterStatus === 'In-Progress'" (click)="bookingFilterStatus = 'In-Progress'">
+          <i class="bi bi-telephone-outbound"></i> {{ 'services.inProgress' | translate }} ({{ getBookingCount('In-Progress') }})
+        </button>
+        <button [class.active]="bookingFilterStatus === 'Completed'" (click)="bookingFilterStatus = 'Completed'">
+          <i class="bi bi-check2-circle"></i> {{ 'services.completed' | translate }} ({{ getBookingCount('Completed') }})
+        </button>
       </div>
-      
-      <!-- Clean View Switcher Pill -->
-      <div class="view-segment-container">
-        <button 
-          type="button" 
-          class="view-segment-pill" 
-          [class.active]="activeView === 'bookings'" 
-          (click)="activeView = 'bookings'"
-        >
-          <i class="bi bi-calendar2-event-fill"></i> {{ 'services.viewBookings' | translate }} ({{ serviceBookings.length }})
-        </button>
-        <button 
-          type="button" 
-          class="view-segment-pill" 
-          [class.active]="activeView === 'astrologers'" 
-          (click)="activeView = 'astrologers'"
-        >
-          <i class="bi bi-people-fill"></i> {{ 'services.viewAstrologers' | translate }} ({{ astrologersList.length }})
-        </button>
+
+      <div style="width:100%;max-width:240px;">
+        <input 
+          type="text" 
+          [(ngModel)]="bookingSearchQuery" 
+          [placeholder]="'common.search' | translate" 
+          class="ctrl-sm"
+        />
       </div>
     </div>
 
-    <!-- VIEW A: APPOINTMENT BOOKINGS (MAIN FOCUSED VIEW) -->
-    @if (activeView === 'bookings') {
-      <!-- TOP 4 KPI STATS -->
-      <div class="metrics-grid" style="margin-bottom:24px;">
-        <div class="metric-card gold">
-          <div class="lbl"><i class="bi bi-journal-bookmark-fill" style="margin-right:4px;"></i>{{ 'services.totalBookings' | translate }}</div>
-          <div class="val">{{ serviceBookings.length }}</div>
-        </div>
-
-        <div class="metric-card gold">
-          <div class="lbl"><i class="bi bi-hourglass-split" style="margin-right:4px;"></i>{{ 'services.pending' | translate }}</div>
-          <div class="val" style="color:#b45309;">{{ getBookingCount('Pending') }}</div>
-        </div>
-
-        <div class="metric-card blue">
-          <div class="lbl"><i class="bi bi-telephone-outbound-fill" style="margin-right:4px;"></i>{{ 'services.inProgress' | translate }}</div>
-          <div class="val" style="color:#1d4ed8;">{{ getBookingCount('In-Progress') }}</div>
-        </div>
-
-        <div class="metric-card green">
-          <div class="lbl"><i class="bi bi-check-circle-fill" style="margin-right:4px;"></i>{{ 'services.completed' | translate }}</div>
-          <div class="val" style="color:#15803d;">{{ getBookingCount('Completed') }}</div>
-        </div>
+    <!-- Empty State -->
+    @if (getFilteredBookings().length === 0) {
+      <div style="text-align:center;padding:50px 20px;">
+        <div style="font-size:42px;margin-bottom:10px;color:#cbd5e1;"><i class="bi bi-calendar2-x"></i></div>
+        <h3 style="color:#0f172a;margin:0 0 4px;font-size:16px;">{{ 'common.noRecords' | translate }}</h3>
+        <p class="muted" style="margin:0;font-size:13px;">
+          {{ 'services.subtitle' | translate }}
+        </p>
       </div>
-
-      <!-- CLIENT BOOKINGS LIST PANEL -->
-      <div class="card-box">
-        <!-- Filter Tabs + Search -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-          <div class="rasi-type-bar" style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button [class.active]="bookingFilterStatus === 'all'" (click)="bookingFilterStatus = 'all'">
-              {{ 'common.all' | translate }} ({{ serviceBookings.length }})
-            </button>
-            <button [class.active]="bookingFilterStatus === 'Pending'" (click)="bookingFilterStatus = 'Pending'">
-              <i class="bi bi-hourglass-split"></i> {{ 'services.pending' | translate }} ({{ getBookingCount('Pending') }})
-            </button>
-            <button [class.active]="bookingFilterStatus === 'In-Progress'" (click)="bookingFilterStatus = 'In-Progress'">
-              <i class="bi bi-telephone-outbound"></i> {{ 'services.inProgress' | translate }} ({{ getBookingCount('In-Progress') }})
-            </button>
-            <button [class.active]="bookingFilterStatus === 'Completed'" (click)="bookingFilterStatus = 'Completed'">
-              <i class="bi bi-check2-circle"></i> {{ 'services.completed' | translate }} ({{ getBookingCount('Completed') }})
-            </button>
-          </div>
-
-          <div style="width:100%;max-width:240px;">
-            <input 
-              type="text" 
-              [(ngModel)]="bookingSearchQuery" 
-              [placeholder]="'common.search' | translate" 
-              class="ctrl-sm"
-            />
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        @if (getFilteredBookings().length === 0) {
-          <div style="text-align:center;padding:50px 20px;">
-            <div style="font-size:42px;margin-bottom:10px;color:#cbd5e1;"><i class="bi bi-calendar2-x"></i></div>
-            <h3 style="color:#0f172a;margin:0 0 4px;font-size:16px;">{{ 'common.noRecords' | translate }}</h3>
-            <p class="muted" style="margin:0;font-size:13px;">
-              {{ 'services.subtitle' | translate }}
-            </p>
-          </div>
-        } @else {
-          <div style="overflow-x:auto;">
-            <table class="data-table" style="width:100%;">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>{{ 'services.client' | translate }}</th>
-                  <th>{{ 'services.name' | translate }}</th>
-                  <th>{{ 'services.serviceType' | translate }}</th>
-                  <th>{{ 'services.fee' | translate }}</th>
-                  <th>{{ 'services.preferredDate' | translate }}</th>
-                  <th>{{ 'common.status' | translate }}</th>
-                  <th>{{ 'services.bookingDate' | translate }}</th>
-                  <th style="text-align:center;">{{ 'common.actions' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (b of getFilteredBookings(); track b.id) {
-                  <tr>
-                    <td><strong style="font-family:monospace;color:#0f172a;">#{{ b.id }}</strong></td>
-                    <td>
-                      <div style="font-weight:700;color:#0f172a;font-size:14px;">{{ b.user_name }}</div>
-                      <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:6px;align-items:center;">
-                        <a [href]="'tel:' + b.user_phone" class="btn-tel-call" [title]="'services.call' | translate">
-                          <i class="bi bi-telephone-fill"></i> {{ b.user_phone }}
-                        </a>
-                        <a [href]="'https://wa.me/91' + b.user_phone" target="_blank" class="btn-wa-link" [title]="'services.whatsapp' | translate">
-                          <i class="bi bi-whatsapp"></i> WA
-                        </a>
-                      </div>
-                    </td>
-                    <td>
-                      @if (b.details?.astrologer_name) {
-                        <span style="font-weight:700;color:#0f172a;font-size:12px;display:inline-flex;align-items:center;gap:4px;background:#fef3c7;border:1px solid #fde68a;padding:3px 8px;border-radius:6px;">
-                          <i class="bi bi-person-badge-fill" style="color:#d97706;"></i> {{ b.details.astrologer_name }}
-                        </span>
-                      } @else {
-                        <span class="muted" style="font-size:12px;">Chief Astrologer</span>
-                      }
-                    </td>
-                    <td><span class="badge-role" style="font-size:11px;">{{ b.service_type }}</span></td>
-                    <td><strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong></td>
-                    <td>
-                      @if (b.details?.preferred_date) {
-                        <div>
-                          <div style="font-size:12px;color:#1d4ed8;font-weight:700;">
-                            <i class="bi bi-calendar-event"></i> {{ b.details.preferred_date }}
-                          </div>
-                          @if (b.details?.time_slot) {
-                            <small class="muted"><i class="bi bi-clock"></i> {{ b.details.time_slot }}</small>
-                          }
-                        </div>
-                      } @else {
-                        <span class="muted">-</span>
-                      }
-                    </td>
-                    <td>
-                      <span class="status-pill" [ngClass]="(b.status || 'Pending').toLowerCase()">
-                        {{ b.status === 'Completed' ? 'Completed' : (b.status === 'In-Progress' ? 'In-Progress' : 'Pending') }}
-                      </span>
-                    </td>
-                    <td style="font-size:12px;color:#64748b;">{{ b.created_at | date:'dd MMM yyyy' }}</td>
-                    <td>
-                      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-                        <button 
-                          class="btn-sm"
-                          style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:700;padding:5px 10px;font-size:11px;border-radius:6px;cursor:pointer;"
-                          (click)="openViewBookingModal(b)"
-                          [title]="'common.details' | translate"
-                        >
-                          <i class="bi bi-eye-fill"></i> {{ 'common.details' | translate }}
-                        </button>
-                        <button 
-                          class="btn-primary btn-sm"
-                          style="padding:5px 10px;font-size:11px;border-radius:6px;"
-                          (click)="openFulfillModal(b)"
-                          [title]="'common.status' | translate"
-                        >
-                          <i class="bi bi-check2-circle"></i> {{ 'common.status' | translate }}
-                        </button>
-                        <button 
-                          class="btn-sm danger"
-                          style="padding:5px 8px;font-size:11px;border-radius:6px;"
-                          (click)="deleteBooking(b.id)"
-                          [title]="'common.delete' | translate"
-                        >
-                          <i class="bi bi-trash3-fill"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- VIEW B: CHIEF ASTROLOGERS DIRECTORY -->
-    @if (activeView === 'astrologers') {
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(290px, 1fr));gap:18px;">
-        @for (astro of astrologersList; track astro.id) {
-          <div 
-            class="astro-clean-card"
-            (click)="openAstrologerManageModal(astro)"
-          >
-            <div class="astro-card-top">
-              <div class="astro-avatar-clean">
-                @if (astro.avatar_url) {
-                  <img [src]="astro.avatar_url" alt="{{ astro.name }}" class="astro-avatar-img"/>
-                } @else {
-                  <span>{{ astro.name.charAt(0) }}</span>
-                }
-              </div>
-              <div class="astro-meta-clean">
-                <h4 class="astro-name-clean">{{ astro.name }}</h4>
-                <span class="astro-role-clean">{{ astro.role_title }}</span>
-              </div>
-              <span 
-                class="astro-status-clean"
-                [class.is-leave]="astro.status !== 'Available'"
-              >
-                <i class="bi" [ngClass]="astro.status === 'Available' ? 'bi-check-circle-fill' : 'bi-dash-circle-fill'"></i>
-                {{ astro.status === 'Available' ? ' Available' : ' Leave' }}
-              </span>
-            </div>
-
-            <div class="astro-badges-clean">
-              <span class="badge-fee"><i class="bi bi-currency-rupee"></i>{{ astro.fee }}</span>
-              <span class="badge-slots"><i class="bi bi-clock-fill"></i> {{ (astro.available_slots || []).length }}</span>
-              <span class="badge-leave"><i class="bi bi-calendar-x-fill"></i> {{ (astro.blocked_dates || []).length }}</span>
-            </div>
-
-            <div class="astro-card-actions">
-              <button 
-                type="button" 
-                class="btn-primary btn-manage-clean"
-                (click)="openAstrologerManageModal(astro); $event.stopPropagation()"
-              >
-                <i class="bi bi-gear-fill"></i> {{ 'services.editAstrologer' | translate }} <i class="bi bi-arrow-right"></i>
-              </button>
-              <button 
-                type="button" 
-                class="btn-delete-card"
-                (click)="deleteAstrologer(astro, $event)"
-                [title]="'services.deleteAstrologer' | translate"
-              >
-                <i class="bi bi-trash3-fill"></i>
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- 4th Card: Add New Astrologer + Card -->
-        <div 
-          class="astro-add-card"
-          (click)="openNewAstrologerModal()"
-          role="button"
-          tabindex="0"
-          [title]="'services.addAstrologer' | translate"
-        >
-          <div class="add-card-inner">
-            <div class="add-icon-circle">
-              <i class="bi bi-plus-lg"></i>
-            </div>
-            <h4 class="add-card-title">{{ 'services.addAstrologer' | translate }}</h4>
-            <p class="add-card-desc">{{ 'team.roleAstro' | translate }}</p>
-          </div>
-        </div>
-      </div>
-    }
-  }
-
-  <!-- =========================================================
-       VIEW 2: DEDICATED FULL-PAGE ASTROLOGER MANAGEMENT STUDIO
-       ========================================================= -->
-  @if (selectedAstrologerForManage) {
-    <div class="studio-fullpage-container">
-      
-      <!-- 1. TOP NAVIGATION / ACTION BAR -->
-      <div class="studio-top-nav">
-        <button 
-          type="button" 
-          class="btn-back-clean" 
-          (click)="selectedAstrologerForManage = null"
-        >
-          <i class="bi bi-arrow-left"></i> {{ 'common.back' | translate }}
-        </button>
-
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          @if (astrologerSuccessMsg) {
-            <span class="save-success-pill">
-              <i class="bi bi-check2-circle"></i> {{ astrologerSuccessMsg }}
-            </span>
-          }
-
-          @if (!isCreatingNewAstrologer && selectedAstrologerForManage.id) {
-            <button 
-              type="button" 
-              class="btn-danger-outline" 
-              (click)="deleteAstrologer(selectedAstrologerForManage)"
-            >
-              <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
-            </button>
-          }
-
-          <button 
-            type="button" 
-            class="btn-primary" 
-            (click)="saveAstrologerFullProfile()"
-            [disabled]="astrologerSaving"
-            style="padding:10px 24px;font-size:13px;font-weight:800;border-radius:10px;"
-          >
-            <i class="bi bi-floppy2-fill"></i> {{ astrologerSaving ? ('common.saving' | translate) : (isCreatingNewAstrologer ? ('services.addAstrologer' | translate) : ('common.save' | translate)) }}
-          </button>
-        </div>
-      </div>
-
-      <!-- 2. HERO ASTROLOGER OVERVIEW BANNER -->
-      <div class="studio-hero-banner">
-        <div class="studio-profile-left">
-          <div class="studio-avatar-lg">
-            @if (selectedAstrologerForManage.avatar_url) {
-              <img [src]="selectedAstrologerForManage.avatar_url" alt="{{ selectedAstrologerForManage.name }}" class="studio-avatar-img"/>
-            } @else {
-              <span>{{ selectedAstrologerForManage.name ? selectedAstrologerForManage.name.charAt(0) : '+' }}</span>
-            }
-          </div>
-          <div>
-            <h2 class="studio-title-main">
-              {{ isCreatingNewAstrologer ? ('services.addAstrologer' | translate) : selectedAstrologerForManage.name }}
-            </h2>
-            <div class="studio-sub-meta">
-              <span style="font-weight:700;color:#0f172a;">{{ selectedAstrologerForManage.role_title || 'Chief Astrologer' }}</span>
-              <span>&bull;</span>
-              <span style="color:#b45309;font-weight:800;">{{ 'services.fee' | translate }}: ₹{{ selectedAstrologerForManage.fee }}</span>
-              <span>&bull;</span>
-              <span>{{ 'services.experience' | translate }}: {{ selectedAstrologerForManage.experience || '10+ Years' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="studio-pills-bar">
-          <span class="chip-stat gold">
-            <i class="bi bi-star-fill" style="color:#f59e0b;margin-right:6px;"></i>{{ selectedAstrologerForManage.rating || 4.90 }} {{ 'services.rating' | translate }}
-          </span>
-          <span class="chip-stat">
-            <i class="bi bi-patch-check-fill" style="color:#2563eb;margin-right:6px;"></i>{{ selectedAstrologerForManage.consultation_count || 0 }}+ {{ 'services.consultations' | translate }}
-          </span>
-          <span 
-            class="chip-stat"
-            [style.color]="selectedAstrologerForManage.status === 'Available' ? '#166534' : '#991b1b'"
-            [style.background]="selectedAstrologerForManage.status === 'Available' ? '#f0fdf4' : '#fef2f2'"
-            [style.border-color]="selectedAstrologerForManage.status === 'Available' ? '#bbf7d0' : '#fecaca'"
-          >
-            <i class="bi" [ngClass]="selectedAstrologerForManage.status === 'Available' ? 'bi-check-circle-fill' : 'bi-dash-circle-fill'" style="margin-right:6px;"></i>
-            {{ selectedAstrologerForManage.status === 'Available' ? 'Available' : 'Leave' }}
-          </span>
-        </div>
-      </div>
-
-      <!-- 3. STUDIO TABS SWITCHER -->
-      <div class="astro-modal-tabs-lg">
-        <button 
-          class="astro-tab-btn-lg"
-          [class.active]="astrologerManageTab === 'profile'" 
-          (click)="astrologerManageTab = 'profile'"
-        >
-          <i class="bi bi-person-circle"></i> {{ 'services.tabProfile' | translate }}
-        </button>
-        <button 
-          class="astro-tab-btn-lg"
-          [class.active]="astrologerManageTab === 'slots'" 
-          (click)="astrologerManageTab = 'slots'"
-        >
-          <i class="bi bi-clock-history"></i> {{ 'services.tabSlots' | translate }} ({{ (selectedAstrologerForManage.available_slots || []).length }})
-        </button>
-        <button 
-          class="astro-tab-btn-lg"
-          [class.active]="astrologerManageTab === 'calendar'" 
-          (click)="astrologerManageTab = 'calendar'; generateAstrologerMonthCalendar();"
-        >
-          <i class="bi bi-calendar3"></i> {{ 'services.tabCalendar' | translate }}
-        </button>
-      </div>
-
-      <!-- 4. ACTIVE TAB CONTENT CARD -->
-      <div class="studio-content-card">
-
-        <!-- TAB 1: PROFILE & PHOTO -->
-        @if (astrologerManageTab === 'profile') {
-          <div>
-            <!-- PHOTO / AVATAR BOX -->
-            <div class="avatar-studio-box">
-              <div class="avatar-preview-wrapper">
-                <div class="avatar-preview-lg">
-                  @if (selectedAstrologerForManage.avatar_url) {
-                    <img [src]="selectedAstrologerForManage.avatar_url" alt="Profile" class="avatar-img-fit"/>
-                  } @else {
-                    <i [class]="selectedAstrologerForManage.avatar_icon || 'bi bi-person-fill'"></i>
-                  }
-                </div>
-              </div>
-
-              <div class="avatar-controls-right">
-                <label class="field-lbl-lg" style="margin-bottom:6px;">
-                  <i class="bi bi-image" style="color:#d97706;"></i> {{ 'services.avatar' | translate }}:
-                </label>
-                
-                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
-                  <label class="btn-primary" style="padding:7px 14px;font-size:12px;cursor:pointer;margin:0;display:inline-flex;align-items:center;gap:6px;">
-                    <i class="bi bi-upload"></i> {{ 'services.uploadPhoto' | translate }}
-                    <input type="file" (change)="onAstrologerPhotoSelected($event)" accept="image/*" style="display:none;"/>
-                  </label>
-
-                  @if (selectedAstrologerForManage.avatar_url) {
-                    <button type="button" class="btn-slot-del" (click)="removeAstrologerPhoto()" style="padding:7px 12px;font-size:12px;">
-                      <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
-                    </button>
-                  }
-                </div>
-
-                <!-- Direct URL input -->
-                <div style="margin-bottom:10px;">
-                  <input 
-                    [(ngModel)]="selectedAstrologerForManage.avatar_url" 
-                    class="field-input-lg" 
-                    style="padding:8px 12px;font-size:12px;"
-                    placeholder="URL (https://...)"
-                  />
-                </div>
-
-                <!-- Preset Avatar Icons -->
-                <div>
-                  <span style="font-size:11px;color:#64748b;font-weight:600;display:block;margin-bottom:6px;">{{ 'services.presetIcons' | translate }}:</span>
-                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    @for (pIcon of presetAvatarIcons; track pIcon) {
-                      <button 
-                        type="button" 
-                        class="preset-icon-pill" 
-                        [class.active]="selectedAstrologerForManage.avatar_icon === pIcon && !selectedAstrologerForManage.avatar_url"
-                        (click)="selectPresetAvatar(pIcon); removeAstrologerPhoto()"
-                        [title]="pIcon"
-                      >
-                        <i [class]="pIcon"></i>
-                      </button>
-                    }
+    } @else {
+      <div style="overflow-x:auto;">
+        <table class="data-table" style="width:100%;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>{{ 'services.client' | translate }}</th>
+              <th>{{ 'services.name' | translate }}</th>
+              <th>{{ 'services.serviceType' | translate }}</th>
+              <th>{{ 'services.fee' | translate }}</th>
+              <th>{{ 'services.preferredDate' | translate }}</th>
+              <th>{{ 'common.status' | translate }}</th>
+              <th>{{ 'services.bookingDate' | translate }}</th>
+              <th style="text-align:center;">{{ 'common.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of getFilteredBookings(); track b.id) {
+              <tr>
+                <td><strong style="font-family:monospace;color:#0f172a;">#{{ b.id }}</strong></td>
+                <td>
+                  <div style="font-weight:700;color:#0f172a;font-size:14px;">{{ b.user_name }}</div>
+                  <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:6px;align-items:center;">
+                    <a [href]="'tel:' + b.user_phone" class="btn-tel-call" [title]="'services.call' | translate">
+                      <i class="bi bi-telephone-fill"></i> {{ b.user_phone }}
+                    </a>
+                    <a [href]="'https://wa.me/91' + b.user_phone" target="_blank" class="btn-wa-link" [title]="'services.whatsapp' | translate">
+                      <i class="bi bi-whatsapp"></i> WA
+                    </a>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Basic Info Fields -->
-            <div class="form-grid-2-lg">
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-person-fill" style="color:#d97706;"></i> {{ 'services.name' | translate }} *
-                </label>
-                <input 
-                  [(ngModel)]="selectedAstrologerForManage.name" 
-                  class="field-input-lg" 
-                  placeholder="Guru Srinivasan"
-                />
-              </div>
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-award-fill" style="color:#d97706;"></i> {{ 'services.roleTitle' | translate }} *
-                </label>
-                <input 
-                  [(ngModel)]="selectedAstrologerForManage.role_title" 
-                  class="field-input-lg" 
-                  placeholder="Chief Vedic Astrologer"
-                />
-              </div>
-            </div>
-
-            <div class="form-grid-3-lg">
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-cash" style="color:#d97706;"></i> {{ 'services.fee' | translate }} *
-                </label>
-                <input 
-                  type="number" 
-                  [(ngModel)]="selectedAstrologerForManage.fee" 
-                  class="field-input-lg"
-                />
-              </div>
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-hourglass" style="color:#d97706;"></i> {{ 'services.experience' | translate }}
-                </label>
-                <input 
-                  [(ngModel)]="selectedAstrologerForManage.experience" 
-                  class="field-input-lg" 
-                  placeholder="20+ Years"
-                />
-              </div>
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-activity" style="color:#d97706;"></i> {{ 'services.status' | translate }}
-                </label>
-                <select [(ngModel)]="selectedAstrologerForManage.status" class="field-input-lg">
-                  <option value="Available">🟢 Available</option>
-                  <option value="On Leave">🔴 On Leave</option>
-                  <option value="Busy">🟡 Busy</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-grid-3-lg">
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-telephone-fill" style="color:#d97706;"></i> {{ 'services.phone' | translate }}
-                </label>
-                <input 
-                  [(ngModel)]="selectedAstrologerForManage.phone" 
-                  class="field-input-lg" 
-                  placeholder="9876543210"
-                />
-              </div>
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-star-fill" style="color:#d97706;"></i> {{ 'services.rating' | translate }}
-                </label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  max="5.0" 
-                  [(ngModel)]="selectedAstrologerForManage.rating" 
-                  class="field-input-lg"
-                />
-              </div>
-              <div class="field-group-lg" style="margin:0;">
-                <label class="field-lbl-lg">
-                  <i class="bi bi-people-fill" style="color:#d97706;"></i> {{ 'services.consultations' | translate }}
-                </label>
-                <input 
-                  type="number" 
-                  [(ngModel)]="selectedAstrologerForManage.consultation_count" 
-                  class="field-input-lg"
-                />
-              </div>
-            </div>
-
-            <div class="field-group-lg">
-              <label class="field-lbl-lg">
-                <i class="bi bi-stars" style="color:#d97706;"></i> {{ 'services.specialty' | translate }}
-              </label>
-              <input 
-                [(ngModel)]="selectedAstrologerForManage.specialty" 
-                class="field-input-lg" 
-                placeholder="Vedic Horoscope Reading, Marriage Compatibility, Vastu"
-              />
-            </div>
-
-            <div class="field-group-lg" style="margin-bottom:0;">
-              <label class="field-lbl-lg">
-                <i class="bi bi-journal-text" style="color:#d97706;"></i> {{ 'services.bio' | translate }}
-              </label>
-              <textarea 
-                [(ngModel)]="selectedAstrologerForManage.bio" 
-                rows="3" 
-                class="field-input-lg" 
-                placeholder="Detailed heritage, education and achievements..."
-              ></textarea>
-            </div>
-          </div>
-        }
-
-        <!-- TAB 2: TIME SLOTS STUDIO -->
-        @if (astrologerManageTab === 'slots') {
-          <div>
-            <!-- Quick Suggestions Bar -->
-            <div style="background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:20px;">
-              <label class="field-lbl-lg" style="margin-bottom:10px;">
-                <i class="bi bi-lightning-charge-fill" style="color:#d97706;"></i> {{ 'services.quickSlots' | translate }}:
-              </label>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-                @for (qSlot of quickSlotsList; track qSlot) {
-                  <button 
-                    type="button" 
-                    class="quick-slot-pill"
-                    (click)="addQuickSlot(qSlot)"
-                    [disabled]="(selectedAstrologerForManage.available_slots || []).includes(qSlot)"
-                  >
-                    + {{ qSlot }}
-                  </button>
-                }
-              </div>
-
-              <label class="field-lbl-lg" style="margin-bottom:8px;">
-                <i class="bi bi-plus-circle" style="color:#d97706;"></i> {{ 'services.addSlot' | translate }}:
-              </label>
-              <div style="display:flex;gap:10px;">
-                <input 
-                  [(ngModel)]="newSlotInput" 
-                  placeholder="e.g. 10:00 AM - 11:00 AM" 
-                  class="field-input-lg" 
-                  style="flex:1;"
-                  (keyup.enter)="addAstrologerSlot()"
-                />
-                <button 
-                  type="button" 
-                  class="btn-primary" 
-                  style="padding:0 24px;font-size:13px;border-radius:10px;font-weight:700;"
-                  (click)="addAstrologerSlot()"
-                >
-                  <i class="bi bi-plus-lg"></i> {{ 'common.save' | translate }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Active Slots List -->
-            <div>
-              <label class="field-lbl-lg" style="margin-bottom:14px;">
-                <i class="bi bi-clock-fill" style="color:#d97706;"></i> {{ 'services.activeSlots' | translate }} ({{ (selectedAstrologerForManage.available_slots || []).length }}):
-              </label>
-              <div class="slots-grid-2col">
-                @for (slot of selectedAstrologerForManage.available_slots; track slot; let idx = $index) {
-                  <div class="slot-item-card-lg">
-                    <span class="slot-time-text-lg">
-                      <i class="bi bi-clock-fill" style="color:#d97706;"></i> {{ slot }}
+                </td>
+                <td>
+                  @if (b.details?.astrologer_name) {
+                    <span style="font-weight:700;color:#0f172a;font-size:12px;display:inline-flex;align-items:center;gap:4px;background:#fef3c7;border:1px solid #fde68a;padding:3px 8px;border-radius:6px;">
+                      <i class="bi bi-person-badge-fill" style="color:#d97706;"></i> {{ b.details.astrologer_name }}
                     </span>
+                  } @else {
+                    <span class="muted" style="font-size:12px;">Chief Astrologer</span>
+                  }
+                </td>
+                <td><span class="badge-role" style="font-size:11px;">{{ b.service_type }}</span></td>
+                <td><strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong></td>
+                <td>
+                  @if (b.details?.preferred_date) {
+                    <div>
+                      <div style="font-size:12px;color:#1d4ed8;font-weight:700;">
+                        <i class="bi bi-calendar-event"></i> {{ b.details.preferred_date }}
+                      </div>
+                      @if (b.details?.time_slot) {
+                        <small class="muted"><i class="bi bi-clock"></i> {{ b.details.time_slot }}</small>
+                      }
+                    </div>
+                  } @else {
+                    <span class="muted">-</span>
+                  }
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="(b.status || 'Pending').toLowerCase()">
+                    {{ b.status === 'Completed' ? 'Completed' : (b.status === 'In-Progress' ? 'In-Progress' : 'Pending') }}
+                  </span>
+                </td>
+                <td style="font-size:12px;color:#64748b;">{{ b.created_at | date:'dd MMM yyyy' }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
                     <button 
-                      type="button" 
-                      class="btn-slot-del"
-                      (click)="removeAstrologerSlot(idx)"
+                      class="btn-sm"
+                      style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:700;padding:5px 10px;font-size:11px;border-radius:6px;cursor:pointer;"
+                      (click)="openViewBookingModal(b)"
+                      [title]="'common.details' | translate"
+                    >
+                      <i class="bi bi-eye-fill"></i> {{ 'common.details' | translate }}
+                    </button>
+                    <button 
+                      class="btn-primary btn-sm"
+                      style="padding:5px 10px;font-size:11px;border-radius:6px;"
+                      (click)="openFulfillModal(b)"
+                      [title]="'common.status' | translate"
+                    >
+                      <i class="bi bi-check2-circle"></i> {{ 'common.status' | translate }}
+                    </button>
+                    <button 
+                      class="btn-sm danger"
+                      style="padding:5px 8px;font-size:11px;border-radius:6px;"
+                      (click)="deleteBooking(b.id)"
                       [title]="'common.delete' | translate"
                     >
-                      <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
+                      <i class="bi bi-trash3-fill"></i>
                     </button>
                   </div>
-                }
-                @if (!selectedAstrologerForManage.available_slots || selectedAstrologerForManage.available_slots.length === 0) {
-                  <div style="grid-column:1 / -1;text-align:center;padding:28px;color:#64748b;font-size:13px;background:#f8fafc;border-radius:14px;border:1px dashed #cbd5e1;">
-                    {{ 'common.noRecords' | translate }}
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- TAB 3: LEAVE & AVAILABILITY CALENDAR -->
-        @if (astrologerManageTab === 'calendar') {
-          <div>
-            <div class="cal-nav-bar" style="padding:14px 18px;margin-bottom:18px;">
-              <div style="display:flex;align-items:center;gap:8px;">
-                <button 
-                  type="button" 
-                  (click)="prevAstrologerMonth()" 
-                  style="background:#fff;border:1px solid #cbd5e1;padding:6px 14px;font-size:13px;font-weight:800;cursor:border;border-radius:8px;"
-                >
-                  <i class="bi bi-chevron-left"></i>
-                </button>
-                <strong style="font-size:15px;color:#0f172a;padding:0 8px;">
-                  {{ getAstrologerMonthNameTamil() }}
-                </strong>
-                <button 
-                  type="button" 
-                  (click)="nextAstrologerMonth()" 
-                  style="background:#fff;border:1px solid #cbd5e1;padding:6px 14px;font-size:13px;font-weight:800;cursor:border;border-radius:8px;"
-                >
-                  <i class="bi bi-chevron-right"></i>
-                </button>
-                <button 
-                  type="button" 
-                  (click)="jumpToAstrologerTodayMonth()" 
-                  style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;margin-left:6px;"
-                >
-                  {{ 'common.today' | translate }}
-                </button>
-              </div>
-
-              <!-- Stats summary -->
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:12px;font-weight:700;color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;padding:5px 10px;border-radius:8px;">
-                  🟢 Available: {{ astrologerCalendarDays.length - getBlockedDaysCount() }}
-                </span>
-                <span style="font-size:12px;font-weight:700;color:#991b1b;background:#fef2f2;border:1px solid #fecaca;padding:5px 10px;border-radius:8px;">
-                  🔴 Leave: {{ getBlockedDaysCount() }}
-                </span>
-              </div>
-            </div>
-
-            <!-- 7-Days Column Header -->
-            <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:8px;text-align:center;margin-bottom:8px;">
-              <div style="padding:8px 4px;font-size:12px;font-weight:800;color:#dc2626;background:#fef2f2;border-radius:8px;">Sun</div>
-              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Mon</div>
-              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Tue</div>
-              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Wed</div>
-              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Thu</div>
-              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Fri</div>
-              <div style="padding:8px 4px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border-radius:8px;">Sat</div>
-            </div>
-
-            <!-- 1-Month Matrix -->
-            <div class="cal-matrix-lg">
-              @for (day of astrologerCalendarDays; track day.date) {
-                <div 
-                  class="month-cal-cell-lg"
-                  [class.other-month]="!day.isCurrentMonth"
-                  [class.is-today]="day.isToday"
-                  [class.cell-free]="day.isCurrentMonth && !day.isBlocked"
-                  [class.cell-busy]="day.isCurrentMonth && day.isBlocked"
-                  (click)="day.isCurrentMonth && toggleAstrologerDate(day.date, day.isBlocked ? 'available' : 'busy')"
-                >
-                  <div class="cell-top-row">
-                    <span class="cal-day-num" [class.text-sunday]="day.dayOfWeek === 0" style="font-size:14px;font-weight:800;">{{ day.dayNumber }}</span>
-                    @if (day.isToday) {
-                      <span class="cal-today-badge">Today</span>
-                    }
-                  </div>
-                  @if (day.isCurrentMonth) {
-                    <div class="cell-bottom-row">
-                      <span class="cal-status-pill" [class.pill-free]="!day.isBlocked" [class.pill-busy]="day.isBlocked" style="font-size:11px;padding:3px 8px;">
-                        {{ day.isBlocked ? '🔴 Leave' : '🟢 Free' }}
-                      </span>
-                    </div>
-                  }
-                </div>
-              }
-            </div>
-
-            <!-- Batch Actions Bar -->
-            <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
-              <button 
-                type="button" 
-                (click)="blockAllSundaysForAstrologer()"
-                style="background:#fff1f2;border:1.5px solid #fecdd3;color:#9f1239;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;"
-              >
-                <i class="bi bi-x-circle-fill"></i> {{ 'services.blockSundays' | translate }}
-              </button>
-              <button 
-                type="button" 
-                (click)="unblockAllDaysForAstrologer()"
-                style="background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;"
-              >
-                <i class="bi bi-check-circle-fill"></i> {{ 'services.unblockAll' | translate }}
-              </button>
-            </div>
-          </div>
-        }
-
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-
-    </div>
-  }
+    }
+  </div>
 
   <!-- BOOKING FULL DETAILS VIEW MODAL -->
   @if (selectedBookingForView) {
@@ -858,8 +290,18 @@
           </div>
 
           <div class="form-group">
-            <label>PDF URL:</label>
-            <input [(ngModel)]="fulfillForm.chart_url" name="f_url" class="ctrl" placeholder="https://..."/>
+            <label>ஜாதக கணிப்பு கோப்பு பதிவேற்றம் (Upload Completed Horoscope PDF / Image):</label>
+            <input type="file" accept=".pdf,image/*,application/pdf" (change)="uploadFulfillChart($event)" class="ctrl" style="padding:6px;"/>
+            @if (isUploadingFulfillChart) {
+              <span style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;display:block;">
+                <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
+              </span>
+            }
+            @if (fulfillForm.chart_url) {
+              <div style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
+                <i class="bi bi-check-circle-fill"></i> கோப்பு வெற்றிகரமாக பதிவேற்றப்பட்டது
+              </div>
+            }
           </div>
 
           <div class="modal-btns">

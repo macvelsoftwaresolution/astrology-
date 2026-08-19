@@ -16,11 +16,14 @@ export const TA_TRANSLATIONS: Record<string, any> = {
   },
   nav: {
     overview: "கண்ணோட்டம் & பகுப்பாய்வு",
+    astrology: "ஜோதிடம் (Astrology)",
+    learn: "கல்வி (Learn)",
+    general: "பொதுவானவை (General)",
     team: "குழு & ஜோதிடர்கள்",
     lms: "பாடங்கள் & பாடத்திட்டம்",
     courier: "கூரியர் & புத்தக ஆர்டர்கள்",
     grading: "தேர்வு மதிப்பீடு & சான்றிதழ்",
-    services: "முன்பதிவுகள் & ஜோதிடர்கள்",
+    services: "முன்பதிவுகள் மேலாண்மை",
     rasi_editor: "ராசி பலன் பதிப்பாசிரியர்",
     matches: "திருமணப் பொருத்தப் பதிவு",
     payments: "பணப்பரிவர்த்தனைப் பட்டியல்",
@@ -160,10 +163,10 @@ export const TA_TRANSLATIONS: Record<string, any> = {
     issueCert: "சான்றிதழ் வழங்குக"
   },
   services: {
-    title: "முன்பதிவுகள் & தலைமை ஜோதிடர்கள்",
-    subtitle: "ஜோதிடர்கள் மேலாண்மை மற்றும் வாடிக்கையாளர் ஆலோசனை முன்பதிவுகள்",
+    title: "முன்பதிவுகள் & சேவைகள் மேலாண்மை",
+    subtitle: "வாடிக்கையாளர் ஜோதிட ஆலோசனை முன்பதிவுகள் மற்றும் நிலை கண்காணிப்பு",
     viewBookings: "முன்பதிவுகள்",
-    viewAstrologers: "ஜோதிடர்கள்",
+    viewAstrologers: "தலைமை ஜோதிடர்கள்",
     addAstrologer: "+ புதிய ஜோதிடர்",
     newBooking: "+ புதிய முன்பதிவு",
     astrologersList: "தலைமை ஜோதிடர்கள் பட்டியல்",
@@ -283,13 +286,16 @@ export const EN_TRANSLATIONS: Record<string, any> = {
   },
   nav: {
     overview: "Overview & Analytics",
+    astrology: "Astrology",
+    learn: "Learn",
+    general: "General Platform",
     team: "Team & Astrologers",
-    lms: "Learn & Course Studio",
-    courier: "Courier & Book Orders",
-    grading: "Exam Valuation & Certs",
     services: "Appointment Bookings",
     rasi_editor: "Rasi Palan Editor",
     matches: "Marriage Match Log",
+    lms: "Learn & Course Studio",
+    courier: "Courier & Book Orders",
+    grading: "Exam Valuation & Certs",
     payments: "Payment Transactions",
     broadcast: "Notify Users",
     users: "Registered Users",
@@ -427,8 +433,8 @@ export const EN_TRANSLATIONS: Record<string, any> = {
     issueCert: "Issue Certificate"
   },
   services: {
-    title: "Appointments & Chief Astrologers",
-    subtitle: "Astrologers Management and Client Consultation Bookings",
+    title: "Appointment Bookings & Services",
+    subtitle: "Client consultation bookings, schedule fulfillment, and status tracking",
     viewBookings: "Appointment Bookings",
     viewAstrologers: "Chief Astrologers",
     addAstrologer: "+ Add Astrologer",
@@ -573,7 +579,7 @@ export class TranslationService {
     this.http.get<Record<string, any>>(`/assets/i18n/${lang}.json`).subscribe({
       next: (data) => {
         if (data && Object.keys(data).length > 0) {
-          this.translations[lang] = { ...this.translations[lang], ...data };
+          this.translations[lang] = this.deepMerge(this.translations[lang], data);
           this.version.update((v) => v + 1);
         }
       },
@@ -581,6 +587,28 @@ export class TranslationService {
         // Built-in dictionaries already active
       }
     });
+  }
+
+  private deepMerge(target: any, source: any): any {
+    const output = { ...(target || {}) };
+    if (this.isObject(target) && this.isObject(source)) {
+      Object.keys(source).forEach((key) => {
+        if (this.isObject(source[key])) {
+          if (!(key in target)) {
+            output[key] = source[key];
+          } else {
+            output[key] = this.deepMerge(target[key], source[key]);
+          }
+        } else {
+          output[key] = source[key];
+        }
+      });
+    }
+    return output;
+  }
+
+  private isObject(item: any): boolean {
+    return item && typeof item === 'object' && !Array.isArray(item);
   }
 
   public setLanguage(lang: LanguageCode): void {

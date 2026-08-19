@@ -23,6 +23,40 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadLiveRasiPalan();
+    this.loadLiveAstrologers();
+    this.loadLivePanchangam();
+  }
+
+  loadLiveAstrologers() {
+    if (typeof window === 'undefined') return;
+    this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
+      next: (res) => {
+        if (res && Array.isArray(res.astrologers)) {
+          this.astrologers = res.astrologers;
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  loadLivePanchangam() {
+    if (typeof window === 'undefined') return;
+    this.http.get<any>('http://127.0.0.1:8000/api/panchangam/today').subscribe({
+      next: (res) => {
+        if (res && res.panchangam) {
+          this.panchangam = {
+            ...this.panchangam,
+            ...res.panchangam,
+            nallaNeram: res.panchangam.nalla_neram || this.panchangam.nallaNeram,
+            rahukalam: res.panchangam.rahukalam || this.panchangam.rahukalam,
+            yamagandam: res.panchangam.yamagandam || this.panchangam.yamagandam
+          };
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {}
+    });
   }
 
   loadLiveRasiPalan() {
@@ -168,25 +202,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
   ];
 
-  // Chief Astrologers
-  astrologers = [
-    {
-      name: 'குரு ஸ்ரீநிவாசன்',
-      role: 'தலைமை வேத ஜோதிடர்',
-      experience: '25+ ஆண்டுகள் அனுபவம்',
-      specialty: 'ஜாதக கணிப்பு, பிரசன்ன ஜோதிடம், பரிகார முறைகள்',
-      iconClass: 'bi bi-person-workspace',
-      bio: 'கால் நூற்றாண்டுக்கு மேலாக பல்லாயிரக்கணக்கான குடும்பங்களுக்கு ஜாதக கணிப்பு மற்றும் துல்லிய பரிகாரங்கள் மூலம் வழிகாட்டி வருகிறார்.'
-    },
-    {
-      name: 'குரு ராமஜெயம்',
-      role: 'வாஸ்து மற்றும் எண்கணித நிபுணர்',
-      experience: '18+ ஆண்டுகள் அனுபவம்',
-      specialty: 'வாஸ்து சாஸ்திரம், அதிர்ஷ்ட பெயர் தேர்வு, தொழில் யோகம்',
-      iconClass: 'bi bi-compass-fill',
-      bio: 'வீடு மற்றும் வணிக வளாகங்களுக்கான சிறந்த வாஸ்து ஆலோசனைகளை வழங்கி தொழில் வளர்ச்சிக்கு வித்திட்டு வருகிறார்.'
-    }
-  ];
+  // Chief Astrologers (Live Database API)
+  astrologers: any[] = [];
 
   // Verified Customer Reviews
   testimonials = [
