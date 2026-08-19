@@ -177,29 +177,60 @@ class JathagamController extends Controller
         $matchDetails = [];
         $totalScore   = 0;
 
-        $poruthams = [
-            'Dinam'          => in_array($diff % 9, [1, 3, 5]) ? 1 : 0,
-            'Ganam'          => $this->calcGanam($request->boy_nakshatra, $request->girl_nakshatra),
-            'Mahendram'      => ($diff % 4 === 0) ? 1 : 0,
-            'Stree Deergham' => ($diff >= 7) ? 1 : 0,
-            'Yoni'           => rand(0, 1), // Simplified; real calc needs nakshatra->yoni mapping
-            'Rasi'           => ($diff % 7 !== 0) ? 1 : 0,
-            'Rajju'          => ($diff % 3 !== 0) ? 1 : 0,
-            'Vedhai'         => ($diff !== 6 && $diff !== 8) ? 1 : 0,
-            'Vasiyam'        => in_array($diff, [2, 4, 6]) ? 1 : 0,
-            'Rasi Adhipathi' => ($diff % 2 === 0) ? 1 : 0,
+        $poruthamsDef = [
+            'Dinam'          => ['tamil' => 'தினப் பொருத்தம்', 'desc' => 'ஆயுள், உடல் ஆரோக்கியம்', 'score' => in_array($diff % 9, [1, 3, 5, 7]) ? 1 : 0],
+            'Ganam'          => ['tamil' => 'கணப் பொருத்தம்', 'desc' => 'குண ஒற்றுமை, சுபாவம்', 'score' => $this->calcGanam($request->boy_nakshatra, $request->girl_nakshatra)],
+            'Mahendram'      => ['tamil' => 'மகேந்திரப் பொருத்தம்', 'desc' => 'புத்திர பாக்கியம், வம்ச விருத்தி', 'score' => ($diff % 4 === 0) ? 1 : 0],
+            'Stree Deergham' => ['tamil' => 'ஸ்திரீ தீர்க்கம்', 'desc' => 'சகல ஐஸ்வர்யம், லட்சுமி கடாட்சம்', 'score' => ($diff >= 7) ? 1 : 0],
+            'Yoni'           => ['tamil' => 'யோனிப் பொருத்தம்', 'desc' => 'தாம்பத்ய சுகம், மன ஈர்ப்பு', 'score' => 1],
+            'Rasi'           => ['tamil' => 'இராசிப் பொருத்தம்', 'desc' => 'குடும்ப ஒற்றுமை, சுப விருத்தி', 'score' => ($diff % 7 !== 0) ? 1 : 0],
+            'Rasi Adhipathi' => ['tamil' => 'இராசி அதிபதி பொருத்தம்', 'desc' => 'கிரக நட்பு, சமாதானம்', 'score' => ($diff % 2 === 0) ? 1 : 0],
+            'Vasiyam'        => ['tamil' => 'வசியப் பொருத்தம்', 'desc' => 'அன்யோன்யம், ஈர்ப்பு', 'score' => in_array($diff, [2, 4, 6]) ? 1 : 0],
+            'Rajju'          => ['tamil' => 'ரஜ்ஜுப் பொருத்தம்', 'desc' => 'மாங்கல்ய பலம் (அதி முக்கியம்)', 'score' => ($diff % 3 !== 0) ? 1 : 0],
+            'Vedhai'         => ['tamil' => 'வேதைப் பொருத்தம்', 'desc' => 'துன்பமின்மை, பகையற்ற நிலை', 'score' => ($diff !== 6 && $diff !== 8) ? 1 : 0],
         ];
 
-        foreach ($poruthams as $name => $score) {
-            $matchDetails[] = [
-                'name'   => $name,
-                'result' => $score === 1 ? 'Match' : 'No Match',
-                'score'  => $score
-            ];
-            $totalScore += $score;
+        $matchDetails = [];
+        $totalScore   = 0;
+
+        if ($request->has('match_details') && is_array($request->input('match_details')) && count($request->input('match_details')) > 0) {
+            $rawDetails = $request->input('match_details');
+            foreach ($rawDetails as $item) {
+                $isMatched = !empty($item['match']) || (!empty($item['score']) && $item['score'] == 1) || (!empty($item['points']) && $item['points'] == 1);
+                $matchDetails[] = [
+                    'name'       => $item['name'] ?? 'Porutham',
+                    'tamil_name' => $item['tamil_name'] ?? ($poruthamsDef[$item['name'] ?? '']['tamil'] ?? ($item['name'] ?? '')),
+                    'desc'       => $item['desc'] ?? ($poruthamsDef[$item['name'] ?? '']['desc'] ?? ''),
+                    'match'      => $isMatched,
+                    'result'     => $isMatched ? 'Match' : 'No Match',
+                    'score'      => $isMatched ? 1 : 0
+                ];
+                if ($isMatched) {
+                    $totalScore++;
+                }
+            }
+        } else {
+            foreach ($poruthamsDef as $name => $meta) {
+                $isMatched = $meta['score'] === 1;
+                $matchDetails[] = [
+                    'name'       => $name,
+                    'tamil_name' => $meta['tamil'],
+                    'desc'       => $meta['desc'],
+                    'match'      => $isMatched,
+                    'result'     => $isMatched ? 'Match' : 'No Match',
+                    'score'      => $meta['score']
+                ];
+                $totalScore += $meta['score'];
+            }
         }
 
-        $matchStatus = $totalScore >= 6 ? 'Match' : 'No Match';
+        if ($request->has('match_score') && is_numeric($request->input('match_score'))) {
+            $totalScore = intval($request->input('match_score'));
+        }
+
+        $totalPoruthams = count($matchDetails);
+        $matchStatus = $request->input('match_status') ?: ($totalScore >= 6 ? 'Match' : 'Low Match');
+        $verdict = $request->input('verdict') ?: ($totalScore >= 8 ? '🟢 மிக உன்னதமான பொருத்தம்' : ($totalScore >= 6 ? '🟢 நல்ல பொருத்தம்' : '🟡 சுமாரான பொருத்தம்'));
 
         // Save to DB
         $userId = null;
@@ -213,37 +244,41 @@ class JathagamController extends Controller
         } catch (\Exception $e) {}
 
         $id = DB::table('marriage_matches')->insertGetId([
-            'user_id'        => $userId,
-            'boy_name'       => $request->boy_name,
-            'boy_dob'        => $request->boy_dob,
-            'boy_tob'        => $request->input('boy_tob'),
-            'boy_pob'        => $request->input('boy_pob'),
-            'boy_rasi'       => $request->boy_rasi,
-            'boy_nakshatra'  => $request->boy_nakshatra,
-            'girl_name'      => $request->girl_name,
-            'girl_dob'       => $request->girl_dob,
-            'girl_tob'       => $request->input('girl_tob'),
-            'girl_pob'       => $request->input('girl_pob'),
-            'girl_rasi'      => $request->girl_rasi,
-            'girl_nakshatra' => $request->girl_nakshatra,
-            'match_score'    => $totalScore,
-            'match_status'   => $matchStatus,
-            'match_details'  => json_encode($matchDetails),
-            'created_at'     => now(),
-            'updated_at'     => now()
+            'user_id'         => $userId,
+            'request_type'    => $request->input('request_type', 'pair_match'),
+            'requester_phone' => $request->input('requester_phone'),
+            'boy_name'        => $request->boy_name,
+            'boy_dob'         => $request->boy_dob,
+            'boy_tob'         => $request->input('boy_tob'),
+            'boy_pob'         => $request->input('boy_pob'),
+            'boy_rasi'        => $request->boy_rasi,
+            'boy_nakshatra'   => $request->boy_nakshatra,
+            'girl_name'       => $request->girl_name,
+            'girl_dob'        => $request->girl_dob,
+            'girl_tob'        => $request->input('girl_tob'),
+            'girl_pob'        => $request->input('girl_pob'),
+            'girl_rasi'       => $request->girl_rasi,
+            'girl_nakshatra'  => $request->girl_nakshatra,
+            'match_score'     => $totalScore,
+            'match_status'    => $matchStatus,
+            'verdict'         => $verdict,
+            'match_details'   => json_encode($matchDetails),
+            'created_at'      => now(),
+            'updated_at'      => now()
         ]);
 
         return response()->json([
-            'success'      => true,
-            'match_id'     => $id,
-            'boy_name'     => $request->boy_name,
-            'girl_name'    => $request->girl_name,
-            'match_score'  => $totalScore,
-            'match_status' => $matchStatus,
-            'match_details'=> $matchDetails,
-            'message'      => $matchStatus === 'Match'
-                ? "நல்ல பொருத்தம்! {$totalScore}/10 பொருத்தங்கள் உள்ளன."
-                : "பொருத்தம் சரியில்லை. {$totalScore}/10 மட்டுமே பொருந்துகின்றன."
+            'success'       => true,
+            'match_id'      => $id,
+            'boy_name'      => $request->boy_name,
+            'girl_name'     => $request->girl_name,
+            'match_score'   => $totalScore,
+            'match_status'  => $matchStatus,
+            'verdict'       => $verdict,
+            'match_details' => $matchDetails,
+            'message'       => $totalScore >= 6
+                ? "நல்ல பொருத்தம்! {$totalScore}/{$totalPoruthams} பொருத்தங்கள் உள்ளன."
+                : "சுமாரான பொருத்தம். {$totalScore}/{$totalPoruthams} மட்டுமே பொருந்துகின்றன."
         ]);
     }
 

@@ -1,6 +1,8 @@
 .dashboard-wrapper {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   background: #f8fafc;
   color: #1e293b;
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -56,9 +58,13 @@
   color: #fbbf24;
 }
 
-/* LEFT SIDEBAR STYLING - COSMIC SLATE NAVY WITH WARM GOLD ACCENTS */
+/* LEFT SIDEBAR STYLING - COSMIC SLATE NAVY WITH INDEPENDENT SCROLL */
 .sidebar {
   width: 275px;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: #0f172a;
   border-right: 1px solid #1e293b;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
@@ -66,9 +72,24 @@
   flex-direction: column;
   padding: 22px 16px;
   flex-shrink: 0;
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 90;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 .brand {
@@ -166,17 +187,8 @@
   flex-direction: column;
   gap: 6px;
   margin-top: 14px;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.nav-menu::-webkit-scrollbar {
-  width: 4px;
-}
-.nav-menu::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 .nav-single-btn {
@@ -396,7 +408,9 @@
   background: #1e293b;
   border: 1px solid #334155;
   border-radius: 12px;
-  margin-top: 14px;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .user-info-row {
@@ -442,58 +456,54 @@
   letter-spacing: 0.5px;
 }
 
-.btn-edit-profile {
-  flex: 1;
-  padding: 7px 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid #334155;
-  color: #cbd5e1;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 11.5px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  transition: all 0.2s ease;
-}
-
-.btn-edit-profile:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-}
-
 .btn-logout-full {
-  flex: 1;
-  padding: 7px 10px;
-  background: rgba(220, 38, 38, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   color: #fca5a5;
-  border-radius: 8px;
+  border-radius: 9px;
   cursor: pointer;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 7px;
   transition: all 0.2s ease;
 }
 
 .btn-logout-full:hover {
   background: #dc2626;
+  border-color: #dc2626;
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
 }
 
-/* MAIN PANEL LAYOUT */
+/* MAIN PANEL LAYOUT - INDEPENDENT SCROLL */
 .main-panel {
   flex: 1;
   min-width: 0;
+  height: 100vh;
+  max-height: 100vh;
   padding: 28px 32px;
   background: #f8fafc;
   overflow-y: auto;
-  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.main-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.main-panel::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.main-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.main-panel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* MODAL STYLES */

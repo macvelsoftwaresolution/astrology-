@@ -98,16 +98,35 @@ class AstrologyController extends Controller
             }
         }
 
-        $orderId = 'AST-2026-' . rand(100, 999);
+        // Generate guaranteed unique Order ID
+        $orderId = $request->input('booking_id') 
+            ?? (is_array($request->details) && isset($request->details['booking_ref']) ? $request->details['booking_ref'] : null)
+            ?? ('AST-' . date('Ymd') . '-' . strtoupper(Str::random(6)));
+
+        while (DB::table('bookings')->where('id', $orderId)->exists()) {
+            $orderId = 'AST-' . date('Ymd') . '-' . strtoupper(Str::random(8));
+        }
 
         // Check for authenticated user token
         $userId = null;
         try {
-            if ($request->bearerToken()) {
-                $token = DB::table('personal_access_tokens')
-                    ->where('token', hash('sha256', $request->bearerToken()))
-                    ->first();
-                $userId = $token?->tokenable_id;
+            $bearerToken = $request->bearerToken();
+            if ($bearerToken) {
+                // Sanctum token format is id|token
+                if (str_contains($bearerToken, '|')) {
+                    [$id, $plainToken] = explode('|', $bearerToken, 2);
+                    $pat = DB::table('personal_access_tokens')
+                        ->where('id', $id)
+                        ->first();
+                    if ($pat && hash_equals($pat->token, hash('sha256', $plainToken))) {
+                        $userId = $pat->tokenable_id;
+                    }
+                } else {
+                    $pat = DB::table('personal_access_tokens')
+                        ->where('token', hash('sha256', $bearerToken))
+                        ->first();
+                    $userId = $pat?->tokenable_id;
+                }
             }
         } catch (\Exception $e) {}
 
@@ -119,7 +138,7 @@ class AstrologyController extends Controller
             'service_type' => $request->service_type,
             'price' => $request->price,
             'status' => 'Pending',
-            'details' => json_encode($request->details),
+            'details' => is_string($request->details) ? $request->details : json_encode($request->details, JSON_UNESCAPED_UNICODE),
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -305,6 +324,7 @@ class AstrologyController extends Controller
 
         $id = DB::table('astrologers')->insertGetId([
             'name' => $request->input('name'),
+            'category' => $request->input('category', 'ஜாதகம் எழுதுதல்'),
             'role_title' => $request->input('role_title', 'வேத ஜோதிடர்'),
             'experience' => $request->input('experience', '10+ ஆண்டுகள்'),
             'specialty' => $request->input('specialty', 'ஜாதகக் கணிப்பு, திருமணப் பொருத்தம்'),
@@ -345,6 +365,7 @@ class AstrologyController extends Controller
 
         $updateData = [
             'name' => $request->input('name', $astro->name),
+            'category' => $request->input('category', $astro->category ?? 'ஜாதகம் எழுதுதல்'),
             'role_title' => $request->input('role_title', $astro->role_title),
             'experience' => $request->input('experience', $astro->experience),
             'specialty' => $request->input('specialty', $astro->specialty),

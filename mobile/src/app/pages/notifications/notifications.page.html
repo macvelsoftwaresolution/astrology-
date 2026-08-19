@@ -1,58 +1,85 @@
-<ion-header class="app-top-navbar ion-no-border">
-  <div class="top-navbar-content">
-    <div class="top-nav-left">
-      <button type="button" class="top-nav-back-btn" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i>
-      </button>
-      <div class="top-nav-title-box">
-        <h1 class="top-nav-title">அறிவிப்புகள் (Notifications)</h1>
+<ion-header class="ion-no-border" style="background: #FDFBF0; border-bottom: 2px solid #ECC876; box-shadow: 0 4px 15px rgba(74, 14, 23, 0.1);">
+  <ion-toolbar style="--background: #FDFBF0; --color: #4A0E17; padding: 6px 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 600px; margin: 0 auto;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" (click)="goBack()" style="width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 1.5px solid #ECC876; color: #4A0E17; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 6px rgba(74, 14, 23, 0.15);">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <h1 style="font-size: 1.25rem; font-weight: 800; color: #4A0E17; margin: 0; font-family: 'Noto Serif Tamil', serif;">
+          அறிவிப்புகள் (Notifications)
+        </h1>
       </div>
+      @if (unreadCount > 0) {
+        <button type="button" (click)="markAllRead()" style="background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 20px; cursor: pointer;">
+          அனைத்தும் படித்தவை
+        </button>
+      }
     </div>
-    <div class="top-nav-right" *ngIf="unreadCount > 0">
-      <button class="btn btn-sm btn-outline-warning" (click)="markAllRead()" style="font-size: 11px; border-radius: 20px;">
-        அனைத்தும் படித்தவை
-      </button>
-    </div>
-  </div>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="astrology-app-content" style="--background: #fdfaf6;">
-  <!-- Loading state -->
-  <div *ngIf="loading" style="text-align: center; padding: 3rem;">
-    <ion-spinner name="crescent" color="warning"></ion-spinner>
-    <p style="color: #8a7a60; margin-top: 10px; font-size: 13px;">அறிவிப்புகள் ஏற்றப்படுகிறது...</p>
-  </div>
-
-  <!-- Empty state -->
-  <div *ngIf="!loading && notifications.length === 0" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 75%; text-align: center; padding: 2rem; color: #4A0E17;">
-    <i class="bi bi-bell-slash" style="font-size: 3.5rem; margin-bottom: 1rem; color: #a38c64;"></i>
-    <h2 style="font-weight: bold; margin-bottom: 0.5rem; font-size: 18px;">புதிய அறிவிப்புகள் ஏதுமில்லை</h2>
-    <p style="color: #6a5e4d; font-size: 13px;">தற்போது உங்களுக்கு எந்த புதிய தகவல்களும் இல்லை.</p>
-  </div>
-
-  <!-- Notification Cards List -->
-  <div class="p-3" *ngIf="!loading && notifications.length > 0">
-    <div *ngFor="let n of notifications" 
-         (click)="markRead(n)"
-         class="notif-item-card mb-3 p-3 rounded-4 shadow-sm position-relative cursor-pointer"
-         [style.background]="n.is_read ? '#ffffff' : '#fff9f0'"
-         [style.border]="n.is_read ? '1px solid #eadecb' : '1.5px solid #d4af37'">
-      
-      <div class="d-flex align-items-start gap-3">
-        <div class="notif-icon-circle" style="width: 42px; height: 42px; border-radius: 50%; background: #f7eee2; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px;">
-          <i class="bi" [ngClass]="getNotifIcon(n.type)"></i>
-        </div>
-        <div class="flex-grow-1">
-          <div class="d-flex justify-content-between align-items-start">
-            <h6 class="mb-1 fw-bold text-maroon" style="font-size: 14px;">{{ n.title }}</h6>
-            <span *ngIf="!n.is_read" class="badge rounded-pill bg-warning text-dark" style="font-size: 9px;">புதியது</span>
-          </div>
-          <p class="mb-2 text-secondary" style="font-size: 12.5px; line-height: 1.5;">{{ n.body }}</p>
-          <small class="text-muted" style="font-size: 11px;">
-            <i class="bi bi-clock me-1"></i>{{ n.created_at | date:'dd MMM yyyy, hh:mm a' }}
-          </small>
-        </div>
+<ion-content [fullscreen]="false" style="--background: #FBF9E7; background-color: #FBF9E7;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 16px; box-sizing: border-box;">
+    
+    <!-- Loading state -->
+    @if (loading) {
+      <div style="text-align: center; padding: 4rem 1rem;">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <p style="color: #64748b; margin-top: 12px; font-size: 14px; font-weight: 500;">அறிவிப்புகள் ஏற்றப்படுகிறது...</p>
       </div>
-    </div>
+    }
+
+    <!-- Empty state -->
+    @if (!loading && notifications.length === 0) {
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 1.5rem;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: #fef2f2; color: #991b1b; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 1.25rem; border: 2px dashed #fca5a5;">
+          <i class="bi bi-bell-slash"></i>
+        </div>
+        <h2 style="font-size: 1.15rem; font-weight: 800; color: #3B0910; margin: 0 0 0.5rem 0;">புதிய அறிவிப்புகள் ஏதுமில்லை</h2>
+        <p style="font-size: 0.88rem; color: #64748b; margin: 0; max-width: 280px; line-height: 1.4;">தற்போது உங்களுக்கு எந்த புதிய தகவல்களும் இல்லை.</p>
+      </div>
+    }
+
+    <!-- Notification Cards List -->
+    @if (!loading && notifications.length > 0) {
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        @for (n of notifications; track n.id) {
+          <div (click)="markRead(n)"
+               style="display: flex; align-items: flex-start; gap: 14px; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s ease;"
+               [style.background]="n.is_read ? '#ffffff' : '#fffdf5'"
+               [style.border]="n.is_read ? '1.5px solid #e2e8f0' : '1.5px solid #ECC876'"
+               [style.border-left]="n.is_read ? '1.5px solid #e2e8f0' : '5px solid #d97706'">
+            
+            <!-- Icon Circle -->
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.35rem; color: #b45309;">
+              <i class="bi" [ngClass]="getNotifIcon(n.type)"></i>
+            </div>
+
+            <!-- Content -->
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <h6 style="font-size: 14.5px; font-weight: 800; color: #1e293b; margin: 0;">
+                  {{ n.title }}
+                </h6>
+                @if (!n.is_read) {
+                  <span style="background: #dc2626; color: #ffffff; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">புதியது</span>
+                }
+              </div>
+              
+              <p style="font-size: 13.5px; line-height: 1.55; color: #334155; margin: 0 0 8px 0; word-break: break-word; font-weight: 500;">
+                {{ n.body }}
+              </p>
+
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #64748b; font-weight: 600;">
+                <i class="bi bi-clock" style="font-size: 12px;"></i>
+                <span>{{ n.created_at | date:'dd MMM yyyy, hh:mm a' }}</span>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
   </div>
 </ion-content>

@@ -47,7 +47,7 @@ export class UsersTabComponent implements OnInit {
   }
 
   getFilteredUsers(): any[] {
-    let list = this.users;
+    let list = this.users.filter(u => u.role !== 'admin');
     if (this.userSearchQuery && this.userSearchQuery.trim()) {
       const q = this.userSearchQuery.toLowerCase().trim();
       list = list.filter(u =>

@@ -65,7 +65,8 @@ class CourierManagementController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Book order placed successfully',
+            'message' => 'Book order placed successfully.',
+            'order_id' => $orderId,
             'order_number' => $orderNumber
         ]);
     }

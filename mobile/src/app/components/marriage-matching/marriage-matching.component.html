@@ -303,7 +303,7 @@
     <div class="matching-header-badge">
       <span class="badge-om">ஓம் நமச்சிவாய</span>
       <h3>ஓம் பிரகஸ்பதி ஜோதிடாலயம்</h3>
-      <p>பெரியகுளம் • 11 திருமணப் பொருத்தப் படிவம்</p>
+      <p>பெரியகுளம் • 10 திருமணப் பொருத்தப் படிவம்</p>
     </div>
     <!-- Girl Inputs -->
     <div class="form-section-title"><i class="bi bi-gender-female text-danger me-1"></i> பெண் விவரங்கள் (ஜாதகி)</div>
@@ -387,7 +387,7 @@
       </div>
     </div>
     <button (click)="calculatePorutham()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
-      <span>11 பொருத்தங்கள் கணக்கிடுக ➔</span>
+      <span>10 பொருத்தங்கள் கணக்கிடுக ➔</span>
     </button>
   </div>
 }
@@ -431,11 +431,11 @@
           </tr>
         </tbody>
       </table>
-      <!-- 11 Poruthams & Elements Side-by-Side Table -->
+      <!-- 10 Poruthams & Elements Side-by-Side Table -->
       <table class="astro-table porutham-elements-table">
         <thead>
           <tr>
-            <th colspan="2" style="width: 50%;">11 திருமணப் பொருத்தங்கள்</th>
+            <th colspan="2" style="width: 50%;">10 திருமணப் பொருத்தங்கள்</th>
             <th style="width: 25%;">அம்சங்கள்</th>
             <th style="width: 12.5%;">பெண்</th>
             <th style="width: 12.5%;">ஆண்</th>
@@ -479,9 +479,9 @@
                 <td class="el-val">{{ matchResult.girlElements?.nadi }}</td>
                 <td class="el-val">{{ matchResult.boyElements?.nadi }}</td>
               }
-              <!-- Score & Summaries mapping (rows 5 to 10) -->
+              <!-- Score & Summaries mapping (rows 5 to 9) -->
               @if (i === 5) {
-                <td class="el-title" colspan="3"><strong>மொத்தப் பொருத்தம் :</strong> {{ matchResult.totalMatches }} / 11</td>
+                <td class="el-title" colspan="3"><strong>மொத்தப் பொருத்தம் :</strong> {{ matchResult.totalMatches }} / 10</td>
               }
               @if (i === 6) {
                 <td class="el-title" colspan="3"><strong>ரஜ்ஜு நிலை :</strong> {{ matchResult.rajjuMatch ? '✔ சுப ரஜ்ஜு பொருத்தம்' : '✖ ஏக ரஜ்ஜு' }}</td>
@@ -490,7 +490,7 @@
                 <td class="el-title" colspan="3" rowspan="2"><strong>முக்கிய பொருத்தம் :</strong><br>{{ matchResult.keyMatchesText }}</td>
               }
               @if (i === 9) {
-                <td class="el-title" colspan="3" rowspan="2"><strong>முடிவு :</strong><br>{{ matchResult.verdictTitle }}</td>
+                <td class="el-title" colspan="3"><strong>முடிவு :</strong><br>{{ matchResult.verdictTitle }}</td>
               }
             </tr>
           }

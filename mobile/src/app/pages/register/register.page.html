@@ -74,6 +74,26 @@
         </div>
       </div>
 
+      <div class="input-group">
+        <label>Password (கடவுச்சொல்)</label>
+        <div class="input-wrapper">
+          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="குறைந்தது 6 எழுத்துக்கள்">
+          <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
+            {{ showPassword ? '👁️' : '🔑' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password (உறுதிப்படுத்தல்)</label>
+        <div class="input-wrapper">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="மீண்டும் கடவுச்சொல் உள்ளிடவும்">
+          <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
+            {{ showConfirmPassword ? '👁️' : '🔒' }}
+          </span>
+        </div>
+      </div>
+
       <button class="submit-btn" (click)="onRegister()">
         <span class="btn-primary-text">Register and Continue</span>
         <span class="btn-secondary-text">பதிவு செய்து தொடரவும்</span>

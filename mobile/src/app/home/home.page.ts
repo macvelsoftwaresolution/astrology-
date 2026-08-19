@@ -33,13 +33,22 @@ export class HomePage implements OnInit {
   currentTab: 'home' | 'services' | 'matching' | 'profile' = 'home';
 
   // Sub-view Screen flow states for consultation workflows
-  activeServiceFlow: null | 'horoscope' | 'vastu' | 'ramajayam' | 'srinivasan' | 'rasi-palan' = null;
+  activeServiceFlow: null | 'horoscope' | 'vastu' | 'ramajayam' | 'srinivasan' | 'rasi-palan' | 'astrologer_consultation' = null;
   serviceStep: number = 1; // 1: Info/List, 2: Form, 3: Payment, 4: Success
 
-  // Selected sub-items
-  selectedVastuService: any = null;
-  selectedRamajayamService: any = null;
-  selectedSrinivasanService: any = null;
+  selectedAstrologer: any = null;
+  selectedCategory: any = null;
+
+  astrologerBookingForm = {
+    name: '',
+    phone: '',
+    dob: '',
+    tob: '',
+    pob: '',
+    date: '',
+    slot: '',
+    notes: ''
+  };
 
   // Profile Orders List (Dynamic from DB)
   userOrders: Order[] = [];
@@ -54,52 +63,9 @@ export class HomePage implements OnInit {
   }
 
   // Hero Slider (Dynamic from DB)
-  heroBanners: any[] = [
-    {
-      image: 'assets/images/temple_sunrise.png',
-      badge: 'இன்றைய சிறப்பு',
-      title: 'இன்றைய ராசி பலன்',
-      subtitle: 'உங்கள் விதியை இன்று அறிந்து கொள்ளுங்கள்',
-      link_flow: 'rasi-palan'
-    }
-  ];
+  heroBanners: any[] = [];
   currentBannerIndex = 0;
   private sliderInterval: any;
-
-  // Forms Data Binding Models for the consultation flows
-  horoscopeForm = {
-    name: '',
-    dob: '',
-    tob: '',
-    pob: '',
-    gender: 'ஆண்',
-    date: ''
-  };
-
-  vastuForm = {
-    name: '',
-    phone: '',
-    address: '',
-    date: '',
-    planUploaded: false
-  };
-
-  ramajayamForm = {
-    name: '',
-    phone: '',
-    dob: '',
-    queryType: 'பெயர் மாற்று ஆலோசனை',
-    date: ''
-  };
-
-  srinivasanForm = {
-    name: '',
-    dob: '',
-    tob: '',
-    pob: '',
-    queryType: 'ஜாதக பலன்',
-    date: ''
-  };
 
   // 12 Zodiac list
   rasis = [
@@ -117,35 +83,14 @@ export class HomePage implements OnInit {
     { name: 'மீனம்', english: 'Pisces', image: '♓', imagePath: 'assets/images/zodiac/pisces.png' }
   ];
 
-  // Today's Panchangam values
+  // Today's Panchangam values (Populated directly from Live DB/API)
   panchangam = {
-    thithi: 'சுக்கில பட்ச துவாதசி',
-    star: 'ரோகிணி',
-    rahukalam: '10:30 AM - 12:00 PM',
-    yamagandam: '09:15 AM - 10:15 AM',
-    nalla_neram: '06:15 AM - 07:15 AM'
+    thithi: '',
+    star: '',
+    rahukalam: '',
+    yamagandam: '',
+    nalla_neram: ''
   };
-
-  // Vastu Services lists
-  vastuServices = [
-    { title: 'வீட்டு வாஸ்து', sub: 'உங்களின் இல்லத்திற்கு அமைதியான மற்றும் மகிழ்ச்சியூட்டும் ஆலோசனை.', price: 2500 },
-    { title: 'அலுவலக வாஸ்து', sub: 'தொழில் முன்னேற்றம் மற்றும் லாபம் தரும் ஆলোசனைகள்.', price: 5000 },
-    { title: 'வரைபட ஆய்வு', sub: 'புதிய கட்டிட வரைபடங்களை வாஸ்து முறைப்படி ஆய்வு செய்தல்.', price: 3500 }
-  ];
-
-  // Guru Ramajayam Services lists
-  ramajayamServices = [
-    { title: 'பெயர் மாற்று ஆலோசனை', sub: 'எண்கணித முறையில் உங்களது அதிர்ஷ்ட பெயரை தேர்வு செய்ய.', price: 750 },
-    { title: 'தொழில் எண் கணிதம்', sub: 'நிறுவனங்களின் பெயரை எண்கணித முறைப்படி மாற்றியமைக்க.', price: 750 },
-    { title: 'குழந்தை பெயர் தேர்வு', sub: 'பிறந்த குழந்தையின் நட்சத்திரத்திற்கேற்ற அதிர்ஷ்ட பெயர் சூட்ட.', price: 750 }
-  ];
-
-  // Guru Srinivasan Services lists
-  srinivasanServices = [
-    { title: 'ஜாதக பலன்', sub: 'பிரச்சனைகளுக்கு ஜாதகம் பார்த்து பரிகாரங்கள் அறிதல்.', price: 1500 },
-    { title: 'வாஸ்து ஆலோசனை', sub: 'மனைகளின் வாஸ்து அமைப்பை சரிபார்க்க நேரடி ஆலோசனை.', price: 2500 },
-    { title: 'சுப முகூர்த்தம்', sub: 'திருமணம் மற்றும் கிரகப்பிரவேசத்திற்கு உகந்த நேரம் தேர்வு.', price: 1000 }
-  ];
 
   constructor(
     private ngZone: NgZone,
@@ -193,20 +138,16 @@ export class HomePage implements OnInit {
     this.startSlider();
   }
 
+  get userName(): string {
+    return this.authService.getCurrentUser()?.name || 'பயனர்';
+  }
+
   customBackHandler = () => {
     return this.goBackStep();
   };
 
   handleOverlayBack() {
     this.goBackStep();
-  }
-
-  private pushHistory() {
-    const current = { tab: this.currentTab, flow: this.activeServiceFlow, step: this.serviceStep };
-    const last = this.navHistory[this.navHistory.length - 1];
-    if (!last || last.tab !== current.tab || last.flow !== current.flow || last.step !== current.step) {
-      this.navHistory.push(current);
-    }
   }
 
   goBackStep(): boolean {
@@ -219,30 +160,29 @@ export class HomePage implements OnInit {
       return true;
     }
 
-    // 2. Step-by-step history pop
-    if (this.navHistory.length > 1) {
-      this.navHistory.pop(); // remove current state
-      const prevState = this.navHistory[this.navHistory.length - 1];
-      if (prevState) {
-        this.currentTab = prevState.tab;
-        this.activeServiceFlow = prevState.flow;
-        this.serviceStep = prevState.step;
+    // 2. If in active consultation booking flow (Step 2 Payment -> Step 1 Form, or Step 1 Form -> Profile)
+    if (this.activeServiceFlow) {
+      if (this.serviceStep > 1 && this.serviceStep !== 3 && this.serviceStep !== 4) {
+        this.serviceStep--;
+      } else {
+        this.activeServiceFlow = null;
+        this.serviceStep = 1;
         this.syncQueryParams();
-        return true;
       }
+      return true;
     }
 
-    // 3. Sequential fallbacks
-    if (this.serviceStep > 1 && this.serviceStep !== 4) {
-      this.prevStep();
-      return true;
-    } else if (this.activeServiceFlow) {
-      this.closeServiceFlow();
-      return true;
-    } else if (this.currentTab !== 'home') {
-      this.currentTab = 'home';
-      this.navHistory = [{ tab: 'home', flow: null, step: 1 }];
+    // 3. If in Services tab inside a Selected Category / Astrologer Profile (Level 2 -> Level 1)
+    if (this.currentTab === 'services' && this.selectedCategory) {
+      this.selectedCategory = null;
+      this.selectedAstrologer = null;
       this.syncQueryParams();
+      return true;
+    }
+
+    // 4. If on Services / Matching / Profile tab (Level 1 -> Home Tab)
+    if (this.currentTab !== 'home') {
+      this.selectTab('home');
       return true;
     }
 
@@ -261,32 +201,58 @@ export class HomePage implements OnInit {
   }
 
   getHeaderTitle(): string {
-    if (this.activeServiceFlow === 'horoscope') return 'ஜாதகம் எழுதுதல்';
-    if (this.activeServiceFlow === 'vastu') return 'வாஸ்து ஆலோசனைகள்';
-    if (this.activeServiceFlow === 'ramajayam') return 'குரு ராமஜெயம் (எண்கணிதம்)';
-    if (this.activeServiceFlow === 'srinivasan') return 'குரு ஸ்ரீநிவாசன் ஆலோசனை';
+    // 1. Root Home Tab
+    if (this.currentTab === 'home' && !this.activeServiceFlow) {
+      const user = this.authService.getCurrentUser();
+      return user?.name || this.userName || 'பயனர்';
+    }
+
+    // 2. Active Service Flows
+    if (this.activeServiceFlow === 'astrologer_consultation') {
+      return this.selectedCategory ? this.selectedCategory.title : 'ஜோதிட ஆலோசனை';
+    }
     if (this.activeServiceFlow === 'rasi-palan') return 'இன்றைய ராசி பலன்';
 
+    // 3. Services Tab
+    if (this.currentTab === 'services') {
+      if (this.selectedCategory) return this.selectedCategory.title;
+      return 'ஜோதிட சேவைகள்';
+    }
+
+    // 4. Other Tabs
     switch (this.currentTab) {
-      case 'services': return 'ஜோதிட சேவைகள்';
       case 'matching': return 'திருமண பொருத்தம்';
       case 'profile': return 'சுயவிவரம்';
-      default: return 'ஆருத்ரா ஜோதிடம்';
+      default: return this.userName || 'ஆருத்ரா ஜோதிடம்';
     }
   }
 
   canShowBackButton(): boolean {
-    return this.activeServiceFlow !== null || this.currentTab !== 'home';
+    if (this.currentTab === 'home' && !this.activeServiceFlow) {
+      return false;
+    }
+    if (this.activeServiceFlow !== null) return true;
+    if (this.currentTab === 'services' && this.selectedCategory !== null) return true;
+    if (this.currentTab !== 'home') return true;
+    return false;
   }
 
-  async showNotificationToast() {
-    const toast = await this.toastController.create({
-      message: 'புதிய அறிவிப்புகள் ஏதுமில்லை',
-      duration: 2000,
-      color: 'dark',
-      position: 'bottom'
+  unreadNotificationsCount: number = 0;
+
+  openNotifications() {
+    this.router.navigate(['/notifications']);
+  }
+
+  loadNotificationsCount() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    const headers = { headers: { Authorization: `Bearer ${token}` } };
+    this.http.get<any>(`${environment.apiUrl}/user/notifications`, headers).subscribe({
+      next: (res) => {
+        this.unreadNotificationsCount = res.unread_count || 0;
+      },
+      error: () => {}
     });
-    await toast.present();
   }
 
   ngOnInit() {
@@ -296,13 +262,24 @@ export class HomePage implements OnInit {
     this.loadPanchangam();
     this.loadAstrologers();
     this.loadUserOrders();
+    this.loadNotificationsCount();
 
     this.route.queryParams.subscribe(params => {
       if (params['tab'] && ['home', 'services', 'matching', 'profile'].includes(params['tab'])) {
         this.currentTab = params['tab'];
+        if (this.currentTab === 'home') {
+          this.selectedCategory = null;
+          this.activeServiceFlow = null;
+        }
+      } else if (!params['tab']) {
+        this.currentTab = 'home';
+        this.selectedCategory = null;
+        this.activeServiceFlow = null;
       }
       if (params['flow']) {
         this.activeServiceFlow = params['flow'];
+      } else {
+        this.activeServiceFlow = null;
       }
     });
   }
@@ -313,6 +290,7 @@ export class HomePage implements OnInit {
     this.loadPanchangam();
     this.loadAstrologers();
     this.loadUserOrders();
+    this.loadNotificationsCount();
   }
 
   loadBanners() {
@@ -335,8 +313,8 @@ export class HomePage implements OnInit {
   onBannerClick(banner: any) {
     if (!banner) return;
     const flow = banner.link_flow;
-    if (flow === 'rasi-palan' || flow === 'horoscope' || flow === 'vastu' || flow === 'ramajayam' || flow === 'srinivasan') {
-      this.startServiceFlow(flow);
+    if (flow === 'rasi-palan') {
+      this.startServiceFlow('rasi-palan');
     } else if (flow === 'matching') {
       this.selectTab('matching');
     } else {
@@ -402,24 +380,63 @@ export class HomePage implements OnInit {
 
   // Change Navigation tabs
   selectTab(tab: 'home' | 'services' | 'matching' | 'profile') {
-    if (this.currentTab === tab && !this.activeServiceFlow) return;
     this.currentTab = tab;
     this.activeServiceFlow = null;
+    this.selectedCategory = null;
+    this.selectedAstrologer = null;
     this.serviceStep = 1;
-    this.pushHistory();
 
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: tab, flow: null },
+      queryParams: { tab: tab === 'home' ? null : tab, flow: null },
       queryParamsHandling: 'merge'
     });
   }
 
+  selectServiceCategory(cat: any) {
+    this.selectedCategory = cat;
+    this.activeServiceFlow = null;
+    this.serviceStep = 1;
+  }
+
+  get displayCategories(): any[] {
+    const categoriesMap = new Map<string, any>();
+
+    // Scan astrologers loaded directly from DB API
+    if (this.astrologers && this.astrologers.length > 0) {
+      this.astrologers.forEach(astro => {
+        const catName = (astro.category || astro.role_title || 'ஜோதிட ஆலோசனை').trim();
+        if (!categoriesMap.has(catName)) {
+          categoriesMap.set(catName, {
+            id: 'cat_' + catName.replace(/\s+/g, '_').toLowerCase(),
+            title: catName,
+            subtitle: `${catName} நேரடி ஆலோசனைகள் மற்றும் துல்லிய வழிகாட்டுதல்`,
+            tag: catName,
+            badge: 'நிபுணர் ஆலோசனை',
+            image: astro.avatar_url || 'assets/images/temple_sunrise.png',
+            icon: 'bi bi-stars'
+          });
+        }
+      });
+    }
+
+    return Array.from(categoriesMap.values());
+  }
+
+  getAstrologersForCategory(cat: any): any[] {
+    if (!this.astrologers || this.astrologers.length === 0) return [];
+    if (!cat) return this.astrologers;
+
+    return this.astrologers.filter(astro => {
+      const catName = (astro.category || astro.role_title || '').trim();
+      return catName === cat.title || catName === cat.id || (astro.category && astro.category === cat.title);
+    });
+  }
+
   // Open Service Screen Flow
-  startServiceFlow(flowName: 'horoscope' | 'vastu' | 'ramajayam' | 'srinivasan' | 'rasi-palan') {
+  startServiceFlow(flowName: 'rasi-palan') {
     this.activeServiceFlow = flowName;
     this.serviceStep = 1;
-    this.pushHistory();
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -431,7 +448,6 @@ export class HomePage implements OnInit {
   closeServiceFlow() {
     this.activeServiceFlow = null;
     this.serviceStep = 1;
-    this.pushHistory();
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -443,65 +459,78 @@ export class HomePage implements OnInit {
   // Form Submission step managers
   nextStep() {
     this.serviceStep++;
-    this.pushHistory();
   }
 
   prevStep() {
     if (this.serviceStep > 1) {
       this.serviceStep--;
-      this.pushHistory();
     }
   }
 
-  // File Upload Simulate for Vastu Plan
-  onFileChange(event: any) {
-    this.vastuForm.planUploaded = true;
+  startAstrologerBooking(astro: any) {
+    this.selectedAstrologer = astro;
+    const user = this.authService.getCurrentUser();
+    this.astrologerBookingForm = {
+      name: user?.name || '',
+      phone: user?.phone || '',
+      dob: '',
+      tob: '',
+      pob: '',
+      date: new Date().toISOString().split('T')[0],
+      slot: (astro.available_slots && astro.available_slots.length > 0) ? astro.available_slots[0] : '10:00 AM - 11:00 AM',
+      notes: ''
+    };
+    this.activeServiceFlow = 'astrologer_consultation';
+    this.serviceStep = 1;
   }
 
-  // Select sub service types
-  selectVastu(service: any) {
-    this.selectedVastuService = service;
-    this.vastuForm.address = '';
-    this.nextStep();
-  }
+  bookingRefCode: string = '';
 
-  selectRamajayam(service: any) {
-    this.selectedRamajayamService = service;
-    this.ramajayamForm.queryType = service.title;
-    this.nextStep();
-  }
-
-  selectSrinivasan(service: any) {
-    this.selectedSrinivasanService = service;
-    this.srinivasanForm.queryType = service.title;
-    this.nextStep();
-  }
-
-  // Payment triggers & confirmation (Stored directly into Database)
-  payAndFulfill(serviceName: string, price: number, details: string) {
+  payAndFulfillAstrologer() {
+    if (!this.selectedAstrologer) return;
+    this.bookingRefCode = 'ASTRO-' + Math.floor(100000 + Math.random() * 900000);
     const currentUser = this.authService.getCurrentUser();
+    const astro = this.selectedAstrologer;
+    const token = localStorage.getItem('auth_token');
+    const headers: any = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const bookingPayload = {
-      user_name: this.horoscopeForm.name || this.vastuForm.name || this.ramajayamForm.name || this.srinivasanForm.name || currentUser?.name || 'பயனர்',
-      user_phone: this.vastuForm.phone || this.ramajayamForm.phone || currentUser?.phone || '9876543210',
-      service_type: serviceName,
-      price: price,
+      booking_id: this.bookingRefCode,
+      user_name: this.astrologerBookingForm.name || currentUser?.name || 'பயனர்',
+      user_phone: this.astrologerBookingForm.phone || currentUser?.phone || '',
+      service_type: `${astro.name} (${astro.role_title})`,
+      price: astro.fee || 499,
+      astrologer_id: astro.id,
+      preferred_date: this.astrologerBookingForm.date,
+      preferred_time: this.astrologerBookingForm.slot,
       details: {
-        summary: details,
-        service: serviceName,
-        horoscope: this.activeServiceFlow === 'horoscope' ? this.horoscopeForm : null,
-        vastu: this.activeServiceFlow === 'vastu' ? this.vastuForm : null,
-        ramajayam: this.activeServiceFlow === 'ramajayam' ? this.ramajayamForm : null,
-        srinivasan: this.activeServiceFlow === 'srinivasan' ? this.srinivasanForm : null,
+        booking_ref: this.bookingRefCode,
+        summary: `நேரடி ஜோதிட ஆலோசனை - ${astro.name}`,
+        astrologer_name: astro.name,
+        role_title: astro.role_title,
+        date: this.astrologerBookingForm.date,
+        slot: this.astrologerBookingForm.slot,
+        dob: this.astrologerBookingForm.dob,
+        tob: this.astrologerBookingForm.tob,
+        pob: this.astrologerBookingForm.pob,
+        notes: this.astrologerBookingForm.notes
       }
     };
 
-    this.http.post<any>(`${environment.apiUrl}/bookings/create`, bookingPayload).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/bookings/create`, bookingPayload, { headers }).subscribe({
       next: (res) => {
+        if (res && res.order_id) {
+          this.bookingRefCode = res.order_id;
+        }
         this.loadUserOrders();
-        this.serviceStep = 4;
+        this.serviceStep = 3;
       },
       error: () => {
-        this.serviceStep = 4;
+        this.loadUserOrders();
+        this.serviceStep = 3;
       }
     });
   }

@@ -117,11 +117,12 @@ class UserProfileController extends Controller
     }
 
     /**
-     * Admin: Get all users list with profile details
+     * Admin: Get all users list with profile details (Excluding Admin accounts)
      */
     public function adminGetUsers()
     {
         $users = DB::table('users')
+            ->where('role', '!=', 'admin')
             ->select('id', 'name', 'email', 'phone', 'role', 'status', 'jathagam_details', 'created_at')
             ->orderBy('id', 'desc')
             ->get()
@@ -148,11 +149,21 @@ class UserProfileController extends Controller
     }
 
     /**
-     * Admin: Delete user account
+     * Admin: Delete user account (Protected against deleting admins)
      */
     public function deleteUser($id)
     {
-        DB::table('users')->where('id', $id)->delete();
+        $deleted = DB::table('users')
+            ->where('id', $id)
+            ->where('role', '!=', 'admin')
+            ->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                'success' => false,
+                'message' => 'நிர்வாகி கணக்குகளை இந்த பக்கத்தில் இருந்து நீக்க இயலாது.'
+            ], 403);
+        }
 
         return response()->json([
             'success' => true,
