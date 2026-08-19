@@ -503,10 +503,12 @@ export class HomePage implements OnInit {
   }
 
   bookingRefCode: string = '';
+  isProcessingPayment: boolean = false;
 
   payAndFulfillAstrologer() {
-    if (!this.selectedAstrologer) return;
-    this.bookingRefCode = 'ASTRO-' + Math.floor(100000 + Math.random() * 900000);
+    if (!this.selectedAstrologer || this.isProcessingPayment) return;
+    this.isProcessingPayment = true;
+
     const currentUser = this.authService.getCurrentUser();
     const astro = this.selectedAstrologer;
     const token = localStorage.getItem('auth_token');
@@ -514,6 +516,72 @@ export class HomePage implements OnInit {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
+
+    const amount = astro.fee || 499;
+
+    // 1. Create Razorpay Order via Backend
+    this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }, { headers }).subscribe({
+      next: (orderRes) => {
+        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+          const options = {
+            key: orderRes.key_id,
+            amount: (orderRes.amount || amount) * 100,
+            currency: orderRes.currency || 'INR',
+            name: 'ஆருத்ரா ஜோதிடம்',
+            description: `${astro.name} - ${astro.role_title}`,
+            order_id: orderRes.order_id,
+            prefill: {
+              name: this.astrologerBookingForm.name || currentUser?.name || 'பயனர்',
+              contact: this.astrologerBookingForm.phone || currentUser?.phone || '',
+              email: currentUser?.email || 'user@astrology.com'
+            },
+            theme: {
+              color: '#4A0E17'
+            },
+            handler: (response: any) => {
+              // Razorpay payment successful
+              this.completeBooking(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
+            },
+            modal: {
+              ondismiss: () => {
+                this.isProcessingPayment = false;
+              }
+            }
+          };
+
+          try {
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (resp: any) => {
+              this.isProcessingPayment = false;
+              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+            });
+            rzp.open();
+          } catch (e: any) {
+            this.isProcessingPayment = false;
+            alert('Razorpay popup பிழை: ' + (e?.message || e));
+          }
+        } else {
+          this.isProcessingPayment = false;
+          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை: ' + (orderRes?.message || 'Authentication failed. Please check Key ID & Secret in .env'));
+        }
+      },
+      error: (err) => {
+        this.isProcessingPayment = false;
+        alert('Razorpay பிழை: ' + (err.error?.message || err.message || 'Authentication failed. Please check Key ID in .env'));
+      }
+    });
+  }
+
+  completeBooking(razorpayOrderId?: string, razorpayPaymentId?: string, razorpaySignature?: string) {
+    const currentUser = this.authService.getCurrentUser();
+    const astro = this.selectedAstrologer;
+    const token = localStorage.getItem('auth_token');
+    const headers: any = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    this.bookingRefCode = 'ASTRO-' + Math.floor(100000 + Math.random() * 900000);
 
     const bookingPayload = {
       booking_id: this.bookingRefCode,
@@ -524,6 +592,8 @@ export class HomePage implements OnInit {
       astrologer_id: astro.id,
       preferred_date: this.astrologerBookingForm.date,
       preferred_time: this.astrologerBookingForm.slot,
+      razorpay_order_id: razorpayOrderId,
+      razorpay_payment_id: razorpayPaymentId,
       details: {
         booking_ref: this.bookingRefCode,
         summary: `நேரடி ஜோதிட ஆலோசனை - ${astro.name}`,
@@ -543,10 +613,26 @@ export class HomePage implements OnInit {
         if (res && res.order_id) {
           this.bookingRefCode = res.order_id;
         }
+
+        // Verify payment if signature exists
+        if (razorpaySignature) {
+          this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
+            order_id: this.bookingRefCode,
+            razorpay_order_id: razorpayOrderId,
+            razorpay_payment_id: razorpayPaymentId,
+            razorpay_signature: razorpaySignature
+          }, { headers }).subscribe({
+            next: () => {},
+            error: () => {}
+          });
+        }
+
+        this.isProcessingPayment = false;
         this.loadUserOrders();
         this.serviceStep = 3;
       },
       error: () => {
+        this.isProcessingPayment = false;
         this.loadUserOrders();
         this.serviceStep = 3;
       }

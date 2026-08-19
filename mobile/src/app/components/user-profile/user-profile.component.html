@@ -2,15 +2,18 @@
 
   <!-- Success Notification Toast -->
   @if (isSavedNotification) {
-    <div class="save-toast-banner">
-      <i class="bi bi-check-circle-fill me-2"></i> சுயவிவர விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!
-    </div>
+  <div class="save-toast-banner">
+    <i class="bi bi-check-circle-fill me-2"></i> சுயவிவர விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!
+  </div>
   }
 
   <!-- 1. Top Profile Center Card -->
   <div class="profile-center-card">
     <div class="avatar-container">
-      <img [src]="personDetails.profileImageUrl || 'https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'" alt="User Avatar" class="profile-avatar-img" (error)="$event.target.src='https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'">
+      <img
+        [src]="personDetails.profileImageUrl || 'https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'"
+        alt="User Avatar" class="profile-avatar-img"
+        (error)="$event.target.src='https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'">
       <div class="edit-badge-btn" (click)="openEditModal()">
         <i class="bi bi-pencil-fill"></i>
       </div>
@@ -148,209 +151,323 @@
 
   <!-- A. DYNAMIC EDIT PROFILE MODAL -->
   @if (showEditModal) {
-    <div class="modal-overlay">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3>சுயவிவரத்தைத் திருத்து</h3>
-          <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+  <div class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>சுயவிவரத்தைத் திருத்து</h3>
+        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Profile Image Upload in Edit Modal -->
+        <div class="profile-pic-upload" style="text-align: center; margin-bottom: 20px;">
+          <label for="editProfilePicInput" class="upload-label" style="display: inline-block; cursor: pointer;">
+            @if (editForm.profileImageUrl) {
+            <div class="avatar-preview"
+              style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid #ECC876;">
+              <img [src]="editForm.profileImageUrl" alt="Profile"
+                style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+            } @else {
+            <div class="avatar-placeholder"
+              style="width: 80px; height: 80px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px dashed #A27B38;">
+              <span class="camera-icon" style="font-size: 24px;">📷</span>
+            </div>
+            }
+            <span class="upload-text" style="color: #A27B38; font-size: 14px;">படம் மாற்றவும்</span>
+          </label>
+          <input type="file" id="editProfilePicInput" accept="image/*" (change)="onProfilePicSelected($event)"
+            style="display: none;">
         </div>
-        <div class="modal-body">
-          <!-- Profile Image Upload in Edit Modal -->
-          <div class="profile-pic-upload" style="text-align: center; margin-bottom: 20px;">
-            <label for="editProfilePicInput" class="upload-label" style="display: inline-block; cursor: pointer;">
-              @if (editForm.profileImageUrl) {
-                <div class="avatar-preview" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid #ECC876;">
-                  <img [src]="editForm.profileImageUrl" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;"/>
-                </div>
-              } @else {
-                <div class="avatar-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px dashed #A27B38;">
-                  <span class="camera-icon" style="font-size: 24px;">📷</span>
-                </div>
-              }
-              <span class="upload-text" style="color: #A27B38; font-size: 14px;">படம் மாற்றவும்</span>
-            </label>
-            <input type="file" id="editProfilePicInput" accept="image/*" (change)="onProfilePicSelected($event)" style="display: none;">
-          </div>
-          <div class="form-input-group">
-            <label>முழு பெயர்</label>
-            <input type="text" [(ngModel)]="editForm.name" placeholder="உங்கள் பெயர்">
-          </div>
-          <div class="form-input-group">
-            <label>மின்னஞ்சல் முகவரி</label>
-            <input type="email" [(ngModel)]="editForm.email" placeholder="மின்னஞ்சல்">
-          </div>
-          <div class="form-input-group">
-            <label>தொலைபேசி எண்</label>
-            <input type="text" [(ngModel)]="editForm.phone" placeholder="தொலைபேசி எண்">
-          </div>
-          <div class="form-input-group">
-            <label>பிறந்த தேதி</label>
-            <input type="date" [(ngModel)]="editForm.dob">
-          </div>
-          <div class="form-input-group">
-            <label>பிறந்த நேரம்</label>
-            <input type="text" [(ngModel)]="editForm.tob" placeholder="எ.கா: 06:30 AM">
-          </div>
-          <div class="form-input-group">
-            <label>பிறந்த இடம்</label>
-            <input type="text" [(ngModel)]="editForm.pob" placeholder="பிறந்த இடம்">
-          </div>
-          <div class="form-input-group">
-            <label>ராசி</label>
-            <input type="text" [(ngModel)]="editForm.rasi" placeholder="உங்கள் ராசி">
-          </div>
-          <div class="form-input-group">
-            <label>நட்சத்திரம்</label>
-            <input type="text" [(ngModel)]="editForm.star" placeholder="உங்கள் நட்சத்திரம்">
-          </div>
+        <div class="form-input-group">
+          <label>முழு பெயர்</label>
+          <input type="text" [(ngModel)]="editForm.name" placeholder="உங்கள் பெயர்">
         </div>
-        <div class="modal-footer-row">
-          <button class="btn-cancel" (click)="closeOptionDetail()">ரத்து செய்க</button>
-          <button class="btn-save-gold" (click)="saveProfile()">சேமிக்கவும்</button>
+        <div class="form-input-group">
+          <label>மின்னஞ்சல் முகவரி</label>
+          <input type="email" [(ngModel)]="editForm.email" placeholder="மின்னஞ்சல்">
+        </div>
+        <div class="form-input-group">
+          <label>தொலைபேசி எண்</label>
+          <input type="text" [(ngModel)]="editForm.phone" placeholder="தொலைபேசி எண்">
+        </div>
+        <div class="form-input-group">
+          <label>பிறந்த தேதி</label>
+          <input type="date" [(ngModel)]="editForm.dob">
+        </div>
+        <div class="form-input-group">
+          <label>பிறந்த நேரம்</label>
+          <input type="text" [(ngModel)]="editForm.tob" placeholder="எ.கா: 06:30 AM">
+        </div>
+        <div class="form-input-group">
+          <label>பிறந்த இடம்</label>
+          <input type="text" [(ngModel)]="editForm.pob" placeholder="பிறந்த இடம்">
+        </div>
+        <div class="form-input-group">
+          <label>ராசி</label>
+          <input type="text" [(ngModel)]="editForm.rasi" placeholder="உங்கள் ராசி">
+        </div>
+        <div class="form-input-group">
+          <label>நட்சத்திரம்</label>
+          <input type="text" [(ngModel)]="editForm.star" placeholder="உங்கள் நட்சத்திரம்">
         </div>
       </div>
+      <div class="modal-footer-row">
+        <button class="btn-cancel" (click)="closeOptionDetail()">ரத்து செய்க</button>
+        <button class="btn-save-gold" (click)="saveProfile()">சேமிக்கவும்</button>
+      </div>
     </div>
+  </div>
   }
 
   <!-- B. PAYMENTS & ACTIVITIES DETAIL MODAL -->
-  @if (selectedOption === 'payments' || selectedOption === 'services' || selectedOption === 'horoscope' || selectedOption === 'marriage') {
-    <div class="modal-overlay">
-      <div class="modal-card">
-        <div class="modal-header">
-          @if (selectedOption === 'payments') {
-            <h3>பணம் செலுத்திய வரலாறு</h3>
+  @if (selectedOption === 'payments' || selectedOption === 'services' || selectedOption === 'horoscope' ||
+  selectedOption === 'marriage') {
+  <div class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        @if (selectedOption === 'payments') {
+        <h3><i class="bi bi-receipt me-2 text-gold"></i>பணம் செலுத்திய வரலாறு</h3>
+        }
+        @if (selectedOption === 'services') {
+        <h3><i class="bi bi-calendar-check-fill me-2 text-gold"></i>பதிவு செய்யப்பட்ட சேவைகள்</h3>
+        }
+        @if (selectedOption === 'horoscope') {
+        <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக கோரிக்கைகள்</h3>
+        }
+        @if (selectedOption === 'marriage') {
+        <h3><i class="bi bi-heart-fill me-2 text-gold"></i>திருமண கோரிக்கைகள்</h3>
+        }
+        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="person-summary-box">
+          <i class="bi bi-person-fill text-gold me-2"></i>
+          <strong>{{ personDetails.name }}</strong>
+          @if (personDetails.rasi || personDetails.star) {
+          <span style="color: #b45309; font-weight: 700; margin-left: 4px;">({{ personDetails.rasi || '-' }} - {{ personDetails.star || '-' }})</span>
           }
-          @if (selectedOption === 'services') {
-            <h3>பதிவு செய்யப்பட்ட சேவைகள்</h3>
-          }
-          @if (selectedOption === 'horoscope') {
-            <h3>ஜாதக கோரிக்கைகள்</h3>
-          }
-          @if (selectedOption === 'marriage') {
-            <h3>திருமண கோரிக்கைகள்</h3>
-          }
-          <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+          <div class="sub-contact">{{ personDetails.phone }} | {{ personDetails.email }}</div>
         </div>
-        <div class="modal-body">
-          <div class="person-summary-box">
-            <i class="bi bi-person-fill text-gold me-2"></i>
-            <strong>{{ personDetails.name }}</strong>
-            @if (personDetails.rasi || personDetails.star) {
-              <span style="color: #b45309; font-weight: 700; margin-left: 4px;">({{ personDetails.rasi || '-' }} - {{ personDetails.star || '-' }})</span>
-            }
-            <div class="sub-contact">{{ personDetails.phone }} | {{ personDetails.email }}</div>
-          </div>
-          @if (getFilteredOrders().length > 0) {
-            <div class="orders-list">
-              @for (order of getFilteredOrders(); track order) {
-                <div class="order-history-card">
-                  <div class="oh-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                      <h4 style="margin: 0 0 2px 0; font-size: 14.5px; font-weight: 800; color: #3B0910;">
-                        {{ order.service }}
-                      </h4>
-                      @if (getParsedDetails(order)?.booking_ref) {
-                        <span style="font-size: 11px; color: #b45309; font-weight: 700;">#{{ getParsedDetails(order).booking_ref }}</span>
-                      }
-                    </div>
-                    <span class="status-dot" [class.dot-pending]="order.status === 'Pending'" [style.background]="order.status === 'Completed' ? '#dcfce7' : (order.status === 'In-Progress' ? '#eff6ff' : '#fef3c7')" [style.color]="order.status === 'Completed' ? '#15803d' : (order.status === 'In-Progress' ? '#1d4ed8' : '#b45309')" style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 12px; white-space: nowrap;">
-                      {{ order.status === 'Pending' ? 'நிலுவையில்' : (order.status === 'In-Progress' ? 'ஆய்வில் உள்ளது' : 'முடிந்தது') }}
-                    </span>
+
+        <!-- 1. PAYMENTS VIEW -->
+        @if (selectedOption === 'payments') {
+            @if (getPayments().length > 0) {
+            <div class="activity-cards-list">
+              @for (p of getPayments(); track p.id) {
+              <div class="receipt-proof-card">
+                <div class="rpc-top">
+                  <div>
+                    <strong class="rpc-service-title">{{ p.description || 'ஜோதிட ஆலோசனை முன்பதிவு' }}</strong>
+                    <span class="rpc-ref">பதிவு எண்: #{{ p.booking_id || p.id }}</span>
                   </div>
+                  <span class="rpc-amount">₹{{ p.amount }}</span>
+                </div>
 
-                  <!-- Structured Booking Details -->
-                  @if (getParsedDetails(order); as details) {
-                    <div style="background: #faf8ef; border: 1.5px solid #ebd9b4; border-radius: 12px; padding: 12px 14px; margin: 10px 0; font-size: 12.5px; display: flex; flex-direction: column; gap: 7px; box-shadow: 0 1px 4px rgba(74,14,23,0.04);">
-                      @if (details.date || details.slot) {
-                        <div style="display: flex; align-items: center; gap: 8px; color: #4A0E17; font-weight: 700;">
-                          <i class="bi bi-calendar2-check-fill" style="color: #d97706; font-size: 14px;"></i>
-                          <span><strong>நேரம்:</strong> {{ details.date }} {{ details.slot ? ' | ' + details.slot : '' }}</span>
-                        </div>
-                      }
-                      @if (details.dob || details.tob || details.pob) {
-                        <div style="display: flex; align-items: center; gap: 8px; color: #1e293b; font-weight: 600;">
-                          <i class="bi bi-person-lines-fill" style="color: #6366f1; font-size: 14px;"></i>
-                          <span><strong>பிறப்பு:</strong> {{ details.dob }} {{ details.tob ? '(' + details.tob + ')' : '' }} {{ details.pob ? '- ' + details.pob : '' }}</span>
-                        </div>
-                      }
-                      @if (details.notes && !details.notes.startsWith('{')) {
-                        <div style="display: flex; align-items: flex-start; gap: 8px; color: #334155; font-weight: 500; background: #ffffff; padding: 6px 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
-                          <i class="bi bi-chat-left-dots-fill" style="color: #10b981; font-size: 13px; margin-top: 2px;"></i>
-                          <span><strong>குறிப்பு:</strong> {{ details.notes }}</span>
-                        </div>
-                      }
-                    </div>
-                  } @else if (order.details && !order.details.startsWith('{')) {
-                    <p class="oh-desc" style="margin: 8px 0; font-size: 12.5px; color: #475569;"><strong>விவரங்கள்:</strong> {{ order.details }}</p>
-                  }
-
-                  @if (order.person?.name) {
-                    <p class="oh-desc" style="font-size: 12.5px; color: #334155; margin: 4px 0;"><strong>நபர்:</strong> {{ order.person.name }} {{ order.person.dob ? '(பிறந்த தேதி: ' + order.person.dob + ')' : '' }}</p>
-                  }
-
-                  @if (order.chart_url) {
-                    <div style="margin-top: 10px; margin-bottom: 8px;">
-                      <a [href]="order.chart_url" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; padding: 8px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 4px rgba(5,150,105,0.1);">
-                        <i class="bi bi-file-earmark-pdf-fill" style="font-size: 14px;"></i> ஜாதகக் கணிப்பு கோப்பைப் பார்க்க (View Horoscope PDF)
-                      </a>
-                    </div>
-                  }
-
-                  <div class="oh-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 8px;">
-                    <span style="font-size: 11.5px; color: #64748b;"><i class="bi bi-clock"></i> {{ order.date }}</span>
-                    <strong style="font-size: 14px; color: #b45309;">₹{{ order.price }}</strong>
+                <div class="rpc-gateway-box">
+                  <div class="rpc-row">
+                    <span>Razorpay ID:</span>
+                    <strong class="text-mono">{{ p.razorpay_payment_id || 'pay_' + p.id }}</strong>
+                  </div>
+                  <div class="rpc-row">
+                    <span>தேதி:</span>
+                    <span>{{ p.date }}</span>
                   </div>
                 </div>
+
+                <div class="rpc-status-tag">
+                  <i class="bi bi-shield-fill-check"></i> கட்டணம் வெற்றிகரமாகச் செலுத்தப்பட்டது (Paid)
+                </div>
+              </div>
               }
             </div>
-          }
-          @if (getFilteredOrders().length === 0) {
-            <div class="empty-state">
-              <p>தகவல்கள் ஏதும் இல்லை.</p>
+            } @else {
+            <div class="empty-activity-state">
+              <i class="bi bi-credit-card-2-front text-muted" style="font-size:2.5rem;"></i>
+              <p>பரிவர்த்தனை விவரங்கள் ஏதுமில்லை</p>
             </div>
-          }
-        </div>
-        <button class="btn-app-gold-full" (click)="closeOptionDetail()" style="margin-top: 10px;">மூடுக (Close)</button>
-      </div>
-    </div>
-  }
+            }
+            }
 
-  <!-- C. SETTINGS / POLICY MODAL -->
-  @if (selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms') {
-    <div class="modal-overlay">
-      <div class="modal-card">
-        <div class="modal-header">
-          @if (selectedOption === 'settings') {
+            <!-- 2. BOOKED SERVICES VIEW WITH LIVE PROGRESS TRACKER -->
+            @if (selectedOption === 'services') {
+            @if (getServices().length > 0) {
+            <div class="activity-cards-list">
+              @for (b of getServices(); track b.id) {
+              <div class="booking-progress-card">
+                <div class="bpc-header">
+                  <div>
+                    <strong class="bpc-id">#{{ b.id }}</strong>
+                    <h4 class="bpc-service-name">{{ b.service }}</h4>
+                  </div>
+                  <span class="bpc-price">₹{{ b.price }}</span>
+                </div>
+
+                <div class="bpc-astro-info">
+                  <i class="bi bi-person-badge-fill text-gold me-1"></i>
+                  <span>ஜோதிடர்: <strong>{{ b.astrologer_name }}</strong></span>
+                </div>
+
+                <div class="bpc-schedule-pill">
+                  <span><i class="bi bi-calendar-event me-1"></i> {{ b.date }}</span>
+                  <span><i class="bi bi-clock me-1"></i> {{ b.slot }}</span>
+                </div>
+
+                <!-- 3-Step Live Progress Tracker -->
+                <div class="bpc-progress-tracker">
+                  <div class="progress-step done">
+                    <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+                    <span>முன்பதிவு</span>
+                  </div>
+                  <div class="step-connector" [class.active]="b.status === 'In-Progress' || b.status === 'Completed'">
+                  </div>
+                  <div class="progress-step" [class.done]="b.status === 'In-Progress' || b.status === 'Completed'"
+                    [class.current]="b.status === 'Pending'">
+                    <div class="step-icon"><i class="bi"
+                        [ngClass]="b.status === 'Completed' ? 'bi-check-lg' : 'bi-hourglass-split'"></i></div>
+                    <span>செயலாக்கம்</span>
+                  </div>
+                  <div class="step-connector" [class.active]="b.status === 'Completed'"></div>
+                  <div class="progress-step" [class.done]="b.status === 'Completed'">
+                    <div class="step-icon"><i class="bi bi-stars"></i></div>
+                    <span>நிறைவு</span>
+                  </div>
+                </div>
+
+                <!-- Razorpay Payment Badge -->
+                @if (b.razorpay_payment_id) {
+                <div class="bpc-payment-badge">
+                  <i class="bi bi-shield-check"></i> கட்டணம்: {{ b.razorpay_payment_id }}
+                </div>
+                }
+
+                <!-- Download Completed Chart if available -->
+                @if (b.chart_url) {
+                <a [href]="b.chart_url" target="_blank" class="btn-download-chart">
+                  <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
+                </a>
+                }
+              </div>
+              }
+            </div>
+            } @else {
+            <div class="empty-activity-state">
+              <i class="bi bi-calendar2-x text-muted" style="font-size:2.5rem;"></i>
+              <p>பதிவு செய்யப்பட்ட சேவைகள் ஏதுமில்லை</p>
+            </div>
+            }
+            }
+
+            <!-- 3. HOROSCOPE REQUESTS VIEW -->
+            @if (selectedOption === 'horoscope') {
+            @if (getHoroscopes().length > 0) {
+            <div class="activity-cards-list">
+              @for (h of getHoroscopes(); track h.id) {
+              <div class="booking-progress-card">
+                <div class="bpc-header">
+                  <div>
+                    <strong class="bpc-id">#{{ h.id }}</strong>
+                    <h4 class="bpc-service-name">{{ h.service }}</h4>
+                  </div>
+                  <span class="status-pill-mini" [ngClass]="(h.status || 'pending').toLowerCase()">{{ h.status }}</span>
+                </div>
+                <div class="bpc-astro-info">
+                  <i class="bi bi-calendar-check me-1 text-gold"></i>
+                  <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
+                </div>
+                @if (h.chart_url) {
+                <a [href]="h.chart_url" target="_blank" class="btn-download-chart">
+                  <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
+                </a>
+                }
+              </div>
+              }
+            </div>
+            } @else {
+            <div class="empty-activity-state">
+              <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem;"></i>
+              <p>ஜாதகக் கோரிக்கைகள் ஏதுமில்லை</p>
+            </div>
+            }
+            }
+
+            <!-- 4. MARRIAGE MATCHING REQUESTS VIEW -->
+            @if (selectedOption === 'marriage') {
+            @if (getMatches().length > 0) {
+            <div class="activity-cards-list">
+              @for (m of getMatches(); track m.id) {
+              <div class="marriage-match-card">
+                <div class="mmc-header">
+                  <span class="mmc-icon">❤️</span>
+                  <strong>திருமண பொருத்தம்</strong>
+                  <span class="mmc-score-badge">{{ m.score || m.match_details?.score || '8' }}/10 பொருத்தம்</span>
+                </div>
+                <div class="mmc-couple-grid">
+                  <div class="mmc-person">
+                    <span class="gender-lbl">ஆண்:</span>
+                    <strong>{{ m.boy_name || 'வரன்' }}</strong>
+                    <small>{{ m.boy_rasi }} - {{ m.boy_star }}</small>
+                  </div>
+                  <div class="mmc-person">
+                    <span class="gender-lbl">பெண்:</span>
+                    <strong>{{ m.girl_name || 'வரன்' }}</strong>
+                    <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+            } @else {
+            <div class="empty-activity-state">
+              <i class="bi bi-heartbreak text-muted" style="font-size:2.5rem;"></i>
+              <p>திருமணப் பொருத்த கோரிக்கைகள் ஏதுமில்லை</p>
+            </div>
+            }
+            }
+
+          </div>
+          <button class="btn-app-gold-full" (click)="closeOptionDetail()" style="margin-top: 10px;">மூடுக
+            (Close)</button>
+        </div>
+      </div>
+      }
+
+      <!-- C. SETTINGS / POLICY MODAL -->
+      @if (selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms') {
+      <div class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-header">
+            @if (selectedOption === 'settings') {
             <h3>அமைப்புகள்</h3>
-          }
-          @if (selectedOption === 'privacy') {
+            }
+            @if (selectedOption === 'privacy') {
             <h3>தனியுரிமைக் கொள்கை</h3>
-          }
-          @if (selectedOption === 'terms') {
+            }
+            @if (selectedOption === 'terms') {
             <h3>விதிமுறைகள் மற்றும் நிபந்தனைகள்</h3>
-          }
-          <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+            }
+            <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p class="text-muted fs-sm">
+              ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
+            </p>
+            <div class="person-detail-row mt-2">
+              <span class="p-label">கணக்கு உரியவர்:</span>
+              <strong class="p-val">{{ personDetails.name }}</strong>
+            </div>
+            <div class="person-detail-row">
+              <span class="p-label">மின்னஞ்சல்:</span>
+              <strong class="p-val">{{ personDetails.email }}</strong>
+            </div>
+            <div class="person-detail-row">
+              <span class="p-label">தொலைபேசி:</span>
+              <strong class="p-val">{{ personDetails.phone }}</strong>
+            </div>
+          </div>
+          <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
         </div>
-        <div class="modal-body">
-          <p class="text-muted fs-sm">
-            ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
-          </p>
-          <div class="person-detail-row mt-2">
-            <span class="p-label">கணக்கு உரியவர்:</span>
-            <strong class="p-val">{{ personDetails.name }}</strong>
-          </div>
-          <div class="person-detail-row">
-            <span class="p-label">மின்னஞ்சல்:</span>
-            <strong class="p-val">{{ personDetails.email }}</strong>
-          </div>
-          <div class="person-detail-row">
-            <span class="p-label">தொலைபேசி:</span>
-            <strong class="p-val">{{ personDetails.phone }}</strong>
-          </div>
-        </div>
-        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
       </div>
-    </div>
-  }
+      }
 
-</div>
+    </div>

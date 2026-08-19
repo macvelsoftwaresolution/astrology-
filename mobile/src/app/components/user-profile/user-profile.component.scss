@@ -436,3 +436,314 @@ $color-white: #FFFFFF;
     background-color: #ffcdd2;
   }
 }
+
+/* Activity Cards & Progress Tracker */
+.activity-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty-activity-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: $color-text-muted;
+  p {
+    margin: 8px 0 0 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+}
+
+/* Receipt Proof Card */
+.receipt-proof-card {
+  background: #ffffff;
+  border: 1.5px solid rgba($color-gold, 0.35);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 12px rgba(74, 14, 23, 0.05);
+
+  .rpc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+
+    .rpc-service-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: $color-maroon;
+      display: block;
+    }
+
+    .rpc-ref {
+      font-size: 0.72rem;
+      color: $color-text-muted;
+      font-family: monospace;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .rpc-amount {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #b45309;
+    }
+  }
+
+  .rpc-gateway-box {
+    background: #fdfcf9;
+    border: 1px solid rgba($color-gold, 0.2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+
+    .rpc-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      color: #64748b;
+      margin-bottom: 3px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: #0f172a;
+      }
+    }
+  }
+
+  .rpc-status-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #15803d;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+/* Booking Progress Card */
+.booking-progress-card {
+  background: #ffffff;
+  border: 1.5px solid rgba($color-gold, 0.3);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 14px rgba(74, 14, 23, 0.06);
+
+  .bpc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+
+    .bpc-id {
+      font-size: 0.72rem;
+      font-family: monospace;
+      color: #64748b;
+      display: block;
+    }
+
+    .bpc-service-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: $color-maroon;
+      margin: 2px 0 0 0;
+    }
+
+    .bpc-price {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #d97706;
+    }
+  }
+
+  .bpc-astro-info {
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 6px;
+
+    strong {
+      color: $color-maroon;
+    }
+  }
+
+  .bpc-schedule-pill {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Live Progress Step Tracker */
+  .bpc-progress-tracker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 6px;
+    background: #fdfaf3;
+    border-radius: 12px;
+    border: 1px dashed rgba($color-gold, 0.4);
+    margin-bottom: 10px;
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+
+      .step-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      span {
+        font-size: 0.68rem;
+        color: #64748b;
+        font-weight: 700;
+      }
+
+      &.done {
+        .step-icon {
+          background: #16a34a;
+          color: #ffffff;
+          box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+        }
+        span {
+          color: #15803d;
+        }
+      }
+
+      &.current {
+        .step-icon {
+          background: #d97706;
+          color: #ffffff;
+          animation: pulse 1.5s infinite;
+        }
+        span {
+          color: #b45309;
+        }
+      }
+    }
+
+    .step-connector {
+      flex: 1;
+      height: 2px;
+      background: #e2e8f0;
+      margin: 0 4px 14px 4px;
+
+      &.active {
+        background: #16a34a;
+      }
+    }
+  }
+
+  .bpc-payment-badge {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    color: #15803d;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .btn-download-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: linear-gradient(135deg, #4A0E17, #2A080C);
+    color: #ECC876;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-decoration: none;
+    margin-top: 6px;
+    box-shadow: 0 3px 10px rgba(74, 14, 23, 0.2);
+  }
+}
+
+/* Marriage Match Card */
+.marriage-match-card {
+  background: #ffffff;
+  border: 1.5px solid #fecdd3;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 10px rgba(225, 29, 72, 0.06);
+
+  .mmc-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+
+    .mmc-icon {
+      font-size: 1.1rem;
+    }
+
+    strong {
+      color: $color-maroon;
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .mmc-score-badge {
+      background: #ffe4e6;
+      color: #be123c;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+  }
+
+  .mmc-couple-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #fff1f2;
+    padding: 8px 10px;
+    border-radius: 10px;
+
+    .mmc-person {
+      .gender-lbl {
+        font-size: 0.7rem;
+        color: #9f1239;
+        font-weight: 700;
+        display: block;
+      }
+      strong {
+        font-size: 0.84rem;
+        color: #0f172a;
+        display: block;
+      }
+      small {
+        font-size: 0.72rem;
+        color: #64748b;
+        display: block;
+      }
+    }
+  }
+}

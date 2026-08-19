@@ -35,6 +35,11 @@ export class UserProfileComponent implements OnInit, OnChanges {
   showEditModal: boolean = false;
   isSavedNotification: boolean = false;
 
+  bookingsList: any[] = [];
+  paymentsList: any[] = [];
+  marriageMatches: any[] = [];
+  isLoadingActivities: boolean = false;
+
   constructor(
     private authService: AuthService,
     private http: HttpClient,
@@ -61,6 +66,80 @@ export class UserProfileComponent implements OnInit, OnChanges {
       this.selectedOption = this.initialOption;
     }
     this.loadProfileFromDb();
+    this.loadActivitiesData();
+  }
+
+  loadActivitiesData() {
+    if (!this.token) return;
+    this.isLoadingActivities = true;
+
+    // 1. Load Bookings
+    this.http.get<any>(`${environment.apiUrl}/user/bookings`, this.headers).subscribe({
+      next: (res) => {
+        if (res && res.bookings && Array.isArray(res.bookings)) {
+          this.bookingsList = res.bookings.map((b: any) => {
+            const details = typeof b.details === 'string' ? (this.safeJsonParse(b.details)) : (b.details || {});
+            return {
+              id: b.id,
+              service: b.service_type || 'ஜோதிட ஆலோசனை',
+              astrologer_name: details.astrologer_name || 'தலைமை வேத ஜோதிடர்',
+              role_title: details.role_title || '',
+              date: b.preferred_date || details.date || details.preferred_date || (b.created_at ? new Date(b.created_at).toLocaleDateString('en-GB') : ''),
+              slot: b.preferred_time || details.slot || details.time_slot || '10:00 AM - 11:00 AM',
+              price: Number(b.price) || 0,
+              status: b.status || 'Pending',
+              chart_url: b.chart_url,
+              razorpay_payment_id: details.razorpay_payment_id || b.razorpay_payment_id,
+              razorpay_order_id: details.razorpay_order_id || b.razorpay_order_id,
+              notes: details.notes || details.query || '',
+              created_at: b.created_at
+            };
+          });
+        }
+        this.isLoadingActivities = false;
+      },
+      error: () => {
+        this.isLoadingActivities = false;
+      }
+    });
+
+    // 2. Load Payments
+    this.http.get<any>(`${environment.apiUrl}/user/payments`, this.headers).subscribe({
+      next: (res) => {
+        if (res && res.payments && Array.isArray(res.payments)) {
+          this.paymentsList = res.payments.map((p: any) => ({
+            id: p.id,
+            booking_id: p.booking_id,
+            amount: Number(p.amount) || 0,
+            currency: p.currency || 'INR',
+            status: p.status || 'Paid',
+            description: p.description || 'ஜோதிட ஆலோசனை முன்பதிவு',
+            razorpay_payment_id: p.razorpay_payment_id,
+            razorpay_order_id: p.razorpay_order_id,
+            date: p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''
+          }));
+        }
+      },
+      error: () => {}
+    });
+
+    // 3. Load Marriage Matches
+    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, this.headers).subscribe({
+      next: (res) => {
+        if (res && res.matches && Array.isArray(res.matches)) {
+          this.marriageMatches = res.matches;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  private safeJsonParse(val: string): any {
+    try {
+      return JSON.parse(val);
+    } catch {
+      return {};
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -167,6 +246,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
 
   openOptionDetail(optionKey: string) {
     this.selectedOption = optionKey;
+    this.loadActivitiesData();
   }
 
   closeOptionDetail() {
@@ -178,11 +258,35 @@ export class UserProfileComponent implements OnInit, OnChanges {
     });
   }
 
-  getFilteredOrders(): any[] {
-    if (!this.selectedOption || this.selectedOption === 'payments') {
-      return this.orders;
-    }
-    return this.orders.filter(o => o.type === this.selectedOption || this.selectedOption === 'services');
+  getPayments(): any[] {
+    if (this.paymentsList.length > 0) return this.paymentsList;
+    // Fallback from bookings if transactions not in ledger
+    return this.bookingsList.map(b => ({
+      id: b.id,
+      booking_id: b.id,
+      amount: b.price,
+      currency: 'INR',
+      status: 'Paid',
+      description: `நேரடி ஆலோசனை - ${b.astrologer_name}`,
+      razorpay_payment_id: b.razorpay_payment_id || `pay_${b.id}`,
+      razorpay_order_id: b.razorpay_order_id || b.id,
+      date: b.date
+    }));
+  }
+
+  getServices(): any[] {
+    return this.bookingsList;
+  }
+
+  getHoroscopes(): any[] {
+    return this.bookingsList.filter(b => 
+      b.service?.toLowerCase().includes('jathagam') || 
+      b.service?.includes('ஜாதகம்')
+    );
+  }
+
+  getMatches(): any[] {
+    return this.marriageMatches;
   }
 
   getParsedDetails(order: any): any {

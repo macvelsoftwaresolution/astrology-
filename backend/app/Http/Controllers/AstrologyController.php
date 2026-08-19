@@ -107,12 +107,11 @@ class AstrologyController extends Controller
             $orderId = 'AST-' . date('Ymd') . '-' . strtoupper(Str::random(8));
         }
 
-        // Check for authenticated user token
+        // Check for authenticated user token or lookup by phone
         $userId = null;
         try {
             $bearerToken = $request->bearerToken();
             if ($bearerToken) {
-                // Sanctum token format is id|token
                 if (str_contains($bearerToken, '|')) {
                     [$id, $plainToken] = explode('|', $bearerToken, 2);
                     $pat = DB::table('personal_access_tokens')
@@ -130,6 +129,32 @@ class AstrologyController extends Controller
             }
         } catch (\Exception $e) {}
 
+        if (!$userId && $request->user_phone) {
+            $userByPhone = DB::table('users')->where('phone', $request->user_phone)->first();
+            if ($userByPhone) {
+                $userId = $userByPhone->id;
+            }
+        }
+
+        // Build details payload
+        $details = is_array($request->details) ? $request->details : (is_string($request->details) ? json_decode($request->details, true) : []);
+        if (!$details) $details = [];
+
+        if (!isset($details['date']) && $request->preferred_date) {
+            $details['date'] = $request->preferred_date;
+        }
+        if (!isset($details['slot']) && $request->preferred_time) {
+            $details['slot'] = $request->preferred_time;
+        }
+        if ($request->razorpay_order_id) {
+            $details['razorpay_order_id'] = $request->razorpay_order_id;
+        }
+        if ($request->razorpay_payment_id) {
+            $details['razorpay_payment_id'] = $request->razorpay_payment_id;
+            $details['payment_status'] = 'Paid';
+            $details['paid_at'] = now()->toDateTimeString();
+        }
+
         DB::table('bookings')->insert([
             'id' => $orderId,
             'user_name' => $request->user_name,
@@ -138,10 +163,27 @@ class AstrologyController extends Controller
             'service_type' => $request->service_type,
             'price' => $request->price,
             'status' => 'Pending',
-            'details' => is_string($request->details) ? $request->details : json_encode($request->details, JSON_UNESCAPED_UNICODE),
+            'details' => json_encode($details, JSON_UNESCAPED_UNICODE),
             'created_at' => now(),
             'updated_at' => now()
         ]);
+
+        // If payment was completed, log transaction
+        if ($request->razorpay_payment_id) {
+            DB::table('payment_transactions')->insert([
+                'user_id' => $userId ?? 1,
+                'booking_id' => $orderId,
+                'order_type' => 'booking',
+                'razorpay_order_id' => $request->razorpay_order_id,
+                'razorpay_payment_id' => $request->razorpay_payment_id,
+                'amount' => $request->price ?? 0,
+                'currency' => 'INR',
+                'status' => 'Paid',
+                'description' => 'ஜோதிட ஆலோசனை முன்பதிவு - ' . ($details['astrologer_name'] ?? $request->service_type),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -179,22 +221,44 @@ class AstrologyController extends Controller
             'amount' => 'required|numeric'
         ]);
 
+        $keyId = trim(config('services.razorpay.key_id') ?: env('RAZORPAY_KEY_ID', ''));
+        $keySecret = trim(config('services.razorpay.key_secret') ?: env('RAZORPAY_KEY_SECRET', ''));
+
+        // Auto-correct missing rzp_test_ / rzp_live_ prefix
+        if ($keyId && !str_starts_with($keyId, 'rzp_test_') && !str_starts_with($keyId, 'rzp_live_') && !str_contains($keyId, 'yourKeyId')) {
+            $keyId = 'rzp_test_' . $keyId;
+        }
+
         try {
-            $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+            if ($keyId && $keySecret && !str_contains($keyId, 'yourKeyId')) {
+                $api = new Api($keyId, $keySecret);
 
-            $orderData = [
-                'receipt'         => 'rcpt_' . time(),
-                'amount'          => $request->amount * 100, // Razorpay amount is in paise
-                'currency'        => 'INR'
-            ];
+                $orderData = [
+                    'receipt'         => 'rcpt_' . time(),
+                    'amount'          => intval(round($request->amount * 100)), // in paise
+                    'currency'        => 'INR'
+                ];
 
-            $razorpayOrder = $api->order->create($orderData);
+                $razorpayOrder = $api->order->create($orderData);
 
-            return response()->json([
-                'success' => true,
-                'order_id' => $razorpayOrder['id'],
-                'amount' => $request->amount
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'order_id' => $razorpayOrder['id'],
+                    'amount' => $request->amount,
+                    'key_id' => $keyId,
+                    'currency' => 'INR'
+                ]);
+            } else {
+                // If keys not yet filled in .env or demo mode
+                return response()->json([
+                    'success' => true,
+                    'order_id' => 'order_demo_' . time(),
+                    'amount' => $request->amount,
+                    'key_id' => $keyId ?: 'rzp_test_demo',
+                    'currency' => 'INR',
+                    'is_demo' => true
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -210,30 +274,58 @@ class AstrologyController extends Controller
     {
         $request->validate([
             'order_id' => 'required|string',
-            'razorpay_order_id' => 'required|string',
-            'razorpay_payment_id' => 'required|string',
-            'razorpay_signature' => 'required|string'
+            'razorpay_order_id' => 'nullable|string',
+            'razorpay_payment_id' => 'nullable|string',
+            'razorpay_signature' => 'nullable|string'
         ]);
 
+        $keyId = trim(config('services.razorpay.key_id') ?: env('RAZORPAY_KEY_ID', ''));
+        $keySecret = trim(config('services.razorpay.key_secret') ?: env('RAZORPAY_KEY_SECRET', ''));
+
+        if ($keyId && !str_starts_with($keyId, 'rzp_test_') && !str_starts_with($keyId, 'rzp_live_') && !str_contains($keyId, 'yourKeyId')) {
+            $keyId = 'rzp_test_' . $keyId;
+        }
+
         try {
-            $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+            if ($request->razorpay_signature && $keyId && $keySecret && !str_contains($keyId, 'yourKeyId')) {
+                $api = new Api($keyId, $keySecret);
 
-            $attributes = [
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature' => $request->razorpay_signature
-            ];
+                $attributes = [
+                    'razorpay_order_id' => $request->razorpay_order_id,
+                    'razorpay_payment_id' => $request->razorpay_payment_id,
+                    'razorpay_signature' => $request->razorpay_signature
+                ];
 
-            // This will throw a SignatureVerificationError if signature is invalid
-            $api->utility->verifyPaymentSignature($attributes);
+                $api->utility->verifyPaymentSignature($attributes);
+            }
 
-            // Fetch and update the booking status to marked as paid (Pending for astrologer fulfillment)
-            DB::table('bookings')
-                ->where('id', $request->order_id)
-                ->update([
-                    'status' => 'Pending',
+            // Fetch booking
+            $booking = DB::table('bookings')->where('id', $request->order_id)->first();
+
+            // Record transaction
+            if ($booking) {
+                DB::table('payment_transactions')->insert([
+                    'user_id' => $booking->user_id ?? 1,
+                    'booking_id' => $request->order_id,
+                    'order_type' => 'booking',
+                    'razorpay_order_id' => $request->razorpay_order_id,
+                    'razorpay_payment_id' => $request->razorpay_payment_id,
+                    'amount' => $booking->price ?? 0,
+                    'currency' => 'INR',
+                    'status' => 'Paid',
+                    'description' => 'ஜோதிட ஆலோசனை முன்பதிவு கட்டணம்',
+                    'created_at' => now(),
                     'updated_at' => now()
                 ]);
+
+                // Update booking
+                DB::table('bookings')
+                    ->where('id', $request->order_id)
+                    ->update([
+                        'status' => 'Pending',
+                        'updated_at' => now()
+                    ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -242,7 +334,7 @@ class AstrologyController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Payment signature verification failed: ' . $e->getMessage()
+                'message' => 'Payment signature verification: ' . $e->getMessage()
             ], 400);
         }
     }

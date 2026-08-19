@@ -385,8 +385,12 @@
           </div>
         </div>
 
-        <button class="btn-app-gold btn-pay-now" (click)="payAndFulfillAstrologer()">
-          ₹{{ selectedAstrologer.fee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒
+        <button class="btn-app-gold btn-pay-now" [disabled]="isProcessingPayment" (click)="payAndFulfillAstrologer()">
+          @if (isProcessingPayment) {
+            <span>செயலாக்கப்படுகிறது...</span>
+          } @else {
+            <span>₹{{ selectedAstrologer.fee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒</span>
+          }
         </button>
 
         <div class="footer-safety-badge" style="margin-top: 14px;">
