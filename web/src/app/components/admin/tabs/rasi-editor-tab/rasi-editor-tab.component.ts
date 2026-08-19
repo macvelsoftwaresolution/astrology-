@@ -78,6 +78,59 @@ export class RasiEditorTabComponent implements OnInit {
     nalla_neram: ''
   };
 
+  // Interactive Time Pickers State
+  timePickers = {
+    rahuFrom: '',
+    rahuTo: '',
+    yamaFrom: '',
+    yamaTo: '',
+    nallaMornFrom: '',
+    nallaMornTo: '',
+    nallaEveFrom: '',
+    nallaEveTo: ''
+  };
+
+  formatTime12(time24: string): string {
+    if (!time24) return '';
+    const [hStr, mStr] = time24.split(':');
+    let h = parseInt(hStr, 10);
+    const m = mStr || '00';
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    if (h === 0) h = 12;
+    const hh = h < 10 ? '0' + h : '' + h;
+    return `${hh}:${m} ${ampm}`;
+  }
+
+  updateRahukalamFromPickers(): void {
+    if (this.timePickers.rahuFrom && this.timePickers.rahuTo) {
+      this.panchangamForm.rahukalam = `${this.formatTime12(this.timePickers.rahuFrom)} - ${this.formatTime12(this.timePickers.rahuTo)}`;
+    }
+  }
+
+  updateYamagandamFromPickers(): void {
+    if (this.timePickers.yamaFrom && this.timePickers.yamaTo) {
+      this.panchangamForm.yamagandam = `${this.formatTime12(this.timePickers.yamaFrom)} - ${this.formatTime12(this.timePickers.yamaTo)}`;
+    }
+  }
+
+  updateNallaNeramFromPickers(): void {
+    const parts: string[] = [];
+    if (this.timePickers.nallaMornFrom && this.timePickers.nallaMornTo) {
+      parts.push(`${this.formatTime12(this.timePickers.nallaMornFrom)} - ${this.formatTime12(this.timePickers.nallaMornTo)} (காலை)`);
+    }
+    if (this.timePickers.nallaEveFrom && this.timePickers.nallaEveTo) {
+      parts.push(`${this.formatTime12(this.timePickers.nallaEveFrom)} - ${this.formatTime12(this.timePickers.nallaEveTo)} (மாலை)`);
+    }
+    if (parts.length > 0) {
+      this.panchangamForm.nalla_neram = parts.join(' / ');
+    }
+  }
+
+  setPreset(field: 'rahukalam' | 'yamagandam' | 'nalla_neram', val: string): void {
+    this.panchangamForm[field] = val;
+  }
+
   // Video Preview Modal
   previewVideoModal = false;
   previewVideoUrl = '';

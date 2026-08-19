@@ -217,7 +217,7 @@
   <!-- 4. PROFILE TAB COMPONENT -->
   @if (currentTab === 'profile' && !activeServiceFlow) {
   <div class="tab-content">
-    <app-user-profile [orders]="userOrders"></app-user-profile>
+    <app-user-profile [orders]="userOrders" [initialOption]="profileOption"></app-user-profile>
   </div>
   }
 

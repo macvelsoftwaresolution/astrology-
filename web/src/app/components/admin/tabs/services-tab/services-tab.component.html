@@ -223,10 +223,10 @@
         <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:10px 12px;border-radius:8px;margin-bottom:12px;">
           <span style="font-size:11px;color:#1d4ed8;font-weight:700;display:block;">{{ 'services.preferredDate' | translate }}:</span>
           <div style="font-size:13px;font-weight:800;color:#1e3a8a;margin-top:2px;">
-            <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.details?.preferred_date || '-' }}
-            @if (selectedBookingForView.details?.time_slot) {
+            <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.details?.preferred_date || selectedBookingForView.details?.booking_date || selectedBookingForView.details?.appointment_date || selectedBookingForView.details?.date || '-' }}
+            @if (selectedBookingForView.details?.time_slot || selectedBookingForView.details?.slot || selectedBookingForView.details?.preferred_time) {
               <span style="color:#2563eb;font-weight:600;margin-left:6px;">
-                <i class="bi bi-clock"></i> {{ selectedBookingForView.details.time_slot }}
+                <i class="bi bi-clock"></i> {{ selectedBookingForView.details?.time_slot || selectedBookingForView.details?.slot || selectedBookingForView.details?.preferred_time }}
               </span>
             }
           </div>

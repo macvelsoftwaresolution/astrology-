@@ -61,8 +61,8 @@
                 </strong>
               </td>
               <td>
-                <span class="status-pill" [ngClass]="(m.consultation_status || 'Pending').toLowerCase()">
-                  {{ m.consultation_status || 'Pending' }}
+                <span class="status-pill" [ngClass]="(m.admin_status || m.consultation_status || 'Pending').toLowerCase()">
+                  {{ m.admin_status || m.consultation_status || 'Pending' }}
                 </span>
                 @if (m.admin_notes) {
                   <div class="notes-preview-snippet" [title]="m.admin_notes">
@@ -165,7 +165,7 @@
         <form (ngSubmit)="saveMatchStatus()">
           <div class="form-group">
             <label>{{ 'common.status' | translate }}</label>
-            <select [(ngModel)]="matchStatusForm.consultation_status" name="m_cstatus" class="ctrl">
+            <select [(ngModel)]="matchStatusForm.admin_status" (ngModelChange)="matchStatusForm.consultation_status = $event" name="m_cstatus" class="ctrl">
               <option value="Pending">Pending</option>
               <option value="In-Progress">In-Progress</option>
               <option value="Completed">Completed</option>

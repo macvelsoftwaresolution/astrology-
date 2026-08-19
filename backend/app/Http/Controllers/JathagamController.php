@@ -408,6 +408,8 @@ class JathagamController extends Controller
             ->get()
             ->map(function ($m) {
                 $m->match_details = json_decode($m->match_details);
+                $m->admin_status = $m->admin_status ?: 'Pending';
+                $m->consultation_status = $m->admin_status;
                 $m->contact_phone = $m->requester_phone ?: ($m->user_account_phone ?: '');
                 $m->requester_display = $m->user_account_name ?: ($m->requester_phone ? 'Phone: ' . $m->requester_phone : 'பதிவு செய்யாத பயனர் (Guest)');
                 return $m;

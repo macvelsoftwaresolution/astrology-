@@ -578,6 +578,22 @@ class AstrologyController extends Controller
                 'updated_at' => now()
             ]);
 
+        $chartUrl = $request->chart_url ?? $booking->chart_url;
+
+        // Auto notify user in mobile app
+        if (!empty($booking->user_id)) {
+            DB::table('notifications')->insert([
+                'user_id'    => $booking->user_id,
+                'title'      => 'ஜோதிட கணிப்பு நிறைவுற்றது! (Booking Completed)',
+                'body'       => "உங்கள் முன்பதிவு (#{$id} - {$booking->service_type}) ஜோதிடரால் ஆய்வு செய்யப்பட்டு முடிவுற்றது. உங்கள் ஜாதகக் கோப்பு கீழே இணைக்கப்பட்டுள்ளது.",
+                'type'       => 'booking_fulfilled',
+                'data'       => json_encode(['booking_id' => $id, 'chart_url' => $chartUrl], JSON_UNESCAPED_SLASHES),
+                'is_read'    => false,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Booking status updated successfully'

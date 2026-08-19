@@ -44,7 +44,7 @@
     @if (!loading && notifications.length > 0) {
       <div style="display: flex; flex-direction: column; gap: 12px;">
         @for (n of notifications; track n.id) {
-          <div (click)="markRead(n)"
+          <div (click)="handleNotificationClick(n)"
                style="display: flex; align-items: flex-start; gap: 14px; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s ease;"
                [style.background]="n.is_read ? '#ffffff' : '#fffdf5'"
                [style.border]="n.is_read ? '1.5px solid #e2e8f0' : '1.5px solid #ECC876'"
@@ -70,9 +70,39 @@
                 {{ n.body }}
               </p>
 
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #64748b; font-weight: 600;">
-                <i class="bi bi-clock" style="font-size: 12px;"></i>
-                <span>{{ n.created_at | date:'dd MMM yyyy, hh:mm a' }}</span>
+              <!-- Attached Horoscope Chart / Image Preview / Download -->
+              @if (getChartUrl(n)) {
+                <div style="margin: 8px 0 12px 0;">
+                  @if (isImage(getChartUrl(n)!)) {
+                    <div style="border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876; max-height: 220px; margin-bottom: 8px; background: #fafafa;">
+                      <a [href]="getChartUrl(n)" target="_blank" (click)="$event.stopPropagation()">
+                        <img [src]="getChartUrl(n)" alt="Horoscope Chart" style="width: 100%; height: auto; max-height: 220px; object-fit: contain; display: block;" />
+                      </a>
+                    </div>
+                  }
+                  <a [href]="getChartUrl(n)" target="_blank" (click)="$event.stopPropagation()" style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 4px rgba(5,150,105,0.1);">
+                    <i class="bi bi-file-earmark-arrow-down-fill" style="font-size: 14px;"></i> ஜாதகக் கோப்பைப் பார்க்க / பதிவிறக்க (View/Download Chart)
+                  </a>
+                </div>
+              }
+
+              <!-- Attached Video Player / Link -->
+              @if (getVideoUrl(n)) {
+                <div style="margin: 8px 0 12px 0;">
+                  <a [href]="getVideoUrl(n)" target="_blank" (click)="$event.stopPropagation()" style="display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; color: #1d4ed8; border: 1.5px solid #93c5fd; padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; text-decoration: none;">
+                    <i class="bi bi-play-circle-fill" style="font-size: 15px; color: #2563eb;"></i> காணொளியைப் பார்க்க (Watch Video)
+                  </a>
+                </div>
+              }
+
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #64748b; font-weight: 600;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <i class="bi bi-clock" style="font-size: 12px;"></i>
+                  <span>{{ n.created_at | date:'dd MMM yyyy, hh:mm a' }}</span>
+                </div>
+                <span style="color: #b45309; font-size: 11px; font-weight: 700;">
+                  திறக்க தொடவும் <i class="bi bi-chevron-right"></i>
+                </span>
               </div>
             </div>
 

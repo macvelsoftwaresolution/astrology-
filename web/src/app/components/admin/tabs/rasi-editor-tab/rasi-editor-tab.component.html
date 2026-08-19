@@ -92,31 +92,135 @@
         </span>
       </div>
       
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px;">
-        <div class="form-group" style="margin: 0;">
-          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.thithi' | translate }}:</label>
-          <input [(ngModel)]="panchangamForm.thithi" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 24px;">
+
+        <!-- Card 1: Basic Panchangam (Thithi & Nakshatra) -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-stars" style="color: #d97706;"></i> பஞ்சாங்க அடிப்படை (Tithi & Star)
+            </h4>
+            <span style="font-size: 11px; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 20px;">Daily Info</span>
+          </div>
+
+          <div class="form-group" style="margin: 0;">
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <i class="bi bi-moon-stars-fill" style="color: #6366f1;"></i> {{ 'rasi_editor.thithi' | translate }}:
+            </label>
+            <input [(ngModel)]="panchangamForm.thithi" placeholder="எ.கா: சுக்ல பட்ச துவாதசி (Dwadashi)" class="ctrl" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;" />
+          </div>
+
+          <div class="form-group" style="margin: 0;">
+            <label style="font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <i class="bi bi-star-fill" style="color: #eab308;"></i> {{ 'rasi_editor.nakshatra' | translate }}:
+            </label>
+            <input [(ngModel)]="panchangamForm.star" placeholder="எ.கா: ரோகிணி (Rohini)" class="ctrl" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;" />
+          </div>
         </div>
-        <div class="form-group" style="margin: 0;">
-          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.nakshatra' | translate }}:</label>
-          <input [(ngModel)]="panchangamForm.star" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+
+        <!-- Card 2: Nalla Neram (Auspicious Timings) -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #15803d; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-clock-fill" style="color: #16a34a;"></i> {{ 'rasi_editor.nallaNeram' | translate }}
+            </h4>
+            <span style="font-size: 11px; font-weight: 700; color: #166534; background: #dcfce7; padding: 2px 8px; border-radius: 20px;">Time Set ⏱️</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <span style="font-size: 11px; color: #15803d; font-weight: 700; display: block; margin-bottom: 4px;">🌅 காலை:</span>
+              <div style="display: flex; gap: 4px; align-items: center;">
+                <input type="time" [(ngModel)]="timePickers.nallaMornFrom" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
+                <span style="color: #64748b; font-weight: 800;">-</span>
+                <input type="time" [(ngModel)]="timePickers.nallaMornTo" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
+              </div>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: #15803d; font-weight: 700; display: block; margin-bottom: 4px;">🌆 மாலை:</span>
+              <div style="display: flex; gap: 4px; align-items: center;">
+                <input type="time" [(ngModel)]="timePickers.nallaEveFrom" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
+                <span style="color: #64748b; font-weight: 800;">-</span>
+                <input type="time" [(ngModel)]="timePickers.nallaEveTo" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
+              </div>
+            </div>
+          </div>
+
+          <input [(ngModel)]="panchangamForm.nalla_neram" placeholder="06:15 AM - 07:15 AM (காலை) / 04:30 PM - 05:30 PM (மாலை)" style="width: 100%; padding: 8px 12px; font-size: 12.5px; font-weight: 700; color: #15803d; border: 1px solid #86efac; border-radius: 8px; background: #ffffff;" />
+
+          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+            <button type="button" class="btn-xs" (click)="setPreset('nalla_neram', '06:15 AM - 07:15 AM (காலை) / 04:30 PM - 05:30 PM (மாலை)')" style="font-size: 10.5px; padding: 2px 6px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer;">06:15-07:15 (காலை) & 04:30-05:30 (மாலை)</button>
+            <button type="button" class="btn-xs" (click)="setPreset('nalla_neram', '09:15 AM - 10:15 AM (காலை) / 04:45 PM - 05:45 PM (மாலை)')" style="font-size: 10.5px; padding: 2px 6px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer;">09:15-10:15 (காலை) & 04:45-05:45 (மாலை)</button>
+          </div>
         </div>
-        <div class="form-group" style="margin: 0;">
-          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.rahukalam' | translate }}:</label>
-          <input [(ngModel)]="panchangamForm.rahukalam" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+
+        <!-- Card 3: Rahukalam -->
+        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #c2410c; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-stopwatch-fill" style="color: #ea580c;"></i> {{ 'rasi_editor.rahukalam' | translate }}
+            </h4>
+            <span style="font-size: 11px; font-weight: 700; color: #9a3412; background: #ffedd5; padding: 2px 8px; border-radius: 20px;">Time Set ⏱️</span>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1;">
+              <span style="font-size: 11px; color: #9a3412; font-weight: 700; display: block; margin-bottom: 2px;">முதல் (From):</span>
+              <input type="time" [(ngModel)]="timePickers.rahuFrom" (change)="updateRahukalamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fdba74; border-radius: 6px; background: #ffffff;" />
+            </div>
+            <span style="color: #94a3b8; font-weight: 800; margin-top: 16px;">-</span>
+            <div style="flex: 1;">
+              <span style="font-size: 11px; color: #9a3412; font-weight: 700; display: block; margin-bottom: 2px;">வரை (To):</span>
+              <input type="time" [(ngModel)]="timePickers.rahuTo" (change)="updateRahukalamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fdba74; border-radius: 6px; background: #ffffff;" />
+            </div>
+          </div>
+
+          <input [(ngModel)]="panchangamForm.rahukalam" placeholder="10:30 AM - 12:00 PM" style="width: 100%; padding: 8px 12px; font-size: 13px; font-weight: 700; color: #c2410c; border: 1px solid #fdba74; border-radius: 8px; background: #ffffff;" />
+
+          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '07:30 AM - 09:00 AM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">07:30-09:00</button>
+            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '09:00 AM - 10:30 AM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">09:00-10:30</button>
+            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '10:30 AM - 12:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">10:30-12:00</button>
+            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '01:30 PM - 03:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">01:30-03:00</button>
+            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '03:00 PM - 04:30 PM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">03:00-04:30</button>
+          </div>
         </div>
-        <div class="form-group" style="margin: 0;">
-          <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.yamagandam' | translate }}:</label>
-          <input [(ngModel)]="panchangamForm.yamagandam" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
+
+        <!-- Card 4: Yamagandam -->
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-stopwatch-fill" style="color: #dc2626;"></i> {{ 'rasi_editor.yamagandam' | translate }}
+            </h4>
+            <span style="font-size: 11px; font-weight: 700; color: #991b1b; background: #fee2e2; padding: 2px 8px; border-radius: 20px;">Time Set ⏱️</span>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1;">
+              <span style="font-size: 11px; color: #991b1b; font-weight: 700; display: block; margin-bottom: 2px;">முதல் (From):</span>
+              <input type="time" [(ngModel)]="timePickers.yamaFrom" (change)="updateYamagandamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fca5a5; border-radius: 6px; background: #ffffff;" />
+            </div>
+            <span style="color: #94a3b8; font-weight: 800; margin-top: 16px;">-</span>
+            <div style="flex: 1;">
+              <span style="font-size: 11px; color: #991b1b; font-weight: 700; display: block; margin-bottom: 2px;">வரை (To):</span>
+              <input type="time" [(ngModel)]="timePickers.yamaTo" (change)="updateYamagandamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fca5a5; border-radius: 6px; background: #ffffff;" />
+            </div>
+          </div>
+
+          <input [(ngModel)]="panchangamForm.yamagandam" placeholder="09:15 AM - 10:15 AM" style="width: 100%; padding: 8px 12px; font-size: 13px; font-weight: 700; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 8px; background: #ffffff;" />
+
+          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '06:00 AM - 07:30 AM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">06:00-07:30</button>
+            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '09:00 AM - 10:30 AM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">09:00-10:30</button>
+            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '10:30 AM - 12:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">10:30-12:00</button>
+            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '01:30 PM - 03:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">01:30-03:00</button>
+            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '03:00 PM - 04:30 PM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">03:00-04:30</button>
+          </div>
         </div>
+
       </div>
 
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">{{ 'rasi_editor.nallaNeram' | translate }}:</label>
-        <input [(ngModel)]="panchangamForm.nalla_neram" class="field-input-lg" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc;" />
-      </div>
-
-      <button class="btn-primary" (click)="savePanchangam()" style="padding: 10px 24px; font-size: 13.5px; font-weight: 800; border-radius: 10px;">
+      <button class="btn-primary" (click)="savePanchangam()" style="padding: 12px 28px; font-size: 14px; font-weight: 800; border-radius: 10px;">
         <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
       </button>
     </div>

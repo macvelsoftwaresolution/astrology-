@@ -292,8 +292,8 @@ export class MarriageMatchingComponent implements OnInit {
       boy_pob: this.matchingForm.boyPob || null,
       boy_rasi: this.matchingForm.boyRasi,
       boy_nakshatra: this.matchingForm.boyStar,
-      requester_phone: this.matchingForm.requesterPhone || '9876543210',
-      match_score: this.matchResult.totalMatches || 8,
+      requester_phone: this.matchingForm.requesterPhone || null,
+      match_score: this.matchResult.totalMatches || null,
       match_status: this.matchResult.totalMatches >= 6 ? 'Match' : 'Low Match',
       match_details: this.matchResult.poruthams || [],
       verdict: this.matchResult.verdictTitle || ''

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -16,6 +17,7 @@ export class NotificationsPage implements OnInit {
 
   constructor(
     private navCtrl: NavController,
+    private router: Router,
     private http: HttpClient
   ) { }
 
@@ -78,6 +80,84 @@ export class NotificationsPage implements OnInit {
       general: 'bi-bell-fill text-maroon'
     };
     return icons[type] || 'bi-bell-fill text-maroon';
+  }
+
+  isImage(url: string): boolean {
+    if (!url) return false;
+    return /\.(jpg|jpeg|png|webp|gif|svg)($|\?)/i.test(url) || url.includes('data:image');
+  }
+
+  getChartUrl(n: any): string | null {
+    if (n.data && n.data.chart_url) return n.data.chart_url;
+    if (n.data && n.data.image_url) return n.data.image_url;
+    if (n.chart_url) return n.chart_url;
+    if (n.image_url) return n.image_url;
+    return null;
+  }
+
+  getVideoUrl(n: any): string | null {
+    if (n.data && n.data.video_url) return n.data.video_url;
+    if (n.video_url) return n.video_url;
+    const match = (n.body || '').match(/(https?:\/\/[^\s]+(youtube\.com|youtu\.be|vimeo\.com|\.mp4|\.webm)[^\s]*)/i);
+    return match ? match[0] : null;
+  }
+
+  handleNotificationClick(n: any) {
+    this.markRead(n);
+
+    // 1. If notification has a video URL, open video
+    const video = this.getVideoUrl(n);
+    if (video) {
+      window.open(video, '_blank');
+      return;
+    }
+
+    // 2. Type-based direct route redirection
+    if (n.type === 'booking_fulfilled' || n.type === 'booking_confirmed') {
+      this.router.navigate(['/home'], { queryParams: { tab: 'profile', option: 'services' } });
+      return;
+    }
+
+    if (n.type === 'jathagam') {
+      this.router.navigate(['/home'], { queryParams: { tab: 'profile', option: 'jathagam' } });
+      return;
+    }
+
+    if (n.type === 'payment' || n.type === 'transaction') {
+      this.router.navigate(['/home'], { queryParams: { tab: 'profile', option: 'payments' } });
+      return;
+    }
+
+    if (n.type === 'rasi_palan') {
+      this.router.navigate(['/home'], { queryParams: { flow: 'rasi-palan' } });
+      return;
+    }
+
+    if (n.type === 'marriage' || n.type === 'matching') {
+      this.router.navigate(['/home'], { queryParams: { tab: 'matching' } });
+      return;
+    }
+
+    if (n.type === 'course' || n.type === 'certificate') {
+      this.router.navigate(['/home'], { queryParams: { tab: 'services' } });
+      return;
+    }
+
+    // 3. Data-driven redirect
+    if (n.data?.redirect_tab) {
+      this.router.navigate(['/home'], { 
+        queryParams: { 
+          tab: n.data.redirect_tab, 
+          option: n.data.redirect_option || null,
+          flow: n.data.redirect_flow || null 
+        } 
+      });
+      return;
+    }
+    if (n.data?.redirect_flow) {
+      this.router.navigate(['/home'], { queryParams: { flow: n.data.redirect_flow } });
+      return;
+    }
   }
 
   goBack() {

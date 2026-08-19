@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
@@ -10,8 +10,9 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./user-profile.component.scss'],
   standalone: false
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnChanges {
   @Input() orders: any[] = [];
+  @Input() initialOption: string | null = null;
 
   currentUser: User | null = null;
   isLoading: boolean = false;
@@ -56,7 +57,16 @@ export class UserProfileComponent implements OnInit {
       this.personDetails.phone = this.currentUser.mobileNumber || this.currentUser.phone || '';
       this.personDetails.profileImageUrl = this.currentUser.profileImage || '';
     }
+    if (this.initialOption) {
+      this.selectedOption = this.initialOption;
+    }
     this.loadProfileFromDb();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['initialOption'] && this.initialOption) {
+      this.selectedOption = this.initialOption;
+    }
   }
 
   loadProfileFromDb() {
@@ -162,6 +172,10 @@ export class UserProfileComponent implements OnInit {
   closeOptionDetail() {
     this.selectedOption = null;
     this.showEditModal = false;
+    this.router.navigate([], {
+      queryParams: { option: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   getFilteredOrders(): any[] {
@@ -169,6 +183,26 @@ export class UserProfileComponent implements OnInit {
       return this.orders;
     }
     return this.orders.filter(o => o.type === this.selectedOption || this.selectedOption === 'services');
+  }
+
+  getParsedDetails(order: any): any {
+    if (order.parsedDetails) return order.parsedDetails;
+    if (order.details) {
+      if (typeof order.details === 'object') return order.details;
+      if (typeof order.details === 'string') {
+        const trimmed = order.details.trim();
+        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+          try {
+            return JSON.parse(trimmed);
+          } catch {
+            return { notes: order.details };
+          }
+        } else {
+          return { notes: order.details };
+        }
+      }
+    }
+    return null;
   }
 
   logout() {

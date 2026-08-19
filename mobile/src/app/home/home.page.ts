@@ -53,6 +53,7 @@ export class HomePage implements OnInit {
   // Profile Orders List (Dynamic from DB)
   userOrders: Order[] = [];
   astrologers: any[] = [];
+  profileOption: string | null = null;
 
   get userInitial(): string {
     const user = this.authService.getCurrentUser();
@@ -281,6 +282,7 @@ export class HomePage implements OnInit {
       } else {
         this.activeServiceFlow = null;
       }
+      this.profileOption = params['option'] || null;
     });
   }
 
@@ -358,14 +360,30 @@ export class HomePage implements OnInit {
     }).subscribe({
       next: (res) => {
         if (res && res.bookings && Array.isArray(res.bookings)) {
-          this.userOrders = res.bookings.map((b: any) => ({
-            id: b.id,
-            service: b.service_type,
-            price: Number(b.price) || 0,
-            date: b.created_at ? new Date(b.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
-            status: b.status || 'Pending',
-            details: typeof b.details === 'object' ? JSON.stringify(b.details) : (b.details || '')
-          }));
+          this.userOrders = res.bookings.map((b: any) => {
+            let parsedDetails: any = null;
+            if (b.details) {
+              if (typeof b.details === 'object') {
+                parsedDetails = b.details;
+              } else {
+                try {
+                  parsedDetails = JSON.parse(b.details);
+                } catch {
+                  parsedDetails = { notes: b.details };
+                }
+              }
+            }
+            return {
+              id: b.id,
+              service: b.service_type,
+              price: Number(b.price) || 0,
+              date: b.created_at ? new Date(b.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
+              status: b.status || 'Pending',
+              details: parsedDetails?.notes || (typeof b.details === 'string' && !b.details.startsWith('{') ? b.details : ''),
+              parsedDetails: parsedDetails,
+              chart_url: b.chart_url || null
+            };
+          });
         }
       },
       error: () => {}

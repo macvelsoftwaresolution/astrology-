@@ -234,24 +234,71 @@
         <div class="modal-body">
           <div class="person-summary-box">
             <i class="bi bi-person-fill text-gold me-2"></i>
-            <strong>{{ personDetails.name }}</strong> ({{ personDetails.rasi }} - {{ personDetails.star }})
+            <strong>{{ personDetails.name }}</strong>
+            @if (personDetails.rasi || personDetails.star) {
+              <span style="color: #b45309; font-weight: 700; margin-left: 4px;">({{ personDetails.rasi || '-' }} - {{ personDetails.star || '-' }})</span>
+            }
             <div class="sub-contact">{{ personDetails.phone }} | {{ personDetails.email }}</div>
           </div>
           @if (getFilteredOrders().length > 0) {
             <div class="orders-list">
               @for (order of getFilteredOrders(); track order) {
                 <div class="order-history-card">
-                  <div class="oh-header">
-                    <strong>{{ order.service }}</strong>
-                    <span class="status-dot" [class.dot-pending]="order.status === 'Pending'">{{ order.status === 'Pending' ? 'நிலுவையில்' : 'முடிந்தது' }}</span>
+                  <div class="oh-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+                    <div style="flex: 1;">
+                      <h4 style="margin: 0 0 2px 0; font-size: 14.5px; font-weight: 800; color: #3B0910;">
+                        {{ order.service }}
+                      </h4>
+                      @if (getParsedDetails(order)?.booking_ref) {
+                        <span style="font-size: 11px; color: #b45309; font-weight: 700;">#{{ getParsedDetails(order).booking_ref }}</span>
+                      }
+                    </div>
+                    <span class="status-dot" [class.dot-pending]="order.status === 'Pending'" [style.background]="order.status === 'Completed' ? '#dcfce7' : (order.status === 'In-Progress' ? '#eff6ff' : '#fef3c7')" [style.color]="order.status === 'Completed' ? '#15803d' : (order.status === 'In-Progress' ? '#1d4ed8' : '#b45309')" style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 12px; white-space: nowrap;">
+                      {{ order.status === 'Pending' ? 'நிலுவையில்' : (order.status === 'In-Progress' ? 'ஆய்வில் உள்ளது' : 'முடிந்தது') }}
+                    </span>
                   </div>
-                  <p class="oh-desc"><strong>விவரங்கள்:</strong> {{ order.details || 'ஆன்லைன் ஜோதிட சேவை' }}</p>
-                  @if (order.person?.name) {
-                    <p class="oh-desc"><strong>நபர்:</strong> {{ order.person.name }} {{ order.person.dob ? '(பிறந்த தேதி: ' + order.person.dob + ')' : '' }}</p>
+
+                  <!-- Structured Booking Details -->
+                  @if (getParsedDetails(order); as details) {
+                    <div style="background: #faf8ef; border: 1.5px solid #ebd9b4; border-radius: 12px; padding: 12px 14px; margin: 10px 0; font-size: 12.5px; display: flex; flex-direction: column; gap: 7px; box-shadow: 0 1px 4px rgba(74,14,23,0.04);">
+                      @if (details.date || details.slot) {
+                        <div style="display: flex; align-items: center; gap: 8px; color: #4A0E17; font-weight: 700;">
+                          <i class="bi bi-calendar2-check-fill" style="color: #d97706; font-size: 14px;"></i>
+                          <span><strong>நேரம்:</strong> {{ details.date }} {{ details.slot ? ' | ' + details.slot : '' }}</span>
+                        </div>
+                      }
+                      @if (details.dob || details.tob || details.pob) {
+                        <div style="display: flex; align-items: center; gap: 8px; color: #1e293b; font-weight: 600;">
+                          <i class="bi bi-person-lines-fill" style="color: #6366f1; font-size: 14px;"></i>
+                          <span><strong>பிறப்பு:</strong> {{ details.dob }} {{ details.tob ? '(' + details.tob + ')' : '' }} {{ details.pob ? '- ' + details.pob : '' }}</span>
+                        </div>
+                      }
+                      @if (details.notes && !details.notes.startsWith('{')) {
+                        <div style="display: flex; align-items: flex-start; gap: 8px; color: #334155; font-weight: 500; background: #ffffff; padding: 6px 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
+                          <i class="bi bi-chat-left-dots-fill" style="color: #10b981; font-size: 13px; margin-top: 2px;"></i>
+                          <span><strong>குறிப்பு:</strong> {{ details.notes }}</span>
+                        </div>
+                      }
+                    </div>
+                  } @else if (order.details && !order.details.startsWith('{')) {
+                    <p class="oh-desc" style="margin: 8px 0; font-size: 12.5px; color: #475569;"><strong>விவரங்கள்:</strong> {{ order.details }}</p>
                   }
-                  <div class="oh-footer">
-                    <span>தேதி: {{ order.date }}</span>
-                    <strong>₹{{ order.price }}</strong>
+
+                  @if (order.person?.name) {
+                    <p class="oh-desc" style="font-size: 12.5px; color: #334155; margin: 4px 0;"><strong>நபர்:</strong> {{ order.person.name }} {{ order.person.dob ? '(பிறந்த தேதி: ' + order.person.dob + ')' : '' }}</p>
+                  }
+
+                  @if (order.chart_url) {
+                    <div style="margin-top: 10px; margin-bottom: 8px;">
+                      <a [href]="order.chart_url" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; padding: 8px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 4px rgba(5,150,105,0.1);">
+                        <i class="bi bi-file-earmark-pdf-fill" style="font-size: 14px;"></i> ஜாதகக் கணிப்பு கோப்பைப் பார்க்க (View Horoscope PDF)
+                      </a>
+                    </div>
+                  }
+
+                  <div class="oh-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 8px;">
+                    <span style="font-size: 11.5px; color: #64748b;"><i class="bi bi-clock"></i> {{ order.date }}</span>
+                    <strong style="font-size: 14px; color: #b45309;">₹{{ order.price }}</strong>
                   </div>
                 </div>
               }
@@ -263,7 +310,7 @@
             </div>
           }
         </div>
-        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()" style="margin-top: 10px;">மூடுக (Close)</button>
       </div>
     </div>
   }
