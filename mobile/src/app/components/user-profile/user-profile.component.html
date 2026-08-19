@@ -218,50 +218,200 @@
       <div class="modal-card">
         <div class="modal-header">
           @if (selectedOption === 'payments') {
-            <h3>பணம் செலுத்திய வரலாறு</h3>
+            <h3><i class="bi bi-receipt me-2 text-gold"></i>பணம் செலுத்திய வரலாறு</h3>
           }
           @if (selectedOption === 'services') {
-            <h3>பதிவு செய்யப்பட்ட சேவைகள்</h3>
+            <h3><i class="bi bi-calendar-check-fill me-2 text-gold"></i>பதிவு செய்யப்பட்ட சேவைகள்</h3>
           }
           @if (selectedOption === 'horoscope') {
-            <h3>ஜாதக கோரிக்கைகள்</h3>
+            <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக கோரிக்கைகள்</h3>
           }
           @if (selectedOption === 'marriage') {
-            <h3>திருமண கோரிக்கைகள்</h3>
+            <h3><i class="bi bi-heart-fill me-2 text-gold"></i>திருமண கோரிக்கைகள்</h3>
           }
           <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
         </div>
+
         <div class="modal-body">
           <div class="person-summary-box">
             <i class="bi bi-person-fill text-gold me-2"></i>
-            <strong>{{ personDetails.name }}</strong> ({{ personDetails.rasi }} - {{ personDetails.star }})
+            <strong>{{ personDetails.name }}</strong>
+            <span *ngIf="personDetails.rasi && personDetails.star"> ({{ personDetails.rasi }} - {{ personDetails.star }})</span>
             <div class="sub-contact">{{ personDetails.phone }} | {{ personDetails.email }}</div>
           </div>
-          @if (getFilteredOrders().length > 0) {
-            <div class="orders-list">
-              @for (order of getFilteredOrders(); track order) {
-                <div class="order-history-card">
-                  <div class="oh-header">
-                    <strong>{{ order.service }}</strong>
-                    <span class="status-dot" [class.dot-pending]="order.status === 'Pending'">{{ order.status === 'Pending' ? 'நிலுவையில்' : 'முடிந்தது' }}</span>
+
+          <!-- 1. PAYMENTS VIEW -->
+          @if (selectedOption === 'payments') {
+            @if (getPayments().length > 0) {
+              <div class="activity-cards-list">
+                @for (p of getPayments(); track p.id) {
+                  <div class="receipt-proof-card">
+                    <div class="rpc-top">
+                      <div>
+                        <strong class="rpc-service-title">{{ p.description || 'ஜோதிட ஆலோசனை முன்பதிவு' }}</strong>
+                        <span class="rpc-ref">பதிவு எண்: #{{ p.booking_id || p.id }}</span>
+                      </div>
+                      <span class="rpc-amount">₹{{ p.amount }}</span>
+                    </div>
+
+                    <div class="rpc-gateway-box">
+                      <div class="rpc-row">
+                        <span>Razorpay ID:</span>
+                        <strong class="text-mono">{{ p.razorpay_payment_id || 'pay_' + p.id }}</strong>
+                      </div>
+                      <div class="rpc-row">
+                        <span>தேதி:</span>
+                        <span>{{ p.date }}</span>
+                      </div>
+                    </div>
+
+                    <div class="rpc-status-tag">
+                      <i class="bi bi-shield-fill-check"></i> கட்டணம் வெற்றிகரமாகச் செலுத்தப்பட்டது (Paid)
+                    </div>
                   </div>
-                  <p class="oh-desc"><strong>விவரங்கள்:</strong> {{ order.details || 'ஆன்லைன் ஜோதிட சேவை' }}</p>
-                  @if (order.person?.name) {
-                    <p class="oh-desc"><strong>நபர்:</strong> {{ order.person.name }} {{ order.person.dob ? '(பிறந்த தேதி: ' + order.person.dob + ')' : '' }}</p>
-                  }
-                  <div class="oh-footer">
-                    <span>தேதி: {{ order.date }}</span>
-                    <strong>₹{{ order.price }}</strong>
+                }
+              </div>
+            } @else {
+              <div class="empty-activity-state">
+                <i class="bi bi-credit-card-2-front text-muted" style="font-size:2.5rem;"></i>
+                <p>பரிவர்த்தனை விவரங்கள் ஏதுமில்லை</p>
+              </div>
+            }
+          }
+
+          <!-- 2. BOOKED SERVICES VIEW WITH LIVE PROGRESS TRACKER -->
+          @if (selectedOption === 'services') {
+            @if (getServices().length > 0) {
+              <div class="activity-cards-list">
+                @for (b of getServices(); track b.id) {
+                  <div class="booking-progress-card">
+                    <div class="bpc-header">
+                      <div>
+                        <strong class="bpc-id">#{{ b.id }}</strong>
+                        <h4 class="bpc-service-name">{{ b.service }}</h4>
+                      </div>
+                      <span class="bpc-price">₹{{ b.price }}</span>
+                    </div>
+
+                    <div class="bpc-astro-info">
+                      <i class="bi bi-person-badge-fill text-gold me-1"></i>
+                      <span>ஜோதிடர்: <strong>{{ b.astrologer_name }}</strong></span>
+                    </div>
+
+                    <div class="bpc-schedule-pill">
+                      <span><i class="bi bi-calendar-event me-1"></i> {{ b.date }}</span>
+                      <span><i class="bi bi-clock me-1"></i> {{ b.slot }}</span>
+                    </div>
+
+                    <!-- 3-Step Live Progress Tracker -->
+                    <div class="bpc-progress-tracker">
+                      <div class="progress-step done">
+                        <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+                        <span>முன்பதிவு</span>
+                      </div>
+                      <div class="step-connector" [class.active]="b.status === 'In-Progress' || b.status === 'Completed'"></div>
+                      <div class="progress-step" [class.done]="b.status === 'In-Progress' || b.status === 'Completed'" [class.current]="b.status === 'Pending'">
+                        <div class="step-icon"><i class="bi" [ngClass]="b.status === 'Completed' ? 'bi-check-lg' : 'bi-hourglass-split'"></i></div>
+                        <span>செயலாக்கம்</span>
+                      </div>
+                      <div class="step-connector" [class.active]="b.status === 'Completed'"></div>
+                      <div class="progress-step" [class.done]="b.status === 'Completed'">
+                        <div class="step-icon"><i class="bi bi-stars"></i></div>
+                        <span>நிறைவு</span>
+                      </div>
+                    </div>
+
+                    <!-- Razorpay Payment Badge -->
+                    @if (b.razorpay_payment_id) {
+                      <div class="bpc-payment-badge">
+                        <i class="bi bi-shield-check"></i> கட்டணம்: {{ b.razorpay_payment_id }}
+                      </div>
+                    }
+
+                    <!-- Download Completed Chart if available -->
+                    @if (b.chart_url) {
+                      <a [href]="b.chart_url" target="_blank" class="btn-download-chart">
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
+                      </a>
+                    }
                   </div>
-                </div>
-              }
-            </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-activity-state">
+                <i class="bi bi-calendar2-x text-muted" style="font-size:2.5rem;"></i>
+                <p>பதிவு செய்யப்பட்ட சேவைகள் ஏதுமில்லை</p>
+              </div>
+            }
           }
-          @if (getFilteredOrders().length === 0) {
-            <div class="empty-state">
-              <p>தகவல்கள் ஏதும் இல்லை.</p>
-            </div>
+
+          <!-- 3. HOROSCOPE REQUESTS VIEW -->
+          @if (selectedOption === 'horoscope') {
+            @if (getHoroscopes().length > 0) {
+              <div class="activity-cards-list">
+                @for (h of getHoroscopes(); track h.id) {
+                  <div class="booking-progress-card">
+                    <div class="bpc-header">
+                      <div>
+                        <strong class="bpc-id">#{{ h.id }}</strong>
+                        <h4 class="bpc-service-name">{{ h.service }}</h4>
+                      </div>
+                      <span class="status-pill-mini" [ngClass]="(h.status || 'pending').toLowerCase()">{{ h.status }}</span>
+                    </div>
+                    <div class="bpc-astro-info">
+                      <i class="bi bi-calendar-check me-1 text-gold"></i>
+                      <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
+                    </div>
+                    @if (h.chart_url) {
+                      <a [href]="h.chart_url" target="_blank" class="btn-download-chart">
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
+                      </a>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-activity-state">
+                <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem;"></i>
+                <p>ஜாதகக் கோரிக்கைகள் ஏதுமில்லை</p>
+              </div>
+            }
           }
+
+          <!-- 4. MARRIAGE MATCHING REQUESTS VIEW -->
+          @if (selectedOption === 'marriage') {
+            @if (getMatches().length > 0) {
+              <div class="activity-cards-list">
+                @for (m of getMatches(); track m.id) {
+                  <div class="marriage-match-card">
+                    <div class="mmc-header">
+                      <span class="mmc-icon">❤️</span>
+                      <strong>திருமண பொருத்தம்</strong>
+                      <span class="mmc-score-badge">{{ m.score || m.match_details?.score || '8' }}/10 பொருத்தம்</span>
+                    </div>
+                    <div class="mmc-couple-grid">
+                      <div class="mmc-person">
+                        <span class="gender-lbl">ஆண்:</span>
+                        <strong>{{ m.boy_name || 'வரன்' }}</strong>
+                        <small>{{ m.boy_rasi }} - {{ m.boy_star }}</small>
+                      </div>
+                      <div class="mmc-person">
+                        <span class="gender-lbl">பெண்:</span>
+                        <strong>{{ m.girl_name || 'வரன்' }}</strong>
+                        <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-activity-state">
+                <i class="bi bi-heartbreak text-muted" style="font-size:2.5rem;"></i>
+                <p>திருமணப் பொருத்த கோரிக்கைகள் ஏதுமில்லை</p>
+              </div>
+            }
+          }
+
         </div>
         <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
       </div>

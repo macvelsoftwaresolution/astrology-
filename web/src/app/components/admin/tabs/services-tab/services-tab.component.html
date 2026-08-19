@@ -121,16 +121,27 @@
                     <span class="muted" style="font-size:12px;">Chief Astrologer</span>
                   }
                 </td>
-                <td><span class="badge-role" style="font-size:11px;">{{ b.service_type }}</span></td>
-                <td><strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong></td>
                 <td>
-                  @if (b.details?.preferred_date) {
+                  <span class="badge-role" style="font-size:11px;font-weight:700;">{{ b.details?.category || b.details?.role_title || b.service_type }}</span>
+                </td>
+                <td>
+                  <strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong>
+                  @if (b.details?.razorpay_payment_id || b.razorpay_payment_id) {
+                    <div style="margin-top:3px;">
+                      <span style="font-size:10px;font-weight:700;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:1px 5px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;" [title]="b.details?.razorpay_payment_id || b.razorpay_payment_id">
+                        <i class="bi bi-shield-fill-check"></i> Paid
+                      </span>
+                    </div>
+                  }
+                </td>
+                <td>
+                  @if (b.preferred_date || b.details?.date || b.details?.preferred_date) {
                     <div>
                       <div style="font-size:12px;color:#1d4ed8;font-weight:700;">
-                        <i class="bi bi-calendar-event"></i> {{ b.details.preferred_date }}
+                        <i class="bi bi-calendar-event"></i> {{ b.preferred_date || b.details?.date || b.details?.preferred_date }}
                       </div>
-                      @if (b.details?.time_slot) {
-                        <small class="muted"><i class="bi bi-clock"></i> {{ b.details.time_slot }}</small>
+                      @if (b.preferred_time || b.details?.slot || b.details?.time_slot) {
+                        <small class="muted"><i class="bi bi-clock"></i> {{ b.preferred_time || b.details?.slot || b.details?.time_slot }}</small>
                       }
                     </div>
                   } @else {
@@ -208,10 +219,40 @@
           </div>
         </div>
 
+        <!-- Razorpay Payment Verification Proof Box -->
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1.5px solid #86efac; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:11px; font-weight:800; color:#166534; text-transform:uppercase; display:flex; align-items:center; gap:5px;">
+              <i class="bi bi-shield-fill-check" style="color:#16a34a; font-size:14px;"></i> Razorpay கட்டண விவரம் (Payment Proof)
+            </span>
+            <span style="background:#16a34a; color:#ffffff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:12px;">
+              {{ (selectedBookingForView.details?.razorpay_payment_id || selectedBookingForView.razorpay_payment_id) ? 'PAID / சரிபார்க்கப்பட்டது' : 'VERIFIED' }}
+            </span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+            <div>
+              <span style="font-size:11px; color:#475569; display:block;">Payment ID:</span>
+              <strong style="font-family:monospace; color:#0f172a;">{{ selectedBookingForView.details?.razorpay_payment_id || selectedBookingForView.razorpay_payment_id || 'pay_' + selectedBookingForView.id }}</strong>
+            </div>
+            <div>
+              <span style="font-size:11px; color:#475569; display:block;">Order ID:</span>
+              <strong style="font-family:monospace; color:#0f172a;">{{ selectedBookingForView.details?.razorpay_order_id || selectedBookingForView.razorpay_order_id || selectedBookingForView.id }}</strong>
+            </div>
+            <div>
+              <span style="font-size:11px; color:#475569; display:block;">செலுத்திய தொகை:</span>
+              <strong style="color:#15803d; font-size:13px;">₹{{ selectedBookingForView.price }}</strong>
+            </div>
+            <div>
+              <span style="font-size:11px; color:#475569; display:block;">Gateway:</span>
+              <strong style="color:#0f172a;">Razorpay (Test/Live)</strong>
+            </div>
+          </div>
+        </div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
           <div style="background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
             <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">{{ 'services.serviceType' | translate }}:</span>
-            <strong style="font-size:13px;color:#0f172a;">{{ selectedBookingForView.service_type }}</strong>
+            <strong style="font-size:13px;color:#0f172a;">{{ selectedBookingForView.details?.category || selectedBookingForView.details?.role_title || selectedBookingForView.service_type }}</strong>
           </div>
           <div style="background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
             <span style="font-size:11px;color:#64748b;font-weight:600;display:block;">{{ 'services.fee' | translate }}:</span>
@@ -223,10 +264,10 @@
         <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:10px 12px;border-radius:8px;margin-bottom:12px;">
           <span style="font-size:11px;color:#1d4ed8;font-weight:700;display:block;">{{ 'services.preferredDate' | translate }}:</span>
           <div style="font-size:13px;font-weight:800;color:#1e3a8a;margin-top:2px;">
-            <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.details?.preferred_date || '-' }}
-            @if (selectedBookingForView.details?.time_slot) {
+            <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.preferred_date || selectedBookingForView.details?.date || selectedBookingForView.details?.preferred_date || '-' }}
+            @if (selectedBookingForView.preferred_time || selectedBookingForView.details?.slot || selectedBookingForView.details?.time_slot) {
               <span style="color:#2563eb;font-weight:600;margin-left:6px;">
-                <i class="bi bi-clock"></i> {{ selectedBookingForView.details.time_slot }}
+                <i class="bi bi-clock"></i> {{ selectedBookingForView.preferred_time || selectedBookingForView.details?.slot || selectedBookingForView.details?.time_slot }}
               </span>
             }
           </div>

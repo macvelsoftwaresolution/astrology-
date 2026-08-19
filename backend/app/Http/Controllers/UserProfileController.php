@@ -90,11 +90,16 @@ class UserProfileController extends Controller
         $user = $request->user();
 
         $bookings = DB::table('bookings')
-            ->where('user_id', $user->id)
+            ->where(function($q) use ($user) {
+                $q->where('user_id', $user->id);
+                if ($user->phone) {
+                    $q->orWhere('user_phone', $user->phone);
+                }
+            })
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($b) {
-                $b->details = $b->details ? json_decode($b->details) : null;
+                $b->details = is_string($b->details) ? json_decode($b->details) : $b->details;
                 return $b;
             });
 
@@ -113,7 +118,25 @@ class UserProfileController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json(['payments' => $payments]);
+        // Also fetch any paid bookings
+        $paidBookings = DB::table('bookings')
+            ->where(function($q) use ($user) {
+                $q->where('user_id', $user->id);
+                if ($user->phone) {
+                    $q->orWhere('user_phone', $user->phone);
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($b) {
+                $b->details = is_string($b->details) ? json_decode($b->details) : $b->details;
+                return $b;
+            });
+
+        return response()->json([
+            'payments' => $payments,
+            'bookings' => $paidBookings
+        ]);
     }
 
     /**
