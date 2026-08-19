@@ -224,9 +224,11 @@
           <span style="font-size:11px;color:#1d4ed8;font-weight:700;display:block;">{{ 'services.preferredDate' | translate }}:</span>
           <div style="font-size:13px;font-weight:800;color:#1e3a8a;margin-top:2px;">
             <i class="bi bi-calendar-event"></i> {{ selectedBookingForView.details?.preferred_date || '-' }}
-            <span *ngIf="selectedBookingForView.details?.time_slot" style="color:#2563eb;font-weight:600;margin-left:6px;">
-              <i class="bi bi-clock"></i> {{ selectedBookingForView.details.time_slot }}
-            </span>
+            @if (selectedBookingForView.details?.time_slot) {
+              <span style="color:#2563eb;font-weight:600;margin-left:6px;">
+                <i class="bi bi-clock"></i> {{ selectedBookingForView.details.time_slot }}
+              </span>
+            }
           </div>
         </div>
 

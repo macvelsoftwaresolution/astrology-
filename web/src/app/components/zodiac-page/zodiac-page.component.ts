@@ -45,84 +45,94 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
               
               <!-- Tab Selector -->
               <div class="zodiac-period-tabs">
-                <button 
-                  *ngFor="let t of tabs" 
-                  [class.active]="selectedTab === t.val"
-                  (click)="changeTab(t.val)">
-                  {{ t.tamil }} ({{ t.english }})
-                </button>
+                @for (t of tabs; track t.val) {
+                  <button 
+                    [class.active]="selectedTab === t.val"
+                    (click)="changeTab(t.val)">
+                    {{ t.tamil }} ({{ t.english }})
+                  </button>
+                }
               </div>
             </div>
 
             <!-- Loading Indicator -->
-            <div *ngIf="loading" class="zodiac-loader-wrap">
-              <div class="spinner-border text-warning" role="status"></div>
-              <span>வானியல் கணிப்புகள் ஏற்றப்படுகிறது...</span>
-            </div>
-
-            <div *ngIf="!loading" class="celestial-zodiac-selector">
-              <div class="zodiac-btns-layout">
-                @for (zodiac of zodiacSigns; track zodiac.name) {
-                  <button 
-                    class="zodiac-luxury-btn"
-                    [class.active]="selectedZodiac.name === zodiac.name"
-                    (click)="selectZodiac(zodiac)">
-                    <span class="sign-glyph">{{ zodiac.symbol }}</span>
-                    <span class="sign-tamil-name">{{ zodiac.name }}</span>
-                  </button>
-                }
+            @if (loading) {
+              <div class="zodiac-loader-wrap">
+                <div class="spinner-border text-warning" role="status"></div>
+                <span>வானியல் கணிப்புகள் ஏற்றப்படுகிறது...</span>
               </div>
-
-              <div class="zodiac-display-card">
-                <div class="card-inner-halo"></div>
-                <div class="zodiac-display-header">
-                  <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
-                  <h3>{{ selectedZodiac.name }}</h3>
-                  <span class="display-label-sub">{{ selectedZodiac.englishName }} &bull; {{ selectedZodiac.dates }}</span>
-                  <span class="live-badge-pill"><span class="pulse-dot"></span> நேரலை கணிப்பு (Live Sync)</span>
+            } @else {
+              <div class="celestial-zodiac-selector">
+                <div class="zodiac-btns-layout">
+                  @for (zodiac of zodiacSigns; track zodiac.name) {
+                    <button 
+                      class="zodiac-luxury-btn"
+                      [class.active]="selectedZodiac.name === zodiac.name"
+                      (click)="selectZodiac(zodiac)">
+                      <span class="sign-glyph">{{ zodiac.symbol }}</span>
+                      <span class="sign-tamil-name">{{ zodiac.name }}</span>
+                    </button>
+                  }
                 </div>
 
-                <p class="zodiac-display-prediction">
-                  "{{ selectedZodiac.prediction }}"
-                </p>
+                <div class="zodiac-display-card">
+                  <div class="card-inner-halo"></div>
+                  <div class="zodiac-display-header">
+                    <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
+                    <h3>{{ selectedZodiac.name }}</h3>
+                    <span class="display-label-sub">{{ selectedZodiac.englishName }} &bull; {{ selectedZodiac.dates }}</span>
+                    <span class="live-badge-pill"><span class="pulse-dot"></span> நேரலை கணிப்பு (Live Sync)</span>
+                  </div>
 
-                <!-- Optional Audio Player -->
-                <div *ngIf="selectedZodiac.audioUrl" class="zodiac-audio-player">
-                  <div class="audio-info">
-                    <i class="bi bi-volume-up-fill text-gold me-2"></i>
-                    <span>ராசி பலன் ஆடியோ உரை (Audio Forecast)</span>
-                  </div>
-                  <audio [src]="selectedZodiac.audioUrl" controls style="width: 100%; border-radius: 8px; margin-top: 8px;"></audio>
-                </div>
+                  <p class="zodiac-display-prediction">
+                    "{{ selectedZodiac.prediction }}"
+                  </p>
 
-                <!-- Optional Video Player (NEW) -->
-                <div *ngIf="selectedZodiac.videoUrl" class="zodiac-video-player-box">
-                  <div class="video-header-info">
-                    <i class="bi bi-play-btn-fill text-gold me-2"></i>
-                    <span>{{ selectedZodiac.name }} ராசி பலன் வீடியோ உரை (Video Horoscope)</span>
-                  </div>
-                  <div *ngIf="isYouTube(selectedZodiac.videoUrl)" class="video-embed-responsive">
-                    <iframe 
-                      [src]="getVideoSafeUrl(selectedZodiac.videoUrl)" 
-                      title="Zodiac Video Forecast" 
-                      frameborder="0" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                      allowfullscreen>
-                    </iframe>
-                  </div>
-                  <div *ngIf="!isYouTube(selectedZodiac.videoUrl)" class="video-direct-responsive">
-                    <video [src]="selectedZodiac.videoUrl" controls style="width: 100%; border-radius: 12px; max-height: 340px; background: #000;"></video>
-                  </div>
-                </div>
+                  <!-- Optional Audio Player -->
+                  @if (selectedZodiac.audioUrl) {
+                    <div class="zodiac-audio-player">
+                      <div class="audio-info">
+                        <i class="bi bi-volume-up-fill text-gold me-2"></i>
+                        <span>ராசி பலன் ஆடியோ உரை (Audio Forecast)</span>
+                      </div>
+                      <audio [src]="selectedZodiac.audioUrl" controls style="width: 100%; border-radius: 8px; margin-top: 8px;"></audio>
+                    </div>
+                  }
 
-                <div class="zodiac-card-actions">
-                  <a routerLink="/" class="btn-card-luxury">முழுமையான ஜாதக பலன்கள் <i class="bi bi-chevron-right ms-2"></i></a>
-                  <button class="btn-refresh-zodiac" (click)="loadPredictions()" title="Refresh Predictions">
-                    <i class="bi bi-arrow-clockwise"></i> புதுப்பி
-                  </button>
+                  <!-- Optional Video Player (NEW) -->
+                  @if (selectedZodiac.videoUrl) {
+                    <div class="zodiac-video-player-box">
+                      <div class="video-header-info">
+                        <i class="bi bi-play-btn-fill text-gold me-2"></i>
+                        <span>{{ selectedZodiac.name }} ராசி பலன் வீடியோ உரை (Video Horoscope)</span>
+                      </div>
+                      @if (isYouTube(selectedZodiac.videoUrl)) {
+                        <div class="video-embed-responsive">
+                          <iframe 
+                            [src]="getVideoSafeUrl(selectedZodiac.videoUrl)" 
+                            title="Zodiac Video Forecast" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                          </iframe>
+                        </div>
+                      } @else {
+                        <div class="video-direct-responsive">
+                          <video [src]="selectedZodiac.videoUrl" controls style="width: 100%; border-radius: 12px; max-height: 340px; background: #000;"></video>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <div class="zodiac-card-actions">
+                    <a routerLink="/" class="btn-card-luxury">முழுமையான ஜாதக பலன்கள் <i class="bi bi-chevron-right ms-2"></i></a>
+                    <button class="btn-refresh-zodiac" (click)="loadPredictions()" title="Refresh Predictions">
+                      <i class="bi bi-arrow-clockwise"></i> புதுப்பி
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            }
           </div>
         </section>
       </main>
