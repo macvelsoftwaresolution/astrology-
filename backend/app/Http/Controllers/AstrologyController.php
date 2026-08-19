@@ -12,26 +12,42 @@ class AstrologyController extends Controller
     // ================= USER MOBILE ENDPOINTS =================
 
     /**
-     * Get today's Panchangam
+     * Get today's Panchangam (Dynamic from DB)
      */
     public function getTodayPanchangam(Request $request)
     {
-        $today = date('Y-m-d');
+        $today = $request->input('date', date('Y-m-d'));
         $panchangam = DB::table('panchangams')->where('date', $today)->first();
 
         if (!$panchangam) {
-            // Return default fallback if not seeded
-            return response()->json([
-                'date' => $today,
-                'thithi' => 'ஏகாதசி (Ekadashi)',
-                'star' => 'ரோகினி (Rohini)',
-                'rahukalam' => '10:30 AM - 12:00 PM',
-                'yamagandam' => '09:15 AM - 10:15 AM',
-                'nalla_neram' => '06:15 AM - 07:15 AM'
-            ]);
+            $panchangam = DB::table('panchangams')->orderBy('date', 'desc')->first();
         }
 
-        return response()->json($panchangam);
+        if (!$panchangam) {
+            // Seed a live initial row into DB so it's always in database
+            $initialId = DB::table('panchangams')->insertGetId([
+                'date' => $today,
+                'thithi' => 'சுக்கில பட்ச துவாதசி (Dwadashi)',
+                'star' => 'ரோகிணி (Rohini)',
+                'rahukalam' => '10:30 AM - 12:00 PM',
+                'yamagandam' => '09:15 AM - 10:15 AM',
+                'nalla_neram' => '06:15 AM - 07:15 AM',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            $panchangam = DB::table('panchangams')->where('id', $initialId)->first();
+        }
+
+        return response()->json([
+            'success' => true,
+            'panchangam' => $panchangam,
+            'date' => $panchangam->date,
+            'thithi' => $panchangam->thithi,
+            'star' => $panchangam->star,
+            'rahukalam' => $panchangam->rahukalam,
+            'yamagandam' => $panchangam->yamagandam,
+            'nalla_neram' => $panchangam->nalla_neram ?? ''
+        ]);
     }
 
     /**
@@ -564,23 +580,17 @@ class AstrologyController extends Controller
      */
     public function updatePanchangam(Request $request)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'thithi' => 'required|string',
-            'star' => 'required|string',
-            'rahukalam' => 'required|string',
-            'yamagandam' => 'required|string',
-            'nalla_neram' => 'required|string'
-        ]);
+        $date = $request->input('date', date('Y-m-d'));
+        $nallaNeram = $request->input('nalla_neram') ?? $request->input('nallaNeram') ?? $request->input('nallaneram') ?? '06:15 AM - 07:15 AM';
 
         DB::table('panchangams')->updateOrInsert(
-            ['date' => $request->date],
+            ['date' => $date],
             [
-                'thithi' => $request->thithi,
-                'star' => $request->star,
-                'rahukalam' => $request->rahukalam,
-                'yamagandam' => $request->yamagandam,
-                'nalla_neram' => $request->nalla_neram,
+                'thithi' => (string) $request->input('thithi', ''),
+                'star' => (string) $request->input('star', ''),
+                'rahukalam' => (string) $request->input('rahukalam', ''),
+                'yamagandam' => (string) $request->input('yamagandam', ''),
+                'nalla_neram' => (string) $nallaNeram,
                 'updated_at' => now()
             ]
         );
@@ -596,20 +606,18 @@ class AstrologyController extends Controller
      */
     public function updateRasiPalan(Request $request)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'type' => 'required|string',
-            'predictions' => 'required|array'
-        ]);
+        $date = $request->input('date') ?? $request->input('prediction_date') ?? date('Y-m-d');
+        $type = $request->input('type') ?? $request->input('tab_type') ?? 'daily';
+        $predictions = $request->input('predictions') ?? [];
 
         try {
-            foreach ($request->predictions as $p) {
+            foreach ($predictions as $p) {
                 if (empty($p['rasi_name'])) continue;
 
                 $existing = DB::table('rasi_palans')
-                    ->where('prediction_date', $request->date)
+                    ->where('prediction_date', $date)
                     ->where('rasi_name', $p['rasi_name'])
-                    ->where('tab_type', $request->type)
+                    ->where('tab_type', $type)
                     ->first();
 
                 if ($existing) {
@@ -621,9 +629,9 @@ class AstrologyController extends Controller
                     ]);
                 } else {
                     DB::table('rasi_palans')->insert([
-                        'prediction_date' => $request->date,
+                        'prediction_date' => $date,
                         'rasi_name'       => $p['rasi_name'],
-                        'tab_type'        => $request->type,
+                        'tab_type'        => $type,
                         'prediction_text' => (string) ($p['prediction_text'] ?? ''),
                         'audio_url'       => $p['audio_url'] ?? null,
                         'video_url'       => $p['video_url'] ?? null,

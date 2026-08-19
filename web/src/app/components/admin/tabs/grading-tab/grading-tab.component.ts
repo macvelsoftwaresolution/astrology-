@@ -25,7 +25,9 @@ export class GradingTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadSubmissions();
+    if (typeof window !== 'undefined') {
+      this.loadSubmissions();
+    }
   }
 
   loadSubmissions(): void {

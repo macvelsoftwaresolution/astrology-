@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user-profile',
@@ -9,69 +11,21 @@ import { AuthService, User } from '../../services/auth.service';
   standalone: false
 })
 export class UserProfileComponent implements OnInit {
-  @Input() orders: any[] = [
-    {
-      type: 'horoscope',
-      service: 'ஜாதகம் எழுதுதல்',
-      details: 'ராஜேஷ் குமார் - மேஷ ராசி (அஸ்வினி)',
-      date: '10 ஆகஸ்ட் 2026',
-      price: '2,000',
-      status: 'Completed',
-      person: {
-        name: 'ராஜேஷ் குமார்',
-        dob: '15-05-1995',
-        tob: '06:30 AM',
-        pob: 'சென்னை',
-        rasi: 'மேஷம்',
-        star: 'அஸ்வினி'
-      }
-    },
-    {
-      type: 'marriage',
-      service: 'திருமண பொருத்தம்',
-      details: 'ராஜேஷ் குமார் & பிரியா - 8/10 பொருத்தம்',
-      date: '08 ஆகஸ்ட் 2026',
-      price: '500',
-      status: 'Completed',
-      person: {
-        name: 'ராஜேஷ் குமார் & பிரியா',
-        dob: '15-05-1995 / 22-09-1998',
-        tob: '06:30 AM / 04:15 PM',
-        pob: 'சென்னை / மதுரை',
-        rasi: 'மேஷம் / ரிஷபம்',
-        star: 'அஸ்வினி / கார்த்திகை'
-      }
-    },
-    {
-      type: 'services',
-      service: 'வாஸ்து ஆலோசனைகள்',
-      details: 'அலுவலக வாஸ்து வரைபட ஆய்வு',
-      date: '01 ஆகஸ்ட் 2026',
-      price: '2,500',
-      status: 'Completed',
-      person: {
-        name: 'ராஜேஷ் குமார்',
-        dob: '15-05-1995',
-        tob: '06:30 AM',
-        pob: 'சென்னை',
-        rasi: 'மேஷம்',
-        star: 'அஸ்வினி'
-      }
-    }
-  ];
+  @Input() orders: any[] = [];
 
   currentUser: User | null = null;
+  isLoading: boolean = false;
 
   personDetails = {
-    name: 'ராஜேஷ் குமார்',
-    email: 'rajesh.kumar@email.com',
-    phone: '+91 98765 43210',
-    dob: '1995-05-15',
-    tob: '06:30 AM',
-    pob: 'சென்னை, தமிழ்நாடு',
-    rasi: 'மேஷம்',
-    star: 'அஸ்வினி',
-    gothram: 'சிவ கோத்திரம்',
+    name: '',
+    email: '',
+    phone: '',
+    dob: '',
+    tob: '',
+    pob: '',
+    rasi: '',
+    star: '',
+    gothram: '',
     profileImageUrl: ''
   };
 
@@ -82,18 +36,57 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private http: HttpClient,
     private router: Router
   ) {}
+
+  get token() {
+    return localStorage.getItem('auth_token') || '';
+  }
+
+  get headers() {
+    return { headers: { Authorization: `Bearer ${this.token}` } };
+  }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (this.currentUser) {
-      if (this.currentUser.fullName) this.personDetails.name = this.currentUser.fullName;
-      if (this.currentUser.emailAddress) this.personDetails.email = this.currentUser.emailAddress;
-      if (this.currentUser.mobileNumber) this.personDetails.phone = this.currentUser.mobileNumber;
-      if (this.currentUser.profileImage) this.personDetails.profileImageUrl = this.currentUser.profileImage;
+      this.personDetails.name = this.currentUser.fullName || this.currentUser.name || '';
+      this.personDetails.email = this.currentUser.emailAddress || this.currentUser.email || '';
+      this.personDetails.phone = this.currentUser.mobileNumber || this.currentUser.phone || '';
+      this.personDetails.profileImageUrl = this.currentUser.profileImage || '';
     }
-    this.editForm = { ...this.personDetails };
+    this.loadProfileFromDb();
+  }
+
+  loadProfileFromDb() {
+    if (!this.token) return;
+    this.isLoading = true;
+    this.http.get<any>(`${environment.apiUrl}/user/profile`, this.headers).subscribe({
+      next: (res) => {
+        if (res) {
+          this.personDetails.name = res.name || this.personDetails.name;
+          this.personDetails.email = res.email || this.personDetails.email;
+          this.personDetails.phone = res.phone || this.personDetails.phone;
+          this.personDetails.profileImageUrl = res.avatar_url || this.personDetails.profileImageUrl;
+
+          const jd = res.jathagam_details;
+          if (jd) {
+            this.personDetails.dob = jd.dob || '';
+            this.personDetails.tob = jd.tob || '';
+            this.personDetails.pob = jd.pob || '';
+            this.personDetails.rasi = jd.rasi || '';
+            this.personDetails.star = jd.star || jd.nakshatra || '';
+            this.personDetails.gothram = jd.gothram || '';
+          }
+          this.editForm = { ...this.personDetails };
+        }
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
   }
 
   openEditModal() {
@@ -101,27 +94,61 @@ export class UserProfileComponent implements OnInit {
     this.showEditModal = true;
   }
 
+  isUploadingAvatar = false;
+
   onProfilePicSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.editForm.profileImageUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingAvatar = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'avatars');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          this.editForm.profileImageUrl = res.url;
+        }
+        this.isUploadingAvatar = false;
+      },
+      error: () => {
+        this.isUploadingAvatar = false;
+      }
+    });
   }
 
   saveProfile() {
     this.personDetails = { ...this.editForm };
     this.showEditModal = false;
     this.isSavedNotification = true;
-    
-    // Save updated profile image back to auth_user in local storage
-    if (this.currentUser) {
-      this.currentUser.profileImage = this.personDetails.profileImageUrl;
-      localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
-    }
+
+    const payload = {
+      name: this.personDetails.name,
+      phone: this.personDetails.phone,
+      avatar_url: this.personDetails.profileImageUrl,
+      jathagam_details: {
+        dob: this.personDetails.dob,
+        tob: this.personDetails.tob,
+        pob: this.personDetails.pob,
+        rasi: this.personDetails.rasi,
+        star: this.personDetails.star,
+        nakshatra: this.personDetails.star,
+        gothram: this.personDetails.gothram
+      }
+    };
+
+    this.http.put<any>(`${environment.apiUrl}/user/profile`, payload, this.headers).subscribe({
+      next: () => {
+        if (this.currentUser) {
+          this.currentUser.fullName = this.personDetails.name;
+          this.currentUser.mobileNumber = this.personDetails.phone;
+          this.currentUser.profileImage = this.personDetails.profileImageUrl;
+          localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+        }
+      },
+      error: () => {}
+    });
 
     setTimeout(() => {
       this.isSavedNotification = false;

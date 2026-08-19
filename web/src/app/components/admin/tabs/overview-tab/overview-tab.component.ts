@@ -1,7 +1,9 @@
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 export interface Metrics {
   total_students: number;
@@ -17,12 +19,10 @@ export interface Metrics {
   };
 }
 
-import { TranslatePipe } from '../../../../pipes/translate.pipe';
-
 @Component({
   selector: 'app-overview-tab',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './overview-tab.component.html',
   styleUrls: ['../../admin-dashboard.component.css', './overview-tab.component.css']
 })
@@ -31,7 +31,11 @@ export class OverviewTabComponent implements OnInit {
 
   metrics: Metrics | null = null;
   teamList: any[] = [];
+  banners: any[] = [];
   isLoading = false;
+
+  editingBanner: any = null;
+  showBannerModal = false;
 
   constructor(
     private http: HttpClient,
@@ -40,8 +44,11 @@ export class OverviewTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadMetrics();
-    this.loadTeamList();
+    if (typeof window !== 'undefined') {
+      this.loadMetrics();
+      this.loadTeamList();
+      this.loadBanners();
+    }
   }
 
   loadMetrics(): void {
@@ -68,6 +75,95 @@ export class OverviewTabComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {}
+    });
+  }
+
+  loadBanners(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>('http://127.0.0.1:8000/api/admin/banners', headers).subscribe({
+      next: (res) => {
+        this.banners = res.banners || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  openNewBanner(): void {
+    this.editingBanner = {
+      id: null,
+      title: '',
+      subtitle: '',
+      badge: 'சிறப்பு',
+      image_url: 'assets/images/temple_sunrise.png',
+      link_flow: 'rasi-palan',
+      is_active: true,
+      sort_order: this.banners.length + 1
+    };
+    this.showBannerModal = true;
+  }
+
+  editBanner(banner: any): void {
+    this.editingBanner = { ...banner };
+    this.showBannerModal = true;
+  }
+
+  saveBanner(): void {
+    if (!this.editingBanner.title) {
+      alert('Banner title is required.');
+      return;
+    }
+    const headers = this.authService.getAuthHeaders();
+    const url = this.editingBanner.id 
+      ? `http://127.0.0.1:8000/api/admin/banners/${this.editingBanner.id}` 
+      : 'http://127.0.0.1:8000/api/admin/banners';
+    
+    const req = this.editingBanner.id 
+      ? this.http.put<any>(url, this.editingBanner, headers) 
+      : this.http.post<any>(url, this.editingBanner, headers);
+
+    req.subscribe({
+      next: () => {
+        this.showBannerModal = false;
+        this.loadBanners();
+      },
+      error: () => alert('Failed to save banner.')
+    });
+  }
+
+  isUploadingBannerImage = false;
+
+  uploadBannerImage(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingBannerImage = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'banners');
+
+    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.editingBanner) {
+          this.editingBanner.image_url = res.url;
+        }
+        this.isUploadingBannerImage = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('File upload failed.');
+        this.isUploadingBannerImage = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  deleteBanner(id: number): void {
+    if (!confirm('Are you sure you want to delete this banner?')) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/banners/${id}`, headers).subscribe({
+      next: () => this.loadBanners(),
+      error: () => alert('Failed to delete banner.')
     });
   }
 

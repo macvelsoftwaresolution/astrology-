@@ -74,6 +74,21 @@ import { IonSpinner } from '@ionic/angular/standalone';
             <textarea [(ngModel)]="vastuForm.query" placeholder="உங்கள் கேள்வி அல்லது பிரச்சனை..." rows="3" class="field textarea"></textarea>
           </div>
 
+          <div class="form-group">
+            <label>வீட்டு வரைபடம் பதிவேற்றம் (Upload Blueprint / Plan Image / PDF)</label>
+            <input type="file" accept="image/*,.pdf" (change)="uploadVastuPlan($event)" class="field" style="padding:6px;"/>
+            @if (isUploadingPlan) {
+              <span style="font-size:11px;color:#d97706;font-weight:600;display:block;margin-top:4px;">
+                <i class="bi bi-hourglass-split"></i> வரைபடம் பதிவேற்றப்படுகிறது...
+              </span>
+            }
+            @if (vastuForm.plan_url) {
+              <span style="font-size:11px;color:#059669;font-weight:600;display:block;margin-top:4px;">
+                <i class="bi bi-check-circle-fill"></i> வரைபடம் பதிவேற்றப்பட்டது
+              </span>
+            }
+          </div>
+
           <button class="book-btn" (click)="bookService('Vastu Consultation', 999, vastuForm)">
             📅 ₹999 செலுத்தி Appointment பதிவு செய்யுங்கள்
           </button>
@@ -200,7 +215,41 @@ export class VastuKanithaComponent {
   booked = false;
   bookedOrderId = '';
 
-  vastuForm = { name: '', phone: '', property_type: 'Home', main_door_direction: 'East', plot_shape: 'Rectangle', query: '' };
+  vastuForm: any = {
+    name: '',
+    phone: '',
+    property_type: 'Home',
+    main_door_direction: 'East',
+    plot_shape: 'Square',
+    query: '',
+    plan_url: ''
+  };
+
+  isUploadingPlan = false;
+
+  uploadVastuPlan(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingPlan = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'vastu_plans');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          this.vastuForm.plan_url = res.url;
+        }
+        this.isUploadingPlan = false;
+      },
+      error: () => {
+        alert('Plan upload failed.');
+        this.isUploadingPlan = false;
+      }
+    });
+  }
+
   kanithaForm = { name: '', phone: '', dob: '', marital_status: 'Single', query: '' };
 
   constructor(private http: HttpClient) {}
@@ -236,7 +285,7 @@ export class VastuKanithaComponent {
       details: { ...formData, service_category: this.serviceType }
     };
 
-    this.http.post<any>('http://127.0.0.1:8000/api/bookings/create', bookingPayload).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/bookings/create`, bookingPayload).subscribe({
       next: res => {
         this.bookedOrderId = res.order_id;
         this.booked = true;

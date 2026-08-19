@@ -10,11 +10,15 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\JathagamController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Middleware\CheckRole;
 
 // =====================================================================
 // PUBLIC ROUTES (No Auth Required)
 // =====================================================================
+
+// Unified File Upload (Images, PDFs, Audio, Video)
+Route::post('/upload', [FileUploadController::class, 'upload']);
 
 // Auth
 Route::post('/auth/web-login',        [AuthController::class, 'webLogin']);
@@ -28,6 +32,10 @@ Route::get('/rasi-palan',           [JathagamController::class, 'getRasiPalan'])
 Route::get('/availability',         [AstrologyController::class, 'getAvailability']);
 Route::get('/public/astrologers',   [AstrologyController::class, 'getAstrologers']);
 Route::get('/public/courses',       [CourseController::class, 'index']);
+Route::get('/public/books',         [CourierManagementController::class, 'getPublicBooks']);
+Route::get('/public/banners',       [SuperAdminController::class, 'getPublicBanners']);
+Route::get('/public/seminars',      [SuperAdminController::class, 'getPublicSeminars']);
+Route::get('/public/materials',     [SuperAdminController::class, 'getPublicMaterials']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
@@ -38,6 +46,10 @@ Route::post('/jathagam/para-reading', [JathagamController::class, 'paraJathagamR
 Route::post('/bookings/create',        [AstrologyController::class, 'createBooking']);
 Route::post('/payments/create-order',  [AstrologyController::class, 'createRazorpayOrder']);
 Route::post('/payments/verify',        [AstrologyController::class, 'verifyPayment']);
+
+// Book Orders & Submissions (public fallback if guest)
+Route::post('/user/book-orders',       [CourierManagementController::class, 'createBookOrder']);
+Route::post('/user/submissions',       [GradingController::class, 'submitExam']);
 
 // =====================================================================
 // AUTHENTICATED USER ROUTES (Mobile — role:user)
@@ -64,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Payment History
     Route::get('/user/payments', [UserProfileController::class, 'getPaymentHistory']);
+
+    // Certificates & Submissions
+    Route::get('/user/certificates', [GradingController::class, 'getMyCertificates']);
 
     // Notifications
     Route::get('/user/notifications',                    [NotificationController::class, 'getMyNotifications']);
@@ -137,4 +152,22 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/notifications/broadcast',                    [NotificationController::class, 'broadcastNotification']);
     Route::get('/notifications/daily-rasi-status',             [NotificationController::class, 'getDailyNotificationStatus']);
     Route::put('/notifications/daily-rasi-toggle',             [NotificationController::class, 'toggleDailyNotificationFeature']);
+
+    // App Hero Banners CRUD
+    Route::get('/banners',                                     [SuperAdminController::class, 'getAdminBanners']);
+    Route::post('/banners',                                    [SuperAdminController::class, 'saveBanner']);
+    Route::put('/banners/{id}',                                [SuperAdminController::class, 'saveBanner']);
+    Route::delete('/banners/{id}',                             [SuperAdminController::class, 'deleteBanner']);
+
+    // Live Seminars & Webinars CRUD
+    Route::get('/seminars',                                    [SuperAdminController::class, 'getPublicSeminars']);
+    Route::post('/seminars',                                   [SuperAdminController::class, 'saveSeminar']);
+    Route::put('/seminars/{id}',                               [SuperAdminController::class, 'saveSeminar']);
+    Route::delete('/seminars/{id}',                            [SuperAdminController::class, 'deleteSeminar']);
+
+    // Course Study Materials / PDF Notes CRUD
+    Route::get('/materials',                                   [SuperAdminController::class, 'getPublicMaterials']);
+    Route::post('/materials',                                  [SuperAdminController::class, 'saveMaterial']);
+    Route::put('/materials/{id}',                              [SuperAdminController::class, 'saveMaterial']);
+    Route::delete('/materials/{id}',                           [SuperAdminController::class, 'deleteMaterial']);
 });

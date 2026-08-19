@@ -47,6 +47,10 @@ export class AdminDashboardComponent implements OnInit {
   currentUser: User | null = null;
   mobileMenuOpen = false;
 
+  // Sidebar Category Dropdown States
+  astrologyCategoryOpen = true;
+  learnCategoryOpen = true;
+
   // Admin Profile Modal State
   adminProfileModalOpen = false;
   adminProfileForm = {
@@ -79,9 +83,31 @@ export class AdminDashboardComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
         this.currentTab = params['tab'];
+        // Auto-expand the category if a tab within it is selected
+        if (this.isAstrologyActive()) {
+          this.astrologyCategoryOpen = true;
+        } else if (this.isLearnActive()) {
+          this.learnCategoryOpen = true;
+        }
         this.cdr.detectChanges();
       }
     });
+  }
+
+  toggleAstrologyCategory(): void {
+    this.astrologyCategoryOpen = !this.astrologyCategoryOpen;
+  }
+
+  toggleLearnCategory(): void {
+    this.learnCategoryOpen = !this.learnCategoryOpen;
+  }
+
+  isAstrologyActive(): boolean {
+    return ['team', 'services', 'rasi-editor', 'matches'].includes(this.currentTab);
+  }
+
+  isLearnActive(): boolean {
+    return ['lms', 'courier', 'grading'].includes(this.currentTab);
   }
 
   selectTab(tabName: string): void {

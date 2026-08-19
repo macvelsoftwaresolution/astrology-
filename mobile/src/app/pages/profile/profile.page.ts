@@ -406,7 +406,7 @@ export class ProfilePage implements OnInit {
   get headers() { return { headers: { Authorization: `Bearer ${this.token}` } }; }
 
   loadProfile() {
-    this.http.get<any>('http://127.0.0.1:8000/api/user/profile', this.headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/user/profile`, this.headers).subscribe({
       next: res => {
         this.editProfile = { name: res.name, phone: res.phone || '', address: res.address || '' };
         this.jathagam = res.jathagam_details;
@@ -418,7 +418,7 @@ export class ProfilePage implements OnInit {
   saveProfile() {
     this.savingProfile = true;
     this.profileMsg = '';
-    this.http.put<any>('http://127.0.0.1:8000/api/user/profile', this.editProfile, this.headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/user/profile`, this.editProfile, this.headers).subscribe({
       next: () => {
         this.profileMsg = 'சுயவிவரம் புதுப்பிக்கப்பட்டது!';
         this.profileSuccess = true;
@@ -430,7 +430,7 @@ export class ProfilePage implements OnInit {
 
   loadHistory() {
     this.loadingHistory = true;
-    this.http.get<any>('http://127.0.0.1:8000/api/user/bookings', this.headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/user/bookings`, this.headers).subscribe({
       next: res => { this.bookings = res.bookings || []; this.loadingHistory = false; },
       error: () => { this.loadingHistory = false; }
     });
@@ -438,7 +438,7 @@ export class ProfilePage implements OnInit {
 
   loadPayments() {
     this.loadingPayments = true;
-    this.http.get<any>('http://127.0.0.1:8000/api/user/payments', this.headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/user/payments`, this.headers).subscribe({
       next: res => { this.payments = res.payments || []; this.loadingPayments = false; },
       error: () => { this.loadingPayments = false; }
     });
@@ -446,7 +446,7 @@ export class ProfilePage implements OnInit {
 
   loadNotifications() {
     this.loadingNotifs = true;
-    this.http.get<any>('http://127.0.0.1:8000/api/user/notifications', this.headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/user/notifications`, this.headers).subscribe({
       next: res => {
         this.notifications = res.notifications || [];
         this.unreadCount = res.unread_count || 0;
@@ -458,13 +458,13 @@ export class ProfilePage implements OnInit {
 
   markRead(n: any) {
     if (n.is_read) return;
-    this.http.put<any>(`http://127.0.0.1:8000/api/user/notifications/${n.id}/read`, {}, this.headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/user/notifications/${n.id}/read`, {}, this.headers).subscribe({
       next: () => { n.is_read = true; this.unreadCount = Math.max(0, this.unreadCount - 1); }
     });
   }
 
   markAllRead() {
-    this.http.put<any>('http://127.0.0.1:8000/api/user/notifications/read-all', {}, this.headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/user/notifications/read-all`, {}, this.headers).subscribe({
       next: () => { this.notifications.forEach(n => n.is_read = true); this.unreadCount = 0; }
     });
   }
@@ -478,7 +478,7 @@ export class ProfilePage implements OnInit {
   }
 
   loadPreferences() {
-    this.http.get<any>('http://127.0.0.1:8000/api/user/notification-preferences', this.headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/user/notification-preferences`, this.headers).subscribe({
       next: res => { this.dailyNotifPref = res.daily_rasi_notification ?? true; }
     });
   }
@@ -486,7 +486,7 @@ export class ProfilePage implements OnInit {
   toggleDailyNotif() {
     this.prefMsg = '';
     const newValue = !this.dailyNotifPref;
-    this.http.put<any>('http://127.0.0.1:8000/api/user/notification-preferences', { daily_rasi_notification: newValue }, this.headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/user/notification-preferences`, { daily_rasi_notification: newValue }, this.headers).subscribe({
       next: res => {
         this.dailyNotifPref = res.daily_rasi_notification;
         this.prefMsg = res.message;

@@ -33,6 +33,13 @@ export class RasiPalanComponent implements OnDestroy {
     this.navCtrl.navigateForward('/notifications');
   }
 
+  setTab(tab: 'daily' | 'weekly' | 'monthly' | 'yearly') {
+    this.selectedRasiTab = tab;
+    if (this.selectedRasi) {
+      this.fetchPrediction(this.selectedRasi.name);
+    }
+  }
+
   selectRasi(rasi: any) {
     this.selectedRasi = rasi;
     this.predictionData = null;
@@ -43,11 +50,20 @@ export class RasiPalanComponent implements OnDestroy {
 
   fetchPrediction(rasiName: string) {
     const today = new Date().toISOString().split('T')[0];
-    this.http.get<any[]>(`${environment.apiUrl}/rasi-palan?date=${today}&type=${this.selectedRasiTab}`).subscribe({
+    this.isLoading = true;
+    this.http.get<any>(`${environment.apiUrl}/rasi-palan?date=${today}&type=${this.selectedRasiTab}`).subscribe({
       next: (res) => {
-        const found = res.find(r => r.rasi_name === rasiName);
+        const list = res?.predictions || res?.palans || (Array.isArray(res) ? res : []);
+        const found = list.find((r: any) => r.rasi_name === rasiName);
         if (found) {
           this.predictionData = found;
+        } else {
+          this.predictionData = {
+            rasi_name: rasiName,
+            prediction_text: 'இன்றைய ராசி பலன் விரைவில் வெளியிடப்படும்.',
+            audio_url: null,
+            video_url: null
+          };
         }
         this.isLoading = false;
       },

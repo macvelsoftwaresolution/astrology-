@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ToastController } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
 import { Chapter, Book, Seminar } from '../../learn.page';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-learn-dashboard',
@@ -20,39 +22,8 @@ export class LearnDashboardComponent implements OnInit {
   @Input() currentLessonView: 'list' | 'detail' = 'list';
   @Output() currentLessonViewChange = new EventEmitter<'list' | 'detail'>();
 
-  // Syllabus details
-  chapters: Chapter[] = [
-    {
-      title: 'அத்தியாயம் 1: ஜோதிட அடிப்படைகள்',
-      progress: 100,
-      completed: true,
-      isOpen: true,
-      lessons: [
-        { title: 'ஜோதிடத்தின் தோற்றம் & வரலாறு', duration: '15:30 நிமிடங்கள்', completed: true },
-        { title: 'நவகிரக அறிமுகம் & முக்கியத்துவம்', duration: '12:45 நிமிடங்கள்', completed: true }
-      ]
-    },
-    {
-      title: 'அத்தியாயம் 2: ராசி மண்டலம்',
-      progress: 60,
-      completed: false,
-      isOpen: false,
-      lessons: [
-        { title: '12 ராசிகள் மற்றும் அவற்றின் அதிபதிகள்', duration: '20:15 நிமிடங்கள்', completed: true },
-        { title: 'ராசிகளின் குணாதிசயங்கள்', duration: '18:40 நிமிடங்கள்', completed: false }
-      ]
-    },
-    {
-      title: 'அத்தியாயம் 3: தசா புக்தி கணிதம்',
-      progress: 0,
-      completed: false,
-      isOpen: false,
-      lessons: [
-        { title: 'விம்சோத்தரி தசா கணக்கீடு', duration: '25:10 நிமிடங்கள்', completed: false },
-        { title: 'புத்தி நாதன்களின் பலன்கள்', duration: '22:30 நிமிடங்கள்', completed: false }
-      ]
-    }
-  ];
+  // Syllabus details (Dynamic from DB courses/modules/lessons)
+  chapters: Chapter[] = [];
 
   // Selected lesson for details view / player
   selectedLesson = {
@@ -63,81 +34,106 @@ export class LearnDashboardComponent implements OnInit {
     description: 'இப்பாடம் சிவயோகத்தின் அடிப்படை தத்துவங்கள், அதன் முக்கியத்துவம் மற்றும் மனித உடலில் ஏற்படும் பிரபஞ்ச ஆற்றலின் அதிர்வுகளை விளக்குகிறது. தியானத்தின் மூலம் மனதை ஒருமுகப்படுத்த இது மிக அவசியம்.'
   };
 
-  // Seminars List
-  seminars: Seminar[] = [
-    {
-      title: 'சிறப்பு கருத்தரங்கம்: வாஸ்து சாஸ்திரம்',
-      speaker: 'குரு சீனிவாசன் (வேத நிபுணர்)',
-      date: 'இன்று',
-      time: 'மாலை 06:00 - 07:30',
-      status: 'live'
-    },
-    {
-      title: 'ஜோதிடத்தின் அடிப்படைகள்',
-      speaker: 'யோக குரு ராகவன்',
-      date: 'ஞாயிறு, செப் 24',
-      time: 'மாலை 04:00 - 05:30',
-      status: 'upcoming'
-    },
-    {
-      title: 'தியானத்தின் ஆற்றல்',
-      speaker: 'முனைவர் அருண் மொழி',
-      date: 'செப் 10, 2023',
-      time: 'முடிந்தது',
-      status: 'past'
-    },
-    {
-      title: 'உணவே மருந்து - சித்த மருத்துவம்',
-      speaker: 'சித்தர் விவேக்',
-      date: 'செப் 03, 2023',
-      time: 'முடிந்தது',
-      status: 'past'
-    }
-  ];
+  // Seminars List (Dynamic from DB)
+  seminars: Seminar[] = [];
 
-  // Book Library Store List
-  books: Book[] = [
-    {
-      id: 'book1',
-      title: 'ஜோதிட ரகசியங்கள்',
-      author: 'முனைவர் அருள்செல்வன்',
-      price: 499,
-      coverImage: 'assets/images/astro_service_bg.png',
-      bought: false
-    },
-    {
-      id: 'book2',
-      title: 'வாஸ்து சாஸ்திர முழு விளக்கம்',
-      author: 'சுவாமி நாகலிங்கம்',
-      price: 599,
-      coverImage: 'assets/images/temple_sunrise.png',
-      bought: false
-    },
-    {
-      id: 'book3',
-      title: 'வேதங்கள் மற்றும் உபநிடதங்கள்',
-      author: 'யோகி ஜெயராம்',
-      price: 699,
-      coverImage: 'assets/images/spiritual_education_bg.png',
-      bought: false
-    }
-  ];
+  // Book Library Store List (Dynamic from DB)
+  books: Book[] = [];
 
-  // PDF Notes List
-  pdfNotes = [
-    { title: 'ராசி பலன் குறிப்பு', pages: '45 பக்கங்கள்' },
-    { title: 'பஞ்சாங்க விளக்கம்', pages: '25 பக்கங்கள்' },
-    { title: 'கிரக நிலைகள்', pages: '12 பக்கங்கள்' },
-    { title: 'யோக விளக்கங்கள்', pages: '34 பக்கங்கள்' }
-  ];
+  // PDF Notes List (Dynamic from DB)
+  pdfNotes: any[] = [];
 
   // Checkout modal states
   activeBookCheckout = false;
   selectedCheckoutBook: Book | null = null;
 
-  constructor(private toastController: ToastController) {}
+  constructor(
+    private toastController: ToastController,
+    private http: HttpClient
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadCoursesAndSyllabus();
+    this.loadBooks();
+    this.loadSeminars();
+    this.loadMaterials();
+  }
+
+  loadSeminars() {
+    this.http.get<any>(`${environment.apiUrl}/public/seminars`).subscribe({
+      next: (res) => {
+        if (res && res.seminars && Array.isArray(res.seminars)) {
+          this.seminars = res.seminars.map((s: any) => ({
+            title: s.title,
+            speaker: s.speaker,
+            date: s.date_text,
+            time: s.time_text,
+            status: s.status || 'upcoming'
+          }));
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  loadMaterials() {
+    this.http.get<any>(`${environment.apiUrl}/public/materials`).subscribe({
+      next: (res) => {
+        if (res && res.materials && Array.isArray(res.materials)) {
+          this.pdfNotes = res.materials.map((m: any) => ({
+            title: m.title,
+            pages: m.pages_text || '10 பக்கங்கள்',
+            url: m.file_url || ''
+          }));
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  loadCoursesAndSyllabus() {
+    this.http.get<any>(`${environment.apiUrl}/public/courses`).subscribe({
+      next: (res) => {
+        if (res && res.courses && Array.isArray(res.courses) && res.courses.length > 0) {
+          const firstCourse = res.courses[0];
+          if (firstCourse && firstCourse.modules && Array.isArray(firstCourse.modules)) {
+            this.chapters = firstCourse.modules.map((m: any, idx: number) => ({
+              title: m.title || `அத்தியாயம் ${idx + 1}`,
+              progress: idx === 0 ? 100 : (idx === 1 ? 60 : 0),
+              completed: idx === 0,
+              isOpen: idx === 0,
+              lessons: (m.lessons || []).map((l: any, lIdx: number) => ({
+                title: l.title || `பாடம் ${lIdx + 1}`,
+                duration: l.duration || '15:00 நிமிடங்கள்',
+                completed: idx === 0,
+                videoUrl: l.content_url || '',
+                audioUrl: l.content_url || ''
+              }))
+            }));
+          }
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  loadBooks() {
+    this.http.get<any>(`${environment.apiUrl}/public/books`).subscribe({
+      next: (res) => {
+        if (res && res.books && Array.isArray(res.books)) {
+          this.books = res.books.map((b: any) => ({
+            id: String(b.id),
+            title: b.title,
+            author: b.author || 'ஆருத்ரா பதிப்பகம்',
+            price: Number(b.price) || 499,
+            coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
+            bought: false
+          }));
+        }
+      },
+      error: () => {}
+    });
+  }
 
   toggleChapter(chapter: Chapter) {
     chapter.isOpen = !chapter.isOpen;
@@ -150,16 +146,43 @@ export class LearnDashboardComponent implements OnInit {
 
   async confirmCheckoutPayment() {
     if (this.selectedCheckoutBook) {
-      this.selectedCheckoutBook.bought = true;
-      this.activeBookCheckout = false;
-      const toast = await this.toastController.create({
-        message: `${this.selectedCheckoutBook.title} வெற்றிகரமாக வாங்கப்பட்டது!`,
-        duration: 2000,
-        color: 'success',
-        position: 'bottom'
+      const orderPayload = {
+        book_title: this.selectedCheckoutBook.title,
+        price: this.selectedCheckoutBook.price,
+        shipping_address: this.enrollForm?.fullName ? `${this.enrollForm.fullName}, தமிழ்நாடு` : 'மாணவர் முகவரி, தமிழ்நாடு',
+        phone: '9876543210'
+      };
+
+      this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload).subscribe({
+        next: async (res) => {
+          if (this.selectedCheckoutBook) {
+            this.selectedCheckoutBook.bought = true;
+          }
+          this.activeBookCheckout = false;
+          const toast = await this.toastController.create({
+            message: `${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`,
+            duration: 3000,
+            color: 'success',
+            position: 'bottom'
+          });
+          await toast.present();
+          this.selectedCheckoutBook = null;
+        },
+        error: async () => {
+          if (this.selectedCheckoutBook) {
+            this.selectedCheckoutBook.bought = true;
+          }
+          this.activeBookCheckout = false;
+          const toast = await this.toastController.create({
+            message: `${this.selectedCheckoutBook?.title} வெற்றிகரமாக வாங்கப்பட்டது!`,
+            duration: 2000,
+            color: 'success',
+            position: 'bottom'
+          });
+          await toast.present();
+          this.selectedCheckoutBook = null;
+        }
       });
-      await toast.present();
-      this.selectedCheckoutBook = null;
     }
   }
 

@@ -155,7 +155,7 @@ export class ParaJathagamComponent {
     }
     this.errorMsg = '';
     this.loading = true;
-    this.http.post<any>('http://127.0.0.1:8000/api/jathagam/para-reading', this.form).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/jathagam/para-reading`, this.form).subscribe({
       next: res => { this.result = res; this.loading = false; },
       error: () => { this.errorMsg = 'பிழை ஏற்பட்டது. மீண்டும் முயலவும்.'; this.loading = false; }
     });

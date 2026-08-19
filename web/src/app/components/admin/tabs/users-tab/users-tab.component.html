@@ -1,13 +1,11 @@
 <div class="users-container">
-  <div class="header-banner flex-between">
+  <!-- Header Banner in a clean Div Card -->
+  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
     <div>
-      <h1><i class="bi bi-people-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'users.title' | translate }}</h1>
-      <p>{{ 'users.subtitle' | translate }}</p>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-xs-refresh" (click)="loadUsers()" [title]="'common.refresh' | translate">
-        <i class="bi bi-arrow-repeat"></i> {{ 'common.refresh' | translate }}
-      </button>
+      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-people-fill" style="color:#d97706;"></i>{{ 'users.title' | translate }}
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'users.subtitle' | translate }}</p>
     </div>
   </div>
 
@@ -64,9 +62,9 @@
                 }
               </td>
               <td>
-                @if (u.jathagam_profile) {
+                @if (u.jathagam_details || u.jathagam_profile) {
                   <span class="badge-role" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534;">
-                    <i class="bi bi-person-badge"></i> {{ u.jathagam_profile.rasi || 'Horoscope Created' }} &bull; {{ u.jathagam_profile.nakshatra || '' }}
+                    <i class="bi bi-person-badge"></i> {{ (u.jathagam_details?.rasi || u.jathagam_profile?.rasi || 'Horoscope Created') }} &bull; {{ (u.jathagam_details?.star || u.jathagam_details?.nakshatra || u.jathagam_profile?.nakshatra || '') }}
                   </span>
                 } @else {
                   <span class="muted" style="font-size:11px;">-</span>
@@ -79,7 +77,7 @@
               </td>
               <td>
                 <div style="display:flex;gap:6px;">
-                  @if (u.jathagam_profile) {
+                  @if (u.jathagam_details || u.jathagam_profile) {
                     <button class="btn-sm" (click)="selectedUserForProfile = u">
                       <i class="bi bi-eye-fill"></i> {{ 'common.details' | translate }}
                     </button>
@@ -119,27 +117,27 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
             <div>
               <span class="muted" style="font-size:11px;display:block;">Rasi:</span>
-              <strong>{{ selectedUserForProfile.jathagam_profile?.rasi || '-' }}</strong>
+              <strong>{{ (selectedUserForProfile.jathagam_details?.rasi || selectedUserForProfile.jathagam_profile?.rasi || '-') }}</strong>
             </div>
             <div>
               <span class="muted" style="font-size:11px;display:block;">Nakshatra:</span>
-              <strong>{{ selectedUserForProfile.jathagam_profile?.nakshatra || '-' }}</strong>
+              <strong>{{ (selectedUserForProfile.jathagam_details?.star || selectedUserForProfile.jathagam_details?.nakshatra || selectedUserForProfile.jathagam_profile?.nakshatra || '-') }}</strong>
             </div>
             <div>
               <span class="muted" style="font-size:11px;display:block;">DOB:</span>
-              <strong>{{ selectedUserForProfile.jathagam_profile?.dob || '-' }}</strong>
+              <strong>{{ (selectedUserForProfile.jathagam_details?.dob || selectedUserForProfile.jathagam_profile?.dob || '-') }}</strong>
             </div>
             <div>
               <span class="muted" style="font-size:11px;display:block;">TOB:</span>
-              <strong>{{ selectedUserForProfile.jathagam_profile?.tob || '-' }}</strong>
+              <strong>{{ (selectedUserForProfile.jathagam_details?.tob || selectedUserForProfile.jathagam_profile?.tob || '-') }}</strong>
             </div>
             <div>
               <span class="muted" style="font-size:11px;display:block;">POB:</span>
-              <strong>{{ selectedUserForProfile.jathagam_profile?.pob || '-' }}</strong>
+              <strong>{{ (selectedUserForProfile.jathagam_details?.pob || selectedUserForProfile.jathagam_profile?.pob || '-') }}</strong>
             </div>
             <div>
               <span class="muted" style="font-size:11px;display:block;">Gender:</span>
-              <strong>{{ selectedUserForProfile.jathagam_profile?.gender || '-' }}</strong>
+              <strong>{{ (selectedUserForProfile.jathagam_details?.gender || selectedUserForProfile.jathagam_profile?.gender || '-') }}</strong>
             </div>
           </div>
         </div>

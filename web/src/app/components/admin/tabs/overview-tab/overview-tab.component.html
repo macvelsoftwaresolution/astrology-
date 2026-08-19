@@ -1,13 +1,11 @@
 <div class="overview-container">
-  <div class="header-banner flex-between">
+  <!-- Header Banner in a clean Div Card -->
+  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
     <div>
-      <h1><i class="bi bi-grid-1x2-fill" style="color:#d97706;margin-right:8px;"></i>{{ 'overview.title' | translate }}</h1>
-      <p>{{ 'overview.subtitle' | translate }}</p>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-primary" (click)="loadMetrics()">
-        <i class="bi bi-arrow-repeat"></i> {{ 'overview.refreshMetrics' | translate }}
-      </button>
+      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-grid-1x2-fill" style="color:#d97706;"></i>{{ 'overview.title' | translate }}
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'overview.subtitle' | translate }}</p>
     </div>
   </div>
 
@@ -81,6 +79,121 @@
           @if (teamList.length === 0) {
             <div style="text-align:center;padding:12px;color:#64748b;font-size:12px;">{{ 'common.noRecords' | translate }}</div>
           }
+        </div>
+      </div>
+    </div>
+
+    <!-- APP HERO BANNERS MANAGEMENT SECTION -->
+    <div class="card-box" style="margin-top: 24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+            <i class="bi bi-images" style="color:#d97706;"></i> மொபைல் முகப்பு பேனர்கள் (Mobile Hero Banners)
+          </h3>
+          <span style="font-size:12px;color:#64748b;">மொபைல் ஆப் முகப்புப் பக்கத்தில் தோன்றும் விளம்பர பேனர்கள்</span>
+        </div>
+        <button class="btn-sm gold" (click)="openNewBanner()">
+          <i class="bi bi-plus-lg"></i> புதிய பேனர் சேர்க்க
+        </button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;">
+        @for (b of banners; track b.id) {
+          <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-direction:column;">
+            <div style="height:120px;background:#1e1b4b;position:relative;overflow:hidden;">
+              <img [src]="b.image_url" alt="Banner" style="width:100%;height:100%;object-fit:cover;opacity:0.85;">
+              <span style="position:absolute;top:8px;left:8px;background:rgba(217,119,6,0.9);color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">
+                {{ b.badge || 'சிறப்பு' }}
+              </span>
+              <span [style.background]="b.is_active ? '#16a34a' : '#dc2626'" style="position:absolute;top:8px;right:8px;color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">
+                {{ b.is_active ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <div style="padding:12px;flex-grow:1;display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <h4 style="margin:0 0 4px 0;font-size:14px;color:#0f172a;font-weight:700;">{{ b.title }}</h4>
+                <p style="margin:0 0 10px 0;font-size:12px;color:#64748b;line-height:1.4;">{{ b.subtitle }}</p>
+                <div style="font-size:11px;color:#b45309;font-weight:600;margin-bottom:10px;">
+                  <i class="bi bi-link-45deg"></i> Link: {{ b.link_flow }}
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;justify-content:flex-end;border-top:1px solid #f1f5f9;padding-top:10px;">
+                <button class="btn-sm" (click)="editBanner(b)"><i class="bi bi-pencil-square"></i> Edit</button>
+                <button class="btn-sm danger" (click)="deleteBanner(b.id)"><i class="bi bi-trash3"></i> Delete</button>
+              </div>
+            </div>
+          </div>
+        }
+        @if (banners.length === 0) {
+          <div style="grid-column:1/-1;text-align:center;padding:30px;color:#64748b;">
+            பேனர்கள் ஏதுமில்லை.
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: EDIT / CREATE BANNER -->
+  @if (showBannerModal && editingBanner) {
+    <div class="modal-overlay" (click)="showBannerModal = false">
+      <div class="modal-box" style="max-width:480px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 style="margin:0;"><i class="bi bi-image-fill" style="color:#d97706;margin-right:6px;"></i>{{ editingBanner.id ? 'பேனர் திருத்து' : 'புதிய பேனர் உருவாக்கு' }}</h3>
+          <button class="close-btn" (click)="showBannerModal = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">பேனர் தலைப்பு (Title) *</label>
+            <input type="text" [(ngModel)]="editingBanner.title" class="ctrl" placeholder="எ.கா. இன்றைய ராசி பலன்"/>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">துணைத் தலைப்பு (Subtitle)</label>
+            <input type="text" [(ngModel)]="editingBanner.subtitle" class="ctrl" placeholder="எ.கா. உங்கள் விதியை இன்று அறியுங்கள்"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Badge Text</label>
+              <input type="text" [(ngModel)]="editingBanner.badge" class="ctrl" placeholder="இன்றைய சிறப்பு"/>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Link Flow</label>
+              <select [(ngModel)]="editingBanner.link_flow" class="ctrl">
+                <option value="rasi-palan">ராசி பலன் (rasi-palan)</option>
+                <option value="matching">திருமண பொருத்தம் (matching)</option>
+                <option value="horoscope">ஜாதகம் எழுதுதல் (horoscope)</option>
+                <option value="vastu">வாஸ்து ஆலோசனை (vastu)</option>
+                <option value="ramajayam">குரு ராமஜெயம் (ramajayam)</option>
+                <option value="srinivasan">குரு சீனிவாசன் (srinivasan)</option>
+                <option value="services">சேவைகள் (services)</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">பேனர் படம் பதிவேற்றம் (Upload Banner Image) *</label>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              @if (editingBanner.image_url) {
+                <img [src]="editingBanner.image_url" alt="Banner Preview" style="width:100px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.1);"/>
+              }
+              <div style="flex:1;min-width:180px;">
+                <input type="file" accept="image/*" (change)="uploadBannerImage($event)" class="ctrl" style="padding:6px;"/>
+                @if (isUploadingBannerImage) {
+                  <span style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;display:block;">
+                    <i class="bi bi-hourglass-split"></i> படம் பதிவேற்றப்படுகிறது...
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+            <input type="checkbox" [(ngModel)]="editingBanner.is_active" id="bActive"/>
+            <label for="bActive" style="font-size:13px;font-weight:600;color:#334155;cursor:pointer;">Active (மொபைலில் காட்டுக)</label>
+          </div>
+        </div>
+
+        <div class="modal-btns">
+          <button type="button" class="btn-cancel" (click)="showBannerModal = false">ரத்து</button>
+          <button type="button" class="btn-primary" (click)="saveBanner()"><i class="bi bi-check2-circle"></i> சேமி</button>
         </div>
       </div>
     </div>

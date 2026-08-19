@@ -5,7 +5,9 @@ $color-text-muted: #7E716A;
 $color-white: #FFFFFF;
 $color-red-light: #FDF1F1;
 $color-gold-light: #FDF9E9;
+$color-orange-light: #FFF6EC;
 $color-red-text: #B43838;
+$color-orange-text: #C05621;
 
 .panchangam-widget {
   padding: 0.5rem 0;
@@ -43,7 +45,7 @@ $color-red-text: #B43838;
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-radius: 12px;
-  border: 1px solid rgba($color-gold, 0.2);
+  border: 1px solid rgba($color-gold, 0.25);
   overflow: hidden;
   background-color: transparent;
 }
@@ -52,17 +54,19 @@ $color-red-text: #B43838;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 1rem 0.5rem;
+  gap: 0.35rem;
+  padding: 0.85rem 0.5rem;
 
   .panch-label {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     color: $color-text-muted;
+    font-weight: 600;
   }
 
   .panch-value {
     font-size: 0.85rem;
     font-weight: 700;
+    text-align: center;
   }
 
   &.top-left {
@@ -74,22 +78,32 @@ $color-red-text: #B43838;
     border-bottom: 1px solid rgba($color-gold, 0.15);
   }
 
+  &.middle-full {
+    grid-column: span 2;
+    background-color: $color-gold-light;
+    border-bottom: 1px solid rgba($color-gold, 0.2);
+    padding: 0.75rem 0.5rem;
+  }
+
   &.bottom-left {
     border-right: 1px solid rgba($color-gold, 0.15);
     background-color: $color-red-light;
   }
 
   &.bottom-right {
-    background-color: $color-gold-light;
+    background-color: $color-orange-light;
   }
 
   .value-highlight {
     color: $color-maroon;
   }
 
-  .label-red { color: rgba($color-red-text, 0.8); }
+  .label-red { color: rgba($color-red-text, 0.85); }
   .value-red { color: $color-red-text; }
 
-  .label-gold { color: rgba(#8C6A5A, 0.8); }
-  .value-gold { color: #8C6A5A; }
+  .label-gold { color: #8A6520; }
+  .value-gold { color: #8A6520; font-size: 0.92rem; }
+
+  .label-orange { color: rgba($color-orange-text, 0.9); }
+  .value-orange { color: $color-orange-text; }
 }

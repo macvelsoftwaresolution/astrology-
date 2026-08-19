@@ -245,41 +245,8 @@ export class ServicesPageComponent implements OnInit {
     { title: 'நியூமராலஜி & பெயர் அதிர்ஷ்டம்', englishTitle: 'NUMEROLOGY & NAMING', description: 'உங்கள் பிறந்த தேதி மற்றும் நட்சத்திரத்திற்கு ஏற்ற அதிர்ஷ்டப் பெயர்கள் மற்றும் எண்கணித வழிகாட்டுதல்கள்.', price: 399, priceDisplay: '₹399', iconClass: 'bi bi-123' }
   ];
 
-  defaultAstrologers = [
-    {
-      id: 1,
-      name: 'குரு ஸ்ரீநிவாசன்',
-      role_title: 'தலைமை வேத ஜோதிடர் (Chief Vedic Astrologer)',
-      experience: '25+ ஆண்டுகள் அனுபவம்',
-      specialty: 'துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், பிரசன்ன ஜோதிடம்',
-      fee: 999,
-      available_slots: ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM - 04:30 PM', '05:00 PM - 06:00 PM', '06:30 PM - 07:30 PM'],
-      blocked_dates: ['2026-08-23', '2026-08-30']
-    },
-    {
-      id: 2,
-      name: 'குரு ராமஜெயம்',
-      role_title: 'முதுநிலை பிரசன்ன & வாஸ்து நிபுணர் (Senior Prashna Expert)',
-      experience: '18+ ஆண்டுகள் அனுபவம்',
-      specialty: 'கேள்வி ஜோதிடம், வாஸ்து சாஸ்திரம், தோஷ நிவாரணப் பரிகாரங்கள்',
-      fee: 799,
-      available_slots: ['10:30 AM - 11:30 AM', '02:00 PM - 03:00 PM', '04:30 PM - 05:30 PM', '07:00 PM - 08:00 PM'],
-      blocked_dates: ['2026-08-23']
-    },
-    {
-      id: 3,
-      name: 'குரு மீனாட்சி சுந்தரம்',
-      role_title: 'நாடி & நியூமராலஜி வல்லுநர் (Nadi & Numerology Specialist)',
-      experience: '15+ ஆண்டுகள் அனுபவம்',
-      specialty: 'நாடி ஜோதிடம், நியூமராலஜி பெயர் அதிர்ஷ்டம், தொழில் & வியாபார யோகம்',
-      fee: 599,
-      available_slots: ['09:00 AM - 10:00 AM', '11:00 AM - 12:00 PM', '03:00 PM - 04:00 PM', '06:00 PM - 07:00 PM'],
-      blocked_dates: ['2026-08-24']
-    }
-  ];
-
-  astrologers: any[] = [...this.defaultAstrologers];
-  selectedAstrologer: any = this.defaultAstrologers[0];
+  astrologers: any[] = [];
+  selectedAstrologer: any = null;
   blockedDates: string[] = [];
   selectedService: any = null;
   selectedDateIsBlocked = false;
@@ -309,8 +276,8 @@ export class ServicesPageComponent implements OnInit {
   fetchAstrologers(): void {
     this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
       next: (res) => {
-        if (res.astrologers && res.astrologers.length > 0) {
-          this.astrologers = res.astrologers;
+        this.astrologers = res.astrologers || [];
+        if (this.astrologers.length > 0) {
           this.selectedAstrologer = this.astrologers[0];
           if (this.selectedAstrologer.available_slots && this.selectedAstrologer.available_slots.length > 0) {
             this.bookingForm.time_slot = this.selectedAstrologer.available_slots[0];
@@ -318,7 +285,9 @@ export class ServicesPageComponent implements OnInit {
         }
         this.checkSelectedDate();
       },
-      error: () => {}
+      error: () => {
+        this.astrologers = [];
+      }
     });
   }
 

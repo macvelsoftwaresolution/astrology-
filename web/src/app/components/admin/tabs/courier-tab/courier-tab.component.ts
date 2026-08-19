@@ -25,7 +25,9 @@ export class CourierTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadOrders();
+    if (typeof window !== 'undefined') {
+      this.loadOrders();
+    }
   }
 
   loadOrders(): void {

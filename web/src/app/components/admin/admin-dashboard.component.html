@@ -70,38 +70,102 @@
     </div>
 
     <nav class="nav-menu">
-      <button [class.active]="currentTab === 'overview'" (click)="selectTab('overview')">
-        <i class="bi bi-grid-1x2-fill nav-icon"></i> {{ 'nav.overview' | translate }}
+      <!-- 1. DASHBOARD OVERVIEW -->
+      <button class="nav-single-btn" [class.active]="currentTab === 'overview'" (click)="selectTab('overview')">
+        <i class="bi bi-grid-1x2-fill nav-icon"></i>
+        <span>{{ 'nav.overview' | translate }}</span>
       </button>
-      <button [class.active]="currentTab === 'team'" (click)="selectTab('team')">
-        <i class="bi bi-shield-lock-fill nav-icon"></i> {{ 'nav.team' | translate }}
+
+      <!-- 2. CATEGORY: ASTROLOGY (COLLAPSIBLE DROPDOWN) -->
+      <div class="nav-category-group" [class.is-expanded]="astrologyCategoryOpen">
+        <button 
+          type="button" 
+          class="nav-category-header" 
+          [class.has-active-child]="isAstrologyActive()"
+          (click)="toggleAstrologyCategory()"
+        >
+          <div class="cat-header-left">
+            <i class="bi bi-stars cat-icon" style="color: #f59e0b;"></i>
+            <span class="cat-title">{{ 'nav.astrology' | translate }}</span>
+          </div>
+          <div class="cat-header-right">
+            <i class="bi cat-chevron" [ngClass]="astrologyCategoryOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </div>
+        </button>
+
+        @if (astrologyCategoryOpen) {
+          <div class="nav-sub-menu">
+            <button [class.active]="currentTab === 'team'" (click)="selectTab('team')">
+              <i class="bi bi-shield-lock-fill nav-icon"></i>
+              <span>{{ 'nav.team' | translate }}</span>
+            </button>
+            <button [class.active]="currentTab === 'services'" (click)="selectTab('services')">
+              <i class="bi bi-calendar2-check-fill nav-icon"></i>
+              <span>{{ 'nav.services' | translate }}</span>
+            </button>
+            <button [class.active]="currentTab === 'rasi-editor'" (click)="selectTab('rasi-editor')">
+              <i class="bi bi-sun-fill nav-icon"></i>
+              <span>{{ 'nav.rasi_editor' | translate }}</span>
+            </button>
+            <button [class.active]="currentTab === 'matches'" (click)="selectTab('matches')">
+              <i class="bi bi-heart-fill nav-icon"></i>
+              <span>{{ 'nav.matches' | translate }}</span>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- 3. CATEGORY: LEARN (COLLAPSIBLE DROPDOWN) -->
+      <div class="nav-category-group" [class.is-expanded]="learnCategoryOpen">
+        <button 
+          type="button" 
+          class="nav-category-header" 
+          [class.has-active-child]="isLearnActive()"
+          (click)="toggleLearnCategory()"
+        >
+          <div class="cat-header-left">
+            <i class="bi bi-mortarboard-fill cat-icon" style="color: #38bdf8;"></i>
+            <span class="cat-title">{{ 'nav.learn' | translate }}</span>
+          </div>
+          <div class="cat-header-right">
+            <i class="bi cat-chevron" [ngClass]="learnCategoryOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </div>
+        </button>
+
+        @if (learnCategoryOpen) {
+          <div class="nav-sub-menu">
+            <button [class.active]="currentTab === 'lms'" (click)="selectTab('lms')">
+              <i class="bi bi-book-fill nav-icon"></i>
+              <span>{{ 'nav.lms' | translate }}</span>
+            </button>
+            <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
+              <i class="bi bi-box-seam-fill nav-icon"></i>
+              <span>{{ 'nav.courier' | translate }}</span>
+            </button>
+            <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
+              <i class="bi bi-award-fill nav-icon"></i>
+              <span>{{ 'nav.grading' | translate }}</span>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- 4. COMMON / GENERAL PLATFORM SECTION -->
+      <div class="nav-section-label">
+        <span>{{ 'nav.general' | translate }}</span>
+      </div>
+
+      <button class="nav-single-btn" [class.active]="currentTab === 'payments'" (click)="selectTab('payments')">
+        <i class="bi bi-credit-card-2-front-fill nav-icon"></i>
+        <span>{{ 'nav.payments' | translate }}</span>
       </button>
-      <button [class.active]="currentTab === 'lms'" (click)="selectTab('lms')">
-        <i class="bi bi-mortarboard-fill nav-icon"></i> {{ 'nav.lms' | translate }}
+      <button class="nav-single-btn" [class.active]="currentTab === 'broadcast'" (click)="selectTab('broadcast')">
+        <i class="bi bi-megaphone-fill nav-icon"></i>
+        <span>{{ 'nav.broadcast' | translate }}</span>
       </button>
-      <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
-        <i class="bi bi-box-seam-fill nav-icon"></i> {{ 'nav.courier' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
-        <i class="bi bi-award-fill nav-icon"></i> {{ 'nav.grading' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'services'" (click)="selectTab('services')">
-        <i class="bi bi-calendar2-check-fill nav-icon"></i> {{ 'nav.services' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'rasi-editor'" (click)="selectTab('rasi-editor')">
-        <i class="bi bi-sun-fill nav-icon"></i> {{ 'nav.rasi_editor' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'matches'" (click)="selectTab('matches')">
-        <i class="bi bi-heart-fill nav-icon"></i> {{ 'nav.matches' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'payments'" (click)="selectTab('payments')">
-        <i class="bi bi-credit-card-2-front-fill nav-icon"></i> {{ 'nav.payments' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'broadcast'" (click)="selectTab('broadcast')">
-        <i class="bi bi-megaphone-fill nav-icon"></i> {{ 'nav.broadcast' | translate }}
-      </button>
-      <button [class.active]="currentTab === 'users'" (click)="selectTab('users')">
-        <i class="bi bi-people-fill nav-icon"></i> {{ 'nav.users' | translate }}
+      <button class="nav-single-btn" [class.active]="currentTab === 'users'" (click)="selectTab('users')">
+        <i class="bi bi-people-fill nav-icon"></i>
+        <span>{{ 'nav.users' | translate }}</span>
       </button>
     </nav>
 

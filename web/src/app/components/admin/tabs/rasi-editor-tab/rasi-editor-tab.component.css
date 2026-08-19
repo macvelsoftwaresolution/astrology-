@@ -1,4 +1,782 @@
-/* Rasi editor tab specific styles */
+/* =========================================================
+   12 RASI PALAN DIRECTORY & CLEAN BALANCED STUDIO STYLES
+   ========================================================= */
+
 :host {
   display: block;
+}
+
+.alert-success-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* CONTROLS BAR */
+.rasi-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.rasi-type-bar {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.rasi-type-bar button {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rasi-type-bar button:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.rasi-type-bar button.active {
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 800;
+  border: 1px solid #fde68a;
+  box-shadow: 0 2px 4px rgba(180, 83, 9, 0.08);
+}
+
+.rasi-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 6px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.rasi-date-filter label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-input-ctrl {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 600;
+  background: #f8fafc;
+  outline: none;
+}
+
+.date-input-ctrl:focus {
+  border-color: #d97706;
+}
+
+.center-loader-box {
+  text-align: center;
+  padding: 60px 20px;
+  color: #b45309;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   12 RASI ULTRA-CLEAN CARDS (ONLY ICON, NAME, EDIT BUTTON)
+   ========================================================= */
+.rasi-clean-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rasi-simple-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  user-select: none;
+}
+
+.rasi-simple-card:hover {
+  border-color: #d97706;
+  background: #fffdf7;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.1);
+}
+
+.rasi-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 22px;
+  font-weight: 800;
+  border: 1.5px solid #fde68a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.rasi-simple-card:hover .rasi-icon-circle {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
+}
+
+.rasi-name-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rasi-tamil-txt {
+  margin: 0 0 2px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  transition: color 0.2s;
+}
+
+.rasi-simple-card:hover .rasi-tamil-txt {
+  color: #b45309;
+}
+
+.rasi-eng-txt {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  display: block;
+}
+
+.btn-rasi-edit-action {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.rasi-simple-card:hover .btn-rasi-edit-action {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
+}
+
+/* =========================================================
+   SINGLE RASI CLEAN DETAILS STUDIO (VIEW 2)
+   ========================================================= */
+.rasi-studio-container {
+  animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.studio-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 14px 24px;
+  min-height: 64px;
+}
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  height: 40px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.btn-back-clean:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.rasi-studio-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 4px 10px;
+  gap: 10px;
+  height: 40px;
+}
+
+.btn-nav-cycle {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.btn-nav-cycle:hover {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
+}
+
+.rasi-cycle-symbol {
+  font-size: 16px;
+  color: #b45309;
+  font-weight: 800;
+}
+
+.rasi-cycle-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.btn-save-studio {
+  height: 40px;
+  padding: 0 24px;
+  font-size: 13.5px;
+  font-weight: 800;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* STUDIO MAIN FORM CARD */
+.studio-main-card {
+  padding: 28px 32px;
+}
+
+.rasi-studio-header-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rasi-studio-symbol-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  color: #b45309;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+  flex-shrink: 0;
+}
+
+.rasi-studio-header-meta {
+  flex: 1;
+}
+
+.rasi-studio-title {
+  margin: 0 0 6px 0;
+  font-size: 21px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.rasi-studio-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-stat {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chip-stat.gold {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+/* PREDICTION CONTENT SECTION */
+.studio-section-block {
+  margin-bottom: 24px;
+}
+
+.studio-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.studio-field-lbl {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.char-count-badge {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.rasi-studio-textarea {
+  width: 100%;
+  height: 130px;
+  min-height: 130px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #0f172a;
+  background: #ffffff;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.rasi-studio-textarea:focus {
+  outline: none;
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
+}
+
+/* MULTIMEDIA UNIFORM 2-COLUMN GRID */
+.media-equal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.media-card-uniform {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 130px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.media-card-uniform:focus-within {
+  border-color: #cbd5e1;
+}
+
+.media-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.media-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.media-icon-badge.audio {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.media-icon-badge.video {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.media-card-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.media-card-subtitle {
+  font-size: 11.5px;
+  color: #64748b;
+  display: block;
+}
+
+.media-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.media-field-input {
+  flex: 1;
+  height: 42px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 13px;
+  color: #0f172a;
+  background: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.media-field-input:focus {
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
+}
+
+.btn-media-btn {
+  height: 42px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-media-btn.audio {
+  background: #d97706;
+  color: #ffffff;
+}
+
+.btn-media-btn.audio:hover {
+  background: #b45309;
+}
+
+.btn-media-btn.video {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-media-btn.video:hover {
+  background: #1d4ed8;
+}
+
+/* FILE UPLOAD DROPZONE & PREVIEW STYLES */
+.file-upload-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 16px 14px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.file-upload-dropzone:hover {
+  border-color: #d97706;
+  background: #fffdfa;
+}
+
+.btn-upload-trigger {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-upload-trigger.audio-theme {
+  background: #d97706;
+  color: #ffffff;
+}
+
+.btn-upload-trigger.audio-theme:hover:not(:disabled) {
+  background: #b45309;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+}
+
+.btn-upload-trigger.video-theme {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-upload-trigger.video-theme:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-upload-trigger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.upload-progress-text {
+  font-size: 12px;
+  color: #d97706;
+  font-weight: 700;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+.uploaded-file-banner {
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.uploaded-file-banner.audio-active {
+  background: #fffdf5;
+  border-color: #fef08a;
+}
+
+.uploaded-file-banner.video-active {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.file-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.file-ready-tag {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #166534;
+  background: #dcfce7;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-audio-player {
+  height: 34px;
+  max-width: 240px;
+  outline: none;
+}
+
+.btn-preview-video-pill {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-preview-video-pill:hover {
+  background: #1d4ed8;
+}
+
+.btn-icon-action.delete {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.btn-icon-action.delete:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* FOOTER BAR */
+.studio-footer-bar {
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-link-reset {
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.btn-link-reset:hover {
+  color: #dc2626;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 768px) {
+  .media-equal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rasi-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rasi-type-bar {
+    width: 100%;
+  }
+
+  .rasi-type-bar button {
+    flex: 1;
+    text-align: center;
+    padding: 7px 6px;
+    font-size: 12px;
+  }
+
+  .rasi-date-filter {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .studio-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rasi-studio-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .rasi-studio-nav-pill {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

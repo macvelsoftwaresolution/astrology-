@@ -25,7 +25,9 @@ export class UsersTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadUsers();
+    if (typeof window !== 'undefined') {
+      this.loadUsers();
+    }
   }
 
   loadUsers(): void {
@@ -52,8 +54,8 @@ export class UsersTabComponent implements OnInit {
         (u.name && u.name.toLowerCase().includes(q)) ||
         (u.email && u.email.toLowerCase().includes(q)) ||
         (u.phone && u.phone.toLowerCase().includes(q)) ||
-        (u.jathagam_profile?.rasi && u.jathagam_profile.rasi.toLowerCase().includes(q)) ||
-        (u.jathagam_profile?.nakshatra && u.jathagam_profile.nakshatra.toLowerCase().includes(q))
+        ((u.jathagam_details?.rasi || u.jathagam_profile?.rasi) && (u.jathagam_details?.rasi || u.jathagam_profile?.rasi).toLowerCase().includes(q)) ||
+        ((u.jathagam_details?.star || u.jathagam_details?.nakshatra || u.jathagam_profile?.nakshatra) && (u.jathagam_details?.star || u.jathagam_details?.nakshatra || u.jathagam_profile?.nakshatra).toLowerCase().includes(q))
       );
     }
     return list;

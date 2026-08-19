@@ -1,26 +1,33 @@
 <div class="panchangam-widget">
   <div class="widget-header">
-    <h3>இன்றைய பஞ்சாங்கம்</h3>
-    <span class="widget-date">மேலும் காண்க</span>
+    <h3><i class="bi bi-calendar2-range-fill me-1 text-gold"></i> இன்றைய பஞ்சாங்கம்</h3>
+    <span class="widget-date"><i class="bi bi-stars text-gold"></i> துல்லிய கணிப்பு</span>
   </div>
   <div class="panch-grid">
-    <!-- Top Row -->
+    <!-- Top Row: Thithi & Star -->
     <div class="panch-item top-left">
       <span class="panch-label">திதி</span>
-      <span class="panch-value value-highlight">{{ panchangam.thithi }}</span>
+      <span class="panch-value value-highlight">{{ panchangam.thithi || 'துவாதசி' }}</span>
     </div>
     <div class="panch-item top-right">
       <span class="panch-label">நட்சத்திரம்</span>
-      <span class="panch-value value-highlight">{{ panchangam.star }}</span>
+      <span class="panch-value value-highlight">{{ panchangam.star || 'ரோகிணி' }}</span>
     </div>
-    <!-- Bottom Row -->
+
+    <!-- Middle Row: Nalla Neram -->
+    <div class="panch-item middle-full">
+      <span class="panch-label label-gold"><i class="bi bi-clock-fill me-1"></i> நல்ல நேரம் (சுப காலம்)</span>
+      <span class="panch-value value-gold">{{ panchangam.nalla_neram || '06:15 AM - 07:15 AM' }}</span>
+    </div>
+
+    <!-- Bottom Row: Rahukalam & Yamagandam -->
     <div class="panch-item bottom-left">
-      <span class="panch-label label-red">இராகு காலம்</span>
-      <span class="panch-value value-red">{{ panchangam.rahukalam }}</span>
+      <span class="panch-label label-red"><i class="bi bi-exclamation-triangle-fill me-1"></i> இராகு காலம்</span>
+      <span class="panch-value value-red">{{ panchangam.rahukalam || '10:30 AM - 12:00 PM' }}</span>
     </div>
     <div class="panch-item bottom-right">
-      <span class="panch-label label-gold">நல்ல நேரம்</span>
-      <span class="panch-value value-gold">09:15 - 10:15</span>
+      <span class="panch-label label-orange"><i class="bi bi-shield-exclamation me-1"></i> எமகண்டம்</span>
+      <span class="panch-value value-orange">{{ panchangam.yamagandam || '09:15 AM - 10:15 AM' }}</span>
     </div>
   </div>
   <div class="panch-footer-icon">
