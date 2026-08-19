@@ -1455,3 +1455,1116 @@ $color-white: #FFFFFF;
   }
 }
 
+/* ================= DYNAMIC ASTROLOGER CARDS & BOOKING STYLES ================= */
+.astro-dynamic-card {
+  background: #ffffff;
+  border: 1px solid rgba(162, 123, 56, 0.2);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 4px 14px rgba(74, 14, 23, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(74, 14, 23, 0.1);
+  }
+
+  .astro-card-main {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+  }
+
+  .astro-avatar-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid rgba(162, 123, 56, 0.35);
+    background: #fdf6e7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .astro-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .astro-initial-circle {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #8B5E14;
+    }
+  }
+
+  .astro-details-box {
+    flex: 1;
+    min-width: 0;
+
+    .astro-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+
+      h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #2A080C;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .astro-fee-pill {
+        background: #F3E4C2;
+        color: #8B5E14;
+        padding: 0.2rem 0.55rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+    }
+
+    .astro-role-txt {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #b45309;
+      margin-top: 2px;
+    }
+
+    .astro-specialty-txt {
+      margin: 4px 0 6px 0;
+      font-size: 0.74rem;
+      color: #64748b;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .astro-badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      span {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .badge-exp {
+        background: #eff6ff;
+        color: #1e40af;
+      }
+
+      .badge-rating {
+        background: #fefce8;
+        color: #854d0e;
+      }
+
+      .badge-status {
+        background: #f0fdf4;
+        color: #166534;
+
+        &.on-leave {
+          background: #fef2f2;
+          color: #991b1b;
+        }
+      }
+    }
+  }
+
+  .astro-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed rgba(162, 123, 56, 0.2);
+    padding-top: 0.65rem;
+
+    .slots-info {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-book-astro {
+      background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 20px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(74, 14, 23, 0.25);
+    }
+  }
+}
+
+.astro-summary-badge {
+  background: #fdf6e7;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+
+  .as-role {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #8B5E14;
+  }
+
+  .as-fee {
+    font-size: 0.82rem;
+    color: #475569;
+
+    strong {
+      color: #d97706;
+      font-size: 1rem;
+    }
+  }
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-control-native {
+  width: 100%;
+  border: 1px solid rgba(162, 123, 56, 0.3);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  background: #ffffff;
+}
+
+.slots-pill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+
+  .slot-pill {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 7px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+
+    &.active {
+      background: #4A0E17;
+      border-color: #4A0E17;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(74, 14, 23, 0.3);
+    }
+  }
+}
+
+/* ================= LEVEL 1: CATEGORY MAIN CARD STYLES ================= */
+.category-main-card {
+  background: #ffffff;
+  border: 1px solid rgba(162, 123, 56, 0.22);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 4px 16px rgba(74, 14, 23, 0.06);
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(74, 14, 23, 0.12);
+    background: #fffcf7;
+  }
+
+  .cmc-thumb {
+    width: 62px;
+    height: 62px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumb-badge {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(42, 8, 12, 0.85);
+      color: #F3E4C2;
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-align: center;
+      padding: 1px 3px;
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  .cmc-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.45rem;
+
+    .cmc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+
+      h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #2A080C;
+        font-family: 'Noto Serif Tamil', serif;
+      }
+
+      .cmc-expert-count {
+        font-size: 0.7rem;
+        font-weight: 800;
+        background: #fdf6e7;
+        color: #8B5E14;
+        border: 1px solid #fde68a;
+        padding: 2px 6px;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+    }
+
+    .cmc-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .cmc-badge-tag {
+        font-size: 0.72rem;
+        color: #b45309;
+        font-weight: 700;
+      }
+
+      .cmc-arrow {
+        color: #4A0E17;
+        font-size: 1rem;
+        font-weight: 800;
+      }
+    }
+  }
+}
+
+/* ================= LEVEL 2: CATEGORY DETAIL VIEW ================= */
+.cat-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: -0.25rem;
+
+  .btn-back-inline {
+    background: #ffffff;
+    border: 1px solid rgba(162, 123, 56, 0.3);
+    color: #4A0E17;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(74, 14, 23, 0.06);
+
+    &:active {
+      background: #fdf2f4;
+    }
+  }
+
+  .cat-badge-pill {
+    background: #4A0E17;
+    color: #F3E4C2;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+}
+
+.category-hero-banner {
+  background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+  color: #ffffff;
+  border-radius: 18px;
+  padding: 1.25rem 1.1rem;
+  box-shadow: 0 6px 20px rgba(74, 14, 23, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '🕉️';
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    font-size: 5.5rem;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .chb-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .chb-badge {
+      background: rgba(243, 228, 194, 0.2);
+      color: #F3E4C2;
+      border: 1px solid rgba(243, 228, 194, 0.35);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .chb-count {
+      font-size: 0.72rem;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+  }
+
+  h2 {
+    margin: 0.2rem 0 0 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #F3E4C2;
+    font-family: 'Noto Serif Tamil', serif;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #f1f5f9;
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+}
+
+/* ================= ASTROLOGER FULL PROFILE CARD STYLES ================= */
+.astro-full-profile-card {
+  background: #ffffff;
+  border: 1px solid rgba(162, 123, 56, 0.25);
+  border-radius: 22px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px rgba(74, 14, 23, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 0.25rem;
+
+  .afp-top-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    .afp-avatar-box {
+      width: 76px;
+      height: 76px;
+      border-radius: 20px;
+      position: relative;
+      flex-shrink: 0;
+      border: 3px solid #f59e0b;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+      background: #fdf6e7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      .afp-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .afp-initial {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #8B5E14;
+      }
+
+      .afp-status-dot {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #22c55e;
+        border: 2px solid #ffffff;
+
+        &.on-leave {
+          background-color: #ef4444;
+        }
+      }
+    }
+
+    .afp-title-box {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+
+      .afp-status-badge {
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #166534;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        padding: 2px 8px;
+        border-radius: 20px;
+        align-self: flex-start;
+
+        &.on-leave {
+          color: #991b1b;
+          background: #fef2f2;
+          border-color: #fecaca;
+        }
+      }
+
+      h2 {
+        margin: 2px 0 0 0;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #2A080C;
+        font-family: 'Noto Serif Tamil', serif;
+      }
+
+      .afp-role {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #b45309;
+      }
+    }
+  }
+
+  .afp-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    background: #fdfcf9;
+    border: 1px solid rgba(162, 123, 56, 0.15);
+    border-radius: 14px;
+    padding: 10px 8px;
+
+    .afp-stat-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+
+      .stat-icon {
+        font-size: 1.15rem;
+      }
+
+      .stat-txt {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 0.82rem;
+          color: #1e293b;
+          font-weight: 800;
+        }
+
+        small {
+          font-size: 0.65rem;
+          color: #64748b;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .afp-guarantee-banner {
+    background: linear-gradient(135deg, #fdfcf9 0%, #fef8ee 100%);
+    border: 1.5px solid rgba(217, 119, 6, 0.35);
+    border-radius: 14px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    .afp-guarantee-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      i {
+        font-size: 1.6rem;
+        color: #d97706;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 0.82rem;
+          color: #78350f;
+          font-weight: 800;
+        }
+
+        small {
+          font-size: 0.68rem;
+          color: #92400e;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .afp-guarantee-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      padding: 3px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+  }
+
+  .afp-section-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    h4 {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #334155;
+      display: flex;
+      align-items: center;
+    }
+
+    .afp-bio-text {
+      margin: 0;
+      font-size: 0.78rem;
+      color: #475569;
+      line-height: 1.45;
+      background: #fafaf9;
+      border: 1px solid #f5f5f4;
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .afp-specialty-text {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #b45309;
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: 10px;
+      padding: 6px 10px;
+    }
+
+    .afp-slots-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+
+      .afp-slot-chip {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+      }
+    }
+  }
+
+  .btn-book-full-cta {
+    background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    padding: 0.95rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(74, 14, 23, 0.3);
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+
+    &:active {
+      transform: scale(0.98);
+      background: #2A080C;
+    }
+
+    .cta-arrow-circle {
+      background: rgba(243, 228, 194, 0.25);
+      color: #F3E4C2;
+      border: 1px solid rgba(243, 228, 194, 0.4);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+/* ================= BOOKING WIZARD ENHANCED STYLES ================= */
+.booking-flow-step {
+  padding: 1rem 1rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 5rem) 1rem;
+  gap: 1rem;
+}
+
+.booking-astro-pill {
+  background: #ffffff;
+  border: 1px solid rgba(162, 123, 56, 0.25);
+  border-radius: 16px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 14px rgba(74, 14, 23, 0.05);
+
+  .bap-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid #f59e0b;
+    background: #fdf6e7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    span {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #8B5E14;
+    }
+  }
+
+  .bap-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 0.95rem;
+      color: #2A080C;
+      font-weight: 800;
+    }
+
+    span {
+      font-size: 0.74rem;
+      color: #b45309;
+      font-weight: 600;
+    }
+  }
+
+  .bap-status-dot {
+    font-size: 0.65rem;
+    color: #22c55e;
+  }
+}
+
+.booking-form-box {
+  background: #ffffff;
+  border: 1px solid rgba(162, 123, 56, 0.2);
+  border-radius: 20px;
+  padding: 1.35rem 1.15rem;
+  box-shadow: 0 6px 22px rgba(74, 14, 23, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-input-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  label {
+    display: block;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #2A080C;
+
+    .required-star {
+      color: #dc2626;
+      font-weight: 800;
+    }
+  }
+
+  .input-inner-wrap {
+    background: #FAF8F5;
+    border: 1.5px solid #E8DFD5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 48px;
+    transition: all 0.2s ease;
+
+    &:focus-within {
+      background: #ffffff;
+      border-color: #d97706;
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
+    }
+
+    .input-icon {
+      font-size: 1.05rem;
+      color: #b45309;
+      margin-right: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      height: 100%;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #2A080C;
+
+      &::placeholder {
+        color: #a8a29e;
+        font-weight: 500;
+      }
+    }
+
+    &.textarea-wrap {
+      height: auto;
+      align-items: flex-start;
+      padding: 10px 12px;
+
+      .input-icon {
+        margin-top: 2px;
+      }
+
+      textarea {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #2A080C;
+        resize: none;
+
+        &::placeholder {
+          color: #a8a29e;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+.form-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.custom-native-date,
+.custom-native-time {
+  height: 100%;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #2A080C;
+}
+
+.slots-pill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 2px;
+
+  .slot-pill {
+    background: #FAF8F5;
+    border: 1.5px solid #E8DFD5;
+    border-radius: 12px;
+    padding: 10px 8px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #44403c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &.active {
+      background: #FEF3C7;
+      border-color: #D97706;
+      color: #92400E;
+      box-shadow: 0 2px 10px rgba(217, 119, 6, 0.2);
+
+      i {
+        color: #16a34a;
+      }
+    }
+  }
+}
+
+.btn-form-continue {
+  background: linear-gradient(135deg, #4A0E17, #2A080C);
+  color: #F3E4C2;
+  height: 50px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: 0 4px 16px rgba(74, 14, 23, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 0.5rem;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(74, 14, 23, 0.2);
+  }
+
+  .arrow-icon {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+  }
+}
+
+.payment-card {
+  background: #ffffff;
+  border: 1px solid rgba(162, 123, 56, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem 1.25rem;
+  box-shadow: 0 6px 22px rgba(74, 14, 23, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.pm-header-box {
+  text-align: center;
+  margin-bottom: 14px;
+
+  .pm-icon {
+    font-size: 2rem;
+  }
+
+  h3 {
+    margin: 4px 0 2px 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #2A080C;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+}
+
+.pm-details-list {
+  background: #fdfcf9;
+  border: 1px solid rgba(162, 123, 56, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .pm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #475569;
+
+    strong {
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    &.sub-row {
+      font-size: 0.76rem;
+      color: #64748b;
+    }
+
+    &.total-highlight {
+      border-top: 1.5px dashed rgba(162, 123, 56, 0.3);
+      padding-top: 8px;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #2A080C;
+
+      .total-fee {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #d97706;
+      }
+    }
+  }
+}
+
+.booking-ref-badge {
+  display: inline-block;
+  background: #fdf6e7;
+  border: 1.5px dashed #f59e0b;
+  color: #8B5E14;
+  font-weight: 800;
+  font-size: 0.84rem;
+  padding: 5px 14px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.confirmation-notification-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1.5px solid #86efac;
+  border-radius: 16px;
+  padding: 14px;
+  margin: 14px 0 18px 0;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.08);
+
+  .cnc-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #166534;
+    font-weight: 800;
+    margin-bottom: 6px;
+
+    .cnc-bell {
+      font-size: 1.1rem;
+    }
+  }
+
+  .cnc-msg {
+    font-size: 0.8rem;
+    color: #14532d;
+    line-height: 1.45;
+    margin: 0;
+
+    strong {
+      color: #0f172a;
+      font-weight: 800;
+    }
+  }
+
+  .cnc-schedule-pill {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #166534;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #bbf7d0;
+    padding: 5px 12px;
+    border-radius: 8px;
+    width: fit-content;
+  }
+}
+
+
+
+

@@ -40,11 +40,10 @@ export class BroadcastTabComponent implements OnInit {
 
   loadNotificationStatus(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/users', headers).subscribe({
+    this.http.get<any>('http://127.0.0.1:8000/api/admin/notifications/daily-rasi-status', headers).subscribe({
       next: (res) => {
-        if (res.users) {
-          this.dailyNotifOptedInCount = res.users.length;
-        }
+        this.dailyNotifEnabled = res.enabled ?? true;
+        this.dailyNotifOptedInCount = res.opted_in_users ?? 0;
         this.cdr.detectChanges();
       },
       error: () => {}
@@ -53,15 +52,19 @@ export class BroadcastTabComponent implements OnInit {
 
   toggleDailyRasiNotification(): void {
     this.dailyNotifLoading = true;
-    setTimeout(() => {
-      this.dailyNotifEnabled = !this.dailyNotifEnabled;
-      this.dailyNotifLoading = false;
-      alert(this.dailyNotifEnabled
-        ? '✅ காலை 6:00 மணி தினசரி ராசி பலன் தானியங்கி அறிவிப்பு இயக்கப்பட்டது!'
-        : '⏸️ காலை தினசரி ராசி பலன் அறிவிப்பு நிறுத்தப்பட்டது.'
-      );
-      this.cdr.detectChanges();
-    }, 500);
+    const headers = this.authService.getAuthHeaders();
+    const newStatus = !this.dailyNotifEnabled;
+    this.http.put<any>('http://127.0.0.1:8000/api/admin/notifications/daily-rasi-toggle', { enabled: newStatus }, headers).subscribe({
+      next: (res) => {
+        this.dailyNotifEnabled = res.enabled;
+        this.dailyNotifLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.dailyNotifLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   sendBroadcast(): void {

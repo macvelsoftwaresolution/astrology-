@@ -72,7 +72,7 @@ class GradingController extends Controller
                 'score' => $request->score,
                 'issue_date' => now()->toDateString(),
                 'verification_code' => $verifyCode,
-                'pdf_download_url' => "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                'pdf_download_url' => "/api/certificates/{$certNum}/download",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

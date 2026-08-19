@@ -54,6 +54,7 @@
     </div>
 
     <!-- Hero Banner Slider -->
+    @if (heroBanners.length > 0) {
     <div class="home-hero-card" (click)="onBannerClick(heroBanners[currentBannerIndex])">
       <div class="hero-bg-image"
         [ngStyle]="{'background-image': 'url(' + (heroBanners[currentBannerIndex]?.image || 'assets/images/temple_sunrise.png') + ')'}">
@@ -70,6 +71,7 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Quick Services Grid -->
     <div class="section-title-row">
@@ -87,7 +89,7 @@
         <strong>திருமண பொருத்தம்</strong>
         <span>ஜாதக இணைப்பு</span>
       </div>
-      <div class="quick-service-box" (click)="startServiceFlow('horoscope')">
+      <div class="quick-service-box" (click)="selectTab('services'); selectServiceCategory(displayCategories[0])">
         <div class="box-icon-wrapper"><span class="box-icon"><i
               class="bi bi-journal-bookmark-fill text-primary"></i></span></div>
         <strong>ஜாதகம் எழுத</strong>
@@ -105,598 +107,323 @@
   </div>
   }
 
-    <!-- 2. SERVICES TAB -->
-    @if (currentTab === 'services' && !activeServiceFlow) {
-    <div class="tab-content">
-      <div class="section-title-row">
-        <h3>ஜோதிட சேவைகள்</h3>
-        <p class="section-subtitle">உங்களின் தேவைக்கேற்ற சிறந்த ஜோதிட ஆலோசனைகளைத் தேர்ந்தெடுக்கவும்</p>
-      </div>
-      <!-- Main Service List Cards (Left Image + Right Content) -->
-      <div class="services-list-container">
-        <!-- 1. Jathagam -->
-        <div class="service-rich-card" (click)="startServiceFlow('horoscope')">
-          <div class="src-thumb">
-            <img src="assets/images/temple_sunrise.png" alt="Jathagam">
-            <div class="thumb-badge">ஜாதகம்</div>
-          </div>
-          <div class="src-content">
-            <div class="src-header">
-              <h3>ஜாதகம் எழுதுதல்</h3>
-              <span class="src-price">₹2,000</span>
-            </div>
-            <div class="src-footer">
-              <span class="src-badge-tag"><i class="bi bi-patch-check-fill me-1"></i> துல்லிய கணிப்பு</span>
-              <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
-            </div>
-          </div>
-        </div>
-        <!-- 2. Vastu -->
-        <div class="service-rich-card" (click)="startServiceFlow('vastu')">
-          <div class="src-thumb">
-            <img src="assets/images/temple_sunrise.png" alt="Vastu">
-            <div class="thumb-badge">வாஸ்து</div>
-          </div>
-          <div class="src-content">
-            <div class="src-header">
-              <h3>வாஸ்து ஆலோசனைகள்</h3>
-              <span class="src-price">₹2,500+</span>
-            </div>
-            <div class="src-footer">
-              <span class="src-badge-tag"><i class="bi bi-house-heart-fill me-1"></i> நேரடி ஆய்வு</span>
-              <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
-            </div>
-          </div>
-        </div>
-        <!-- 3. Guru Ramajayam -->
-        <div class="service-rich-card" (click)="startServiceFlow('ramajayam')">
-          <div class="src-thumb">
-            <img src="assets/images/user_avatar.png" alt="Ramajayam">
-            <div class="thumb-badge">எண்கணிதம்</div>
-          </div>
-          <div class="src-content">
-            <div class="src-header">
-              <h3>குரு ராமஜெயம் (எண்கணிதம்)</h3>
-              <span class="src-price">₹750</span>
-            </div>
-            <div class="src-footer">
-              <span class="src-badge-tag"><i class="bi bi-123 me-1"></i> எண்கணித நிபுணர்</span>
-              <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
-            </div>
-          </div>
-        </div>
-        <!-- 4. Guru Srinivasan -->
-        <div class="service-rich-card" (click)="startServiceFlow('srinivasan')">
-          <div class="src-thumb">
-            <img src="assets/images/user_avatar.png" alt="Srinivasan">
-            <div class="thumb-badge">ஆலோசனை</div>
-          </div>
-          <div class="src-content">
-            <div class="src-header">
-              <h3>குரு ஸ்ரீநிவாசன்</h3>
-              <span class="src-price">₹1,000+</span>
-            </div>
-            <div class="src-footer">
-              <span class="src-badge-tag"><i class="bi bi-telephone-fill me-1"></i> நேரடி அழைப்பு</span>
-              <span class="src-arrow"><i class="bi bi-chevron-right"></i></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    }
-
-    <!-- 3. MATCHMAKING TAB COMPONENT -->
-    @if (currentTab === 'matching' && !activeServiceFlow) {
-    <div class="tab-content">
-      <app-marriage-matching [rasis]="rasis"></app-marriage-matching>
-    </div>
-    }
-
-    <!-- 4. PROFILE TAB COMPONENT -->
-    @if (currentTab === 'profile' && !activeServiceFlow) {
-    <div class="tab-content">
-      <app-user-profile [orders]="userOrders"></app-user-profile>
-    </div>
-    }
+  <!-- 2. SERVICES TAB (3 CATEGORIES FIRST -> ASTROLOGERS & CONSULTATIONS WITHIN CATEGORY) -->
+  @if (currentTab === 'services' && !activeServiceFlow) {
+  @if (!selectedCategory) {
+  <!-- LEVEL 1: 3 PRIMARY ASTROLOGY CATEGORIES -->
+  <div class="tab-content">
 
 
-    <!-- ================= OVERLAYS FLOWS ================= -->
-
-    <!-- A. RASI PALAN FLOW COMPONENT -->
-    @if (activeServiceFlow === 'rasi-palan') {
-    <app-rasi-palan [rasis]="rasis">
-    </app-rasi-palan>
-    }
-
-    <!-- B. JATHAGAM / HOROSCOPE FLOW -->
-    @if (activeServiceFlow === 'horoscope') {
-    <div class="overlay-panel">
-      <div class="overlay-header">
-        <button class="btn-back" (click)="handleOverlayBack()">◀</button>
-        <h2>ஜாதகம் எழுதுதல்</h2>
-      </div>
-      <!-- Step 1: Info -->
-      @if (serviceStep === 1) {
-      <div class="step-content">
-        <!-- Top Guru Hero Banner -->
-        <div class="guru-hero-card">
-          <div class="guru-hero-overlay"></div>
-          <img src="assets/images/temple_sunrise.png" class="guru-hero-bg" alt="Astrologer">
-          <div class="guru-hero-content">
-            <span class="guru-exp-badge"><i class="bi bi-patch-check-fill me-1"></i> 25+ ஆண்டுகள் அனுபவம்</span>
-            <h2 class="guru-name">முதன்மை ஜோதிடர்</h2>
-            <p class="guru-title">வேத ஜோதிட சாஸ்திர நிபுணர்</p>
+    <div class="services-list-container">
+      @for (cat of displayCategories; track cat.id) {
+      <div class="category-main-card" (click)="selectServiceCategory(cat)">
+        <div class="cmc-thumb">
+          <img [src]="cat.image" [alt]="cat.title">
+          <div class="thumb-badge">{{ cat.tag }}</div>
+        </div>
+        <div class="cmc-content">
+          <div class="cmc-header">
+            <h3>{{ cat.title }}</h3>
+            <span class="cmc-expert-count"><i class="bi bi-person-badge-fill me-1"></i> {{
+              getAstrologersForCategory(cat).length }} நிபுணர்கள்</span>
           </div>
-        </div>
-        <!-- Category Heading -->
-        <div class="category-heading-row">
-          <h3>ஜாதக சேவைகள் (Horoscope Services)</h3>
-          <div class="title-accent-bar"></div>
-        </div>
-        <div class="sub-services-grid">
-          <div class="sub-service-rich-card">
-            <div class="ssrc-top">
-              <div class="ssrc-icon"><i class="bi bi-journal-bookmark-fill text-gold"></i></div>
-              <div class="ssrc-price">
-                <strong>₹2,000</strong>
-                <span>தொடக்க விலை</span>
-              </div>
-            </div>
-            <h3 class="ssrc-title">முழுமையான ஜாதகக் கணிப்பு</h3>
-            <p class="ssrc-desc">உங்கள் பிறப்பு ராசி, நட்சத்திரம், கிரக நிலைகள் மற்றும் எதிர்கால பலன்கள் அறிந்து கொள்ள
-              ஆலோசனை.</p>
-            <button class="btn-book-maroon-pill" (click)="nextStep()">
-              முன்பதிவு செய்க <i class="bi bi-calendar-check ms-1"></i>
-            </button>
-          </div>
-        </div>
-        <!-- Trust Banner -->
-        <div class="trust-banner-card">
-          <h4>எங்களை ஏன் தேர்வு செய்ய வேண்டும்?</h4>
-          <div class="trust-badges-grid">
-            <div class="trust-badge-item">
-              <i class="bi bi-award-fill text-gold"></i>
-              <span>துல்லியமான கணக்கீடு</span>
-            </div>
-            <div class="trust-badge-item">
-              <i class="bi bi-headset text-gold"></i>
-              <span>முழுமையான ஆதரவு</span>
-            </div>
+          <div class="cmc-footer">
+            <span class="cmc-badge-tag"><i [class]="cat.icon" class="me-1"></i> {{ cat.badge }}</span>
+            <span class="cmc-arrow"><i class="bi bi-chevron-right"></i></span>
           </div>
         </div>
       </div>
       }
-      <!-- Step 2: Input Form -->
-      @if (serviceStep === 2) {
-      <div class="step-content">
-        <div class="form-banner">உங்கள் விவரங்கள் மற்றும் ஆலோசனை தேதியை பூர்த்தி செய்யவும்</div>
-        <div class="form-body">
-          <div class="input-row">
-            <label>பெயர் (Name)</label>
-            <input type="text" [(ngModel)]="horoscopeForm.name" placeholder="உங்கள் பெயர்">
-          </div>
-          <div class="input-row">
-            <label>பிறந்த தேதி (Date of Birth)</label>
-            <input type="date" [(ngModel)]="horoscopeForm.dob">
-          </div>
-          <div class="input-row">
-            <label>பிறந்த நேரம் (Time of Birth)</label>
-            <input type="time" [(ngModel)]="horoscopeForm.tob">
-          </div>
-          <div class="input-row">
-            <label>பிறந்த இடம் (Place of Birth)</label>
-            <input type="text" [(ngModel)]="horoscopeForm.pob" placeholder="பிறந்த ஊர்">
-          </div>
-          <div class="input-row">
-            <label>பாலினம் (Gender)</label>
-            <div class="radio-row">
-              <label><input type="radio" name="gender" value="ஆண்" [(ngModel)]="horoscopeForm.gender" checked>
-                ஆண்</label>
-              <label><input type="radio" name="gender" value="பெண்" [(ngModel)]="horoscopeForm.gender"> பெண்</label>
-            </div>
-          </div>
-          <div class="input-row">
-            <label>ஆலோசனை பெற விரும்பும் தேதி (Preferred Booking Date)</label>
-            <input type="date" [(ngModel)]="horoscopeForm.date">
-          </div>
-          <button class="btn-app-gold" style="margin-top: 1.5rem;" (click)="nextStep()">கட்டணம் செலுத்த</button>
-        </div>
-      </div>
-      }
-      <!-- Step 3: Payment Gateway Screen -->
-      @if (serviceStep === 3) {
-      <div class="step-content">
-        <div class="payment-card">
-          <h3>கட்டண விவரம்</h3>
-          <div class="pm-row">
-            <span>சேவை:</span>
-            <strong>ஜாதகம் எழுதுதல்</strong>
-          </div>
-          <div class="pm-row">
-            <span>தொகை:</span>
-            <strong>₹2,000</strong>
-          </div>
-          <h4 style="margin-top: 1.5rem;">கட்டண முறை</h4>
-          <div class="payment-methods">
-            <label class="pay-method-item">
-              <input type="radio" name="payOpt" checked>
-              <span>UPI (GPay, PhonePe, Paytm)</span>
-            </label>
-            <label class="pay-method-item">
-              <input type="radio" name="payOpt">
-              <span>Credit / Debit Card</span>
-            </label>
-            <label class="pay-method-item">
-              <input type="radio" name="payOpt">
-              <span>Net Banking</span>
-            </label>
-          </div>
-          <button class="btn-app-gold btn-pay-now"
-            (click)="payAndFulfill('ஜாதகம் எழுதுதல்', 2000, 'Name: ' + horoscopeForm.name + ', DOB: ' + horoscopeForm.dob + ', Booking Date: ' + horoscopeForm.date)">இப்போதே
-            செலுத்தவும் 🔒</button>
-        </div>
-      </div>
-      }
-      <!-- Step 4: Success page -->
-      @if (serviceStep === 4) {
-      <div class="step-content">
-        <div class="success-box">
-          <span class="success-icon">🎉</span>
-          <h3>முன்பதிவு வெற்றியடைந்தது!</h3>
-          <p>உங்கள் கட்டணம் வெற்றிகரமாக பெறப்பட்டது. உங்களது ஜாதக கணிப்பு 24 முதல் 48 மணி நேரத்திற்குள் உங்கள் செயலியில்
-            பதிவேற்றப்படும்.</p>
-          <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்கு செல்க</button>
-        </div>
-      </div>
-      }
     </div>
-    }
-
-    <!-- C. VASTU FLOW (Matching Screenshot Layout) -->
-    @if (activeServiceFlow === 'vastu') {
-    <div class="overlay-panel">
-      <div class="overlay-header">
-        <button class="btn-back" (click)="handleOverlayBack()">◀</button>
-        <h2>வாஸ்து ஆலோசனைகள்</h2>
-      </div>
-      <!-- Step 1: Vastu Sub-Category Cards (Exact Screenshot Design) -->
-      @if (serviceStep === 1) {
-      <div class="step-content category-detail-flow">
-        <!-- Top Guru Hero Banner -->
-        <div class="guru-hero-card">
-          <div class="guru-hero-overlay"></div>
-          <img src="assets/images/temple_sunrise.png" class="guru-hero-bg" alt="Guru Ramakrishnan">
-          <div class="guru-hero-content">
-            <span class="guru-exp-badge"><i class="bi bi-patch-check-fill me-1"></i> 20+ ஆண்டுகள் அனுபவம்</span>
-            <h2 class="guru-name">குரு ராமகிருஷ்ணன்</h2>
-            <p class="guru-title">வாஸ்து சாஸ்திர நிபுணர் மற்றும் ஆலோசகர்</p>
-          </div>
-        </div>
-        <!-- Category Heading -->
-        <div class="category-heading-row">
-          <h3>வாஸ்து சேவைகள் (Vastu Services)</h3>
-          <div class="title-accent-bar"></div>
-        </div>
-        <!-- Sub-Services Cards List -->
-        <div class="sub-services-grid">
-          @for (s of vastuServices; track s) {
-          <div class="sub-service-rich-card">
-            <div class="ssrc-top">
-              <div class="ssrc-icon"><i class="bi bi-house-door-fill text-gold"></i></div>
-              <div class="ssrc-price">
-                <strong>₹{{ s.price }}</strong>
-                <span>தொடக்க விலை</span>
-              </div>
-            </div>
-            <h3 class="ssrc-title">{{ s.title }}</h3>
-            <p class="ssrc-desc">{{ s.sub }}</p>
-            <button class="btn-book-maroon-pill" (click)="selectVastu(s)">
-              முன்பதிவு செய்க <i class="bi bi-calendar-check ms-1"></i>
-            </button>
-          </div>
+  </div>
+  } @else {
+  <!-- LEVEL 2: DEDICATED CATEGORY & ASTROLOGER PROFILE VIEW -->
+  <div class="tab-content category-detail-content">
+    <!-- Real Astrologer Full Profile Card (from DB) -->
+    @for (astro of getAstrologersForCategory(selectedCategory); track astro.id) {
+    <div class="astro-full-profile-card">
+      <!-- Avatar & Header -->
+      <div class="afp-top-header">
+        <div class="afp-avatar-box">
+          @if (astro.avatar_url) {
+          <img [src]="astro.avatar_url" [alt]="astro.name" class="afp-img" />
+          } @else {
+          <div class="afp-initial">{{ astro.name.charAt(0) }}</div>
           }
+          <span class="afp-status-dot" [class.on-leave]="astro.status !== 'Available'"></span>
         </div>
-        <!-- Bottom Trust Banner -->
-        <div class="trust-banner-card">
-          <h4>எங்களை ஏன் தேர்வு செய்ய வேண்டும்?</h4>
-          <div class="trust-badges-grid">
-            <div class="trust-badge-item">
-              <i class="bi bi-award-fill text-gold"></i>
-              <span>துல்லியமான கணக்கீடு</span>
-            </div>
-            <div class="trust-badge-item">
-              <i class="bi bi-headset text-gold"></i>
-              <span>முழுமையான ஆதரவு</span>
-            </div>
+        <div class="afp-title-box">
+          <span class="afp-status-badge" [class.on-leave]="astro.status !== 'Available'">
+            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? 'நேரலை ஆலோசனை கிடைக்கும்' :
+            'தற்காலிக விடுமுறை' }}
+          </span>
+          <h2>{{ astro.name }}</h2>
+          <span class="afp-role">{{ astro.role_title }}</span>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="afp-stats-grid">
+        <div class="afp-stat-item">
+          <span class="stat-icon">⭐</span>
+          <div class="stat-txt">
+            <strong>{{ astro.rating || 4.9 }}</strong>
+            <small>ரேட்டிங்</small>
+          </div>
+        </div>
+        <div class="afp-stat-item">
+          <span class="stat-icon">🏆</span>
+          <div class="stat-txt">
+            <strong>{{ astro.experience || '15+ ஆண்டுகள்' }}</strong>
+            <small>அனுபவம்</small>
+          </div>
+        </div>
+        <div class="afp-stat-item">
+          <span class="stat-icon">👥</span>
+          <div class="stat-txt">
+            <strong>{{ astro.consultation_count || 1000 }}+</strong>
+            <small>ஆலோசனைகள்</small>
           </div>
         </div>
       </div>
-      }
-      <!-- Step 2: Vastu Booking Form -->
-      @if (serviceStep === 2 && selectedVastuService) {
-      <div class="step-content styled-booking-step">
-        <!-- Title & Subtitle -->
-        <div class="booking-intro-header">
-          <h3>தகவல்களை உள்ளிடவும்</h3>
-          <p>வாஸ்து ஆலோசனைக்கான அடிப்படை விவரங்களை வழங்கவும்</p>
-        </div>
-        <!-- Step Indicator -->
-        <div class="booking-step-indicator">
-          <div class="step-badge active">
-            <span class="badge-num">1</span>
-            <span class="badge-label">விவரங்கள்</span>
-          </div>
-          <div class="step-line-divider"></div>
-          <div class="step-badge disabled">
-            <span class="badge-num">2</span>
-            <span class="badge-label">பணம் செலுத்துதல்</span>
-          </div>
-        </div>
-        <div class="styled-booking-form">
-          <!-- Name input with Icon -->
-          <div class="form-input-group">
-            <label>பெயர்</label>
-            <div class="input-with-icon">
-              <input type="text" [(ngModel)]="vastuForm.name" placeholder="உங்கள் முழு பெயர்">
-              <span class="input-icon">👤</span>
-            </div>
-          </div>
-          <!-- Phone input with Icon -->
-          <div class="form-input-group">
-            <label>தொலைபேசி எண்</label>
-            <div class="input-with-icon">
-              <input type="tel" [(ngModel)]="vastuForm.phone" placeholder="+91 00000 00000">
-              <span class="input-icon">📞</span>
-            </div>
-          </div>
-          <!-- Address input with Icon -->
-          <div class="form-input-group">
-            <label>முகவரி</label>
-            <div class="input-with-icon text-area-icon">
-              <textarea [(ngModel)]="vastuForm.address" placeholder="சொத்து அமைந்துள்ள இடம் மற்றும் நகரின் பெயர்"
-                rows="3"></textarea>
-              <span class="input-icon">📍</span>
-            </div>
-          </div>
-          <!-- Date Input -->
-          <div class="form-input-group">
-            <label>ஆலோசனை தேதியைத் தேர்ந்தெடுக்கவும்</label>
-            <div class="input-with-icon">
-              <input type="date" [(ngModel)]="vastuForm.date">
-              <span class="input-icon">📅</span>
-            </div>
-          </div>
-          <!-- Postpone Layout Checkbox Card -->
-          <div class="styled-checkbox-card">
-            <label class="checkbox-container">
-              <input type="checkbox" [(ngModel)]="vastuForm.planUploaded">
-              <span class="checkmark"></span>
-              <div class="checkbox-text-content">
-                <strong>வரைபடத்தை பின்னர் பதிவேற்றவும்</strong>
-                <span>உங்களிடம் தற்போது பிளான் இல்லை என்றால் இதைத் தேர்ந்தெடுக்கலாம்.</span>
-              </div>
-            </label>
-          </div>
-          <!-- Submit Button -->
-          <button class="btn-maroon-submit" (click)="nextStep()">
-            <span>கட்டணத்திற்குச் செல்லவும்</span>
-            <span class="arrow-icon">➔</span>
-          </button>
-          <!-- Footer Shield Badge -->
-          <div class="footer-safety-badge">
-            <span class="shield-icon">🛡️</span>
-            <span class="safety-text">உறுதிப்படுத்தப்பட்ட ஆலோசனை</span>
-          </div>
-        </div>
+
+      <!-- Simple Bio & Specialty (from DB) -->
+      @if (astro.bio || astro.specialty) {
+      <div class="afp-section-box">
+        <p class="afp-bio-text">{{ astro.bio || astro.specialty }}</p>
       </div>
       }
-      <!-- Step 3: Vastu Payment -->
-      @if (serviceStep === 3 && selectedVastuService) {
-      <div class="step-content">
-        <div class="payment-card">
-          <h3>கட்டண விவரம்</h3>
-          <div class="pm-row">
-            <span>சேவை:</span>
-            <strong>{{ selectedVastuService.title }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>தொகை:</span>
-            <strong>₹{{ selectedVastuService.price }}</strong>
-          </div>
-          <button class="btn-app-gold btn-pay-now"
-            (click)="payAndFulfill(selectedVastuService.title, selectedVastuService.price, 'Vastu Consultation for ' + vastuForm.name + ' at ' + vastuForm.address)">இப்போதே
-            செலுத்தவும் 🔒</button>
-        </div>
-      </div>
-      }
-      <!-- Step 4: Success -->
-      @if (serviceStep === 4) {
-      <div class="step-content">
-        <div class="success-box">
-          <span class="success-icon">🎉</span>
-          <h3>முன்பதிவு வெற்றியடைந்தது!</h3>
-          <p>வாஸ்து ஆலோசனைக்கான முன்பதிவு வெற்றிகரமாக முடிந்தது. எங்கள் வாஸ்து நிபுணர் உங்களை தொடர்பு கொள்வார்.</p>
-          <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்கு செல்க</button>
-        </div>
-      </div>
-      }
+
+      <!-- Main Book Button CTA (No Amount) -->
+      <button class="btn-book-full-cta" (click)="startAstrologerBooking(astro)">
+        <span>தொடர்க</span>
+        <span class="cta-arrow-circle"><i class="bi bi-arrow-right"></i></span>
+      </button>
     </div>
     }
+  </div>
+  }
+  }
 
-    <!-- D. GURU RAMAJAYAM FLOW -->
-    @if (activeServiceFlow === 'ramajayam') {
-    <div class="overlay-panel">
-      <div class="overlay-header">
-        <button class="btn-back" (click)="handleOverlayBack()">◀</button>
-        <h2>எண்கணித ஆலோசனைகள்</h2>
-      </div>
-      <!-- Step 1: List -->
-      @if (serviceStep === 1) {
-      <div class="step-content">
-        <div class="sub-services-list">
-          @for (s of ramajayamServices; track s) {
-          <div class="sub-service-card" (click)="selectRamajayam(s)">
-            <div class="ssc-text">
-              <h3>{{ s.title }}</h3>
-              <p>{{ s.sub }}</p>
-            </div>
-            <div class="ssc-price">
-              <strong>₹{{ s.price }}</strong>
-              <span class="btn-action-next">▶</span>
-            </div>
+  <!-- 3. MATCHMAKING TAB COMPONENT -->
+  @if (currentTab === 'matching' && !activeServiceFlow) {
+  <div class="tab-content">
+    <app-marriage-matching [rasis]="rasis"></app-marriage-matching>
+  </div>
+  }
+
+  <!-- 4. PROFILE TAB COMPONENT -->
+  @if (currentTab === 'profile' && !activeServiceFlow) {
+  <div class="tab-content">
+    <app-user-profile [orders]="userOrders"></app-user-profile>
+  </div>
+  }
+
+
+  <!-- ================= OVERLAYS FLOWS ================= -->
+
+  <!-- A. RASI PALAN FLOW COMPONENT -->
+  @if (activeServiceFlow === 'rasi-palan') {
+  <app-rasi-palan [rasis]="rasis">
+  </app-rasi-palan>
+  }
+
+  <!-- F. DYNAMIC ASTROLOGER CONSULTATION BOOKING FLOW -->
+  @if (activeServiceFlow === 'astrologer_consultation' && selectedAstrologer) {
+  <div class="tab-content consultation-booking-content">
+
+    <!-- Step 1: Consultation Details Form -->
+    @if (serviceStep === 1) {
+      <!-- Main Spacious Form Container -->
+      <div class="booking-form-box">
+        <!-- Name -->
+        <div class="form-input-card">
+          <label>உங்கள் பெயர் <span class="required-star">*</span></label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+            <input type="text" [(ngModel)]="astrologerBookingForm.name" placeholder="முழுப் பெயரை உள்ளிடவும்">
           </div>
-          }
         </div>
-      </div>
-      }
-      <!-- Step 2: Form -->
-      @if (serviceStep === 2 && selectedRamajayamService) {
-      <div class="step-content">
-        <div class="form-banner">எண்கணித ஆலோசனைக்கான விவரங்களை உள்ளிடவும்</div>
-        <div class="form-body">
-          <div class="input-row">
-            <label>விண்ணப்பதாரர் பெயர்</label>
-            <input type="text" [(ngModel)]="ramajayamForm.name" placeholder="விண்ணப்பதாரர் பெயர்">
+
+        <!-- Phone -->
+        <div class="form-input-card">
+          <label>தொலைபேசி எண் <span class="required-star">*</span></label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
+            <input type="tel" [(ngModel)]="astrologerBookingForm.phone" placeholder="+91 98765 43210">
           </div>
-          <div class="input-row">
-            <label>கைபேசி எண்</label>
-            <input type="text" [(ngModel)]="ramajayamForm.phone" placeholder="மொபைல் எண்">
+        </div>
+
+        <!-- Vastu or Horoscope Specific Details -->
+        @if (selectedCategory?.id === 'vasthu') {
+        <div class="form-input-card">
+          <label>மனை / கட்டிடத்தின் முகவரி</label>
+          <div class="input-inner-wrap textarea-wrap">
+            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+            <textarea [(ngModel)]="astrologerBookingForm.pob"
+              placeholder="வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்..." rows="2"></textarea>
           </div>
-          <div class="input-row">
+        </div>
+        } @else {
+        <!-- DOB & TOB Grid -->
+        <div class="form-dual-grid">
+          <div class="form-input-card">
             <label>பிறந்த தேதி</label>
-            <input type="date" [(ngModel)]="ramajayamForm.dob">
-          </div>
-          <div class="input-row">
-            <label>ஆலோசனை பெற விரும்பும் தேதி</label>
-            <input type="date" [(ngModel)]="ramajayamForm.date">
-          </div>
-          <button class="btn-app-gold" (click)="nextStep()">கட்டணத்திற்கு செல்லவும்</button>
-        </div>
-      </div>
-      }
-      <!-- Step 3: Payment -->
-      @if (serviceStep === 3 && selectedRamajayamService) {
-      <div class="step-content">
-        <div class="payment-card">
-          <h3>கட்டண விவரம்</h3>
-          <div class="pm-row">
-            <span>சேவை:</span>
-            <strong>{{ selectedRamajayamService.title }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>தொகை:</span>
-            <strong>₹{{ selectedRamajayamService.price }}</strong>
-          </div>
-          <button class="btn-app-gold btn-pay-now"
-            (click)="payAndFulfill(selectedRamajayamService.title, selectedRamajayamService.price, 'Numerology for ' + ramajayamForm.name + ' on ' + ramajayamForm.date)">இப்போதே
-            செலுத்தவும் 🔒</button>
-        </div>
-      </div>
-      }
-      <!-- Step 4: Success -->
-      @if (serviceStep === 4) {
-      <div class="step-content">
-        <div class="success-box">
-          <span class="success-icon">🎉</span>
-          <h3>முன்பதிவு வெற்றியடைந்தது!</h3>
-          <p>உங்களது எண்கணித ஆலோசனைக்கான முன்பதிவு முடிந்தது. குரு ராமஜெயம் அவர்கள் விரைவில் உங்களுக்கு எண்கணித
-            பரிந்துரைகளை அனுப்புவார்.</p>
-          <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்கு செல்க</button>
-        </div>
-      </div>
-      }
-    </div>
-    }
-
-    <!-- E. GURU SRINIVASAN FLOW -->
-    @if (activeServiceFlow === 'srinivasan') {
-    <div class="overlay-panel">
-      <div class="overlay-header">
-        <button class="btn-back" (click)="handleOverlayBack()">◀</button>
-        <h2>ஆலோசனைகள்</h2>
-      </div>
-      <!-- Step 1: Srinivasan Services List -->
-      @if (serviceStep === 1) {
-      <div class="step-content">
-        <div class="sub-services-list">
-          @for (s of srinivasanServices; track s) {
-          <div class="sub-service-card" (click)="selectSrinivasan(s)">
-            <div class="ssc-text">
-              <h3>{{ s.title }}</h3>
-              <p>{{ s.sub }}</p>
-            </div>
-            <div class="ssc-price">
-              <strong>₹{{ s.price }}</strong>
-              <span class="btn-action-next">▶</span>
+            <div class="input-inner-wrap">
+              <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
+              <input type="date" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
             </div>
           </div>
-          }
-        </div>
-      </div>
-      }
-      <!-- Step 2: Srinivasan booking form -->
-      @if (serviceStep === 2 && selectedSrinivasanService) {
-      <div class="step-content">
-        <div class="form-banner">ஆலொசனைக்கான விவரங்களை பூர்த்தி செய்யவும்</div>
-        <div class="form-body">
-          <div class="input-row">
-            <label>பெயர்</label>
-            <input type="text" [(ngModel)]="srinivasanForm.name" placeholder="உங்கள் பெயர்">
-          </div>
-          <div class="input-row">
-            <label>பிறந்த தேதி</label>
-            <input type="date" [(ngModel)]="srinivasanForm.dob">
-          </div>
-          <div class="input-row">
+          <div class="form-input-card">
             <label>பிறந்த நேரம்</label>
-            <input type="time" [(ngModel)]="srinivasanForm.tob">
+            <div class="input-inner-wrap">
+              <span class="input-icon"><i class="bi bi-clock"></i></span>
+              <input type="time" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
+            </div>
           </div>
-          <div class="input-row">
-            <label>பிறந்த இடம்</label>
-            <input type="text" [(ngModel)]="srinivasanForm.pob" placeholder="பிறந்த ஊர்">
-          </div>
-          <div class="input-row">
-            <label>ஆளொசனை பெற விரும்பும் தேதி</label>
-            <input type="date" [(ngModel)]="srinivasanForm.date">
-          </div>
-          <button class="btn-app-gold" (click)="nextStep()">கட்டணத்திற்கு செல்லவும்</button>
         </div>
-      </div>
-      }
-      <!-- Step 3: Srinivasan Payment -->
-      @if (serviceStep === 3 && selectedSrinivasanService) {
-      <div class="step-content">
-        <div class="payment-card">
-          <h3>கட்டண விவரம்</h3>
-          <div class="pm-row">
-            <span>சேவை:</span>
-            <strong>{{ selectedSrinivasanService.title }} (குரு ஸ்ரீநிவாசன்)</strong>
+
+        <!-- POB -->
+        <div class="form-input-card">
+          <label>பிறந்த ஊர்</label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+            <input type="text" [(ngModel)]="astrologerBookingForm.pob" placeholder="எ.கா: சென்னை, மதுரை, கோவை">
           </div>
-          <div class="pm-row">
-            <span>தொகை:</span>
-            <strong>₹{{ selectedSrinivasanService.price }}</strong>
+        </div>
+        }
+
+        <!-- Consultation Date -->
+        <div class="form-input-card">
+          <label>ஆலோசனை தேதி <span class="required-star">*</span></label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-calendar-check-fill"></i></span>
+            <input type="date" [(ngModel)]="astrologerBookingForm.date" class="custom-native-date">
           </div>
-          <button class="btn-app-gold btn-pay-now"
-            (click)="payAndFulfill(selectedSrinivasanService.title + ' (Srinivasan)', selectedSrinivasanService.price, 'Consultation with Srinivasan for ' + srinivasanForm.name + ' on ' + srinivasanForm.date)">இப்போதே
-            செலுத்தவும் 🔒</button>
         </div>
-      </div>
-      }
-      <!-- Step 4: Success -->
-      @if (serviceStep === 4) {
-      <div class="step-content">
-        <div class="success-box">
-          <span class="success-icon">🎉</span>
-          <h3>முன்பதிவு வெற்றியடைந்தது!</h3>
-          <p>குரு ஸ்ரீநிவாசன் அவர்களுடனான சந்திப்பு முன்பதிவு முடிந்தது. உங்கள் குறிப்பிட்ட ஆலோசனை நேரத்தில் ஜோதிடர்
-            உங்களை தொலைபேசியில் தொடர்பு கொள்வார்.</p>
-          <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்கு செல்க</button>
+
+        <!-- Time Slot Selection -->
+        <div class="form-input-card">
+          <label>நேர இடைவெளி (Slot) <span class="required-star">*</span></label>
+          <div class="slots-pill-grid">
+            @for (slot of selectedAstrologer.available_slots || ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM - 04:30 PM', '05:00 PM - 06:00 PM']; track slot) {
+            <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.slot === slot"
+              (click)="astrologerBookingForm.slot = slot">
+              <i class="bi"
+                [ngClass]="astrologerBookingForm.slot === slot ? 'bi-check-circle-fill' : 'bi-clock'"></i>
+              <span>{{ slot }}</span>
+            </button>
+            }
+          </div>
         </div>
+
+        <!-- Optional Questions / Notes -->
+        <div class="form-input-card">
+          <label>கேள்விகள் / குறிப்புகள் (விருப்பத்தேர்வு)</label>
+          <div class="input-inner-wrap textarea-wrap">
+            <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
+            <textarea [(ngModel)]="astrologerBookingForm.notes" rows="2"
+              placeholder="எ.கா: தொழில் முன்னேற்றம், திருமண யோகம்..."></textarea>
+          </div>
+        </div>
+
+        <!-- Continue Button -->
+        <button class="btn-form-continue" (click)="nextStep()">
+          <span>தொடர்க</span>
+          <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
+        </button>
       </div>
-      }
-    </div>
     }
+
+    <!-- Step 2: Payment Confirmation & Order Breakdown -->
+    @if (serviceStep === 2) {
+      <div class="payment-card">
+        <div class="pm-header-box">
+          <span class="pm-icon">💳</span>
+          <h3>முன்பதிவு கட்டண விவரம்</h3>
+          <p>கீழ்க்கண்ட விவரங்களைச் சரிபார்த்து பாதுகாப்பாக கட்டணத்தைச் செலுத்தவும்</p>
+        </div>
+
+        <div class="pm-details-list">
+          <div class="pm-row">
+            <span>தலைமை ஜோதிடர்:</span>
+            <strong>{{ selectedAstrologer.name }}</strong>
+          </div>
+          <div class="pm-row">
+            <span>சேவைப் பிரிவு:</span>
+            <strong>{{ selectedAstrologer.role_title }}</strong>
+          </div>
+          <div class="pm-row">
+            <span>பதிவு செய்தவர்:</span>
+            <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong>
+          </div>
+          <div class="pm-row">
+            <span>தொடர்பு எண்:</span>
+            <strong>{{ astrologerBookingForm.phone }}</strong>
+          </div>
+          <div class="pm-row">
+            <span>முன்பதிவு தேதி:</span>
+            <strong>{{ astrologerBookingForm.date }}</strong>
+          </div>
+          <div class="pm-row">
+            <span>ஆலோசனை நேரம்:</span>
+            <strong>{{ astrologerBookingForm.slot }}</strong>
+          </div>
+          <div class="pm-row sub-row">
+            <span>ஆலோசனை கட்டணம்:</span>
+            <span>₹{{ selectedAstrologer.fee }}</span>
+          </div>
+          <div class="pm-row sub-row">
+            <span>தளம் & சேவைக் கட்டணம்:</span>
+            <span style="color:#16a34a;font-weight:700;">₹0 (இலவசம்)</span>
+          </div>
+          <div class="pm-row total-highlight">
+            <span>செலுத்த வேண்டிய மொத்தத் தொகை:</span>
+            <strong class="total-fee">₹{{ selectedAstrologer.fee }}</strong>
+          </div>
+        </div>
+
+        <button class="btn-app-gold btn-pay-now" (click)="payAndFulfillAstrologer()">
+          ₹{{ selectedAstrologer.fee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒
+        </button>
+
+        <div class="footer-safety-badge" style="margin-top: 14px;">
+          <span class="shield-icon">🛡️</span>
+          <span class="safety-text">100% பாதுகாப்பான மற்றும் உறுதியான நேரடி ஆலோசனை</span>
+        </div>
+      </div>
+    }
+
+    <!-- Step 3: Success Screen with Confirmation Notification -->
+    @if (serviceStep === 3) {
+      <div class="success-box">
+        <span class="success-icon">🎉</span>
+        <h3>முன்பதிவு வெற்றிகரமாக உறுதியானது!</h3>
+        <span class="booking-ref-badge">பதிவு எண்: #{{ bookingRefCode }}</span>
+
+        <!-- In-App Confirmation Notification Alert Box -->
+        <div class="confirmation-notification-card">
+          <div class="cnc-header">
+            <span class="cnc-bell">🔔</span>
+            <strong>உறுதிப்படுத்தல் அறிவிப்பு (Notification)</strong>
+          </div>
+          <p class="cnc-msg">
+            வணக்கம் <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong> வெற்றிகரமாக பதிவு செய்யப்பட்டது. தலைமை
+            ஜோதிடர் <strong>{{ selectedAstrologer.name }}</strong> அவர்கள்
+            குறித்த நேரத்தில் உங்களை தொலைபேசியில் தொடர்பு கொள்வார்.
+          </p>
+          <div class="cnc-schedule-pill">
+            <span><i class="bi bi-calendar-check-fill me-1"></i> {{ astrologerBookingForm.date }}</span>
+            <span><i class="bi bi-clock-fill me-1"></i> {{ astrologerBookingForm.slot }}</span>
+          </div>
+        </div>
+
+        <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்குச் செல்க</button>
+      </div>
+    }
+
+  </div>
+  }
 
 </ion-content>
 
