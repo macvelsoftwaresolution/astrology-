@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet, Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-jathagam',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, IonContent, IonHeader, IonToolbar, IonTitle],
+  imports: [RouterOutlet, IonContent, IonHeader, IonToolbar, IonTitle],
   template: `
     <ion-header class="ion-no-border">
       <ion-toolbar color="dark">

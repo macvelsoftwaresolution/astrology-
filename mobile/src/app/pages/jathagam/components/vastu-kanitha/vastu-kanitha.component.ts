@@ -1,6 +1,6 @@
 import { environment } from '../../../../../environments/environment';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
@@ -8,7 +8,7 @@ import { IonSpinner } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-vastu-kanitha',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner],
+  imports: [FormsModule, IonSpinner],
   template: `
     <div class="vk-wrapper">
       <!-- Service Type Toggle -->

@@ -60,25 +60,31 @@
     </div>
 
     <!-- Extra fields for mudhunilai -->
-    <div class="form-group" *ngIf="localForm.courseLevel === 'mudhunilai'">
-      <label>இளநிலை சான்றிதழ் (Ilanilai Certificate) *</label>
-      <div class="file-upload-wrapper">
-        <input type="file" id="cert-upload" (change)="onFileChange($event)" accept="image/*,application/pdf" style="display: none;">
-        <label for="cert-upload" class="custom-file-upload">
-          📁 {{ localForm.prevCertificate || 'சான்றிதழ் பதிவேற்றவும் (Upload PDF/Image)' }}
-        </label>
+    @if (localForm.courseLevel === 'mudhunilai') {
+      <div class="form-group">
+        <label>இளநிலை சான்றிதழ் (Ilanilai Certificate) *</label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="cert-upload" (change)="onFileChange($event)" accept="image/*,application/pdf" style="display: none;">
+          <label for="cert-upload" class="custom-file-upload">
+            📁 {{ localForm.prevCertificate || 'சான்றிதழ் பதிவேற்றவும் (Upload PDF/Image)' }}
+          </label>
+        </div>
       </div>
-    </div>
+    }
 
-    <div class="form-group" *ngIf="localForm.courseLevel === 'mudhunilai'">
-      <label>எப்போது முடித்தீர்கள்? (Completion Date/Year) *</label>
-      <input type="text" [(ngModel)]="localForm.completionYear" placeholder="உதாரணமாக: மே 2023">
-    </div>
+    @if (localForm.courseLevel === 'mudhunilai') {
+      <div class="form-group">
+        <label>எப்போது முடித்தீர்கள்? (Completion Date/Year) *</label>
+        <input type="text" [(ngModel)]="localForm.completionYear" placeholder="உதாரணமாக: மே 2023">
+      </div>
+    }
 
-    <div class="form-group" *ngIf="localForm.courseLevel === 'mudhunilai'">
-      <label>மதிப்பெண்கள் எவ்வளவு? (Marks Obtained) *</label>
-      <input type="text" [(ngModel)]="localForm.prevMarks" placeholder="உதாரணமாக: 85% அல்லது 850/1000">
-    </div>
+    @if (localForm.courseLevel === 'mudhunilai') {
+      <div class="form-group">
+        <label>மதிப்பெண்கள் எவ்வளவு? (Marks Obtained) *</label>
+        <input type="text" [(ngModel)]="localForm.prevMarks" placeholder="உதாரணமாக: 85% அல்லது 850/1000">
+      </div>
+    }
 
     <div class="form-group">
       <label>இடற்பாடில் சேருவதற்கான காரணம் (Reason for joining this course) *</label>

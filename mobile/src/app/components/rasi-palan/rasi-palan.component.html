@@ -13,20 +13,21 @@
   </div>
 
   <div class="rasi-content-scroll">
-    
+
     <!-- ================= GRID VIEW ================= -->
-    <ng-container *ngIf="!selectedRasi">
+    @if (!selectedRasi) {
       <!-- Title Section -->
       <div class="title-section">
         <h2 class="page-title">ராசி பலன்</h2>
         <p class="page-subtitle">உங்கள் நட்சத்திரங்களின்<br>வழிகாட்டுதலைக் கண்டறியவும்</p>
       </div>
-
       <!-- Tabs Section -->
       <div class="period-tabs-grid">
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'daily'" (click)="selectedRasiTab = 'daily'">
           <span class="tab-icon"><i class="bi bi-brightness-high-fill"></i></span>
-          <div class="tab-badge" *ngIf="selectedRasiTab === 'daily'">இன்று</div>
+          @if (selectedRasiTab === 'daily') {
+            <div class="tab-badge">இன்று</div>
+          }
           <span class="tab-label">தினசரி</span>
         </div>
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'weekly'" (click)="selectedRasiTab = 'weekly'">
@@ -42,23 +43,26 @@
           <span class="tab-label">வருடாந்திர</span>
         </div>
       </div>
-
       <!-- Zodiac Grid Section -->
       <div class="zodiac-section-header">
         <h3>உங்கள் ராசியைத்<br>தேர்ந்தெடுக்கவும்</h3>
         <span class="filter-icon"><i class="bi bi-sliders"></i></span>
       </div>
-
       <div class="zodiac-grid">
-        <div class="zodiac-item" *ngFor="let r of rasis" (click)="selectRasi(r)">
-          <div class="zodiac-icon-box">
-            <img [src]="r.imagePath" class="zodiac-img" *ngIf="r.imagePath" alt="{{ r.name }}">
-            <span class="zodiac-glyph" *ngIf="!r.imagePath">{{ r.image }}&#xFE0E;</span>
+        @for (r of rasis; track r) {
+          <div class="zodiac-item" (click)="selectRasi(r)">
+            <div class="zodiac-icon-box">
+              @if (r.imagePath) {
+                <img [src]="r.imagePath" class="zodiac-img" alt="{{ r.name }}">
+              }
+              @if (!r.imagePath) {
+                <span class="zodiac-glyph">{{ r.image }}&#xFE0E;</span>
+              }
+            </div>
+            <span class="zodiac-name">{{ r.name }}</span>
           </div>
-          <span class="zodiac-name">{{ r.name }}</span>
-        </div>
+        }
       </div>
-
       <!-- Bottom Prediction Card -->
       <div class="prediction-card">
         <div class="prediction-header">
@@ -71,16 +75,18 @@
       </div>
       <!-- Empty space to fix scrolling issue -->
       <div style="height: 90px;"></div>
-    </ng-container>
+    }
 
     <!-- ================= DETAILS VIEW ================= -->
-    <ng-container *ngIf="selectedRasi">
+    @if (selectedRasi) {
       <div class="detail-hero-card">
         <div class="hero-image-placeholder">
           <!-- Placeholder for the rich image -->
           <img src="assets/images/temple_sunrise.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
           <div class="hero-overlay-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
-            <img [src]="selectedRasi.imagePath" style="width: 90px; height: 90px; margin-bottom: 0.5rem; object-fit: contain; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5));" *ngIf="selectedRasi.imagePath">
+            @if (selectedRasi.imagePath) {
+              <img [src]="selectedRasi.imagePath" style="width: 90px; height: 90px; margin-bottom: 0.5rem; object-fit: contain; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5));">
+            }
             <span class="zodiac-date-range">மார்ச் 21 - ஏப்ரல் 19</span>
             <h2 class="zodiac-main-title">{{ selectedRasi.name }} ({{ selectedRasi.english }})</h2>
           </div>
@@ -90,7 +96,6 @@
           </div>
         </div>
       </div>
-
       <div class="detail-info-row">
         <div class="info-box">
           <span class="info-icon"><i class="bi bi-calendar-check-fill text-gold"></i></span>
@@ -107,54 +112,56 @@
           </div>
         </div>
       </div>
-
       <div class="section-title">
         <div class="title-bar"></div>
         <h3>இன்றைய கணிப்பு</h3>
       </div>
-      <div class="section-title" *ngIf="isLoading">
-        <div class="title-bar"></div>
-        <h3>கணிப்பு ஏற்றப்படுகிறது... (Loading)</h3>
-      </div>
-      
-      <div class="prediction-large-card" *ngIf="!isLoading && predictionData">
-        <p>{{ predictionData.prediction_text }}</p>
-      </div>
-
-      <div class="section-title" *ngIf="!isLoading && (predictionData?.video_url || predictionData?.audio_url)">
-        <div class="title-bar"></div>
-        <h3>காணொளி & ஒலி</h3>
-      </div>
-
-
+      @if (isLoading) {
+        <div class="section-title">
+          <div class="title-bar"></div>
+          <h3>கணிப்பு ஏற்றப்படுகிறது... (Loading)</h3>
+        </div>
+      }
+      @if (!isLoading && predictionData) {
+        <div class="prediction-large-card">
+          <p>{{ predictionData.prediction_text }}</p>
+        </div>
+      }
+      @if (!isLoading && (predictionData?.video_url || predictionData?.audio_url)) {
+        <div class="section-title">
+          <div class="title-bar"></div>
+          <h3>காணொளி & ஒலி</h3>
+        </div>
+      }
       <!-- Audio Player -->
-      <div class="audio-player-detailed" *ngIf="!isLoading && predictionData?.audio_url">
-        <div class="audio-icon-box"><i class="bi bi-mic-fill"></i></div>
-        <div class="audio-info">
-          <strong>தினசரி மந்திரம்</strong>
-          <span>ஓம் ஐம் ஹ்ரீம் க்லீம்...</span>
+      @if (!isLoading && predictionData?.audio_url) {
+        <div class="audio-player-detailed">
+          <div class="audio-icon-box"><i class="bi bi-mic-fill"></i></div>
+          <div class="audio-info">
+            <strong>தினசரி மந்திரம்</strong>
+            <span>ஓம் ஐம் ஹ்ரீம் க்லீம்...</span>
+          </div>
+          <div class="audio-timeline">
+            <span>01:20</span>
+            <div class="audio-progress-bar"><div class="audio-progress-fill" style="width: 30%"></div></div>
+            <span>04:00</span>
+          </div>
+          <div class="audio-controls-row">
+            <button class="btn-seek"><i class="bi bi-arrow-counterclockwise"></i></button>
+            <button class="btn-play-large"><i class="bi bi-play-fill"></i></button>
+            <button class="btn-seek"><i class="bi bi-arrow-clockwise"></i></button>
+          </div>
         </div>
-        <div class="audio-timeline">
-          <span>01:20</span>
-          <div class="audio-progress-bar"><div class="audio-progress-fill" style="width: 30%"></div></div>
-          <span>04:00</span>
-        </div>
-        <div class="audio-controls-row">
-          <button class="btn-seek"><i class="bi bi-arrow-counterclockwise"></i></button>
-          <button class="btn-play-large"><i class="bi bi-play-fill"></i></button>
-          <button class="btn-seek"><i class="bi bi-arrow-clockwise"></i></button>
-        </div>
-      </div>
-
+      }
       <!-- Video Player (Moved Below Audio) -->
-      <div class="video-player-card" *ngIf="!isLoading && predictionData?.video_url" style="margin-top: 1.5rem;">
-        <video controls autoplay muted loop playsinline [src]="predictionData.video_url" width="100%" style="border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></video>
-      </div>
-
-
+      @if (!isLoading && predictionData?.video_url) {
+        <div class="video-player-card" style="margin-top: 1.5rem;">
+          <video controls autoplay muted loop playsinline [src]="predictionData.video_url" width="100%" style="border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></video>
+        </div>
+      }
       <!-- Empty space to fix scrolling issue -->
       <div style="height: 90px;"></div>
-    </ng-container>
+    }
 
   </div>
 </div>

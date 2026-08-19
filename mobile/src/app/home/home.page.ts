@@ -242,6 +242,7 @@ export class HomePage implements OnInit {
         this.currentTab = prevState.tab;
         this.activeServiceFlow = prevState.flow;
         this.serviceStep = prevState.step;
+        this.syncQueryParams();
         return true;
       }
     }
@@ -256,10 +257,22 @@ export class HomePage implements OnInit {
     } else if (this.currentTab !== 'home') {
       this.currentTab = 'home';
       this.navHistory = [{ tab: 'home', flow: null, step: 1 }];
+      this.syncQueryParams();
       return true;
     }
 
     return false;
+  }
+
+  private syncQueryParams() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { 
+        tab: this.currentTab === 'home' && !this.activeServiceFlow ? null : this.currentTab, 
+        flow: this.activeServiceFlow 
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 
   getHeaderTitle(): string {

@@ -1,6 +1,6 @@
 import { environment } from '../../../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
@@ -20,7 +20,7 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-matching',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner],
+  imports: [FormsModule, IonSpinner],
   template: `
     <div class="matching-wrapper">
 

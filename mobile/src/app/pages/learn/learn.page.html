@@ -1,76 +1,88 @@
 <!-- ================= FIXED STICKY TOP HEADER NAVBAR ================= -->
-<ion-header class="app-top-navbar ion-no-border" *ngIf="currentScreen !== 'dashboard'">
-  <div class="top-navbar-content">
-    
-    <!-- Left Section: Back Button + Screen Title -->
-    <div class="top-nav-left">
-      <button 
-        type="button" 
-        class="top-nav-back-btn" 
-        (click)="handleBack()" 
-        title="Go Back">
-        <i class="bi bi-arrow-left"></i>
-      </button>
-
-      <div class="top-nav-title-box">
-        <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
+@if (currentScreen !== 'dashboard') {
+  <ion-header class="app-top-navbar ion-no-border">
+    <div class="top-navbar-content">
+      <!-- Left Section: Back Button + Screen Title -->
+      <div class="top-nav-left">
+        <button
+          type="button"
+          class="top-nav-back-btn"
+          (click)="handleBack()"
+          title="Go Back">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div class="top-nav-title-box">
+          <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
+        </div>
       </div>
     </div>
-
-
-  </div>
-</ion-header>
+  </ion-header>
+}
 
 <ion-content [fullscreen]="true" class="edu-content">
 
-  <app-learn-intro *ngIf="currentScreen === 'intro'" (next)="goToRules()"></app-learn-intro>
-  <app-learn-rules *ngIf="currentScreen === 'rules'" (next)="agreeAndContinue()"></app-learn-rules>
-  <app-learn-enroll *ngIf="currentScreen === 'enroll'" [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
-  <app-learn-payment *ngIf="currentScreen === 'payment'" (next)="payAndStart()"></app-learn-payment>
-  
+  @if (currentScreen === 'intro') {
+    <app-learn-intro (next)="goToRules()"></app-learn-intro>
+  }
+  @if (currentScreen === 'rules') {
+    <app-learn-rules (next)="agreeAndContinue()"></app-learn-rules>
+  }
+  @if (currentScreen === 'enroll') {
+    <app-learn-enroll [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
+  }
+  @if (currentScreen === 'payment') {
+    <app-learn-payment (next)="payAndStart()"></app-learn-payment>
+  }
+
   <!-- Post Payment Login Screen -->
-  <div class="post-payment-login-container" *ngIf="currentScreen === 'post-payment-login'">
-    <div class="success-card">
-      <span class="success-icon">🎉</span>
-      <h2>கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!</h2>
-      <p class="success-info-text">
-        வகுப்பின் உள்நுழைவு விவரங்கள் உங்களது மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.
-      </p>
-      
-      <div class="details-alert-box">
-        <p><strong>உள்நுழைவு பயனர் ஐடி:</strong> {{ generatedLoginId }}</p>
-        <p><strong>கடவுச்சொல்:</strong> {{ generatedPassword }}</p>
-        <span class="test-notice-label">* (சோதனை நோக்கத்திற்காக இது திரையில் காட்டப்படுகிறது)</span>
+  @if (currentScreen === 'post-payment-login') {
+    <div class="post-payment-login-container">
+      <div class="success-card">
+        <span class="success-icon">🎉</span>
+        <h2>கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!</h2>
+        <p class="success-info-text">
+          வகுப்பின் உள்நுழைவு விவரங்கள் உங்களது மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.
+        </p>
+        <div class="details-alert-box">
+          <p><strong>உள்நுழைவு பயனர் ஐடி:</strong> {{ generatedLoginId }}</p>
+          <p><strong>கடவுச்சொல்:</strong> {{ generatedPassword }}</p>
+          <span class="test-notice-label">* (சோதனை நோக்கத்திற்காக இது திரையில் காட்டப்படுகிறது)</span>
+        </div>
+      </div>
+      <div class="login-form-box">
+        <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
+        <div class="input-field-group">
+          <label>பயனர் ஐடி (User ID) *</label>
+          <input type="text" [(ngModel)]="loginIdInput" placeholder="EDU-XXXX">
+        </div>
+        <div class="input-field-group">
+          <label>கடவுச்சொல் (Password) *</label>
+          <input type="password" [(ngModel)]="loginPasswordInput" placeholder="கடவுச்சொல் உள்ளிடவும்">
+        </div>
+        @if (loginErrorMessage) {
+          <p class="error-msg-txt">{{ loginErrorMessage }}</p>
+        }
+        <button class="action-login-btn" (click)="loginToCourse()">உள்நுழைக ➔</button>
       </div>
     </div>
+  }
 
-    <div class="login-form-box">
-      <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
-      <div class="input-field-group">
-        <label>பயனர் ஐடி (User ID) *</label>
-        <input type="text" [(ngModel)]="loginIdInput" placeholder="EDU-XXXX">
-      </div>
-      <div class="input-field-group">
-        <label>கடவுச்சொல் (Password) *</label>
-        <input type="password" [(ngModel)]="loginPasswordInput" placeholder="கடவுச்சொல் உள்ளிடவும்">
-      </div>
-      
-      <p class="error-msg-txt" *ngIf="loginErrorMessage">{{ loginErrorMessage }}</p>
-
-      <button class="action-login-btn" (click)="loginToCourse()">உள்நுழைக ➔</button>
-    </div>
-  </div>
-
-  <app-learn-dashboard *ngIf="currentScreen === 'dashboard' && !activeQuiz && !showCertificate" 
-                       [enrollForm]="enrollForm" 
-                       [(dashboardTab)]="dashboardTab"
-                       [(currentLessonView)]="currentLessonView"
-                       (logout)="logoutCourse()"
-                       (startQuiz)="activeQuiz = true"
-                       (viewCertificate)="showCertificate = true">
-  </app-learn-dashboard>
+  @if (currentScreen === 'dashboard' && !activeQuiz && !showCertificate) {
+    <app-learn-dashboard
+      [enrollForm]="enrollForm"
+      [(dashboardTab)]="dashboardTab"
+      [(currentLessonView)]="currentLessonView"
+      (logout)="logoutCourse()"
+      (startQuiz)="activeQuiz = true"
+      (viewCertificate)="showCertificate = true">
+    </app-learn-dashboard>
+  }
 
   <!-- Overlays -->
-  <app-learn-quiz *ngIf="activeQuiz" (close)="activeQuiz = false"></app-learn-quiz>
-  <app-learn-certificate *ngIf="showCertificate" [enrollForm]="enrollForm" (close)="showCertificate = false"></app-learn-certificate>
+  @if (activeQuiz) {
+    <app-learn-quiz (close)="activeQuiz = false"></app-learn-quiz>
+  }
+  @if (showCertificate) {
+    <app-learn-certificate [enrollForm]="enrollForm" (close)="showCertificate = false"></app-learn-certificate>
+  }
 </ion-content>
