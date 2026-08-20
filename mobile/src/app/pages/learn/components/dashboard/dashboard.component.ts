@@ -64,6 +64,12 @@ export class LearnDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const savedLesson = sessionStorage.getItem('current_selected_lesson');
+    if (savedLesson) {
+      try {
+        this.selectedLesson = JSON.parse(savedLesson);
+      } catch {}
+    }
     this.loadCoursesAndSyllabus();
     this.loadMyBookOrders(); // Load orders first or concurrently
     this.loadSeminars();
@@ -348,6 +354,7 @@ export class LearnDashboardComponent implements OnInit {
     if (this.currentLessonView === 'detail') {
       this.currentLessonView = 'list';
       this.currentLessonViewChange.emit('list');
+      sessionStorage.removeItem('current_selected_lesson');
     } else if (this.dashboardTab !== 'home') {
       this.setTab('home');
     } else {
@@ -359,6 +366,7 @@ export class LearnDashboardComponent implements OnInit {
     this.setTab('lessons');
     this.currentLessonView = 'list';
     this.currentLessonViewChange.emit('list');
+    sessionStorage.removeItem('current_selected_lesson');
     // Auto-open syllabus or scroll to exam
     this.chapters.forEach(c => c.isOpen = true);
     this.showToast('தேர்வுகள் பிரிவிற்கு நகர்த்தப்பட்டது. பாடத்தைத் தேர்வுசெய்து தேர்வினை எழுதலாம்.', 'secondary');
@@ -368,6 +376,7 @@ export class LearnDashboardComponent implements OnInit {
     this.setTab('lessons');
     this.currentLessonView = 'list';
     this.currentLessonViewChange.emit('list');
+    sessionStorage.removeItem('current_selected_lesson');
     this.chapters.forEach(c => c.isOpen = true);
   }
 
@@ -383,6 +392,8 @@ export class LearnDashboardComponent implements OnInit {
     // Add custom properties for handling different content types
     (this.selectedLesson as any).type = lesson.type;
     (this.selectedLesson as any).url = lesson.url;
+
+    sessionStorage.setItem('current_selected_lesson', JSON.stringify(this.selectedLesson));
 
     this.currentLessonView = 'detail';
     this.currentLessonViewChange.emit('detail');

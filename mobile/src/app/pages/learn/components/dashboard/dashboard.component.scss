@@ -700,10 +700,23 @@ $color-orange: #F49320;
   }
 
   .status-circle {
-    font-size: 1rem;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, #FFF9EB 0%, #F5E8C8 100%);
+    color: $color-maroon;
+    border: 1px solid rgba($color-gold, 0.3);
+    flex-shrink: 0;
+
+    .bi-image-fill { color: #0284c7; }
+    .bi-play-circle-fill { color: #dc2626; }
+    .bi-headphones { color: #7c3aed; }
+    .bi-file-earmark-pdf-fill { color: #ea580c; }
+    .bi-broadcast { color: #16a34a; }
   }
 
   .l-details {
@@ -1501,8 +1514,24 @@ $color-orange: #F49320;
     }
 
     .tile-icon {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       margin-right: 0.85rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FFF9EB 0%, #F5E8C8 100%);
+      color: $color-maroon;
+      border: 1px solid rgba($color-gold, 0.25);
+      flex-shrink: 0;
+
+      &.red {
+        background: linear-gradient(135deg, #FFEBEF 0%, #FDD2DB 100%);
+        color: #c62828;
+        border-color: rgba(198, 40, 40, 0.2);
+      }
     }
 
     .tile-text {

@@ -110,67 +110,93 @@
     @if (currentLessonView === 'detail') {
       <div>
         <!-- Back Button to Syllabus -->
-        <button class="back-to-syllabus-btn" (click)="currentLessonView = 'list'">
-          ← பாடத்திட்டம் (Back to Syllabus)
+        <button class="back-to-syllabus-btn" (click)="currentLessonView = 'list'; currentLessonViewChange.emit('list')">
+          <i class="bi bi-arrow-left me-1"></i> பாடத்திட்டம் (Back to Syllabus)
         </button>
-        <!-- Video Player -->
-        <div class="lesson-video-player-container">
-          <div class="video-placeholder" (click)="playVideo()">
-            <span class="play-btn-large">▶</span>
-            <img src="assets/images/user_avatar.png" alt="Teacher" class="teacher-bg-img">
-          </div>
-          <div class="video-info">
-            <h2>{{ selectedLesson.title }}</h2>
-            <span class="v-stats">👤 {{ selectedLesson.instructor }} • {{ selectedLesson.views }} பார்வைகள்</span>
-          </div>
-        </div>
-        <!-- Audio Player Row -->
-        <div class="audio-player-box">
-          <h3>🎧 ஒலி பாடங்கள் (Audio)</h3>
-          <div class="audio-control-row">
-            <button class="audio-play-btn" (click)="playVideo()">▶</button>
-            <div class="audio-progress">
-              <span class="time-elapsed">12:05</span>
-              <div class="progress-bar-bg"><div class="progress-fill" style="width: 45%;"></div></div>
-              <span class="time-total">26:00</span>
+
+        <!-- Video Player (If Video Type) -->
+        @if (selectedLesson?.type === 'video') {
+          <div class="lesson-video-player-container">
+            <div class="video-placeholder" (click)="playVideo()">
+              <span class="play-btn-large"><i class="bi bi-play-fill"></i></span>
+              <img src="assets/images/astro_service_bg.png" alt="Video Lesson" class="teacher-bg-img">
+            </div>
+            <div class="video-info">
+              <h2>{{ selectedLesson?.title }}</h2>
+              <span class="v-stats"><i class="bi bi-play-circle-fill me-1" style="color: #dc2626;"></i> வீடியோ பாடம் • {{ selectedLesson?.duration || '15:00' }}</span>
             </div>
           </div>
-          <div class="audio-track-item" (click)="playVideo()">
-            <span>✓</span>
-            <strong>மூச்சுப் பயிற்சி</strong>
-            <span>15 நிமிடங்கள்</span>
+        }
+
+        <!-- Image Viewer (If Image Type) -->
+        @if (selectedLesson?.type === 'image') {
+          <div class="lesson-video-player-container">
+            <div class="video-placeholder" style="cursor: default; min-height: 200px; display: flex; align-items: center; justify-content: center; background: #1e293b;">
+              <img [src]="selectedLesson?.url || 'assets/images/astro_service_bg.png'" alt="Lesson Image" class="teacher-bg-img" style="object-fit: contain;">
+            </div>
+            <div class="video-info">
+              <h2>{{ selectedLesson?.title }}</h2>
+              <span class="v-stats"><i class="bi bi-image-fill me-1" style="color: #0284c7;"></i> புகைப்படப் பாடம்</span>
+            </div>
           </div>
-        </div>
-        <!-- Download Notes -->
-        <div class="study-documents-box">
-          <h3>📁 படிப்பு ஆவணங்கள்</h3>
-          <div class="doc-download-item" (click)="downloadPDF('பாடக்குறிப்புகள்')">
-            <div class="doc-left">
-              <span class="doc-icon">📄</span>
-              <div>
-                <strong>பாடக்குறிப்புகள்</strong>
-                <span>PDF • 2.6 MB</span>
+        }
+
+        <!-- Audio Player Row (If Audio Type) -->
+        @if (selectedLesson?.type === 'audio') {
+          <div class="audio-player-box">
+            <h3><i class="bi bi-headphones me-2" style="color: #7c3aed;"></i>{{ selectedLesson?.title }}</h3>
+            <div class="audio-control-row">
+              <button class="audio-play-btn" (click)="playVideo()"><i class="bi bi-play-fill"></i></button>
+              <div class="audio-progress">
+                <span class="time-elapsed">00:00</span>
+                <div class="progress-bar-bg"><div class="progress-fill" style="width: 15%;"></div></div>
+                <span class="time-total">{{ selectedLesson?.duration || '15:00' }}</span>
               </div>
             </div>
-            <button class="download-btn">📥</button>
           </div>
-          <div class="doc-download-item" (click)="downloadPDF('மந்திரங்கள்')">
-            <div class="doc-left">
-              <span class="doc-icon">📄</span>
-              <div>
-                <strong>மந்திரங்கள்</strong>
-                <span>TXT • 150 KB</span>
+        }
+
+        <!-- Download Notes (If PDF Type) -->
+        @if (selectedLesson?.type === 'pdf') {
+          <div class="study-documents-box">
+            <h3><i class="bi bi-file-earmark-pdf-fill me-2" style="color: #dc2626;"></i>பாடக்குறிப்புகள் (PDF)</h3>
+            <div class="doc-download-item" (click)="downloadPDF(selectedLesson?.title, selectedLesson?.url)">
+              <div class="doc-left">
+                <span class="doc-icon"><i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626;"></i></span>
+                <div>
+                  <strong>{{ selectedLesson?.title }}</strong>
+                  <span>PDF ஆவணம் • பதிவிறக்கம் செய்ய கிளிக் செய்க</span>
+                </div>
               </div>
+              <button class="download-btn"><i class="bi bi-download"></i></button>
             </div>
-            <button class="download-btn">📥</button>
           </div>
-        </div>
-        <!-- Description -->
-        <div class="lesson-desc-box">
-          <h3>💡 விளக்கவுரை</h3>
-          <p>{{ selectedLesson.description }}</p>
-          <button class="view-full-desc-btn">முழு உரையையும் காண்க</button>
-        </div>
+        }
+
+        <!-- Live Class Link (If Live Type) -->
+        @if (selectedLesson?.type === 'live') {
+          <div class="study-documents-box">
+            <h3><i class="bi bi-broadcast me-2" style="color: #16a34a;"></i>நேரலை வகுப்பு</h3>
+            <div class="doc-download-item" (click)="openMeeting(selectedLesson?.url)">
+              <div class="doc-left">
+                <span class="doc-icon"><i class="bi bi-broadcast" style="color: #16a34a;"></i></span>
+                <div>
+                  <strong>{{ selectedLesson?.title }}</strong>
+                  <span>நேரலை வகுப்பில் இணைய கிளிக் செய்க</span>
+                </div>
+              </div>
+              <button class="download-btn" style="color: #16a34a;"><i class="bi bi-box-arrow-up-right"></i></button>
+            </div>
+          </div>
+        }
+
+        <!-- Description (Dynamic from DB) -->
+        @if (selectedLesson?.description) {
+          <div class="lesson-desc-box">
+            <h3><i class="bi bi-lightbulb-fill me-2" style="color: #f59e0b;"></i>விளக்கவுரை</h3>
+            <p>{{ selectedLesson?.description }}</p>
+          </div>
+        }
       </div>
     }
     <!-- ================= LIST VIEW (SYLLABUS ONLY) ================= -->
@@ -190,25 +216,25 @@
                       <div class="prog-fill" [style.width.%]="c.progress"></div>
                     </div>
                   </div>
-                  <span class="accordion-arrow">{{ c.isOpen ? '▼' : '▲' }}</span>
+                  <span class="accordion-arrow"><i class="bi" [class.bi-chevron-down]="c.isOpen" [class.bi-chevron-right]="!c.isOpen"></i></span>
                 </div>
                 @if (c.isOpen) {
                   <div class="lessons-sub-list">
                     @for (l of c.lessons; track l) {
                       <div class="lesson-sub-item" [class.completed]="l.completed" (click)="selectCourseLesson(l); $event.stopPropagation()">
                         <span class="status-circle">
-                          @if (l.type === 'video') { 🎥 }
-                          @if (l.type === 'audio') { 🎧 }
-                          @if (l.type === 'pdf') { 📄 }
-                          @if (l.type === 'live') { 🔴 }
-                          @if (l.type === 'image') { 🖼️ }
+                          @if (l.type === 'video') { <i class="bi bi-play-circle-fill"></i> }
+                          @if (l.type === 'audio') { <i class="bi bi-headphones"></i> }
+                          @if (l.type === 'pdf') { <i class="bi bi-file-earmark-pdf-fill"></i> }
+                          @if (l.type === 'live') { <i class="bi bi-broadcast"></i> }
+                          @if (l.type === 'image') { <i class="bi bi-image-fill"></i> }
                         </span>
                         <div class="l-details">
                           <h4>{{ l.title }}</h4>
                           <span>{{ l.type | uppercase }} • {{ l.duration || 'N/A' }}</span>
                         </div>
                         @if (!l.completed) {
-                          <span class="lock-icon">🔒</span>
+                          <span class="lock-icon"><i class="bi bi-lock-fill"></i></span>
                         }
                       </div>
                     }
@@ -229,7 +255,7 @@
     <!-- Search -->
     <div class="lib-search-bar">
       <input type="text" placeholder="புத்தகங்கள், ஆசிரியர்கள் அல்லது தலைப்புகள்...">
-      <span class="search-btn-icon">🔍</span>
+      <span class="search-btn-icon"><i class="bi bi-search"></i></span>
     </div>
 
     <!-- Book Lists -->
@@ -266,7 +292,7 @@
     <div class="modern-profile-header-card">
       <div class="mp-avatar-glow">
         <div class="mp-avatar-inner">
-          <span class="mp-avatar-emoji">👤</span>
+          <span class="mp-avatar-emoji"><i class="bi bi-person-fill"></i></span>
         </div>
       </div>
       <div class="mp-info">
@@ -279,14 +305,14 @@
     <!-- Options List (Modern Glass Tiles) -->
     <div class="modern-options-grid">
       <div class="modern-option-tile" (click)="setTab('lessons')">
-        <span class="tile-icon">📚</span>
+        <span class="tile-icon"><i class="bi bi-journal-bookmark-fill"></i></span>
         <span class="tile-text">எனது பாடங்கள்</span>
-        <span class="tile-arrow">➔</span>
+        <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
       </div>
       <div class="modern-option-tile" (click)="viewCertificate.emit()">
-        <span class="tile-icon">🏆</span>
+        <span class="tile-icon"><i class="bi bi-trophy-fill"></i></span>
         <span class="tile-text">எனது சான்றிதழ்கள்</span>
-        <span class="tile-arrow">➔</span>
+        <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
       </div>
       <div class="modern-option-tile" (click)="setTab('library')">
         <span class="tile-icon"><i class="bi bi-book-half"></i></span>
