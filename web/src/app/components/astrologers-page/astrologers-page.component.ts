@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -99,7 +100,7 @@ export class AstrologersPageComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/public/astrologers`).subscribe({
       next: (res) => {
         this.astrologers = res.astrologers || [];
         this.isLoading = false;

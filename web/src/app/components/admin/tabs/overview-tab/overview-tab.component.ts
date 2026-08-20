@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -54,7 +55,7 @@ export class OverviewTabComponent implements OnInit {
   loadMetrics(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/dashboard-metrics', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/dashboard-metrics`, headers).subscribe({
       next: (res) => {
         this.metrics = res.metrics;
         this.isLoading = false;
@@ -69,7 +70,7 @@ export class OverviewTabComponent implements OnInit {
 
   loadTeamList(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/team', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/team`, headers).subscribe({
       next: (res) => {
         this.teamList = res.admins || [];
         this.cdr.detectChanges();
@@ -80,7 +81,7 @@ export class OverviewTabComponent implements OnInit {
 
   loadBanners(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/banners', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/banners`, headers).subscribe({
       next: (res) => {
         this.banners = res.banners || [];
         this.cdr.detectChanges();
@@ -115,8 +116,8 @@ export class OverviewTabComponent implements OnInit {
     }
     const headers = this.authService.getAuthHeaders();
     const url = this.editingBanner.id 
-      ? `http://127.0.0.1:8000/api/admin/banners/${this.editingBanner.id}` 
-      : 'http://127.0.0.1:8000/api/admin/banners';
+      ? `${environment.apiUrl}/admin/banners/${this.editingBanner.id}` 
+      : `${environment.apiUrl}/admin/banners`;
     
     const req = this.editingBanner.id 
       ? this.http.put<any>(url, this.editingBanner, headers) 
@@ -142,7 +143,7 @@ export class OverviewTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'banners');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url && this.editingBanner) {
           this.editingBanner.image_url = res.url;
@@ -161,7 +162,7 @@ export class OverviewTabComponent implements OnInit {
   deleteBanner(id: number): void {
     if (!confirm('Are you sure you want to delete this banner?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/banners/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/banners/${id}`, headers).subscribe({
       next: () => this.loadBanners(),
       error: () => alert('Failed to delete banner.')
     });

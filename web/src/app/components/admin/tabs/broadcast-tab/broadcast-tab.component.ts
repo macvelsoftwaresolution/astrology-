@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +41,7 @@ export class BroadcastTabComponent implements OnInit {
 
   loadNotificationStatus(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/notifications/daily-rasi-status', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/notifications/daily-rasi-status`, headers).subscribe({
       next: (res) => {
         this.dailyNotifEnabled = res.enabled ?? true;
         this.dailyNotifOptedInCount = res.opted_in_users ?? 0;
@@ -54,7 +55,7 @@ export class BroadcastTabComponent implements OnInit {
     this.dailyNotifLoading = true;
     const headers = this.authService.getAuthHeaders();
     const newStatus = !this.dailyNotifEnabled;
-    this.http.put<any>('http://127.0.0.1:8000/api/admin/notifications/daily-rasi-toggle', { enabled: newStatus }, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/notifications/daily-rasi-toggle`, { enabled: newStatus }, headers).subscribe({
       next: (res) => {
         this.dailyNotifEnabled = res.enabled;
         this.dailyNotifLoading = false;
@@ -74,7 +75,7 @@ export class BroadcastTabComponent implements OnInit {
     }
 
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/admin/notifications/broadcast', this.broadcastForm, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/notifications/broadcast`, this.broadcastForm, headers).subscribe({
       next: (res) => {
         this.broadcastMsg = res.message || '✅ புஷ் அறிவிப்பு வெற்றிகரமாக அனுப்பப்பட்டது!';
         this.broadcastForm.title = '';

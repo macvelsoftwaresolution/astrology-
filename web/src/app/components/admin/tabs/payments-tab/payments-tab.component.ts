@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-payments-tab',
@@ -30,7 +31,7 @@ export class PaymentsTabComponent implements OnInit {
   loadPayments(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/payment-transactions', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/payment-transactions`, headers).subscribe({
       next: (res) => {
         this.paymentTransactions = res.payments || [];
         this.isLoading = false;

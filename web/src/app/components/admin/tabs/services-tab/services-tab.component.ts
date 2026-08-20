@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -51,7 +52,7 @@ export class ServicesTabComponent implements OnInit {
 
   loadBookings(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/bookings', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/bookings`, headers).subscribe({
       next: (res) => {
         this.serviceBookings = res || [];
         this.cdr.detectChanges();
@@ -108,7 +109,7 @@ export class ServicesTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'charts');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url && this.fulfillForm) {
           this.fulfillForm.chart_url = res.url;
@@ -127,7 +128,7 @@ export class ServicesTabComponent implements OnInit {
   submitFulfill(): void {
     if (!this.selectedBookingForFulfill) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`http://127.0.0.1:8000/api/admin/bookings/${this.selectedBookingForFulfill.id}/fulfill`, this.fulfillForm, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/bookings/${this.selectedBookingForFulfill.id}/fulfill`, this.fulfillForm, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Booking status updated successfully!');
         this.selectedBookingForFulfill = null;
@@ -140,7 +141,7 @@ export class ServicesTabComponent implements OnInit {
   deleteBooking(id: any): void {
     if (!confirm(`Are you sure you want to delete booking #${id}?`)) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/bookings/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/bookings/${id}`, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Booking deleted successfully!');
         this.loadBookings();
@@ -186,7 +187,7 @@ export class ServicesTabComponent implements OnInit {
     };
 
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/bookings/create', payload, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/bookings/create`, payload, headers).subscribe({
       next: (res) => {
         alert(`Booking #${res.order_id || 'AST'} created successfully!`);
         this.manualBookingModalOpen = false;

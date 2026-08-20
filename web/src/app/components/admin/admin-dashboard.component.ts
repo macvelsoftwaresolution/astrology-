@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { environment } from '../../../environments/environment';
 
 // Subcomponents
 import { OverviewTabComponent } from './tabs/overview-tab/overview-tab.component';
@@ -42,7 +43,7 @@ import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   currentTab = 'overview';
   currentUser: User | null = null;
   mobileMenuOpen = false;
@@ -64,6 +65,14 @@ export class AdminDashboardComponent implements OnInit {
   adminProfileSuccessMsg = '';
   adminProfileErrMsg = '';
 
+  // Live Notifications State
+  notificationsOpen = false;
+  notifications: any[] = [];
+  unreadNotificationsCount = 0;
+  isLoadingNotifications = false;
+  readNotificationIds: Set<string> = new Set();
+  private notifInterval: any = null;
+
   constructor(
     private authService: AuthService,
     public translationService: TranslationService,
@@ -80,6 +89,26 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getUser();
+    
+    // Load read notifications from localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('admin_read_notifications');
+        if (stored) {
+          this.readNotificationIds = new Set(JSON.parse(stored));
+        }
+      } catch {
+        this.readNotificationIds = new Set();
+      }
+
+      this.loadNotifications();
+
+      // Poll notifications every 30 seconds for live real-time feel
+      this.notifInterval = setInterval(() => {
+        this.loadNotifications();
+      }, 30000);
+    }
+
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
         this.currentTab = params['tab'];
@@ -92,6 +121,140 @@ export class AdminDashboardComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.notifInterval) {
+      clearInterval(this.notifInterval);
+      this.notifInterval = null;
+    }
+  }
+
+  loadNotifications(): void {
+    if (typeof window === 'undefined') return;
+    this.isLoadingNotifications = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/admin/notifications/activity-alerts`, headers).subscribe({
+      next: (res) => {
+        const alerts = res.alerts || [];
+        this.notifications = alerts.map((a: any) => ({
+          ...a,
+          is_read: this.readNotificationIds.has(a.id)
+        }));
+        this.unreadNotificationsCount = this.notifications.filter(n => !n.is_read).length;
+        this.isLoadingNotifications = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingNotifications = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  toggleNotifications(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationsOpen = !this.notificationsOpen;
+    if (this.notificationsOpen) {
+      this.loadNotifications();
+    }
+  }
+
+  closeNotifications(): void {
+    this.notificationsOpen = false;
+    this.cdr.detectChanges();
+  }
+
+  openNotification(n: any): void {
+    // 1. Mark as read
+    this.readNotificationIds.add(n.id);
+    n.is_read = true;
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
+      } catch {}
+    }
+    this.unreadNotificationsCount = this.notifications.filter(item => !item.is_read).length;
+
+    // 2. Close notification dropdown
+    this.notificationsOpen = false;
+
+    // 3. Navigate directly to target tab
+    if (n.target_tab) {
+      this.selectTab(n.target_tab);
+    }
+    this.cdr.detectChanges();
+  }
+
+  markAllNotificationsRead(): void {
+    this.notifications.forEach(n => {
+      n.is_read = true;
+      this.readNotificationIds.add(n.id);
+    });
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
+      } catch {}
+    }
+    this.unreadNotificationsCount = 0;
+    this.cdr.detectChanges();
+  }
+
+  getNotificationIcon(type: string): string {
+    switch (type) {
+      case 'booking':
+        return 'bi-calendar-check-fill';
+      case 'book_order':
+        return 'bi-box-seam-fill';
+      case 'submission':
+        return 'bi-award-fill';
+      case 'payment':
+        return 'bi-credit-card-2-front-fill';
+      case 'marriage_match':
+        return 'bi-heart-fill';
+      case 'user':
+        return 'bi-person-plus-fill';
+      default:
+        return 'bi-bell-fill';
+    }
+  }
+
+  getNotificationColorClass(type: string): string {
+    switch (type) {
+      case 'booking':
+        return 'notif-icon-amber';
+      case 'book_order':
+        return 'notif-icon-blue';
+      case 'submission':
+        return 'notif-icon-purple';
+      case 'payment':
+        return 'notif-icon-emerald';
+      case 'marriage_match':
+        return 'notif-icon-rose';
+      case 'user':
+        return 'notif-icon-cyan';
+      default:
+        return 'notif-icon-gold';
+    }
+  }
+
+  getCurrentTabTitle(): string {
+    const titles: Record<string, string> = {
+      'overview': 'nav.overview',
+      'team': 'nav.team',
+      'services': 'nav.services',
+      'rasi-editor': 'nav.rasi_editor',
+      'matches': 'nav.matches',
+      'lms': 'nav.lms',
+      'courier': 'nav.courier',
+      'grading': 'nav.grading',
+      'payments': 'nav.payments',
+      'broadcast': 'nav.broadcast',
+      'users': 'nav.users'
+    };
+    return titles[this.currentTab] || 'nav.overview';
   }
 
   toggleAstrologyCategory(): void {
@@ -151,7 +314,7 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>('http://127.0.0.1:8000/api/user/profile', payload, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/user/profile`, payload, headers).subscribe({
       next: (res) => {
         this.adminProfileSaving = false;
         if (res.user) {
@@ -179,3 +342,4 @@ export class AdminDashboardComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+

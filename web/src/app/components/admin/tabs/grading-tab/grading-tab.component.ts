@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -33,7 +34,7 @@ export class GradingTabComponent implements OnInit {
   loadSubmissions(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/submissions', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/submissions`, headers).subscribe({
       next: (res) => {
         this.submissions = res.submissions || [];
         this.isLoading = false;
@@ -58,7 +59,7 @@ export class GradingTabComponent implements OnInit {
   saveGrading(): void {
     if (!this.selectedSubmissionForGrading) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/submissions/${this.selectedSubmissionForGrading.id}/evaluate`, this.gradingForm, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/submissions/${this.selectedSubmissionForGrading.id}/evaluate`, this.gradingForm, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Exam evaluated and certificate issued successfully!');
         this.selectedSubmissionForGrading = null;

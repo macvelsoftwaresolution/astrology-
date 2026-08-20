@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -153,7 +154,7 @@ export class RasiEditorTabComponent implements OnInit {
 
   loadRasiPredictions(): void {
     this.rasiPredictionsLoading = true;
-    this.http.get<any>(`http://127.0.0.1:8000/api/rasi-palan?type=${this.rasiEditorType}&date=${this.selectedRasiDate}`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/rasi-palan?type=${this.rasiEditorType}&date=${this.selectedRasiDate}`).subscribe({
       next: (res) => {
         const list = res?.predictions || res?.palans || [];
         if (Array.isArray(list) && list.length > 0) {
@@ -185,7 +186,7 @@ export class RasiEditorTabComponent implements OnInit {
   }
 
   loadPanchangam(): void {
-    this.http.get<any>('http://127.0.0.1:8000/api/panchangam/today').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/panchangam/today`).subscribe({
       next: (res) => {
         if (res && res.panchangam) {
           this.panchangamForm = { ...res.panchangam };
@@ -214,7 +215,7 @@ export class RasiEditorTabComponent implements OnInit {
       date: this.selectedRasiDate
     };
 
-    this.http.put<any>('http://127.0.0.1:8000/api/admin/rasi-palan', payload, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/rasi-palan`, payload, headers).subscribe({
       next: () => {
         this.rasiSaveSuccessMsg = `✅ ${item.rasi_name} ராசிக்கான ${this.rasiEditorType} பலன் சேமிக்கப்பட்டது!`;
         setTimeout(() => {
@@ -237,7 +238,7 @@ export class RasiEditorTabComponent implements OnInit {
       date: this.selectedRasiDate
     };
 
-    this.http.put<any>('http://127.0.0.1:8000/api/admin/rasi-palan', payload, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/rasi-palan`, payload, headers).subscribe({
       next: (res) => {
         this.rasiPublishing = false;
         this.rasiSaveSuccessMsg = res.message || `✅ அனைத்து 12 ராசிகளின் ${this.rasiEditorType} பலன்களும் வெளியிடப்பட்டது!`;
@@ -270,7 +271,7 @@ export class RasiEditorTabComponent implements OnInit {
       ...this.panchangamForm
     };
 
-    this.http.put<any>('http://127.0.0.1:8000/api/admin/panchangam', payload, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/panchangam`, payload, headers).subscribe({
       next: (res) => alert(res.message || 'Panchangam updated successfully!'),
       error: () => alert('Failed to update Panchangam.')
     });
@@ -288,7 +289,7 @@ export class RasiEditorTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'audio');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url && this.rasiPredictions[index]) {
           this.rasiPredictions[index].audio_url = res.url;
@@ -313,7 +314,7 @@ export class RasiEditorTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'videos');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url && this.rasiPredictions[index]) {
           this.rasiPredictions[index].video_url = res.url;

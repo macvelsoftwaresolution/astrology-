@@ -6,30 +6,26 @@
       <h2>{{ 'brand.name' | translate }}</h2>
     </div>
 
-    <div style="display:flex;align-items:center;gap:8px;">
-      <!-- Mobile Language Switcher -->
-      <div class="lang-switcher-container" style="margin:0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <!-- Mobile Notification Bell Button -->
+      <div class="notif-bell-wrapper">
         <button 
           type="button" 
-          class="lang-pill" 
-          [class.active]="translationService.currentLanguage() === 'ta'" 
-          (click)="setLanguage('ta')"
+          class="topbar-icon-btn notif-bell-btn" 
+          [class.active]="notificationsOpen"
+          (click)="toggleNotifications($event)"
+          title="அறிவிப்புகள் / Notifications"
         >
-          தமிழ்
-        </button>
-        <button 
-          type="button" 
-          class="lang-pill" 
-          [class.active]="translationService.currentLanguage() === 'en'" 
-          (click)="setLanguage('en')"
-        >
-          EN
+          <i class="bi bi-bell-fill"></i>
+          @if (unreadNotificationsCount > 0) {
+            <span class="notif-badge-pill">{{ unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount }}</span>
+          }
         </button>
       </div>
 
-      <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
+      <!-- Icon-Only Hamburger Menu Button -->
+      <button class="hamburger-btn" (click)="mobileMenuOpen = !mobileMenuOpen" [title]="mobileMenuOpen ? ('nav.close' | translate) : ('nav.menu' | translate)">
         <i class="bi" [ngClass]="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
-        <span>{{ mobileMenuOpen ? ('nav.close' | translate) : ('nav.menu' | translate) }}</span>
       </button>
     </div>
   </div>
@@ -42,6 +38,23 @@
         <h2>{{ 'brand.name' | translate }}</h2>
         <span class="brand-sub">{{ 'brand.subtitle' | translate }}</span>
       </div>
+
+      <!-- Notification Bell Icon in Sidebar Header -->
+      <div class="notif-bell-wrapper sidebar-notif-wrapper">
+        <button 
+          type="button" 
+          class="sidebar-bell-btn" 
+          [class.active]="notificationsOpen"
+          (click)="toggleNotifications($event)"
+          title="அறிவிப்புகள் / Notifications"
+        >
+          <i class="bi bi-bell-fill"></i>
+          @if (unreadNotificationsCount > 0) {
+            <span class="notif-badge-pill">{{ unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount }}</span>
+          }
+        </button>
+      </div>
+
       <button class="drawer-close-btn" (click)="mobileMenuOpen = false">
         <i class="bi bi-x-lg"></i>
       </button>
@@ -236,6 +249,89 @@
       <app-users-tab></app-users-tab>
     }
   </main>
+
+  <!-- LIVE NOTIFICATIONS DROPDOWN / DRAWER -->
+  @if (notificationsOpen) {
+    <div class="notif-dropdown-backdrop" (click)="closeNotifications()"></div>
+    <div class="notif-dropdown-panel" (click)="$event.stopPropagation()">
+      <!-- Dropdown Header -->
+      <div class="notif-header">
+        <div class="notif-header-title">
+          <i class="bi bi-bell-fill" style="color: #d97706; font-size: 18px;"></i>
+          <h3>{{ 'notifications.title' | translate }}</h3>
+          @if (unreadNotificationsCount > 0) {
+            <span class="notif-count-tag">{{ unreadNotificationsCount }} {{ 'notifications.newBadge' | translate }}</span>
+          }
+        </div>
+        <div class="notif-header-actions">
+          @if (unreadNotificationsCount > 0) {
+            <button type="button" class="btn-text-sm" (click)="markAllNotificationsRead()">
+              <i class="bi bi-check2-all"></i> {{ 'notifications.markAllRead' | translate }}
+            </button>
+          }
+          <button type="button" class="btn-icon-close" (click)="closeNotifications()" title="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dropdown Body -->
+      <div class="notif-body">
+        @if (isLoadingNotifications && notifications.length === 0) {
+          <div class="notif-empty">
+            <i class="bi bi-hourglass-split" style="font-size: 28px; color: #d97706;"></i>
+            <p>{{ 'common.loading' | translate }}</p>
+          </div>
+        } @else if (notifications.length === 0) {
+          <div class="notif-empty">
+            <i class="bi bi-bell-slash" style="font-size: 32px; color: #94a3b8;"></i>
+            <p>{{ 'notifications.noAlerts' | translate }}</p>
+          </div>
+        } @else {
+          <div class="notif-list">
+            @for (n of notifications; track n.id) {
+              <div 
+                class="notif-item" 
+                [class.unread]="!n.is_read"
+                (click)="openNotification(n)"
+              >
+                <div class="notif-icon-box" [ngClass]="getNotificationColorClass(n.type)">
+                  <i class="bi" [ngClass]="getNotificationIcon(n.type)"></i>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-item-top">
+                    <span class="notif-item-title">{{ translationService.currentLanguage() === 'ta' ? n.title : (n.title_en || n.title) }}</span>
+                    @if (n.badge) {
+                      <span class="notif-item-badge">{{ n.badge }}</span>
+                    }
+                  </div>
+                  <p class="notif-item-msg">{{ n.message }}</p>
+                  <div class="notif-item-footer">
+                    <span class="notif-item-time">
+                      <i class="bi bi-clock"></i> {{ n.created_at | date:'dd MMM, hh:mm a' }}
+                    </span>
+                    <span class="notif-item-dest">
+                      <i class="bi bi-arrow-right-short"></i> {{ n.target_tab }}
+                    </span>
+                    @if (!n.is_read) {
+                      <span class="unread-dot"></span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Dropdown Footer -->
+      <div class="notif-footer">
+        <button type="button" class="btn-refresh-notif" (click)="loadNotifications()">
+          <i class="bi bi-arrow-clockwise" [class.spin]="isLoadingNotifications"></i> {{ 'common.refresh' | translate }}
+        </button>
+      </div>
+    </div>
+  }
 
   <!-- ADMIN PROFILE EDIT MODAL -->
   @if (adminProfileModalOpen) {

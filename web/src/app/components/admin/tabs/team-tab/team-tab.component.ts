@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -77,7 +78,7 @@ export class TeamTabComponent implements OnInit {
   loadTeam(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/team', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/team`, headers).subscribe({
       next: (res) => {
         this.teamList = res.admins || [];
         this.isLoading = false;
@@ -97,7 +98,7 @@ export class TeamTabComponent implements OnInit {
     }
 
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/admin/create-admin', this.newAdmin, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/create-admin`, this.newAdmin, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Account created successfully!');
         this.openAddAdminModal = false;
@@ -113,7 +114,7 @@ export class TeamTabComponent implements OnInit {
   deleteTeamMember(id: number): void {
     if (!confirm('Are you sure you want to delete this administrator / astrologer account?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/team/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/team/${id}`, headers).subscribe({
       next: () => {
         alert('Account deleted successfully.');
         this.loadTeam();
@@ -126,7 +127,7 @@ export class TeamTabComponent implements OnInit {
   loadAstrologers(): void {
     this.isAstrologersLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/astrologers', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/astrologers`, headers).subscribe({
       next: (res) => {
         this.astrologersList = res.astrologers || [];
         this.isAstrologersLoading = false;
@@ -237,7 +238,7 @@ export class TeamTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'astrologers');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url && this.selectedAstrologerForManage) {
           this.selectedAstrologerForManage.avatar_url = res.url;
@@ -262,7 +263,7 @@ export class TeamTabComponent implements OnInit {
       return;
     }
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/astrologers/${astro.id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/astrologers/${astro.id}`, headers).subscribe({
       next: () => {
         this.astrologersList = this.astrologersList.filter(a => a.id !== astro.id);
         if (this.selectedAstrologerForManage?.id === astro.id) {
@@ -383,7 +384,7 @@ export class TeamTabComponent implements OnInit {
     this.generateAstrologerMonthCalendar();
 
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/astrologers/${this.selectedAstrologerForManage.id}/availability/toggle`, {
+    this.http.post<any>(`${environment.apiUrl}/admin/astrologers/${this.selectedAstrologerForManage.id}/availability/toggle`, {
       date: dateStr,
       status: targetStatus
     }, headers).subscribe({
@@ -444,7 +445,7 @@ export class TeamTabComponent implements OnInit {
   saveAstrologerSlots(): void {
     if (!this.selectedAstrologerForManage) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`http://127.0.0.1:8000/api/admin/astrologers/${this.selectedAstrologerForManage.id}/slots`, {
+    this.http.put<any>(`${environment.apiUrl}/admin/astrologers/${this.selectedAstrologerForManage.id}/slots`, {
       slots: this.selectedAstrologerForManage.available_slots
     }, headers).subscribe({
       next: () => {
@@ -467,7 +468,7 @@ export class TeamTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
 
     if (this.isCreatingNewAstrologer || !this.selectedAstrologerForManage.id) {
-      this.http.post<any>('http://127.0.0.1:8000/api/admin/astrologers', this.selectedAstrologerForManage, headers).subscribe({
+      this.http.post<any>(`${environment.apiUrl}/admin/astrologers`, this.selectedAstrologerForManage, headers).subscribe({
         next: (res) => {
           this.astrologerSaving = false;
           this.astrologerSuccessMsg = '✅ புதிய ஜோதிடர் வெற்றிகரமாக சேர்க்கப்பட்டார்!';
@@ -491,7 +492,7 @@ export class TeamTabComponent implements OnInit {
         }
       });
     } else {
-      this.http.put<any>(`http://127.0.0.1:8000/api/admin/astrologers/${this.selectedAstrologerForManage.id}`, this.selectedAstrologerForManage, headers).subscribe({
+      this.http.put<any>(`${environment.apiUrl}/admin/astrologers/${this.selectedAstrologerForManage.id}`, this.selectedAstrologerForManage, headers).subscribe({
         next: (res) => {
           this.astrologerSaving = false;
           this.astrologerSuccessMsg = '✅ ஜோதிடர் விவரங்கள் வெற்றிகரமாக சேமிக்கப்பட்டன!';

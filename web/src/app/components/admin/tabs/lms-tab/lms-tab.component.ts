@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -72,7 +73,7 @@ export class LmsTabComponent implements OnInit {
   loadExams(): void {
     const headers = this.authService.getAuthHeaders();
     if (this.selectedCategory) {
-      this.http.get<any>(`http://127.0.0.1:8000/api/public/exams/${this.selectedCategory}`, headers).subscribe({
+      this.http.get<any>(`${environment.apiUrl}/public/exams/${this.selectedCategory}`, headers).subscribe({
         next: (res) => {
           this.exams = res.exams || [];
           // If we are currently in exam-studio and editing an exam, update its questions
@@ -126,8 +127,8 @@ export class LmsTabComponent implements OnInit {
     if (!this.activeExamWizard.title) return;
     const headers = this.authService.getAuthHeaders();
     const url = this.activeExamWizard.id 
-      ? `http://127.0.0.1:8000/api/admin/exams/${this.activeExamWizard.id}`
-      : `http://127.0.0.1:8000/api/admin/exams`;
+      ? `${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}`
+      : `${environment.apiUrl}/admin/exams`;
 
     const req = this.activeExamWizard.id
       ? this.http.put<any>(url, this.activeExamWizard, headers)
@@ -148,7 +149,7 @@ export class LmsTabComponent implements OnInit {
   deleteExam(id: number): void {
     if (!confirm('Are you sure you want to delete this exam?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/exams/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/exams/${id}`, headers).subscribe({
       next: () => this.loadExams(),
       error: () => alert('Failed to delete exam.')
     });
@@ -162,7 +163,7 @@ export class LmsTabComponent implements OnInit {
     if (!this.newQuestion.question_text || !this.newQuestion.correct_answer) return;
     const headers = this.authService.getAuthHeaders();
     
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/exams/${this.activeExamWizard.id}/questions`, this.newQuestion, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/questions`, this.newQuestion, headers).subscribe({
       next: () => {
         this.loadExams();
         this.newQuestion = { type: 'mcq', question_text: '', options: ['', '', '', ''], correct_answer: '', marks: 1 };
@@ -174,7 +175,7 @@ export class LmsTabComponent implements OnInit {
   deleteQuestion(id: number): void {
     if (!confirm('Are you sure you want to delete this question?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/questions/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/questions/${id}`, headers).subscribe({
       next: () => {
         this.loadExams();
       },
@@ -204,7 +205,7 @@ export class LmsTabComponent implements OnInit {
     
     // We'll trust getAuthHeaders for now, but usually FormData requires boundary. 
     // Usually we just pass headers without Content-Type. Let's see.
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/exams/${this.activeExamWizard.id}/import-pdf`, formData, {
+    this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/import-pdf`, formData, {
       headers: {
         Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
       }
@@ -243,7 +244,7 @@ export class LmsTabComponent implements OnInit {
   loadCourses(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/courses', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/courses`, headers).subscribe({
       next: (res) => {
         this.courses = res.courses || [];
         this.isLoading = false;
@@ -258,7 +259,7 @@ export class LmsTabComponent implements OnInit {
 
   loadSeminars(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/seminars', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/seminars`, headers).subscribe({
       next: (res) => {
         this.seminars = res.seminars || [];
         this.cdr.detectChanges();
@@ -269,7 +270,7 @@ export class LmsTabComponent implements OnInit {
 
   loadMaterials(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/materials', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/materials`, headers).subscribe({
       next: (res) => {
         this.materials = res.materials || [];
         this.cdr.detectChanges();
@@ -304,8 +305,8 @@ export class LmsTabComponent implements OnInit {
     }
     const headers = this.authService.getAuthHeaders();
     const url = this.editingSeminar.id
-      ? `http://127.0.0.1:8000/api/admin/seminars/${this.editingSeminar.id}`
-      : 'http://127.0.0.1:8000/api/admin/seminars';
+      ? `${environment.apiUrl}/admin/seminars/${this.editingSeminar.id}`
+      : `${environment.apiUrl}/admin/seminars`;
 
     const req = this.editingSeminar.id
       ? this.http.put<any>(url, this.editingSeminar, headers)
@@ -323,7 +324,7 @@ export class LmsTabComponent implements OnInit {
   deleteSeminar(id: number): void {
     if (!confirm('Are you sure you want to delete this seminar?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/seminars/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/seminars/${id}`, headers).subscribe({
       next: () => this.loadSeminars(),
       error: () => alert('Failed to delete seminar.')
     });
@@ -354,7 +355,7 @@ export class LmsTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'courses');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url) {
           this.newCourse.thumbnail = res.url;
@@ -380,7 +381,7 @@ export class LmsTabComponent implements OnInit {
     formData.append('folder', 'lessons');
     // Using global /api/upload route as defined in backend
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (isInline) {
           this.newInlineLesson.content_url = res.url;
@@ -407,7 +408,7 @@ export class LmsTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'notes');
 
-    this.http.post<any>('http://127.0.0.1:8000/api/upload', formData).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (res) => {
         if (res && res.url && this.editingMaterial) {
           this.editingMaterial.file_url = res.url;
@@ -430,8 +431,8 @@ export class LmsTabComponent implements OnInit {
     }
     const headers = this.authService.getAuthHeaders();
     const url = this.editingMaterial.id
-      ? `http://127.0.0.1:8000/api/admin/materials/${this.editingMaterial.id}`
-      : 'http://127.0.0.1:8000/api/admin/materials';
+      ? `${environment.apiUrl}/admin/materials/${this.editingMaterial.id}`
+      : `${environment.apiUrl}/admin/materials`;
 
     const req = this.editingMaterial.id
       ? this.http.put<any>(url, this.editingMaterial, headers)
@@ -449,7 +450,7 @@ export class LmsTabComponent implements OnInit {
   deleteMaterial(id: number): void {
     if (!confirm('Are you sure you want to delete this study material?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/materials/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/materials/${id}`, headers).subscribe({
       next: () => this.loadMaterials(),
       error: () => alert('Failed to delete material.')
     });
@@ -543,7 +544,7 @@ export class LmsTabComponent implements OnInit {
   submitModule(): void {
     if (!this.selectedCourseIdForModule || !this.newModuleTitle) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/courses/${this.selectedCourseIdForModule}/modules`, {
+    this.http.post<any>(`${environment.apiUrl}/admin/courses/${this.selectedCourseIdForModule}/modules`, {
       title: this.newModuleTitle
     }, headers).subscribe({
       next: () => {
@@ -571,7 +572,7 @@ export class LmsTabComponent implements OnInit {
     }
 
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`http://127.0.0.1:8000/api/admin/modules/${this.selectedModuleIdForLesson}/lessons`, this.newLesson, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/modules/${this.selectedModuleIdForLesson}/lessons`, this.newLesson, headers).subscribe({
       next: () => {
         alert('Lesson added successfully!');
         this.openLessonModal = false;
@@ -650,7 +651,7 @@ export class LmsTabComponent implements OnInit {
     
     // If it has an id, it's an update (PUT)
     if (this.newCourse.id) {
-      this.http.put<any>(`http://127.0.0.1:8000/api/admin/courses/${this.newCourse.id}`, payload, headers).subscribe({
+      this.http.put<any>(`${environment.apiUrl}/admin/courses/${this.newCourse.id}`, payload, headers).subscribe({
         next: () => {
           alert('Course updated successfully!');
           this.activeView = 'dashboard';
@@ -660,7 +661,7 @@ export class LmsTabComponent implements OnInit {
       });
     } else {
       // Otherwise create new (POST)
-      this.http.post<any>('http://127.0.0.1:8000/api/admin/courses', payload, headers).subscribe({
+      this.http.post<any>(`${environment.apiUrl}/admin/courses`, payload, headers).subscribe({
         next: () => {
           alert('Course created and published live successfully!');
           this.activeView = 'dashboard';
@@ -674,7 +675,7 @@ export class LmsTabComponent implements OnInit {
   deleteCourse(id: number): void {
     if (!confirm('Are you sure you want to delete this course?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/courses/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/courses/${id}`, headers).subscribe({
       next: () => {
         alert('Course deleted successfully.');
         this.loadCourses();

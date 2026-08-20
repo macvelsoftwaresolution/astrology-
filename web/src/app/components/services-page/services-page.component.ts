@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -274,7 +275,7 @@ export class ServicesPageComponent implements OnInit {
   }
 
   fetchAstrologers(): void {
-    this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/public/astrologers`).subscribe({
       next: (res) => {
         this.astrologers = res.astrologers || [];
         if (this.astrologers.length > 0) {
@@ -292,7 +293,7 @@ export class ServicesPageComponent implements OnInit {
   }
 
   fetchAvailability(): void {
-    this.http.get<any>('http://127.0.0.1:8000/api/availability').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/availability`).subscribe({
       next: (res) => {
         this.blockedDates = res.blocked_dates || [];
         this.checkSelectedDate();
@@ -370,7 +371,7 @@ export class ServicesPageComponent implements OnInit {
       }
     };
 
-    this.http.post<any>('http://127.0.0.1:8000/api/bookings/create', payload).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/bookings/create`, payload).subscribe({
       next: (res) => {
         this.isSubmitting = false;
         this.confirmedOrderId = res.order_id || 'AST-2026';

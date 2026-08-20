@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -34,7 +35,7 @@ export class MatchesTabComponent implements OnInit {
   loadMatches(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/marriage-matches', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/marriage-matches`, headers).subscribe({
       next: (res) => {
         this.marriageMatches = (res.matches || []).map((m: any) => ({
           ...m,
@@ -101,7 +102,7 @@ export class MatchesTabComponent implements OnInit {
   saveMatchStatus(): void {
     if (!this.editingMatch) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`http://127.0.0.1:8000/api/admin/marriage-matches/${this.editingMatch.id}`, this.matchStatusForm, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/marriage-matches/${this.editingMatch.id}`, this.matchStatusForm, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Match consultation status updated successfully!');
         this.editingMatch = null;

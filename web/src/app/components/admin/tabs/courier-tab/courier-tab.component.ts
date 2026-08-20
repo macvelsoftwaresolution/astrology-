@@ -1,3 +1,4 @@
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -44,7 +45,7 @@ export class CourierTabComponent implements OnInit {
   loadOrders(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/book-orders', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/book-orders`, headers).subscribe({
       next: (res) => {
         this.bookOrders = res.orders || [];
         this.isLoading = false;
@@ -60,7 +61,7 @@ export class CourierTabComponent implements OnInit {
   loadBooks(): void {
     this.isBooksLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/books', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/books`, headers).subscribe({
       next: (res) => {
         this.books = res.books || [];
         this.isBooksLoading = false;
@@ -79,7 +80,7 @@ export class CourierTabComponent implements OnInit {
       return;
     }
     const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/admin/books', this.newBookForm, headers).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/books`, this.newBookForm, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Book added successfully!');
         this.showAddBookModal = false;
@@ -95,7 +96,7 @@ export class CourierTabComponent implements OnInit {
     this.isLoadingBuyers = true;
     this.buyersList = [];
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`http://127.0.0.1:8000/api/admin/books/${book.id}/buyers`, headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/books/${book.id}/buyers`, headers).subscribe({
       next: (res) => {
         this.buyersList = res.buyers || [];
         this.isLoadingBuyers = false;
@@ -120,7 +121,7 @@ export class CourierTabComponent implements OnInit {
   saveCourierStatus(): void {
     if (!this.selectedOrderForCourier) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`http://127.0.0.1:8000/api/admin/book-orders/${this.selectedOrderForCourier.id}/courier`, this.courierForm, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/book-orders/${this.selectedOrderForCourier.id}/courier`, this.courierForm, headers).subscribe({
       next: (res) => {
         alert(res.message || 'Courier status updated successfully!');
         this.selectedOrderForCourier = null;
