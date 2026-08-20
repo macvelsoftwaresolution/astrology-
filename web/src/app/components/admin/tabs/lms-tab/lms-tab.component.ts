@@ -54,7 +54,7 @@ export class LmsTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -86,7 +86,7 @@ export class LmsTabComponent implements OnInit {
           }
           this.cdr.detectChanges();
         },
-        error: () => {}
+        error: () => { }
       });
     }
   }
@@ -127,7 +127,7 @@ export class LmsTabComponent implements OnInit {
   saveExamDetails(): void {
     if (!this.activeExamWizard.title) return;
     const headers = this.authService.getAuthHeaders();
-    const url = this.activeExamWizard.id 
+    const url = this.activeExamWizard.id
       ? `${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}`
       : `${environment.apiUrl}/admin/exams`;
 
@@ -163,7 +163,7 @@ export class LmsTabComponent implements OnInit {
     }
     if (!this.newQuestion.question_text || !this.newQuestion.correct_answer) return;
     const headers = this.authService.getAuthHeaders();
-    
+
     this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/questions`, this.newQuestion, headers).subscribe({
       next: () => {
         this.loadExams();
@@ -203,7 +203,7 @@ export class LmsTabComponent implements OnInit {
     // We shouldn't set Content-Type to application/json for FormData. Angular will set multipart/form-data automatically.
     // However, if getAuthHeaders sets Content-Type: application/json, we need to remove it.
     // Let's create a custom header object just with Authorization.
-    
+
     // We'll trust getAuthHeaders for now, but usually FormData requires boundary. 
     // Usually we just pass headers without Content-Type. Let's see.
     this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/import-pdf`, formData, {
@@ -265,7 +265,7 @@ export class LmsTabComponent implements OnInit {
         this.seminars = res.seminars || [];
         this.cdr.detectChanges();
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -275,12 +275,12 @@ export class LmsTabComponent implements OnInit {
 
   loadLiveClasses(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/live-class', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/api/admin/live-class`, headers).subscribe({
       next: (res) => {
         this.liveClasses = res.data || [];
         this.cdr.detectChanges();
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -307,8 +307,8 @@ export class LmsTabComponent implements OnInit {
     }
     const headers = this.authService.getAuthHeaders();
     const url = this.editingLiveClass.id
-      ? `http://127.0.0.1:8000/api/admin/live-class/${this.editingLiveClass.id}`
-      : 'http://127.0.0.1:8000/api/admin/live-class';
+      ? `${environment.apiUrl}/api/admin/live-class/${this.editingLiveClass.id}`
+      : `${environment.apiUrl}/api/admin/live-class`;
 
     const req = this.editingLiveClass.id
       ? this.http.post<any>(url, this.editingLiveClass, headers) // Since backend saveLiveClassInfo handles both via POST
@@ -326,7 +326,7 @@ export class LmsTabComponent implements OnInit {
   deleteLiveClass(id: number): void {
     if (!confirm('Are you sure you want to delete this Live Class?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/live-class/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/api/admin/live-class/${id}`, headers).subscribe({
       next: () => this.loadLiveClasses(),
       error: () => alert('Failed to delete Live Class.')
     });
@@ -339,7 +339,7 @@ export class LmsTabComponent implements OnInit {
         this.materials = res.materials || [];
         this.cdr.detectChanges();
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -439,7 +439,7 @@ export class LmsTabComponent implements OnInit {
     const file = event.target.files[0];
     if (!file) return;
     this.isUploadingLessonFile = true;
-    
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'lessons');
@@ -522,7 +522,7 @@ export class LmsTabComponent implements OnInit {
 
   getFilteredCourses(): any[] {
     let list = this.courses;
-    
+
     // Filter by selected category (ILANILAI or MUTHUNILAI)
     if (this.selectedCategory) {
       list = list.filter(c => c.level === this.selectedCategory);
@@ -531,7 +531,7 @@ export class LmsTabComponent implements OnInit {
     if (this.selectedCourseLevelFilter !== 'all') {
       list = list.filter(c => c.level === this.selectedCourseLevelFilter); // Note: This filter might be redundant now, but kept for future.
     }
-    
+
     if (this.courseSearchQuery && this.courseSearchQuery.trim()) {
       const q = this.courseSearchQuery.toLowerCase().trim();
       list = list.filter(c =>
@@ -548,7 +548,7 @@ export class LmsTabComponent implements OnInit {
     if (this.selectedCategory) {
       // If the backend doesn't return `level` for materials, this might filter out everything.
       // But we requested to add it or filter by it. We'll filter based on the `level` property.
-      list = list.filter(m => m.level === this.selectedCategory || !m.level); 
+      list = list.filter(m => m.level === this.selectedCategory || !m.level);
       // Falling back to `!m.level` to not break existing data until backend is fully updated.
     }
     return list;
@@ -568,13 +568,13 @@ export class LmsTabComponent implements OnInit {
       this.selectedCategory = 'ILANILAI';
     }
     this.wizardStep = 1;
-    this.newCourse = { 
-      title: '', 
-      description: '', 
-      price: 999, 
-      category: 'Astrology', 
-      level: this.selectedCategory, 
-      thumbnail: '' 
+    this.newCourse = {
+      title: '',
+      description: '',
+      price: 999,
+      category: 'Astrology',
+      level: this.selectedCategory,
+      thumbnail: ''
     };
     this.wizardModules = [
       { id: Date.now(), title: 'Level 1', lessons: [] }
@@ -622,7 +622,7 @@ export class LmsTabComponent implements OnInit {
 
   submitLesson(): void {
     if (!this.selectedModuleIdForLesson || !this.newLesson.title || !this.newLesson.content_url) return;
-    
+
     // If in Course Studio, save lesson to local wizard state
     if (this.activeView === 'course-studio') {
       const module = this.wizardModules.find(m => m.id === this.selectedModuleIdForLesson);
@@ -698,8 +698,8 @@ export class LmsTabComponent implements OnInit {
   editCourse(course: any): void {
     this.newCourse = { ...course };
     // Deep clone modules so we can edit without mutating the original until saved
-    this.wizardModules = course.modules && course.modules.length > 0 
-      ? JSON.parse(JSON.stringify(course.modules)) 
+    this.wizardModules = course.modules && course.modules.length > 0
+      ? JSON.parse(JSON.stringify(course.modules))
       : [{ id: Date.now(), title: 'Level 1', lessons: [] }];
     this.activeView = 'course-studio';
     this.cdr.detectChanges();
@@ -712,7 +712,7 @@ export class LmsTabComponent implements OnInit {
       modules: this.wizardModules
     };
     const headers = this.authService.getAuthHeaders();
-    
+
     // If it has an id, it's an update (PUT)
     if (this.newCourse.id) {
       this.http.put<any>(`${environment.apiUrl}/admin/courses/${this.newCourse.id}`, payload, headers).subscribe({
