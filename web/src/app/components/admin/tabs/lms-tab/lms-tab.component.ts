@@ -260,7 +260,8 @@ export class LmsTabComponent implements OnInit {
 
   loadSeminars(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/admin/seminars`, headers).subscribe({
+    const url = this.selectedCategory ? `${environment.apiUrl}/admin/seminars/${this.selectedCategory}` : `${environment.apiUrl}/admin/seminars`;
+    this.http.get<any>(url, headers).subscribe({
       next: (res) => {
         this.seminars = res.seminars || [];
         this.cdr.detectChanges();
@@ -275,7 +276,8 @@ export class LmsTabComponent implements OnInit {
 
   loadLiveClasses(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/admin/live-class`, headers).subscribe({
+    const url = this.selectedCategory ? `${environment.apiUrl}/admin/live-class/${this.selectedCategory}` : `${environment.apiUrl}/admin/live-class`;
+    this.http.get<any>(url, headers).subscribe({
       next: (res) => {
         this.liveClasses = res.data || [];
         this.cdr.detectChanges();
@@ -305,6 +307,7 @@ export class LmsTabComponent implements OnInit {
       alert('Title and Link are required.');
       return;
     }
+    this.editingLiveClass.level = this.selectedCategory || 'ILANILAI';
     const headers = this.authService.getAuthHeaders();
     const url = this.editingLiveClass.id
       ? `${environment.apiUrl}/admin/live-class/${this.editingLiveClass.id}`
@@ -332,7 +335,8 @@ export class LmsTabComponent implements OnInit {
 
   loadMaterials(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/admin/materials`, headers).subscribe({
+    const url = this.selectedCategory ? `${environment.apiUrl}/admin/materials/${this.selectedCategory}` : `${environment.apiUrl}/admin/materials`;
+    this.http.get<any>(url, headers).subscribe({
       next: (res) => {
         this.materials = res.materials || [];
         this.cdr.detectChanges();
@@ -365,6 +369,7 @@ export class LmsTabComponent implements OnInit {
       alert('Title and Speaker are required.');
       return;
     }
+    this.editingSeminar.level = this.selectedCategory || 'ILANILAI';
     const headers = this.authService.getAuthHeaders();
     const url = this.editingSeminar.id
       ? `${environment.apiUrl}/admin/seminars/${this.editingSeminar.id}`
@@ -491,6 +496,7 @@ export class LmsTabComponent implements OnInit {
       alert('Material title is required.');
       return;
     }
+    this.editingMaterial.level = this.selectedCategory || 'ILANILAI';
     const headers = this.authService.getAuthHeaders();
     const url = this.editingMaterial.id
       ? `${environment.apiUrl}/admin/materials/${this.editingMaterial.id}`

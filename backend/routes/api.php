@@ -34,9 +34,9 @@ Route::get('/public/astrologers',   [AstrologyController::class, 'getAstrologers
 Route::get('/public/courses',       [CourseController::class, 'index']);
 Route::get('/public/books',         [CourierManagementController::class, 'getPublicBooks']);
 Route::get('/public/banners',       [SuperAdminController::class, 'getPublicBanners']);
-Route::get('/public/seminars',      [SuperAdminController::class, 'getPublicSeminars']);
-Route::get('/public/materials',     [SuperAdminController::class, 'getPublicMaterials']);
-Route::get('/public/live-class',    [SuperAdminController::class, 'getLiveClassInfo']);
+Route::get('/public/seminars/{level?}',      [SuperAdminController::class, 'getPublicSeminars']);
+Route::get('/public/materials/{level?}',     [SuperAdminController::class, 'getPublicMaterials']);
+Route::get('/public/live-class/{level?}',    [SuperAdminController::class, 'getLiveClassInfo']);
 Route::get('/public/exams/{level}', [\App\Http\Controllers\ExamController::class, 'getExams']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
@@ -181,18 +181,18 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::delete('/banners/{id}',                             [SuperAdminController::class, 'deleteBanner']);
 
     // Live Seminars & Webinars CRUD
-    Route::get('/seminars',                                    [SuperAdminController::class, 'getPublicSeminars']);
+    Route::get('/seminars/{level?}',                           [SuperAdminController::class, 'getPublicSeminars']);
     Route::post('/seminars',                                   [SuperAdminController::class, 'saveSeminar']);
     Route::put('/seminars/{id}',                               [SuperAdminController::class, 'saveSeminar']);
     Route::delete('/seminars/{id}',                            [SuperAdminController::class, 'deleteSeminar']);
 
     // Live Class settings for Mobile Home Banner
-    Route::get('/live-class', [SuperAdminController::class, 'getLiveClassInfo']);
+    Route::get('/live-class/{level?}', [SuperAdminController::class, 'getLiveClassInfo']);
     Route::post('/live-class/{id?}', [SuperAdminController::class, 'saveLiveClassInfo']);
     Route::delete('/live-class/{id}', [SuperAdminController::class, 'deleteLiveClass']);
 
     // Course Study Materials / PDF Notes CRUD
-    Route::get('/materials',                                   [SuperAdminController::class, 'getPublicMaterials']);
+    Route::get('/materials/{level?}',                          [SuperAdminController::class, 'getPublicMaterials']);
     Route::post('/materials',                                  [SuperAdminController::class, 'saveMaterial']);
     Route::put('/materials/{id}',                              [SuperAdminController::class, 'saveMaterial']);
     Route::delete('/materials/{id}',                           [SuperAdminController::class, 'deleteMaterial']);
