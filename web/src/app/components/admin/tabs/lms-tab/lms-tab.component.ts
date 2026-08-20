@@ -275,7 +275,7 @@ export class LmsTabComponent implements OnInit {
 
   loadLiveClasses(): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/api/admin/live-class`, headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/live-class`, headers).subscribe({
       next: (res) => {
         this.liveClasses = res.data || [];
         this.cdr.detectChanges();
@@ -307,12 +307,10 @@ export class LmsTabComponent implements OnInit {
     }
     const headers = this.authService.getAuthHeaders();
     const url = this.editingLiveClass.id
-      ? `${environment.apiUrl}/api/admin/live-class/${this.editingLiveClass.id}`
-      : `${environment.apiUrl}/api/admin/live-class`;
+      ? `${environment.apiUrl}/admin/live-class/${this.editingLiveClass.id}`
+      : `${environment.apiUrl}/admin/live-class`;
 
-    const req = this.editingLiveClass.id
-      ? this.http.post<any>(url, this.editingLiveClass, headers) // Since backend saveLiveClassInfo handles both via POST
-      : this.http.post<any>(url, this.editingLiveClass, headers);
+    const req = this.http.post<any>(url, this.editingLiveClass, headers);
 
     req.subscribe({
       next: () => {
@@ -326,7 +324,7 @@ export class LmsTabComponent implements OnInit {
   deleteLiveClass(id: number): void {
     if (!confirm('Are you sure you want to delete this Live Class?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`${environment.apiUrl}/api/admin/live-class/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/live-class/${id}`, headers).subscribe({
       next: () => this.loadLiveClasses(),
       error: () => alert('Failed to delete Live Class.')
     });

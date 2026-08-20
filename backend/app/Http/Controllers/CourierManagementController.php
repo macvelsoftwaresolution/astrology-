@@ -129,45 +129,65 @@ class CourierManagementController extends Controller
 
     public function saveBook(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string',
-            'author' => 'nullable|string',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'book_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
-        ]);
+        try {
+            $request->validate([
+                'title' => 'required|string',
+                'author' => 'nullable|string',
+                'price' => 'required|numeric',
+                'description' => 'nullable|string',
+            ]);
 
-        $coverImagePath = null;
-        if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('books', 'public');
-            $coverImagePath = url('storage/' . $path);
-        }
-
-        $bookImagesPaths = [];
-        if ($request->hasFile('book_images')) {
-            foreach ($request->file('book_images') as $file) {
-                $path = $file->store('books/images', 'public');
-                $bookImagesPaths[] = url('storage/' . $path);
+            $coverImagePath = null;
+            if ($request->hasFile('cover_image')) {
+                $path = $request->file('cover_image')->store('books', 'public');
+                $coverImagePath = url('storage/' . $path);
+            } elseif (is_string($request->cover_image) && !empty($request->cover_image)) {
+                $coverImagePath = $request->cover_image;
             }
+
+            $bookImagesPaths = [];
+            if ($request->hasFile('book_images')) {
+                foreach ($request->file('book_images') as $file) {
+                    $path = $file->store('books/images', 'public');
+                    $bookImagesPaths[] = url('storage/' . $path);
+                }
+            } elseif (is_array($request->book_images)) {
+                $bookImagesPaths = $request->book_images;
+            }
+
+            $data = [
+                'title' => $request->title,
+                'author' => $request->author ?? '',
+                'price' => (float)$request->price,
+                'description' => $request->description ?? '',
+                'cover_image' => $coverImagePath,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('books', 'book_images')) {
+                $data['book_images'] = json_encode($bookImagesPaths);
+            }
+
+            $id = DB::table('books')->insertGetId($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Book added successfully',
+                'book' => DB::table('books')->find($id)
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error: ' . implode(', ', array_map(fn($e) => implode(' ', $e), $ve->errors())),
+                'errors' => $ve->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving book: ' . $e->getMessage()
+            ], 500);
         }
-
-        $id = DB::table('books')->insertGetId([
-            'title' => $request->title,
-            'author' => $request->author,
-            'price' => $request->price,
-            'description' => $request->description,
-            'cover_image' => $coverImagePath,
-            'book_images' => json_encode($bookImagesPaths),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Book added successfully',
-            'book' => DB::table('books')->find($id)
-        ]);
     }
 
     public function deleteBook($id)
