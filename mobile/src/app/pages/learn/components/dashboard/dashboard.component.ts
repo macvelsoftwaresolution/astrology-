@@ -91,6 +91,10 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   loadMyBookOrders() {
+    if (!this.authService.isLoggedIn()) {
+      this.loadBooks();
+      return;
+    }
     this.isLoadingOrders = true;
     const authHeaders = this.authService.getAuthHeaders().headers;
     this.http.get<any>(`${environment.apiUrl}/user/book-orders`, { headers: authHeaders }).subscribe({

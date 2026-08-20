@@ -574,7 +574,12 @@
                 <div class="module-box" style="margin-bottom:16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; overflow: hidden;">
                   <div style="background: #f1f5f9; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cbd5e1;">
                     <strong style="color:#0f172a;font-size:14px;"><i class="bi bi-diagram-3-fill" style="margin-right:6px;color:#d97706;"></i>நிலை {{ i + 1 }}: {{ m.title }}</strong>
-                    <button class="btn-xs" style="background:#2563eb;color:#fff;" (click)="openInlineLessonForm(m.id)">+ Add Content</button>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <button class="btn-xs" style="background:#2563eb;color:#fff;" (click)="openInlineLessonForm(m.id)">+ Add Content</button>
+                      <button class="btn-xs" style="background:#ef4444;color:#fff;" (click)="removeModuleInWizard(m.id)" title="Remove Level">
+                        <i class="bi bi-trash"></i> நீக்கு
+                      </button>
+                    </div>
                   </div>
                   
                   <div style="padding: 16px;">
@@ -641,6 +646,9 @@
                               <span style="font-size:13px;font-weight:600;color:#334155;">{{ lIdx + 1 }}. {{ les.title }}</span>
                               <span style="font-size:10px;background:#e2e8f0;padding:2px 6px;border-radius:4px;color:#475569;">{{ les.content_type | uppercase }}</span>
                             </div>
+                            <button type="button" class="btn-xs" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-size:13px;" (click)="removeLessonInWizard(m.id, les.id)" title="Remove Lesson">
+                              <i class="bi bi-trash-fill"></i>
+                            </button>
                           </div>
                         }
                       </div>

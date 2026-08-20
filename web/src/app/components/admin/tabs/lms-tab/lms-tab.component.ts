@@ -646,12 +646,35 @@ export class LmsTabComponent implements OnInit {
 
   addModuleInWizard(): void {
     const nextNum = this.wizardModules.length + 1;
+    const title = this.newModuleTitle && this.newModuleTitle.trim() !== ''
+      ? this.newModuleTitle.trim()
+      : `Level ${nextNum}`;
+
     this.wizardModules.push({
       id: Date.now(),
-      title: `Level ${nextNum}`,
+      title: title,
       lessons: []
     });
+    this.newModuleTitle = '';
     this.cdr.detectChanges();
+  }
+
+  removeModuleInWizard(moduleId: number): void {
+    if (confirm('இந்த நிலையை (Level) நீக்க விரும்புகிறீர்களா?')) {
+      this.wizardModules = this.wizardModules.filter(m => m.id !== moduleId);
+      if (this.activeLessonForm && this.activeLessonForm.moduleId === moduleId) {
+        this.activeLessonForm = null;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeLessonInWizard(moduleId: number, lessonId: number): void {
+    const module = this.wizardModules.find(m => m.id === moduleId);
+    if (module && module.lessons) {
+      module.lessons = module.lessons.filter((l: any) => l.id !== lessonId);
+      this.cdr.detectChanges();
+    }
   }
 
   // INLINE LESSON FORM STATE

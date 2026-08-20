@@ -49,6 +49,10 @@ Route::post('/bookings/create',        [AstrologyController::class, 'createBooki
 Route::post('/payments/create-order',  [AstrologyController::class, 'createRazorpayOrder']);
 Route::post('/payments/verify',        [AstrologyController::class, 'verifyPayment']);
 
+// Book Orders & Submissions (supports guest or authenticated user)
+Route::post('/user/book-orders',       [CourierManagementController::class, 'createBookOrder']);
+Route::post('/user/submissions',       [GradingController::class, 'submitExam']);
+
 // =====================================================================
 // AUTHENTICATED USER ROUTES (Mobile — role:user)
 // =====================================================================
@@ -85,10 +89,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/notification-preferences',         [NotificationController::class, 'getNotificationPreferences']);
     Route::put('/user/notification-preferences',         [NotificationController::class, 'updateNotificationPreferences']);
 
-    // Book Orders & Submissions
-    Route::post('/user/book-orders',       [CourierManagementController::class, 'createBookOrder']);
+    // My Book Orders
     Route::get('/user/book-orders',        [CourierManagementController::class, 'getMyBookOrders']);
-    Route::post('/user/submissions',       [GradingController::class, 'submitExam']);
 });
 
 // =====================================================================
