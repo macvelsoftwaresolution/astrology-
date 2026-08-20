@@ -47,7 +47,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
   ) {}
 
   get token() {
-    return localStorage.getItem('auth_token') || '';
+    return this.authService.getToken('astrology') || '';
   }
 
   get headers() {
@@ -55,7 +55,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser();
+    this.currentUser = this.authService.getCurrentUser('astrology');
     if (this.currentUser) {
       this.personDetails.name = this.currentUser.fullName || this.currentUser.name || '';
       this.personDetails.email = this.currentUser.emailAddress || this.currentUser.email || '';
@@ -310,7 +310,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
   }
 
   logout() {
-    this.authService.logout();
+    this.authService.logout('astrology');
     this.router.navigate(['/welcome'], { replaceUrl: true });
   }
 }

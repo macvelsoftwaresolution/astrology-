@@ -395,7 +395,7 @@ export class HomePage implements OnInit {
   }
 
   private checkAuth() {
-    if (!this.authService.isLoggedIn()) {
+    if (!this.authService.isLoggedIn('astrology')) {
       this.router.navigate(['/welcome']);
     }
   }

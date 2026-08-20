@@ -24,6 +24,14 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  private getTokenKey(service: 'astrology' | 'education'): string {
+    return service === 'education' ? 'edu_auth_token' : 'astro_auth_token';
+  }
+
+  private getUserKey(service: 'astrology' | 'education'): string {
+    return service === 'education' ? 'edu_auth_user' : 'astro_auth_user';
+  }
+
   register(user: User, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
     const payload = {
       name: user.fullName || user.name,
@@ -35,11 +43,18 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/auth/register`, payload).pipe(
       tap(res => {
         if (res.success && res.token) {
-          localStorage.setItem('auth_token', res.token);
+          const tKey = this.getTokenKey(service);
+          const uKey = this.getUserKey(service);
+          localStorage.setItem(tKey, res.token);
+          if (service === 'astrology') {
+            localStorage.setItem('auth_token', res.token);
+          }
           
-          // Merge local profileImage if backend doesn't support it yet
           const userToSave = { ...res.user, profileImage: user.profileImage };
-          localStorage.setItem('auth_user', JSON.stringify(userToSave));
+          localStorage.setItem(uKey, JSON.stringify(userToSave));
+          if (service === 'astrology') {
+            localStorage.setItem('auth_user', JSON.stringify(userToSave));
+          }
         }
       })
     );
@@ -54,34 +69,46 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/auth/mobile-login`, payload).pipe(
       tap(res => {
         if (res.success && res.token) {
-          localStorage.setItem('auth_token', res.token);
-          localStorage.setItem('auth_user', JSON.stringify(res.user));
+          const tKey = this.getTokenKey(service);
+          const uKey = this.getUserKey(service);
+          localStorage.setItem(tKey, res.token);
+          localStorage.setItem(uKey, JSON.stringify(res.user));
+          if (service === 'astrology') {
+            localStorage.setItem('auth_token', res.token);
+            localStorage.setItem('auth_user', JSON.stringify(res.user));
+          }
         }
       })
     );
   }
 
   logout(service: 'astrology' | 'education' = 'astrology'): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-    localStorage.removeItem(`astro_auth_user_${service}`);
+    const tKey = this.getTokenKey(service);
+    const uKey = this.getUserKey(service);
+    localStorage.removeItem(tKey);
+    localStorage.removeItem(uKey);
+    if (service === 'astrology') {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
+    }
   }
 
   isLoggedIn(service: 'astrology' | 'education' = 'astrology'): boolean {
-    return !!localStorage.getItem('auth_token');
+    const key = this.getTokenKey(service);
+    return !!localStorage.getItem(key);
   }
 
   getCurrentUser(service: 'astrology' | 'education' = 'astrology'): User | null {
-    const data = localStorage.getItem('auth_user');
+    const data = localStorage.getItem(this.getUserKey(service));
     return data ? JSON.parse(data) : null;
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('auth_token');
+  getToken(service: 'astrology' | 'education' = 'astrology'): string | null {
+    return localStorage.getItem(this.getTokenKey(service));
   }
 
-  getAuthHeaders(): { headers: { [header: string]: string } } {
-    const token = this.getToken();
+  getAuthHeaders(service: 'astrology' | 'education' = 'astrology'): { headers: { [header: string]: string } } {
+    const token = this.getToken(service);
     return {
       headers: {
         'Content-Type': 'application/json',

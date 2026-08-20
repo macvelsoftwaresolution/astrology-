@@ -26,11 +26,7 @@ export class SplashPage implements OnInit {
   }
 
   checkAuthAndNavigate() {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/home'], { replaceUrl: true });
-    } else {
-      this.router.navigate(['/welcome'], { replaceUrl: true });
-    }
+    this.router.navigate(['/welcome'], { replaceUrl: true });
   }
 }
 
