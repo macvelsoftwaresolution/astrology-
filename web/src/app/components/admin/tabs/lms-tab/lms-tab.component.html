@@ -493,20 +493,26 @@
     </div>
   }
 
-  <!-- COURSE STUDIO WIZARD MODAL -->
+  <!-- COURSE STUDIO WIZARD -->
   @if (activeView === 'course-studio') {
-    <div class="modal-overlay" (click)="cancelCourseWizard()">
-      <div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div>
-            <h3 style="margin:0;"><i class="bi bi-magic" style="color:#d97706;margin-right:6px;"></i>{{ 'lms.launchWizard' | translate }}</h3>
-            <span style="font-size:12px;color:#64748b;">Step {{ wizardStep }} of 2</span>
-          </div>
-          <button class="close-btn" (click)="cancelCourseWizard()"><i class="bi bi-x-lg"></i></button>
+    <div style="background: #fff; min-height: calc(100vh - 100px); padding: 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
+        <div>
+          <button class="btn-xs" style="background: #f1f5f9; color: #475569; border: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; margin-bottom: 16px;" (click)="cancelCourseWizard()">
+            <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+          </button>
+          <h2 style="margin:0; font-size: 28px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-magic" style="color:#d97706;"></i>{{ 'lms.launchWizard' | translate }}
+          </h2>
+          <span style="font-size:14px; color:#64748b; font-weight: 500;">Step {{ wizardStep }} of 2</span>
         </div>
+      </div>
 
-        @if (wizardStep === 1) {
-          <div>
+      <div style="max-width: 800px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 40px;">
+        <!-- Course Details Section -->
+        <div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 20px 0;">1. Course Details</h3>
+          <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
             <div class="form-group">
               <label>{{ 'lms.lessonTitle' | translate }}</label>
               <input [(ngModel)]="newCourse.title" class="ctrl" placeholder="e.g. Complete Vedic Kundali Masterclass"/>
@@ -548,43 +554,118 @@
                 </div>
               </div>
             </div>
-            <div class="modal-btns">
-              <button type="button" class="btn-cancel" (click)="cancelCourseWizard()">{{ 'common.cancel' | translate }}</button>
-              <button type="button" class="btn-primary" (click)="wizardStep = 2">Next: Build Modules ➔</button>
-            </div>
           </div>
-        }
+        </div>
 
-        @if (wizardStep === 2) {
-          <div>
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:10px;margin-bottom:16px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:6px;">{{ 'lms.addModule' | translate }}:</label>
+        <!-- Levels & Lessons Section -->
+        <div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 20px 0;">2. Course Levels (பாட நிலைகள்)</h3>
+          <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+            <div style="background:#fff;border:1px solid #e2e8f0;padding:12px;border-radius:10px;margin-bottom:16px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:6px;">நிலை சேர்க்க (Add Level):</label>
               <div style="display:flex;gap:8px;">
-                <input [(ngModel)]="newModuleTitle" placeholder="Module Title (e.g. Chapter 1: Basics)" class="ctrl" style="flex:1;"/>
-                <button type="button" class="btn-primary" (click)="addModuleInWizard()">+ Add</button>
+                <input [(ngModel)]="newModuleTitle" placeholder="Level Title (e.g. Level 1: Basics)" class="ctrl" style="flex:1;"/>
+                <button type="button" class="btn-primary" (click)="addModuleInWizard()">+ Add Level</button>
               </div>
             </div>
 
-            <div style="max-height:260px;overflow-y:auto;margin-bottom:16px;">
+            <div style="margin-bottom:16px;">
               @for (m of wizardModules; track m.id; let i = $index) {
-                <div class="module-box" style="margin-bottom:8px;">
-                  <strong style="color:#b45309;font-size:13px;"><i class="bi bi-folder-fill" style="margin-right:4px;"></i>{{ 'lms.modules' | translate }} {{ i + 1 }}: {{ m.title }}</strong>
-                  <div style="font-size:11px;color:#64748b;margin-top:4px;">{{ (m.lessons || []).length }} {{ 'lms.lessons' | translate }}</div>
+                <div class="module-box" style="margin-bottom:16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; overflow: hidden;">
+                  <div style="background: #f1f5f9; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cbd5e1;">
+                    <strong style="color:#0f172a;font-size:14px;"><i class="bi bi-diagram-3-fill" style="margin-right:6px;color:#d97706;"></i>நிலை {{ i + 1 }}: {{ m.title }}</strong>
+                    <button class="btn-xs" style="background:#2563eb;color:#fff;" (click)="openInlineLessonForm(m.id)">+ Add Content</button>
+                  </div>
+                  
+                  <div style="padding: 16px;">
+                    @if (activeLessonForm && activeLessonForm.moduleId === m.id) {
+                      <div style="background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                        <h4 style="margin:0 0 12px 0;font-size:14px;">உள்ளடக்கம் சேர்க்க (Add Content)</h4>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                          <label>தலைப்பு (Title)</label>
+                          <input [(ngModel)]="newInlineLesson.title" class="ctrl" placeholder="e.g. Introduction"/>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                          <label>வகை (Type)</label>
+                          <select [(ngModel)]="newInlineLesson.content_type" class="ctrl">
+                            <option value="video">வீடியோ (Video - MP4)</option>
+                            <option value="audio">ஆடியோ (Audio - MP3)</option>
+                            <option value="image">படம் (Image)</option>
+                            <option value="pdf">பி.டி.எப் (PDF)</option>
+                            <option value="text">உரை (Text / Article)</option>
+                          </select>
+                        </div>
+                        
+                        @if (newInlineLesson.content_type !== 'text') {
+                          <div class="form-group" style="margin-bottom: 12px;">
+                            <label>கோப்பு பதிவேற்றம் (Upload File)</label>
+                            <input type="file" (change)="uploadLessonFile($event, true)" class="ctrl" style="padding:6px;"/>
+                            @if (isUploadingLessonFile) {
+                              <span style="font-size:11px;color:#2563eb;font-weight:600;margin-top:4px;display:block;">
+                                <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
+                              </span>
+                            }
+                            @if (newInlineLesson.content_url) {
+                              <div style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
+                                <i class="bi bi-check-circle-fill"></i> கோப்பு பதிவேற்றப்பட்டது (File Uploaded)
+                              </div>
+                            }
+                          </div>
+                        }
+
+                        @if (newInlineLesson.content_type === 'text') {
+                          <div class="form-group" style="margin-bottom: 12px;">
+                            <label>உள்ளடக்கம் (Content)</label>
+                            <textarea [(ngModel)]="newInlineLesson.description" class="ctrl" rows="6" placeholder="Type your article or text lesson here..."></textarea>
+                          </div>
+                        }
+                        
+                        <div class="form-group" style="margin-bottom: 16px;">
+                          <label>கால அளவு (Duration - Optional)</label>
+                          <input [(ngModel)]="newInlineLesson.duration" class="ctrl" placeholder="e.g. 10 mins"/>
+                        </div>
+                        
+                        <div style="display:flex;gap:8px;justify-content:flex-end;">
+                          <button class="btn-cancel" (click)="cancelInlineLessonForm()">ரத்து (Cancel)</button>
+                          <button class="btn-primary" (click)="submitInlineLesson()">சேமி (Save Content)</button>
+                        </div>
+                      </div>
+                    }
+
+                    @if (m.lessons && m.lessons.length > 0) {
+                      <div style="display:flex;flex-direction:column;gap:8px;">
+                        @for (les of m.lessons; track les.id; let lIdx = $index) {
+                          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f1f5f9;border-radius:6px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                              <i class="bi" [ngClass]="{'bi-play-btn-fill': les.content_type === 'video', 'bi-volume-up-fill': les.content_type === 'audio', 'bi-image': les.content_type === 'image', 'bi-file-earmark-pdf-fill': les.content_type === 'pdf', 'bi-card-text': les.content_type === 'text'}" style="color:#2563eb;"></i>
+                              <span style="font-size:13px;font-weight:600;color:#334155;">{{ lIdx + 1 }}. {{ les.title }}</span>
+                              <span style="font-size:10px;background:#e2e8f0;padding:2px 6px;border-radius:4px;color:#475569;">{{ les.content_type | uppercase }}</span>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <div style="font-size:12px;color:#64748b;text-align:center;padding:10px;border:1px dashed #cbd5e1;border-radius:6px;">
+                        இன்னும் உள்ளடக்கம் சேர்க்கப்படவில்லை.
+                      </div>
+                    }
+                  </div>
                 </div>
               }
               @if (wizardModules.length === 0) {
-                <div style="text-align:center;padding:16px;color:#64748b;font-size:12px;">{{ 'common.noRecords' | translate }}</div>
+                <div style="text-align:center;padding:16px;color:#64748b;font-size:12px; border: 2px dashed #cbd5e1; border-radius: 8px;">நிலைகள் ஏதுமில்லை (No levels added yet)</div>
               }
             </div>
-
-            <div class="modal-btns">
-              <button type="button" class="btn-cancel" (click)="wizardStep = 1">◀ {{ 'common.back' | translate }}</button>
-              <button type="button" class="btn-primary" (click)="publishWizardCourse()">
-                <i class="bi bi-cloud-arrow-up-fill"></i> {{ 'common.save' | translate }}
-              </button>
-            </div>
           </div>
-        }
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-btns" style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+          <button type="button" class="btn-cancel" (click)="cancelCourseWizard()">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn-primary" (click)="publishWizardCourse()">
+            <i class="bi bi-cloud-arrow-up-fill"></i> Save & Publish Course
+          </button>
+        </div>
       </div>
     </div>
   }

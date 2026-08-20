@@ -657,11 +657,11 @@ export class LmsTabComponent implements OnInit {
 
   // INLINE LESSON FORM STATE
   activeLessonForm: { moduleId: number, type: string } | null = null;
-  newInlineLesson: any = { title: '', content_type: 'video', content_url: '', duration: '' };
+  newInlineLesson: any = { title: '', content_type: 'video', content_url: '', duration: '', description: '' };
 
-  openInlineLessonForm(moduleId: number, type: string): void {
-    this.activeLessonForm = { moduleId, type };
-    this.newInlineLesson = { title: '', content_type: type, content_url: '', duration: '' };
+  openInlineLessonForm(moduleId: number): void {
+    this.activeLessonForm = { moduleId, type: 'video' };
+    this.newInlineLesson = { title: '', content_type: 'video', content_url: '', duration: '', description: '' };
     this.isUploadingLessonFile = false;
     this.cdr.detectChanges();
   }
@@ -677,12 +677,13 @@ export class LmsTabComponent implements OnInit {
       alert('தயவுசெய்து பாடத்தின் தலைப்பை (Title) உள்ளிடவும்.');
       return;
     }
-    if (!this.newInlineLesson.content_url && this.newInlineLesson.content_type !== 'live' && this.newInlineLesson.content_type !== 'image') {
-      alert('தயவுசெய்து கோப்பை (File) பதிவேற்றவும்.');
+    const type = this.newInlineLesson.content_type;
+    if (type !== 'text' && !this.newInlineLesson.content_url) {
+      alert('தயவுசெய்து கோப்பை (File / Link) வழங்கவும்.');
       return;
     }
-    if (!this.newInlineLesson.content_url && this.newInlineLesson.content_type === 'live') {
-      alert('தயவுசெய்து நேரலை இணைப்பை (Live URL) உள்ளிடவும்.');
+    if (type === 'text' && (!this.newInlineLesson.description || this.newInlineLesson.description.trim() === '')) {
+      alert('தயவுசெய்து உரையை (Content) உள்ளிடவும்.');
       return;
     }
     const module = this.wizardModules.find(m => m.id === this.activeLessonForm!.moduleId);
