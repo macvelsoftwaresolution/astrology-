@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-users-tab',
@@ -33,7 +34,7 @@ export class UsersTabComponent implements OnInit {
   loadUsers(): void {
     this.isLoading = true;
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>('http://127.0.0.1:8000/api/admin/users', headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/users`, headers).subscribe({
       next: (res) => {
         this.users = res.users || [];
         this.isLoading = false;
@@ -64,7 +65,7 @@ export class UsersTabComponent implements OnInit {
   deleteUser(id: number): void {
     if (!confirm('Are you sure you want to delete this registered user?')) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/users/${id}`, headers).subscribe({
+    this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}`, headers).subscribe({
       next: () => {
         alert('User deleted successfully.');
         this.loadUsers();

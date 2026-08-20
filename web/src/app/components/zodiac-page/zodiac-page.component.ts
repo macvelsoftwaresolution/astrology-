@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -251,7 +252,7 @@ export class ZodiacPageComponent implements OnInit {
     this.loading = true;
     const today = new Date().toISOString().split('T')[0];
 
-    this.http.get<any>(`http://127.0.0.1:8000/api/rasi-palan?date=${today}&type=${this.selectedTab}`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/rasi-palan?date=${today}&type=${this.selectedTab}`).subscribe({
       next: (res) => {
         this.loading = false;
         if (res && Array.isArray(res.predictions) && res.predictions.length > 0) {

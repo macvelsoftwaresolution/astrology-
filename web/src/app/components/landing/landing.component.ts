@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -29,7 +30,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   loadLiveAstrologers() {
     if (typeof window === 'undefined') return;
-    this.http.get<any>('http://127.0.0.1:8000/api/public/astrologers').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/public/astrologers`).subscribe({
       next: (res) => {
         if (res && Array.isArray(res.astrologers)) {
           this.astrologers = res.astrologers;
@@ -42,7 +43,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   loadLivePanchangam() {
     if (typeof window === 'undefined') return;
-    this.http.get<any>('http://127.0.0.1:8000/api/panchangam/today').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/panchangam/today`).subscribe({
       next: (res) => {
         if (res && res.panchangam) {
           this.panchangam = {
@@ -62,7 +63,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   loadLiveRasiPalan() {
     if (typeof window === 'undefined') return;
     const today = new Date().toISOString().split('T')[0];
-    this.http.get<any>(`http://127.0.0.1:8000/api/rasi-palan?date=${today}&type=daily`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/rasi-palan?date=${today}&type=daily`).subscribe({
       next: (res) => {
         if (res && Array.isArray(res.predictions) && res.predictions.length > 0) {
           this.zodiacSigns = this.zodiacSigns.map(z => {

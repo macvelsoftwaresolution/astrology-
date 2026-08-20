@@ -271,6 +271,19 @@ export const TA_TRANSLATIONS: Record<string, any> = {
     contact: "தொடர்பு விவரம்",
     registeredOn: "பதிவுசெய்த தேதி",
     status: "கணக்கு நிலை"
+  },
+  notifications: {
+    title: "அறிவிப்புகள்",
+    alerts: "நேரலை அறிவிப்புகள்",
+    markAllRead: "அனைத்தையும் படித்ததாகக் குறி",
+    noAlerts: "புதிய அறிவிப்புகள் ஏதும் இல்லை",
+    viewAll: "அனைத்தையும் காண்க",
+    newBadge: "புதியது",
+    bookingAlert: "ஜோதிட முன்பதிவு",
+    orderAlert: "புத்தக ஆர்டர்",
+    examAlert: "தேர்வு சமர்ப்பிப்பு",
+    paymentAlert: "கட்டணப் பரிவர்த்தனை",
+    userAlert: "பயனர் பதிவு"
   }
 };
 
@@ -542,6 +555,19 @@ export const EN_TRANSLATIONS: Record<string, any> = {
     contact: "Contact Info",
     registeredOn: "Registered Date",
     status: "Account Status"
+  },
+  notifications: {
+    title: "Notifications",
+    alerts: "Live Activity Alerts",
+    markAllRead: "Mark all as read",
+    noAlerts: "No new activity alerts",
+    viewAll: "View All",
+    newBadge: "New",
+    bookingAlert: "Astrology Booking",
+    orderAlert: "Book Order",
+    examAlert: "Exam Submission",
+    paymentAlert: "Payment Transaction",
+    userAlert: "User Registration"
   }
 };
 
