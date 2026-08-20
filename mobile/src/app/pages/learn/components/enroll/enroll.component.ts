@@ -20,7 +20,8 @@ export class LearnEnrollComponent implements OnInit {
     courseLevel: 'ilanilai',
     prevCertificate: '',
     completionYear: '',
-    prevMarks: ''
+    prevMarks: '',
+    prevUserId: ''
   };
 
   ngOnInit() {
@@ -36,6 +37,7 @@ export class LearnEnrollComponent implements OnInit {
         prevCertificate: '',
         completionYear: '',
         prevMarks: '',
+        prevUserId: '',
         ...this.form
       };
     }

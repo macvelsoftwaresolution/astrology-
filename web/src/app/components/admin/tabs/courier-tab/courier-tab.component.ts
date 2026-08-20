@@ -24,6 +24,8 @@ export class CourierTabComponent implements OnInit {
 
   showAddBookModal = false;
   newBookForm = { title: '', author: '', price: '', description: '' };
+  selectedCoverImage: File | null = null;
+  selectedBookImages: File[] = [];
 
   selectedBookForBuyers: any = null;
   isLoadingBuyers = false;
@@ -73,17 +75,53 @@ export class CourierTabComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedCoverImage = event.target.files[0];
+    }
+  }
+
+  onBookImagesSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedBookImages = Array.from(event.target.files);
+    }
+  }
+
   saveBook(): void {
     if (!this.newBookForm.title || !this.newBookForm.price) {
       alert('Title and Price are required.');
       return;
     }
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>('http://127.0.0.1:8000/api/admin/books', this.newBookForm, headers).subscribe({
+    
+    const formData = new FormData();
+    formData.append('title', this.newBookForm.title);
+    formData.append('author', this.newBookForm.author || '');
+    formData.append('price', this.newBookForm.price);
+    formData.append('description', this.newBookForm.description || '');
+    if (this.selectedCoverImage) {
+      formData.append('cover_image', this.selectedCoverImage);
+    }
+
+    if (this.selectedBookImages.length > 0) {
+      this.selectedBookImages.forEach((file) => {
+        formData.append('book_images[]', file);
+      });
+    }
+
+    // When sending FormData, angular sets multipart/form-data automatically, but we need the auth header.
+    // getAuthHeaders() typically returns HttpHeaders object. If it sets Content-Type to application/json, we need to override it or remove it.
+    // Let's assume authService.getAuthHeaders() adds Authorization. If it adds Content-Type, we might have an issue.
+    // Let's use authService.getToken() which has the correct logic
+    const token = this.authService.getToken();
+    const headers = { Authorization: `Bearer ${token}` };
+
+    this.http.post<any>('http://127.0.0.1:8000/api/admin/books', formData, { headers }).subscribe({
       next: (res) => {
         alert(res.message || 'Book added successfully!');
         this.showAddBookModal = false;
         this.newBookForm = { title: '', author: '', price: '', description: '' };
+        this.selectedCoverImage = null;
+        this.selectedBookImages = [];
         this.loadBooks();
       },
       error: () => alert('Failed to add book.')

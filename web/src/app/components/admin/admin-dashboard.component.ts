@@ -48,8 +48,8 @@ export class AdminDashboardComponent implements OnInit {
   mobileMenuOpen = false;
 
   // Sidebar Category Dropdown States
-  astrologyCategoryOpen = true;
-  learnCategoryOpen = true;
+  astrologyCategoryOpen = false;
+  learnCategoryOpen = false;
 
   // Admin Profile Modal State
   adminProfileModalOpen = false;
@@ -118,6 +118,10 @@ export class AdminDashboardComponent implements OnInit {
       queryParams: { tab: tabName },
       queryParamsHandling: 'merge'
     });
+    
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   openAdminProfileModal(): void {

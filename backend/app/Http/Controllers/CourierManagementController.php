@@ -33,7 +33,8 @@ class CourierManagementController extends Controller
         ]);
 
         $user = $request->user();
-        $studentId = $user ? $user->id : 1;
+        if (!$user) return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        $studentId = $user->id;
         $orderNumber = 'BOOK-ORD-' . date('Y') . '-' . strtoupper(\Illuminate\Support\Str::random(6));
 
         $orderId = DB::table('book_orders')->insertGetId([
@@ -133,13 +134,31 @@ class CourierManagementController extends Controller
             'author' => 'nullable|string',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'book_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
+
+        $coverImagePath = null;
+        if ($request->hasFile('cover_image')) {
+            $path = $request->file('cover_image')->store('books', 'public');
+            $coverImagePath = url('storage/' . $path);
+        }
+
+        $bookImagesPaths = [];
+        if ($request->hasFile('book_images')) {
+            foreach ($request->file('book_images') as $file) {
+                $path = $file->store('books/images', 'public');
+                $bookImagesPaths[] = url('storage/' . $path);
+            }
+        }
 
         $id = DB::table('books')->insertGetId([
             'title' => $request->title,
             'author' => $request->author,
             'price' => $request->price,
             'description' => $request->description,
+            'cover_image' => $coverImagePath,
+            'book_images' => json_encode($bookImagesPaths),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -177,8 +196,10 @@ class CourierManagementController extends Controller
     public function getMyBookOrders(Request $request)
     {
         $user = $request->user();
+        if (!$user) return response()->json(['success' => false, 'orders' => []], 401);
+
         $orders = DB::table('book_orders')
-            ->where('student_id', $user ? $user->id : 1) // fallback to 1 if no auth for test
+            ->where('student_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 

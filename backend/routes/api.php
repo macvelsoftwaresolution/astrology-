@@ -36,6 +36,7 @@ Route::get('/public/books',         [CourierManagementController::class, 'getPub
 Route::get('/public/banners',       [SuperAdminController::class, 'getPublicBanners']);
 Route::get('/public/seminars',      [SuperAdminController::class, 'getPublicSeminars']);
 Route::get('/public/materials',     [SuperAdminController::class, 'getPublicMaterials']);
+Route::get('/public/live-class',    [SuperAdminController::class, 'getLiveClassInfo']);
 Route::get('/public/exams/{level}', [\App\Http\Controllers\ExamController::class, 'getExams']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
@@ -47,10 +48,6 @@ Route::post('/jathagam/para-reading', [JathagamController::class, 'paraJathagamR
 Route::post('/bookings/create',        [AstrologyController::class, 'createBooking']);
 Route::post('/payments/create-order',  [AstrologyController::class, 'createRazorpayOrder']);
 Route::post('/payments/verify',        [AstrologyController::class, 'verifyPayment']);
-
-// Book Orders & Submissions (public fallback if guest)
-Route::post('/user/book-orders',       [CourierManagementController::class, 'createBookOrder']);
-Route::post('/user/submissions',       [GradingController::class, 'submitExam']);
 
 // =====================================================================
 // AUTHENTICATED USER ROUTES (Mobile — role:user)
@@ -74,9 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Appointment Booking History
     Route::get('/user/bookings', [UserProfileController::class, 'getMyBookings']);
-    
-    // My Book Orders
-    Route::get('/user/book-orders', [CourierManagementController::class, 'getMyBookOrders']);
 
     // Payment History
     Route::get('/user/payments', [UserProfileController::class, 'getPaymentHistory']);
@@ -90,6 +84,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/notifications/read-all',           [NotificationController::class, 'markAllRead']);
     Route::get('/user/notification-preferences',         [NotificationController::class, 'getNotificationPreferences']);
     Route::put('/user/notification-preferences',         [NotificationController::class, 'updateNotificationPreferences']);
+
+    // Book Orders & Submissions
+    Route::post('/user/book-orders',       [CourierManagementController::class, 'createBookOrder']);
+    Route::get('/user/book-orders',        [CourierManagementController::class, 'getMyBookOrders']);
+    Route::post('/user/submissions',       [GradingController::class, 'submitExam']);
 });
 
 // =====================================================================
@@ -183,6 +182,11 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/seminars',                                   [SuperAdminController::class, 'saveSeminar']);
     Route::put('/seminars/{id}',                               [SuperAdminController::class, 'saveSeminar']);
     Route::delete('/seminars/{id}',                            [SuperAdminController::class, 'deleteSeminar']);
+
+    // Live Class settings for Mobile Home Banner
+    Route::get('/live-class', [SuperAdminController::class, 'getLiveClassInfo']);
+    Route::post('/live-class/{id?}', [SuperAdminController::class, 'saveLiveClassInfo']);
+    Route::delete('/live-class/{id}', [SuperAdminController::class, 'deleteLiveClass']);
 
     // Course Study Materials / PDF Notes CRUD
     Route::get('/materials',                                   [SuperAdminController::class, 'getPublicMaterials']);

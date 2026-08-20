@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ToastController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Chapter, Book, Seminar } from '../../learn.page';
 import { environment } from '../../../../../environments/environment';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-learn-dashboard',
@@ -56,42 +57,89 @@ export class LearnDashboardComponent implements OnInit {
   myBookOrders: any[] = [];
   showMyOrdersModal = false;
   isLoadingOrders = false;
+  
+  // Specific Order Status Modal State
+  selectedOrderDetails: any = null;
+  showOrderStatusModal = false;
 
   constructor(
     private toastController: ToastController,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.loadCoursesAndSyllabus();
-    this.loadBooks();
+    this.loadMyBookOrders(); // Load orders first or concurrently
     this.loadSeminars();
+    this.loadLiveClass();
     this.loadMaterials();
     this.loadExams();
   }
 
+  liveClasses: any[] = [];
+
+  loadLiveClass() {
+    this.http.get<any>(`${environment.apiUrl}/public/live-class`).subscribe({
+      next: (res) => {
+        if (res && res.data && Array.isArray(res.data)) {
+          this.liveClasses = res.data.filter((lc: any) => lc.is_active);
+        }
+      },
+      error: () => {}
+    });
+  }
+
   loadMyBookOrders() {
     this.isLoadingOrders = true;
-    this.http.get<any>(`${environment.apiUrl}/user/book-orders`).subscribe({
+    const authHeaders = this.authService.getAuthHeaders().headers;
+    this.http.get<any>(`${environment.apiUrl}/user/book-orders`, { headers: authHeaders }).subscribe({
       next: (res) => {
         if (res && res.orders) {
           this.myBookOrders = res.orders;
+          this.syncBooksWithOrders();
         }
         this.isLoadingOrders = false;
+        // Now load books if not loaded, or sync if already loaded
+        this.loadBooks();
       },
       error: () => {
         this.isLoadingOrders = false;
+        this.loadBooks(); // Still load books even if orders fail
       }
     });
   }
 
+  syncBooksWithOrders() {
+    if (this.books.length > 0 && this.myBookOrders.length > 0) {
+      this.books.forEach(b => {
+        const order = this.myBookOrders.find(o => o.book_title === b.title);
+        if (order) {
+          b.bought = true;
+          b.order = order;
+        }
+      });
+    }
+  }
+
   openMyOrders() {
     this.showMyOrdersModal = true;
+    // Orders already loaded on init, but we can refresh
     this.loadMyBookOrders();
   }
 
   closeMyOrders() {
     this.showMyOrdersModal = false;
+  }
+
+  viewOrderStatus(order: any) {
+    this.selectedOrderDetails = order;
+    this.showOrderStatusModal = true;
+  }
+
+  closeOrderStatus() {
+    this.showOrderStatusModal = false;
+    this.selectedOrderDetails = null;
   }
 
   // Exams List (Dynamic from DB)
@@ -151,11 +199,9 @@ export class LearnDashboardComponent implements OnInit {
           let activeCourse = res.courses.find((c: any) => c.level && c.level.toUpperCase() === userLevel);
           
           if (!activeCourse) {
-            // Fallback to first course if no match
-            activeCourse = res.courses[0];
-          }
-
-          if (activeCourse && activeCourse.modules && Array.isArray(activeCourse.modules)) {
+            // No course found for the selected level. Do not fallback to another level's course.
+            this.chapters = [];
+          } else if (activeCourse && activeCourse.modules && Array.isArray(activeCourse.modules)) {
             this.chapters = activeCourse.modules.map((m: any, idx: number) => ({
               title: m.title || `அத்தியாயம் ${idx + 1}`,
               progress: idx === 0 ? 100 : (idx === 1 ? 60 : 0),
@@ -191,9 +237,10 @@ export class LearnDashboardComponent implements OnInit {
             coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
             bought: false
           }));
+          this.syncBooksWithOrders();
         }
       },
-      error: () => {}
+      error: (err) => console.error('Error loading books:', err)
     });
   }
 
@@ -231,7 +278,8 @@ export class LearnDashboardComponent implements OnInit {
         phone: this.checkoutForm.phone
       };
 
-      this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload).subscribe({
+      const authHeaders = this.authService.getAuthHeaders().headers;
+      this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
         next: async (res) => {
           if (this.selectedCheckoutBook) {
             this.selectedCheckoutBook.bought = true;
@@ -381,8 +429,13 @@ export class LearnDashboardComponent implements OnInit {
     await toast.present();
   }
 
-  playLiveClass() {
-    this.openMockGoogleMeet();
+  playLiveClass(link: string) {
+    if (link) {
+      window.open(link, '_blank');
+      this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success');
+    } else {
+      this.openMockGoogleMeet();
+    }
   }
 
   async playVideo() {

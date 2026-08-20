@@ -86,6 +86,16 @@
       </div>
     }
 
+    @if (localForm.courseLevel === 'mudhunilai') {
+      <div class="form-group">
+        <label>இளநிலை பயனர் ஐடி & கடவுச்சொல் (Ilanilai User ID & Password) *</label>
+        <div class="input-with-icon">
+          <input type="text" [(ngModel)]="localForm.prevUserId" placeholder="உதாரணமாக: EDU-1234 & pwd">
+          <span class="input-icon"><i class="bi bi-person-badge-fill"></i></span>
+        </div>
+      </div>
+    }
+
     <div class="form-group">
       <label>இடற்பாடில் சேருவதற்கான காரணம் (Reason for joining this course) *</label>
       <div class="input-with-icon text-area-icon">
