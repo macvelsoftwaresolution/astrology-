@@ -29,6 +29,7 @@ export interface Book {
   price: number;
   coverImage: string;
   bought: boolean;
+  order?: any;
 }
 
 export interface Seminar {

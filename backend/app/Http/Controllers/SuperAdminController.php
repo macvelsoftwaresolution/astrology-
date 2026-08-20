@@ -266,4 +266,45 @@ class SuperAdminController extends Controller
         DB::table('course_materials')->where('id', $id)->delete();
         return response()->json(['success' => true, 'message' => 'Material deleted.']);
     }
+
+    // ==========================================
+    // LIVE CLASS SETTINGS (For Mobile Banner)
+    // ==========================================
+
+    public function getLiveClassInfo()
+    {
+        $liveClasses = DB::table('live_classes')->orderBy('created_at', 'desc')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $liveClasses // returning array of live classes
+        ]);
+    }
+
+    public function saveLiveClassInfo(Request $request, $id = null)
+    {
+        $data = [
+            'title' => $request->input('title', 'நேரடி வகுப்பு'),
+            'description' => $request->input('description', ''),
+            'link' => $request->input('link', ''),
+            'is_active' => $request->boolean('is_active', false),
+            'updated_at' => now()
+        ];
+
+        if ($id) {
+            DB::table('live_classes')->where('id', $id)->update($data);
+            $liveClass = DB::table('live_classes')->where('id', $id)->first();
+        } else {
+            $data['created_at'] = now();
+            $newId = DB::table('live_classes')->insertGetId($data);
+            $liveClass = DB::table('live_classes')->where('id', $newId)->first();
+        }
+
+        return response()->json(['success' => true, 'data' => $liveClass]);
+    }
+
+    public function deleteLiveClass($id)
+    {
+        DB::table('live_classes')->where('id', $id)->delete();
+        return response()->json(['success' => true, 'message' => 'Live class deleted.']);
+    }
 }

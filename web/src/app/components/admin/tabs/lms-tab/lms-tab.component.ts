@@ -60,6 +60,7 @@ export class LmsTabComponent implements OnInit {
     if (typeof window !== 'undefined') {
       this.loadCourses();
       this.loadSeminars();
+      this.loadLiveClasses();
       this.loadMaterials();
       this.loadExams();
     }
@@ -265,6 +266,69 @@ export class LmsTabComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {}
+    });
+  }
+
+  liveClasses: any[] = [];
+  openLiveClassModal = false;
+  editingLiveClass: any = null;
+
+  loadLiveClasses(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>('http://127.0.0.1:8000/api/admin/live-class', headers).subscribe({
+      next: (res) => {
+        this.liveClasses = res.data || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  openNewLiveClass(): void {
+    this.editingLiveClass = {
+      id: null,
+      title: '',
+      description: '',
+      link: '',
+      is_active: true
+    };
+    this.openLiveClassModal = true;
+  }
+
+  editLiveClass(liveClass: any): void {
+    this.editingLiveClass = { ...liveClass };
+    this.openLiveClassModal = true;
+  }
+
+  saveLiveClass(): void {
+    if (!this.editingLiveClass.title || !this.editingLiveClass.link) {
+      alert('Title and Link are required.');
+      return;
+    }
+    const headers = this.authService.getAuthHeaders();
+    const url = this.editingLiveClass.id
+      ? `http://127.0.0.1:8000/api/admin/live-class/${this.editingLiveClass.id}`
+      : 'http://127.0.0.1:8000/api/admin/live-class';
+
+    const req = this.editingLiveClass.id
+      ? this.http.post<any>(url, this.editingLiveClass, headers) // Since backend saveLiveClassInfo handles both via POST
+      : this.http.post<any>(url, this.editingLiveClass, headers);
+
+    req.subscribe({
+      next: () => {
+        this.openLiveClassModal = false;
+        this.loadLiveClasses();
+      },
+      error: () => alert('Failed to save Live Class.')
+    });
+  }
+
+  deleteLiveClass(id: number): void {
+    if (!confirm('Are you sure you want to delete this Live Class?')) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`http://127.0.0.1:8000/api/admin/live-class/${id}`, headers).subscribe({
+      next: () => this.loadLiveClasses(),
+      error: () => alert('Failed to delete Live Class.')
     });
   }
 
