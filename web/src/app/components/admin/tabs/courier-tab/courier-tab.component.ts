@@ -19,7 +19,7 @@ export class CourierTabComponent implements OnInit {
   buyersList: any[] = [];
   isLoading = false;
   isBooksLoading = false;
-  
+
   selectedOrderForCourier: any = null;
   courierForm = { status: 'Shipped', courier_partner: 'Blue Dart', awb_number: '' };
 
@@ -35,7 +35,7 @@ export class CourierTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -93,11 +93,7 @@ export class CourierTabComponent implements OnInit {
       alert('Title and Price are required.');
       return;
     }
-<<<<<<< HEAD
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`${environment.apiUrl}/admin/books`, this.newBookForm, headers).subscribe({
-=======
-    
+
     const formData = new FormData();
     formData.append('title', this.newBookForm.title);
     formData.append('author', this.newBookForm.author || '');
@@ -120,8 +116,7 @@ export class CourierTabComponent implements OnInit {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
 
-    this.http.post<any>('http://127.0.0.1:8000/api/admin/books', formData, { headers }).subscribe({
->>>>>>> 9959350ede1e25217fca5faa1cff73c3243a939e
+    this.http.post<any>(`${environment.apiUrl}/admin/books`, formData, { headers }).subscribe({
       next: (res) => {
         alert(res.message || 'Book added successfully!');
         this.showAddBookModal = false;
