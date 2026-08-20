@@ -1,18 +1,21 @@
 import { Component } from '@angular/core';
 
 import { RouterOutlet, Router } from '@angular/router';
-import { IonContent, IonHeader, IonToolbar, IonTitle } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-jathagam',
   standalone: true,
-  imports: [RouterOutlet, IonContent, IonHeader, IonToolbar, IonTitle],
+  imports: [RouterOutlet, IonContent, IonHeader, IonToolbar],
   template: `
     <ion-header class="ion-no-border">
       <ion-toolbar color="dark">
-        <ion-title>
-          <span class="brand">✨ ஜாதகம்</span>
-        </ion-title>
+        <div style="display: flex; align-items: center; padding: 0 8px;">
+          <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 22px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
+            ←
+          </button>
+          <span class="brand" style="font-size: 18px; margin-left: 4px;">✨ ஜாதகம்</span>
+        </div>
       </ion-toolbar>
     </ion-header>
 
@@ -91,6 +94,10 @@ export class JathagamPage {
   activeTab = 'rasi-palan';
 
   constructor(private router: Router) {}
+
+  goBack() {
+    this.router.navigate(['/home']);
+  }
 
   navigate(tab: string) {
     this.activeTab = tab;

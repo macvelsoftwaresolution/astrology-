@@ -23,20 +23,41 @@
         </div>
       </div>
     }
-    <!-- Dynamic content only -->
+    <!-- Dynamic Syllabus Section Quick Link -->
+    @if (chapters.length > 0) {
+      <div class="db-section-header" style="margin-top: 1.5rem;">
+        <h3>பாடத்திட்டம்</h3>
+        <span class="subheader-badge" (click)="goToSyllabus()" style="cursor: pointer;">அனைத்தும் <i class="bi bi-arrow-right ms-1"></i></span>
+      </div>
+      @for (c of chapters.slice(0, 2); track c.title) {
+        <div class="quick-syllabus-card" (click)="goToSyllabus()">
+          <div class="qs-icon box-gold">
+            <i class="bi bi-journal-text"></i>
+          </div>
+          <div class="qs-details">
+            <strong>{{ c.title }}</strong>
+            <span>{{ c.lessons.length }} பாடங்கள் • பாடங்களை கற்க</span>
+          </div>
+          <span class="qs-arrow"><i class="bi bi-chevron-right"></i></span>
+        </div>
+      }
+    }
+
     <!-- Exams Section Quick Link -->
     <div class="db-section-header" style="margin-top: 1.5rem;">
       <h3>தேர்வுகள்</h3>
-      <span class="subheader-badge">அனைத்தும்</span>
+      <span class="subheader-badge" (click)="goToExams()" style="cursor: pointer;">அனைத்தும் <i class="bi bi-arrow-right ms-1"></i></span>
     </div>
     @for (ex of exams; track ex.id) {
       <div class="quick-exam-card" (click)="startQuiz.emit(ex)">
-        <div class="qe-icon">📝</div>
+        <div class="qe-icon box-peach">
+          <i class="bi bi-pencil-square"></i>
+        </div>
         <div class="qe-details">
           <strong>{{ ex.title }}</strong>
           <span>{{ ex.questions?.length || 0 }} கேள்விகள் • {{ ex.duration }} நிமிடங்கள்</span>
         </div>
-        <span class="qe-arrow">▶</span>
+        <span class="qe-arrow"><i class="bi bi-chevron-right"></i></span>
       </div>
     }
     @if (exams.length === 0) {
@@ -44,7 +65,8 @@
         தேர்வுகள் ஏதுமில்லை.
       </div>
     }
-    <!-- Audio Lessons Removed based on user request -->    <!-- Webinars -->
+
+    <!-- Webinars -->
     <div class="db-section-header" style="margin-top: 1.5rem;">
       <h3>கருத்தரங்க வைப்புகள்</h3>
     </div>
@@ -52,11 +74,11 @@
       @for (s of seminars; track s) {
         <div class="webinar-card" [class.live]="s.status === 'live'" (click)="openMeeting(s.join_url)">
           @if (s.status === 'live') {
-            <span class="web-status-badge">நேரலை</span>
+            <span class="web-status-badge"><i class="bi bi-broadcast me-1"></i>நேரலை</span>
           }
           <h4>{{ s.title }}</h4>
-          <span class="web-speaker">👤 {{ s.speaker }}</span>
-          <span class="web-date">📅 {{ s.date }} • {{ s.time }}</span>
+          <span class="web-speaker"><i class="bi bi-person-fill me-1"></i> {{ s.speaker }}</span>
+          <span class="web-date"><i class="bi bi-calendar3 me-1"></i> {{ s.date }} • {{ s.time }}</span>
           @if (s.status === 'live') {
             <button class="web-btn" (click)="openMeeting(s.join_url); $event.stopPropagation()">சேர்</button>
           }
@@ -73,7 +95,7 @@
     <div class="pdf-notes-grid">
       @for (p of pdfNotes; track p) {
         <div class="pdf-note-card" (click)="downloadPDF(p.title, p.url)">
-          <span class="pdf-icon">📄</span>
+          <span class="pdf-icon"><i class="bi bi-file-earmark-pdf-fill"></i></span>
           <h4>{{ p.title }}</h4>
           <span>{{ p.pages }}</span>
         </div>
@@ -267,24 +289,24 @@
         <span class="tile-arrow">➔</span>
       </div>
       <div class="modern-option-tile" (click)="setTab('library')">
-        <span class="tile-icon">📖</span>
+        <span class="tile-icon"><i class="bi bi-book-half"></i></span>
         <span class="tile-text">சேமித்த நூல்கள்</span>
-        <span class="tile-arrow">➔</span>
+        <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
       </div>
       <div class="modern-option-tile" (click)="openMyOrders()">
-        <span class="tile-icon">📦</span>
+        <span class="tile-icon"><i class="bi bi-box-seam-fill"></i></span>
         <span class="tile-text">புத்தக ஆர்டர்கள் & நிலை</span>
-        <span class="tile-arrow">➔</span>
+        <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
       </div>
       <div class="modern-option-tile" (click)="openDiary()">
-        <span class="tile-icon">📓</span>
+        <span class="tile-icon"><i class="bi bi-journal-bookmark-fill"></i></span>
         <span class="tile-text">ஆன்மீக நாட்குறிப்பு</span>
-        <span class="tile-arrow">➔</span>
+        <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
       </div>
       <div class="modern-option-tile logout-tile" (click)="logout.emit()">
-        <span class="tile-icon red">🚪</span>
+        <span class="tile-icon red"><i class="bi bi-box-arrow-right"></i></span>
         <span class="tile-text red">வெளியேறு (Logout)</span>
-        <span class="tile-arrow red">➔</span>
+        <span class="tile-arrow red"><i class="bi bi-chevron-right"></i></span>
       </div>
     </div>
   </div>
@@ -293,19 +315,19 @@
 <!-- ================= BOTTOM NAVIGATION TABS ================= -->
 <div class="db-footer-nav">
   <div class="db-nav-item" [class.active]="dashboardTab === 'home'" (click)="setTab('home')">
-    <span class="nav-icon">🏠</span>
+    <span class="nav-icon"><i class="bi bi-house-door-fill"></i></span>
     <span class="nav-label">முகப்பு</span>
   </div>
   <div class="db-nav-item" [class.active]="dashboardTab === 'lessons'" (click)="setTab('lessons')">
-    <span class="nav-icon">📚</span>
+    <span class="nav-icon"><i class="bi bi-journal-bookmark-fill"></i></span>
     <span class="nav-label">பாடங்கள்</span>
   </div>
   <div class="db-nav-item" [class.active]="dashboardTab === 'library'" (click)="setTab('library')">
-    <span class="nav-icon">📖</span>
+    <span class="nav-icon"><i class="bi bi-book-half"></i></span>
     <span class="nav-label">நூலகம்</span>
   </div>
   <div class="db-nav-item" [class.active]="dashboardTab === 'profile'" (click)="setTab('profile')">
-    <span class="nav-icon">👤</span>
+    <span class="nav-icon"><i class="bi bi-person-fill"></i></span>
     <span class="nav-label">சுயவிவரம்</span>
   </div>
 </div>

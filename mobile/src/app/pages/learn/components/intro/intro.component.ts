@@ -8,4 +8,5 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class LearnIntroComponent {
   @Output() next = new EventEmitter<void>();
+  @Output() login = new EventEmitter<void>();
 }

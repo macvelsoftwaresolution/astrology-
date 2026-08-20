@@ -16,17 +16,28 @@ export class WelcomePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.checkIfLoggedIn();
+  }
+
+  ionViewWillEnter() {
+    this.checkIfLoggedIn();
+  }
+
+  checkIfLoggedIn() {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home'], { replaceUrl: true });
+    }
   }
 
   selectAstrologyServices() {
-    if (this.authService.isLoggedIn('astrology')) {
-      this.router.navigate(['/home']);
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home'], { replaceUrl: true });
     } else {
       this.router.navigate(['/login'], { queryParams: { service: 'astrology' } });
     }
   }
 
   selectSpiritualEducation() {
-    this.router.navigate(['/learn']);
+    this.router.navigate(['/learn'], { replaceUrl: true });
   }
 }

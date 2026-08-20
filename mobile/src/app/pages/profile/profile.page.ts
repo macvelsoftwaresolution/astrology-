@@ -1,18 +1,24 @@
 import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { IonContent, IonHeader, IonToolbar, IonTitle, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle, IonSpinner],
+  imports: [CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonSpinner],
   template: `
     <ion-header class="ion-no-border">
       <ion-toolbar color="dark">
-        <ion-title><span class="brand">👤 சுயவிவரம்</span></ion-title>
+        <div style="display: flex; align-items: center; padding: 0 8px;">
+          <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 22px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
+            ←
+          </button>
+          <span class="brand" style="font-size: 18px; margin-left: 4px;">👤 சுயவிவரம்</span>
+        </div>
       </ion-toolbar>
     </ion-header>
 
@@ -385,7 +391,11 @@ export class ProfilePage implements OnInit {
   prefMsg = '';
   prefSuccess = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
+
+  goBack() {
+    this.router.navigate(['/home']);
+  }
 
   ngOnInit() {
     const userStr = localStorage.getItem('auth_user');

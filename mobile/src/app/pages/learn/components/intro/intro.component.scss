@@ -16,6 +16,13 @@ $color-purple-dark: #200438;
   padding-bottom: 3.5rem;
 }
 
+.actions-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
 .action-submit-btn {
   background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
   color: #FFFFFF;
@@ -33,6 +40,28 @@ $color-purple-dark: #200438;
   justify-content: center;
 
   &:active {
+    transform: scale(0.98);
+  }
+}
+
+.action-login-btn-outline {
+  background: #FFFFFF;
+  color: $color-maroon;
+  border: 1.5px solid $color-maroon;
+  border-radius: 14px;
+  padding: 0.85rem 1.2rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba($color-maroon, 0.08);
+  transition: all 0.2s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background: #fdf2f2;
     transform: scale(0.98);
   }
 }

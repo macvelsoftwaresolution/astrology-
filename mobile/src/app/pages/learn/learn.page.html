@@ -22,7 +22,7 @@
 <ion-content [fullscreen]="true" class="edu-content">
 
   @if (currentScreen === 'intro') {
-    <app-learn-intro (next)="goToRules()"></app-learn-intro>
+    <app-learn-intro (next)="goToRules()" (login)="goToLogin()"></app-learn-intro>
   }
   @if (currentScreen === 'rules') {
     <app-learn-rules (next)="agreeAndContinue()"></app-learn-rules>
@@ -34,26 +34,34 @@
     <app-learn-payment (next)="payAndStart()"></app-learn-payment>
   }
 
-  <!-- Post Payment Login Screen -->
+  <!-- Student Login Screen -->
   @if (currentScreen === 'post-payment-login') {
     <div class="post-payment-login-container">
-      <div class="success-card">
-        <span class="success-icon">🎉</span>
-        <h2>கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!</h2>
-        <p class="success-info-text">
-          வகுப்பின் உள்நுழைவு விவரங்கள் உங்களது மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.
-        </p>
-        <div class="details-alert-box">
-          <p><strong>உள்நுழைவு பயனர் ஐடி:</strong> {{ generatedLoginId }}</p>
-          <p><strong>கடவுச்சொல்:</strong> {{ generatedPassword }}</p>
-          <span class="test-notice-label">* (சோதனை நோக்கத்திற்காக இது திரையில் காட்டப்படுகிறது)</span>
+      @if (generatedLoginId) {
+        <div class="success-card">
+          <span class="success-icon">🎉</span>
+          <h2>கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!</h2>
+          <p class="success-info-text">
+            வகுப்பின் உள்நுழைவு விவரங்கள் உங்களது மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.
+          </p>
+          <div class="details-alert-box">
+            <p><strong>உள்நுழைவு பயனர் ஐடி:</strong> {{ generatedLoginId }}</p>
+            <p><strong>கடவுச்சொல்:</strong> {{ generatedPassword }}</p>
+            <span class="test-notice-label">* (சோதனை நோக்கத்திற்காக இது திரையில் காட்டப்படுகிறது)</span>
+          </div>
         </div>
-      </div>
+      } @else {
+        <div class="success-card" style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); color: #FFFFFF; text-align: center; padding: 1.5rem 1rem; border-radius: 16px; margin-bottom: 1.25rem;">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🎓</div>
+          <h2 style="color: #FFD700; font-family: 'Noto Serif Tamil', serif; font-size: 1.3rem; margin: 0 0 0.4rem 0;">ஜோதிட பயிலரங்கம் - மாணவர் உள்நுழைவு</h2>
+          <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0;">உங்கள் பயனர் ஐடி / அலைபேசி எண் மற்றும் கடவுச்சொல் உள்ளிட்டு வகுப்பைத் தொடரவும்.</p>
+        </div>
+      }
       <div class="login-form-box">
         <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
         <div class="input-field-group">
-          <label>பயனர் ஐடி (User ID) *</label>
-          <input type="text" [(ngModel)]="loginIdInput" placeholder="EDU-XXXX">
+          <label>பயனர் ஐடி / அலைபேசி எண் / மின்னஞ்சல் (User ID / Phone) *</label>
+          <input type="text" [(ngModel)]="loginIdInput" placeholder="எ.கா: EDU-1001 அல்லது 9876543210">
         </div>
         <div class="input-field-group">
           <label>கடவுச்சொல் (Password) *</label>
@@ -63,6 +71,12 @@
           <p class="error-msg-txt">{{ loginErrorMessage }}</p>
         }
         <button class="action-login-btn" (click)="loginToCourse()">உள்நுழைக ➔</button>
+
+        <div style="margin-top: 1rem; text-align: center;">
+          <button type="button" style="background: none; border: none; color: #A27B38; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline;" (click)="currentScreen = 'intro'">
+            ← புதிய சேர்க்கை பக்கத்திற்குச் செல்ல (Back to Intro)
+          </button>
+        </div>
       </div>
     </div>
   }
@@ -70,8 +84,11 @@
   @if (currentScreen === 'dashboard' && !activeQuiz && !showCertificate) {
     <app-learn-dashboard
       [enrollForm]="enrollForm"
-      [(dashboardTab)]="dashboardTab"
-      [(currentLessonView)]="currentLessonView"
+      [dashboardTab]="dashboardTab"
+      (dashboardTabChange)="onDashboardTabChange($event)"
+      [currentLessonView]="currentLessonView"
+      (currentLessonViewChange)="onLessonViewChange($event)"
+      (back)="handleDashboardBack()"
       (logout)="logoutCourse()"
       (startQuiz)="activeQuiz = $event"
       (viewCertificate)="showCertificate = true">

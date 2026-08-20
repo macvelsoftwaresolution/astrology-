@@ -174,27 +174,35 @@ $color-orange: #F49320;
   box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
   gap: 1rem;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
 
   .qs-icon, .qe-icon {
-    font-size: 1.2rem;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    font-size: 1.35rem;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
   }
 
   .box-gold {
-    background-color: #F3E4C2;
+    background: linear-gradient(135deg, #FFF6E5 0%, #F5E0B7 100%);
     color: #8B5E14;
+    border: 1px solid rgba(139, 94, 20, 0.25);
   }
 
   .box-peach {
-    background-color: #F8E3D2;
-    color: #A85A20;
+    background: linear-gradient(135deg, #FFEBEF 0%, #FDD2DB 100%);
+    color: #E11D48;
+    border: 1px solid rgba(225, 29, 72, 0.25);
   }
 
   .qs-details, .qe-details {

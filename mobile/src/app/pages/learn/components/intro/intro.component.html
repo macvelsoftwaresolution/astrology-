@@ -47,8 +47,15 @@
     </div>
   </div>
 
-  <button class="action-submit-btn" (click)="next.emit()">
-    <span>தொடரவும்</span>
-    <i class="bi bi-arrow-right ms-2"></i>
-  </button>
+  <div class="actions-wrapper">
+    <button class="action-submit-btn" (click)="next.emit()">
+      <i class="bi bi-mortarboard-fill me-2"></i>
+      <span>புதிய சேர்க்கை (Enroll Course)</span>
+      <i class="bi bi-arrow-right ms-2"></i>
+    </button>
+    <button type="button" class="action-login-btn-outline" (click)="login.emit()">
+      <i class="bi bi-box-arrow-in-right me-2"></i>
+      <span>ஏற்கனவே பதிவு செய்தவரா? உள்நுழைக (Login)</span>
+    </button>
+  </div>
 </div>

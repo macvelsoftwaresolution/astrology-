@@ -311,6 +311,6 @@ export class UserProfileComponent implements OnInit, OnChanges {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/welcome']);
+    this.router.navigate(['/welcome'], { replaceUrl: true });
   }
 }

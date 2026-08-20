@@ -17,6 +17,7 @@ interface Order {
 }
 
 import { BackButtonService } from '../services/back-button.service';
+import { ExitModalService } from '../services/exit-modal.service';
 
 declare var Razorpay: any;
 
@@ -100,7 +101,8 @@ export class HomePage implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private backButtonService: BackButtonService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private exitModalService: ExitModalService
   ) { }
 
   // Navigation History Stack for step-by-step ("line by line") back navigation
@@ -187,7 +189,9 @@ export class HomePage implements OnInit {
       return true;
     }
 
-    return false;
+    // 5. At Root Home Tab -> Open Exit App Confirmation Dialog
+    this.exitModalService.open();
+    return true;
   }
 
   private syncQueryParams() {

@@ -73,7 +73,8 @@ export class LearnQuizComponent implements OnInit {
 
       // Submit to database API
       const payload = {
-        course_id: this.exam?.course_id || 1, // Fallback
+        course_id: this.exam?.course_id || null,
+        exam_id: this.exam?.id || null,
         submission_type: 'online_quiz',
         score: this.quizScore
       };

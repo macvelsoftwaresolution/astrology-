@@ -13,6 +13,7 @@ import { AuthService } from '../../../../services/auth.service';
 })
 export class LearnDashboardComponent implements OnInit {
   @Input() enrollForm: any;
+  @Output() back = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
   @Output() startQuiz = new EventEmitter<any>();
   @Output() viewCertificate = new EventEmitter<void>();
@@ -27,13 +28,7 @@ export class LearnDashboardComponent implements OnInit {
   chapters: Chapter[] = [];
 
   // Selected lesson for details view / player
-  selectedLesson = {
-    title: 'சிவ யோகம் - அறிமுகம்',
-    instructor: 'ஜெக சீனிவாசன்',
-    views: '24.5k',
-    duration: '22 நிமிடங்கள்',
-    description: 'இப்பாடம் சிவயோகத்தின் அடிப்படை தத்துவங்கள், அதன் முக்கியத்துவம் மற்றும் மனித உடலில் ஏற்படும் பிரபஞ்ச ஆற்றலின் அதிர்வுகளை விளக்குகிறது. தியானத்தின் மூலம் மனதை ஒருமுகப்படுத்த இது மிக அவசியம்.'
-  };
+  selectedLesson: any = null;
 
   // Seminars List (Dynamic from DB)
   seminars: Seminar[] = [];
@@ -353,7 +348,7 @@ export class LearnDashboardComponent implements OnInit {
     } else if (this.dashboardTab !== 'home') {
       this.setTab('home');
     } else {
-      this.logout.emit();
+      this.back.emit();
     }
   }
 

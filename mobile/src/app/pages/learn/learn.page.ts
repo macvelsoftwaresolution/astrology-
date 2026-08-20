@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth.service';
 
@@ -76,18 +76,32 @@ export class LearnPage implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private ngZone: NgZone,
     private authService: AuthService,
     private backButtonService: BackButtonService
   ) { }
 
   ngOnInit() {
-    const loggedIn = this.authService.isLoggedIn('education');
+    const loggedIn = this.authService.isLoggedIn();
     if (loggedIn) {
       this.currentScreen = 'dashboard';
     } else {
       this.currentScreen = 'intro';
     }
+
+    this.route.queryParams.subscribe((params: Params) => {
+      if (params['tab'] && ['home', 'lessons', 'library', 'profile'].includes(params['tab'])) {
+        this.dashboardTab = params['tab'];
+      } else {
+        this.dashboardTab = 'home';
+      }
+      if (params['view'] && ['list', 'detail'].includes(params['view'])) {
+        this.currentLessonView = params['view'];
+      } else {
+        this.currentLessonView = 'list';
+      }
+    });
   }
 
   ionViewDidEnter() {
@@ -111,6 +125,18 @@ export class LearnPage implements OnInit {
       this.showCertificate = false;
       return true;
     }
+    if (this.currentScreen === 'dashboard') {
+      if (this.currentLessonView === 'detail') {
+        this.onLessonViewChange('list');
+        return true;
+      }
+      if (this.dashboardTab !== 'home') {
+        this.onDashboardTabChange('home');
+        return true;
+      }
+      this.router.navigate(['/home']);
+      return true;
+    }
     if (this.currentScreen === 'intro') {
       return false;
     }
@@ -119,7 +145,7 @@ export class LearnPage implements OnInit {
   };
 
   ionViewWillEnter() {
-    const loggedIn = this.authService.isLoggedIn('education');
+    const loggedIn = this.authService.isLoggedIn();
     if (loggedIn) {
       this.currentScreen = 'dashboard';
     }
@@ -127,7 +153,11 @@ export class LearnPage implements OnInit {
 
   handleBack() {
     if (this.currentScreen === 'intro') {
-      this.router.navigate(['/welcome']);
+      if (this.authService.isLoggedIn()) {
+        this.router.navigate(['/home']);
+      } else {
+        this.router.navigate(['/welcome']);
+      }
     } else if (this.currentScreen === 'rules') {
       this.currentScreen = 'intro';
     } else if (this.currentScreen === 'enroll') {
@@ -135,20 +165,57 @@ export class LearnPage implements OnInit {
     } else if (this.currentScreen === 'payment') {
       this.currentScreen = 'enroll';
     } else if (this.currentScreen === 'post-payment-login') {
-      this.currentScreen = 'payment';
+      this.currentScreen = 'intro';
     } else if (this.currentScreen === 'dashboard') {
-      if (this.currentLessonView === 'detail') {
-        this.currentLessonView = 'list';
-      } else if (this.dashboardTab !== 'home') {
-        this.dashboardTab = 'home';
-      } else {
-        this.currentScreen = 'intro';
-      }
+      this.handleDashboardBack();
     }
+  }
+
+  handleDashboardBack() {
+    if (this.currentLessonView === 'detail') {
+      this.onLessonViewChange('list');
+    } else if (this.dashboardTab !== 'home') {
+      this.onDashboardTabChange('home');
+    } else {
+      this.router.navigate(['/home']);
+    }
+  }
+
+  onDashboardTabChange(tab: 'home' | 'lessons' | 'library' | 'profile') {
+    this.dashboardTab = tab;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { 
+        tab: tab === 'home' ? null : tab,
+        view: this.currentLessonView === 'list' ? null : this.currentLessonView
+      },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  onLessonViewChange(view: 'list' | 'detail') {
+    this.currentLessonView = view;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { 
+        tab: this.dashboardTab === 'home' ? null : this.dashboardTab,
+        view: view === 'list' ? null : view
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 
   goToRules() {
     this.currentScreen = 'rules';
+  }
+
+  goToLogin() {
+    this.generatedLoginId = '';
+    this.generatedPassword = '';
+    this.loginIdInput = '';
+    this.loginPasswordInput = '';
+    this.loginErrorMessage = '';
+    this.currentScreen = 'post-payment-login';
   }
 
   agreeAndContinue() {
@@ -183,25 +250,25 @@ export class LearnPage implements OnInit {
 
   loginToCourse() {
     if (!this.loginIdInput || !this.loginPasswordInput) {
-      this.loginErrorMessage = 'அனைத்து விவரங்களையும் உள்ளிடவும்.';
+      this.loginErrorMessage = 'தயவுசெய்து அனைத்து விவரங்களையும் உள்ளிடவும்.';
       return;
     }
 
-    this.authService.login(this.loginIdInput, this.loginPasswordInput, 'education').subscribe({
+    this.authService.login(this.loginIdInput.trim(), this.loginPasswordInput.trim(), 'education').subscribe({
       next: () => {
         this.loginErrorMessage = '';
         this.currentScreen = 'dashboard';
       },
-      error: () => {
-        this.loginErrorMessage = 'தவறான பயனர் ஐடி அல்லது கடவுச்சொல்.';
+      error: (err) => {
+        this.loginErrorMessage = err?.error?.message || 'தவறான பயனர் ஐடி அல்லது கடவுச்சொல்.';
       }
     });
   }
 
   logoutCourse() {
-    this.authService.logout('education');
+    this.authService.logout();
     this.currentScreen = 'intro';
-    this.router.navigate(['/welcome']);
+    this.router.navigate(['/welcome'], { replaceUrl: true });
   }
 
   getHeaderTitle(): string {
