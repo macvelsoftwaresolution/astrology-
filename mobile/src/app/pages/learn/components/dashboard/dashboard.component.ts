@@ -75,7 +75,8 @@ export class LearnDashboardComponent implements OnInit {
   liveClasses: any[] = [];
 
   loadLiveClass() {
-    this.http.get<any>(`${environment.apiUrl}/public/live-class`).subscribe({
+    const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
+    this.http.get<any>(`${environment.apiUrl}/public/live-class/${userLevel}`).subscribe({
       next: (res) => {
         if (res && res.data && Array.isArray(res.data)) {
           this.liveClasses = res.data.filter((lc: any) => lc.is_active);
@@ -157,7 +158,8 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   loadSeminars() {
-    this.http.get<any>(`${environment.apiUrl}/public/seminars`).subscribe({
+    const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
+    this.http.get<any>(`${environment.apiUrl}/public/seminars/${userLevel}`).subscribe({
       next: (res) => {
         if (res && res.seminars && Array.isArray(res.seminars)) {
           this.seminars = res.seminars.map((s: any) => ({
@@ -175,7 +177,8 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   loadMaterials() {
-    this.http.get<any>(`${environment.apiUrl}/public/materials`).subscribe({
+    const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
+    this.http.get<any>(`${environment.apiUrl}/public/materials/${userLevel}`).subscribe({
       next: (res) => {
         if (res && res.materials && Array.isArray(res.materials)) {
           this.pdfNotes = res.materials.map((m: any) => ({

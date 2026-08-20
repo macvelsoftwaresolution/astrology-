@@ -42,6 +42,8 @@ class SuperAdminController extends Controller
                 'total_bookings' => (int) ($data->total_bookings ?? 0),
                 'total_book_orders' => (int) ($data->total_book_orders ?? 0),
                 'total_revenue' => $totalRevenue,
+                'ilanilai_applicants' => 0,
+                'muthunilai_applicants' => 0,
                 'revenue_breakdown' => [
                     'courses' => $courseRevenue,
                     'services' => $serviceRevenue,
@@ -193,9 +195,13 @@ class SuperAdminController extends Controller
     // SEMINARS & WEBINARS MANAGEMENT
     // ==========================================
 
-    public function getPublicSeminars()
+    public function getPublicSeminars($level = null)
     {
-        $seminars = DB::table('seminars')->orderBy('id', 'desc')->get();
+        $query = DB::table('seminars');
+        if ($level) {
+            $query->where('level', strtoupper($level));
+        }
+        $seminars = $query->orderBy('id', 'desc')->get();
         return response()->json(['seminars' => $seminars]);
     }
 
@@ -208,6 +214,7 @@ class SuperAdminController extends Controller
             'time_text' => $request->input('time_text'),
             'status' => $request->input('status', 'upcoming'),
             'join_url' => $request->input('join_url'),
+            'level' => $request->input('level', 'ILANILAI'),
             'updated_at' => now()
         ];
 
@@ -233,9 +240,13 @@ class SuperAdminController extends Controller
     // COURSE MATERIALS / STUDY NOTES
     // ==========================================
 
-    public function getPublicMaterials()
+    public function getPublicMaterials($level = null)
     {
-        $materials = DB::table('course_materials')->orderBy('id', 'desc')->get();
+        $query = DB::table('course_materials');
+        if ($level) {
+            $query->where('level', strtoupper($level));
+        }
+        $materials = $query->orderBy('id', 'desc')->get();
         return response()->json(['materials' => $materials]);
     }
 
@@ -246,6 +257,7 @@ class SuperAdminController extends Controller
             'title' => $request->input('title'),
             'file_url' => $request->input('file_url'),
             'pages_text' => $request->input('pages_text', '10 பக்கங்கள்'),
+            'level' => $request->input('level', 'ILANILAI'),
             'updated_at' => now()
         ];
 
@@ -271,9 +283,13 @@ class SuperAdminController extends Controller
     // LIVE CLASS SETTINGS (For Mobile Banner)
     // ==========================================
 
-    public function getLiveClassInfo()
+    public function getLiveClassInfo($level = null)
     {
-        $liveClasses = DB::table('live_classes')->orderBy('created_at', 'desc')->get();
+        $query = DB::table('live_classes');
+        if ($level) {
+            $query->where('level', strtoupper($level));
+        }
+        $liveClasses = $query->orderBy('created_at', 'desc')->get();
         return response()->json([
             'success' => true,
             'data' => $liveClasses // returning array of live classes
@@ -287,6 +303,7 @@ class SuperAdminController extends Controller
             'description' => $request->input('description', ''),
             'link' => $request->input('link', ''),
             'is_active' => $request->boolean('is_active', false),
+            'level' => $request->input('level', 'ILANILAI'),
             'updated_at' => now()
         ];
 

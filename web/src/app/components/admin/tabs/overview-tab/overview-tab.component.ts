@@ -13,6 +13,8 @@ export interface Metrics {
   total_bookings: number;
   total_book_orders: number;
   total_revenue: number;
+  ilanilai_applicants: number;
+  muthunilai_applicants: number;
   revenue_breakdown: {
     courses: number;
     services: number;

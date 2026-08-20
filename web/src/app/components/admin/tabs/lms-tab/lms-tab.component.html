@@ -1,12 +1,47 @@
 <div class="lms-container">
+  @if (!selectedCategory) {
+    <!-- CATEGORY SELECTION SCREEN -->
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; padding: 40px 20px;">
+      <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">கல்வித் திட்டம் (Education Level)</h2>
+      <p style="font-size: 15px; color: #64748b; margin-bottom: 40px;">நீங்கள் நிர்வகிக்க விரும்பும் பிரிவை தேர்ந்தெடுக்கவும்</p>
+      
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 800px;">
+        
+        <!-- ILANILAI CARD -->
+        <div (click)="selectCategory('ILANILAI')" style="flex: 1; min-width: 280px; background: #fff; border: 2px solid #e2e8f0; border-radius: 20px; padding: 40px 30px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 20px rgba(59,130,246,0.1)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.02)';">
+          <div style="width: 80px; height: 80px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #3b82f6; font-size: 32px;">
+            <i class="bi bi-book-half"></i>
+          </div>
+          <h3 style="font-size: 22px; font-weight: 800; color: #1e293b; margin-bottom: 12px;">இளநிலை</h3>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin: 0;">இளநிலை மாணவர்களுக்கான பாடங்கள், தேர்வுகள் மற்றும் குறிப்புகள்.</p>
+        </div>
+
+        <!-- MUTHUNILAI CARD -->
+        <div (click)="selectCategory('MUTHUNILAI')" style="flex: 1; min-width: 280px; background: #fff; border: 2px solid #e2e8f0; border-radius: 20px; padding: 40px 30px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#a855f7'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 20px rgba(168,85,247,0.1)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.02)';">
+          <div style="width: 80px; height: 80px; background: #f3e8ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #a855f7; font-size: 32px;">
+            <i class="bi bi-award-fill"></i>
+          </div>
+          <h3 style="font-size: 22px; font-weight: 800; color: #1e293b; margin-bottom: 12px;">முதுநிலை</h3>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin: 0;">முதுநிலை மாணவர்களுக்கான மேம்பட்ட பாடத்திட்டங்கள் மற்றும் தேர்வுகள்.</p>
+        </div>
+
+      </div>
+    </div>
+  } @else {
   @if (activeView === 'dashboard') {
     <!-- Header Banner in a clean Div Card -->
     <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-      <div>
-        <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-mortarboard-fill" style="color:#d97706;"></i>{{ 'lms.title' | translate }}
-        </h1>
-        <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'lms.subtitle' | translate }}</p>
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <button class="btn-xs" style="background: #f1f5f9; color: #475569; border: none; font-weight: 600; padding: 10px 16px; border-radius: 8px; font-size: 18px;" (click)="clearCategory()" title="Back to Selection">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div>
+          <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-mortarboard-fill" style="color:#d97706;"></i>
+            {{ selectedCategory === 'ILANILAI' ? 'இளநிலை (Ilanilai)' : 'முதுநிலை (Muthunilai)' }} - {{ 'lms.title' | translate }}
+          </h1>
+          <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'lms.subtitle' | translate }}</p>
+        </div>
       </div>
       <div style="display:flex;gap:10px;align-items:center;">
         <button class="btn-primary" (click)="openNewCourseWizard()">
@@ -830,5 +865,6 @@
         </div>
       </div>
     </div>
+  }
   }
 </div>

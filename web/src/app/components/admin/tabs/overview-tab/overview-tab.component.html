@@ -61,24 +61,38 @@
       </div>
 
       <div class="card-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-          <h3 style="margin:0;"><i class="bi bi-shield-lock-fill" style="color:#d97706;margin-right:6px;"></i>{{ 'overview.activeTeam' | translate }}</h3>
-          <button class="btn-sm" (click)="goToTab('team')">{{ 'overview.manageTeam' | translate }}</button>
-        </div>
-        <div class="team-mini-list">
-          @for (member of teamList.slice(0, 4); track member.id) {
-            <div class="mini-item">
-              <div class="mini-avatar">{{ member.name.charAt(0) }}</div>
-              <div class="mini-info">
-                <strong>{{ member.name }}</strong>
-                <small>{{ member.email }}</small>
+        <h3 style="margin-bottom:18px; display:flex; align-items:center; gap:8px;">
+          <i class="bi bi-people-fill" style="color:#d97706;"></i> பாட விண்ணப்பங்கள் (Course Applications)
+        </h3>
+        
+        <div style="display:flex; flex-direction: column; gap: 14px;">
+          <!-- ILANILAI -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:16px 20px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <div style="background:#dbeafe; color:#2563eb; width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                <i class="bi bi-book-half"></i>
               </div>
-              <span class="status active">{{ 'common.active' | translate }}</span>
+              <div>
+                <strong style="display:block; font-size:15px; color:#1e293b;">இளநிலை (Ilanilai)</strong>
+                <small style="color:#64748b; font-size:12px;">மொத்த விண்ணப்பங்கள்</small>
+              </div>
             </div>
-          }
-          @if (teamList.length === 0) {
-            <div style="text-align:center;padding:12px;color:#64748b;font-size:12px;">{{ 'common.noRecords' | translate }}</div>
-          }
+            <div style="font-size:24px; font-weight:800; color:#0f172a;">{{ metrics?.ilanilai_applicants || 0 }}</div>
+          </div>
+          
+          <!-- MUTHUNILAI -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#fcf5ff; padding:16px 20px; border-radius:12px; border:1px solid #f3e8ff; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <div style="background:#f3e8ff; color:#9333ea; width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                <i class="bi bi-award-fill"></i>
+              </div>
+              <div>
+                <strong style="display:block; font-size:15px; color:#1e293b;">முதுநிலை (Muthunilai)</strong>
+                <small style="color:#64748b; font-size:12px;">மொத்த விண்ணப்பங்கள்</small>
+              </div>
+            </div>
+            <div style="font-size:24px; font-weight:800; color:#0f172a;">{{ metrics?.muthunilai_applicants || 0 }}</div>
+          </div>
         </div>
       </div>
     </div>

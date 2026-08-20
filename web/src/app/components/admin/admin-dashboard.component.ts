@@ -112,11 +112,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
         this.currentTab = params['tab'];
-        // Auto-expand the category if a tab within it is selected
+        // Auto-expand the category if a tab within it is selected, and close others
         if (this.isAstrologyActive()) {
           this.astrologyCategoryOpen = true;
+          this.learnCategoryOpen = false;
         } else if (this.isLearnActive()) {
           this.learnCategoryOpen = true;
+          this.astrologyCategoryOpen = false;
+        } else {
+          this.astrologyCategoryOpen = false;
+          this.learnCategoryOpen = false;
         }
         this.cdr.detectChanges();
       }
@@ -259,10 +264,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   toggleAstrologyCategory(): void {
     this.astrologyCategoryOpen = !this.astrologyCategoryOpen;
+    if (this.astrologyCategoryOpen) {
+      this.learnCategoryOpen = false;
+    }
   }
 
   toggleLearnCategory(): void {
     this.learnCategoryOpen = !this.learnCategoryOpen;
+    if (this.learnCategoryOpen) {
+      this.astrologyCategoryOpen = false;
+    }
   }
 
   isAstrologyActive(): boolean {
@@ -276,6 +287,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selectTab(tabName: string): void {
     this.currentTab = tabName;
     this.mobileMenuOpen = false;
+    
+    if (this.isAstrologyActive()) {
+      this.astrologyCategoryOpen = true;
+      this.learnCategoryOpen = false;
+    } else if (this.isLearnActive()) {
+      this.learnCategoryOpen = true;
+      this.astrologyCategoryOpen = false;
+    } else {
+      this.astrologyCategoryOpen = false;
+      this.learnCategoryOpen = false;
+    }
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab: tabName },
