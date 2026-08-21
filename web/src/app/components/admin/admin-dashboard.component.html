@@ -124,6 +124,10 @@
               <i class="bi bi-heart-fill nav-icon"></i>
               <span>{{ 'nav.matches' | translate }}</span>
             </button>
+            <button [class.active]="currentTab === 'matrimony'" (click)="selectTab('matrimony')">
+              <i class="bi bi-person-lines-fill nav-icon"></i>
+              <span>{{ 'nav.matrimony' | translate }}</span>
+            </button>
           </div>
         }
       </div>
@@ -235,6 +239,10 @@
 
     @if (currentTab === 'matches') {
       <app-matches-tab></app-matches-tab>
+    }
+
+    @if (currentTab === 'matrimony') {
+      <app-matrimony-tab></app-matrimony-tab>
     }
 
     @if (currentTab === 'payments') {

@@ -30,9 +30,12 @@ $color-white: #FFFFFF;
   display: none;
 }
 
-.rasi-content-scroll {
+.rasi-scroll-container {
   flex: 1;
-  overflow-y: auto;
+  --background: transparent;
+}
+
+.rasi-content-scroll {
   padding: 1.25rem 1.25rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 7.5rem) 1.25rem;
   display: flex;
   flex-direction: column;
@@ -405,9 +408,7 @@ $color-white: #FFFFFF;
 .video-player-card {
   position: relative;
   width: 100%;
-  height: 180px;
   border-radius: 16px;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 
   .video-thumbnail {

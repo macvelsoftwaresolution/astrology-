@@ -346,11 +346,11 @@
               </div>
             } @else {
               <div class="uploaded-file-banner audio-active">
-                <div class="file-info-left">
-                  <span class="file-ready-tag"><i class="bi bi-check-circle-fill"></i> ஆடியோ தயார்</span>
-                  <audio controls [src]="rasiPredictions[selectedRasiIndex].audio_url" class="mini-audio-player"></audio>
+                <div class="file-info-left" style="width: 100%;">
+                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> ஆடியோ தயார்</span>
+                  <audio controls [src]="rasiPredictions[selectedRasiIndex].audio_url" class="mini-audio-player" style="width: 100%;"></audio>
                 </div>
-                <div class="file-actions-right">
+                <div class="file-actions-right" style="margin-top: 8px;">
                   <button
                     type="button"
                     class="btn-icon-action delete"
@@ -400,17 +400,11 @@
               </div>
             } @else {
               <div class="uploaded-file-banner video-active">
-                <div class="file-info-left">
-                  <span class="file-ready-tag"><i class="bi bi-check-circle-fill"></i> வீடியோ தயார்</span>
-                  <button
-                    type="button"
-                    class="btn-preview-video-pill"
-                    (click)="openVideoPreview(rasiPredictions[selectedRasiIndex].video_url, rasiEditorList[selectedRasiIndex].name + ' - ' + rasiEditorType)"
-                  >
-                    <i class="bi bi-play-circle-fill"></i> வீடியோவை பார்க்க (Play Video)
-                  </button>
+                <div class="file-info-left" style="width: 100%;">
+                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> வீடியோ தயார்</span>
+                  <video controls [src]="rasiPredictions[selectedRasiIndex].video_url" style="width: 100%; border-radius: 8px; max-height: 200px; background: #000;"></video>
                 </div>
-                <div class="file-actions-right">
+                <div class="file-actions-right" style="margin-top: 8px;">
                   <button
                     type="button"
                     class="btn-icon-action delete"

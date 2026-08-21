@@ -24,19 +24,31 @@ class FileUploadController extends Controller
 
         $extension = $file->getClientOriginalExtension() ?: 'bin';
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeName = Str::slug($originalName) . '-' . time() . '.' . $extension;
+        $safeName = Str::slug($originalName) . '-' . time();
 
-        $path = $file->storeAs("uploads/{$folder}", $safeName, 'public');
+        try {
+            $cloudinaryResponse = cloudinary()->upload($file->getRealPath(), [
+                'folder' => "astrology/{$folder}",
+                'public_id' => $safeName,
+                'resource_type' => 'auto'
+            ]);
 
-        $url = asset("storage/{$path}");
+            $url = $cloudinaryResponse->getSecurePath();
+            $path = $cloudinaryResponse->getPublicId();
 
-        return response()->json([
-            'success' => true,
-            'url' => $url,
-            'path' => $path,
-            'file_name' => $file->getClientOriginalName(),
-            'size' => $file->getSize(),
-            'mime_type' => $file->getMimeType()
-        ]);
+            return response()->json([
+                'success' => true,
+                'url' => $url,
+                'path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime_type' => $file->getMimeType()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cloudinary upload failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

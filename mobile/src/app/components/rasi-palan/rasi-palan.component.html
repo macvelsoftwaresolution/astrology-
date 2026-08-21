@@ -12,7 +12,8 @@
     </div>
   </div>
 
-  <div class="rasi-content-scroll">
+  <ion-content class="rasi-scroll-container">
+    <div class="rasi-content-scroll">
 
     <!-- ================= GRID VIEW ================= -->
     @if (!selectedRasi) {
@@ -135,22 +136,15 @@
       }
       <!-- Audio Player -->
       @if (!isLoading && predictionData?.audio_url) {
-        <div class="audio-player-detailed">
-          <div class="audio-icon-box"><i class="bi bi-mic-fill"></i></div>
-          <div class="audio-info">
-            <strong>தினசரி மந்திரம்</strong>
-            <span>ஓம் ஐம் ஹ்ரீம் க்லீம்...</span>
+        <div class="audio-player-detailed" style="padding: 15px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 1rem;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div class="audio-icon-box" style="background: #eef2ff; color: #4f46e5; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-mic-fill"></i></div>
+            <div class="audio-info">
+              <strong style="display: block; font-size: 14px; color: #1e293b;">ஒலிப் பதிவு (Audio)</strong>
+              <span style="font-size: 12px; color: #64748b;">இன்றைய ராசி பலன்</span>
+            </div>
           </div>
-          <div class="audio-timeline">
-            <span>01:20</span>
-            <div class="audio-progress-bar"><div class="audio-progress-fill" style="width: 30%"></div></div>
-            <span>04:00</span>
-          </div>
-          <div class="audio-controls-row">
-            <button class="btn-seek"><i class="bi bi-arrow-counterclockwise"></i></button>
-            <button class="btn-play-large"><i class="bi bi-play-fill"></i></button>
-            <button class="btn-seek"><i class="bi bi-arrow-clockwise"></i></button>
-          </div>
+          <audio controls [src]="predictionData.audio_url" style="width: 100%; height: 40px; border-radius: 8px;"></audio>
         </div>
       }
       <!-- Video Player (Moved Below Audio) -->
@@ -163,5 +157,6 @@
       <div style="height: 90px;"></div>
     }
 
-  </div>
+    </div>
+  </ion-content>
 </div>

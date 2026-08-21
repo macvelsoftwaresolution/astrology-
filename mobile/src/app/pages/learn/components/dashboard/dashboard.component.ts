@@ -494,6 +494,8 @@ export class LearnDashboardComponent implements OnInit {
       this.downloadPDF(lesson.title, lesson.url);
     } else if (lesson.type === 'audio') {
       this.showToast('ஒலி பாடம் பிளே செய்யப்படுகிறது...', 'success');
+    } else if (lesson.type === 'text' || lesson.type === 'document') {
+      this.showToast('உரை திறக்கப்படுகிறது...', 'success');
     } else {
       this.playVideo();
     }
