@@ -39,34 +39,86 @@ export class NotificationsPage implements OnInit {
 
   loadNotifications() {
     this.loading = true;
-    this.http.get<any>(`${environment.apiUrl}/user/notifications`, this.headers).subscribe({
+    const userNotifs$ = this.http.get<any>(`${environment.apiUrl}/user/notifications`, this.headers);
+    const liveClasses$ = this.http.get<any>(`${environment.apiUrl}/public/live-class/ILANILAI`);
+
+    userNotifs$.subscribe({
       next: (res) => {
-        this.notifications = res.notifications || [];
+        let notifs = res.notifications || [];
         this.unreadCount = res.unread_count || 0;
-        this.loading = false;
+
+        // Fetch live class announcements to enrich the notifications feed
+        liveClasses$.subscribe({
+          next: (lcRes) => {
+            if (lcRes && lcRes.data && Array.isArray(lcRes.data)) {
+              const activeLives = lcRes.data.filter((lc: any) => lc.is_active);
+              const liveNotifs = activeLives.map((lc: any) => ({
+                id: 'live_' + lc.id,
+                title: '🔴 நேரலை வகுப்பு: ' + lc.title,
+                body: lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.',
+                type: 'course',
+                is_read: false,
+                is_live: true,
+                link: lc.link,
+                created_at: lc.created_at || new Date().toISOString()
+              }));
+              notifs = [...liveNotifs, ...notifs];
+              this.unreadCount += liveNotifs.length;
+            }
+            this.notifications = notifs;
+            this.loading = false;
+          },
+          error: () => {
+            this.notifications = notifs;
+            this.loading = false;
+          }
+        });
       },
       error: () => {
-        this.loading = false;
+        // Fallback: still try to load live classes even if user auth fails
+        liveClasses$.subscribe({
+          next: (lcRes) => {
+            if (lcRes && lcRes.data && Array.isArray(lcRes.data)) {
+              const activeLives = lcRes.data.filter((lc: any) => lc.is_active);
+              this.notifications = activeLives.map((lc: any) => ({
+                id: 'live_' + lc.id,
+                title: '🔴 நேரலை வகுப்பு: ' + lc.title,
+                body: lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.',
+                type: 'course',
+                is_read: false,
+                is_live: true,
+                link: lc.link,
+                created_at: lc.created_at || new Date().toISOString()
+              }));
+              this.unreadCount = this.notifications.length;
+            }
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+          }
+        });
       }
     });
   }
 
   markRead(n: any) {
     if (n.is_read) return;
+    n.is_read = true;
+    this.unreadCount = Math.max(0, this.unreadCount - 1);
+    if (typeof n.id === 'string' && n.id.startsWith('live_')) {
+      return;
+    }
     this.http.put<any>(`${environment.apiUrl}/user/notifications/${n.id}/read`, {}, this.headers).subscribe({
-      next: () => {
-        n.is_read = true;
-        this.unreadCount = Math.max(0, this.unreadCount - 1);
-      }
+      next: () => {}
     });
   }
 
   markAllRead() {
+    this.notifications.forEach(n => n.is_read = true);
+    this.unreadCount = 0;
     this.http.put<any>(`${environment.apiUrl}/user/notifications/read-all`, {}, this.headers).subscribe({
-      next: () => {
-        this.notifications.forEach(n => n.is_read = true);
-        this.unreadCount = 0;
-      }
+      next: () => {}
     });
   }
 
@@ -104,6 +156,12 @@ export class NotificationsPage implements OnInit {
 
   handleNotificationClick(n: any) {
     this.markRead(n);
+
+    // If notification has a direct link (e.g. Live Class Meet URL)
+    if (n.link) {
+      window.open(n.link, '_blank');
+      return;
+    }
 
     // 1. If notification has a video URL, open video
     const video = this.getVideoUrl(n);

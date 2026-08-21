@@ -31,7 +31,11 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -54,6 +58,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": false
+              },
               "outputHashing": "all"
             },
             "development": {
@@ -80,7 +92,7 @@
               "buildTarget": "app:build:development"
             },
             "ci": {
-              "progress": false
+              "buildTarget": "app:build:ci"
             }
           },
           "defaultConfiguration": "development"
@@ -111,7 +123,11 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
+            ],
             "scripts": []
           },
           "configurations": {

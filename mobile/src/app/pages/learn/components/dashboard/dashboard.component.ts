@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../services/auth.service';
@@ -57,10 +58,17 @@ export class LearnDashboardComponent implements OnInit {
   selectedOrderDetails: any = null;
   showOrderStatusModal = false;
 
+  // Notifications & Announcements State
+  notifications: any[] = [];
+  unreadCount: number = 0;
+  showNotificationsModal = false;
+  marqueeMessage = '📢 ஆருத்ரா ஜோதிட பயிலரங்கத்திற்கு தங்களை அன்புடன் வரவேற்கிறோம்! ✦ புதிய நேரலை வகுப்புகள் மற்றும் பாடக்குறிப்புகள் உடனுக்குடன் புதுப்பிக்கப்படுகின்றன ✦ பாடங்களை முழுமையாக படித்து தேர்வு எழுதி சான்றிதழ் பெறுங்கள்!';
+
   constructor(
     private toastController: ToastController,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -76,6 +84,7 @@ export class LearnDashboardComponent implements OnInit {
     this.loadLiveClass();
     this.loadMaterials();
     this.loadExams();
+    this.loadNotifications();
   }
 
   liveClasses: any[] = [];
@@ -86,9 +95,89 @@ export class LearnDashboardComponent implements OnInit {
       next: (res) => {
         if (res && res.data && Array.isArray(res.data)) {
           this.liveClasses = res.data.filter((lc: any) => lc.is_active);
+          this.updateMarqueeMessage();
         }
       },
       error: () => {}
+    });
+  }
+
+  loadNotifications() {
+    if (!this.authService.isLoggedIn()) {
+      this.updateMarqueeMessage();
+      return;
+    }
+    const authHeaders = this.authService.getAuthHeaders().headers;
+    this.http.get<any>(`${environment.apiUrl}/user/notifications`, { headers: authHeaders }).subscribe({
+      next: (res) => {
+        this.notifications = res.notifications || [];
+        this.unreadCount = res.unread_count || 0;
+        this.updateMarqueeMessage();
+      },
+      error: () => {
+        this.updateMarqueeMessage();
+      }
+    });
+  }
+
+  updateMarqueeMessage() {
+    const parts: string[] = [];
+
+    // 1. Live class announcements
+    if (this.liveClasses && this.liveClasses.length > 0) {
+      const lc = this.liveClasses[0];
+      parts.push(`🔴 நேரலை வகுப்பு: ${lc.title} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
+    }
+
+    // 2. Recent notifications
+    if (this.notifications && this.notifications.length > 0) {
+      const recent = this.notifications.slice(0, 3);
+      recent.forEach((n: any) => {
+        parts.push(`🔔 ${n.title}: ${n.body || n.message || ''}`);
+      });
+    }
+
+    // 3. Educational / LMS reminders
+    parts.push('📢 ஆருத்ரா ஜோதிட பயிலரங்கம்: அனைத்து பாடங்களையும் முழுமையாக கற்று தேர்வு எழுதி சான்றிதழ் பெற்றிடுங்கள்!');
+    parts.push('✨ உங்கள் சந்தேகங்களை நேரலை வகுப்புகளில் ஆசிரியரிடம் நேரடியாக கேட்டுத் தெரிந்து கொள்ளலாம்.');
+    parts.push('📚 புதிய ஜோதிட ஆய்வுப் புத்தகங்கள் மற்றும் குறிப்புகள் நூலகப் பகுதியில் பதிவேற்றப்பட்டுள்ளன.');
+
+    this.marqueeMessage = parts.join('   ✦✦   ');
+  }
+
+  openNotificationsModal() {
+    this.showNotificationsModal = true;
+    this.loadNotifications();
+  }
+
+  closeNotificationsModal() {
+    this.showNotificationsModal = false;
+  }
+
+  goToFullNotifications() {
+    this.showNotificationsModal = false;
+    this.router.navigate(['/notifications']);
+  }
+
+  markNotificationAsRead(n: any) {
+    if (n.is_read || !this.authService.isLoggedIn()) return;
+    const authHeaders = this.authService.getAuthHeaders().headers;
+    this.http.put<any>(`${environment.apiUrl}/user/notifications/${n.id}/read`, {}, { headers: authHeaders }).subscribe({
+      next: () => {
+        n.is_read = true;
+        this.unreadCount = Math.max(0, this.unreadCount - 1);
+      }
+    });
+  }
+
+  markAllNotificationsRead() {
+    if (!this.authService.isLoggedIn()) return;
+    const authHeaders = this.authService.getAuthHeaders().headers;
+    this.http.put<any>(`${environment.apiUrl}/user/notifications/read-all`, {}, { headers: authHeaders }).subscribe({
+      next: () => {
+        this.notifications.forEach((n: any) => n.is_read = true);
+        this.unreadCount = 0;
+      }
     });
   }
 

@@ -32,6 +32,58 @@ $color-orange: #F49320;
     align-items: center;
     justify-content: center;
     outline: none;
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  .db-header-action-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FFFDF7;
+    border: 1.5px solid rgba($color-gold, 0.4);
+    color: $color-maroon;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba($color-maroon, 0.08);
+    position: relative;
+    transition: all 0.2s ease;
+    outline: none;
+
+    &:active {
+      transform: scale(0.92);
+      background: #fdf2f4;
+    }
+
+    &.bell-btn {
+      .notif-badge-count {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        background: #dc2626;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        min-width: 17px;
+        height: 17px;
+        line-height: 17px;
+        border-radius: 9px;
+        text-align: center;
+        padding: 0 4px;
+        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.4);
+        border: 1.5px solid #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: bell-bounce 1.5s infinite alternate ease-in-out;
+      }
+    }
   }
 }
 
@@ -1586,6 +1638,335 @@ $color-orange: #F49320;
     &:focus {
       border-color: #4a0404;
       background-color: #fff;
+    }
+  }
+}
+
+/* ================= PASSING MESSAGE MARQUEE / TICKER ================= */
+.announcement-ticker-bar {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #4A0E17 0%, #681522 55%, #831B2B 100%);
+  color: #FAF6E8;
+  padding: 0.48rem 0.85rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1.5px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 3px 10px rgba(74, 14, 23, 0.18);
+  user-select: none;
+
+  .ticker-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #ECC876 0%, #C49B45 50%, #A27B38 100%);
+    color: #2A080C;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+
+    .ticker-icon {
+      font-size: 0.8rem;
+      color: #2A080C;
+      animation: ticker-pulse 1.8s infinite ease-in-out;
+    }
+  }
+
+  .ticker-content-wrapper {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0 10px;
+    position: relative;
+
+    .ticker-text-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: marquee-scroll 24s linear infinite;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #FFF8E7;
+      letter-spacing: 0.25px;
+
+      &:hover {
+        animation-play-state: paused;
+      }
+    }
+  }
+
+  .ticker-arrow {
+    color: #ECC876;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes ticker-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25) rotate(-8deg);
+  }
+}
+
+@keyframes bell-bounce {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15);
+  }
+}
+
+/* ================= NOTIFICATIONS MODAL OVERLAY ================= */
+.notif-modal-overlay {
+  z-index: 9999;
+}
+
+.notif-modal-card {
+  max-width: 480px;
+  width: 92%;
+  border-radius: 20px;
+  background: #FFFDF9;
+  border: 1.5px solid rgba($color-gold, 0.45);
+  box-shadow: 0 16px 40px rgba(74, 14, 23, 0.25);
+  overflow: hidden;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+
+  .notif-modal-header {
+    background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+    color: #FFFFFF;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1.5px solid rgba(212, 175, 55, 0.35);
+
+    .notif-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .header-bell-icon {
+        color: #ECC876;
+        font-size: 1.15rem;
+      }
+
+      h3 {
+        font-family: 'Noto Serif Tamil', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0;
+        color: #FFFDF7;
+      }
+
+      .notif-header-badge {
+        background: #dc2626;
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 12px;
+      }
+    }
+
+    .close-checkout-btn {
+      color: #FFFDF7;
+      font-size: 1.6rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+  }
+
+  .notif-modal-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .notif-item-card {
+      display: flex;
+      gap: 12px;
+      padding: 0.85rem;
+      background: #FFFFFF;
+      border-radius: 12px;
+      border: 1px solid rgba($color-gold, 0.25);
+      transition: all 0.2s ease;
+
+      &.unread {
+        background: #FFF9EE;
+        border-color: rgba($color-gold, 0.6);
+        box-shadow: 0 2px 8px rgba(162, 123, 56, 0.12);
+      }
+
+      &.live-alert-card {
+        background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F0 100%);
+        border: 1.5px solid #dc2626;
+        cursor: pointer;
+      }
+
+      .notif-item-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba($color-gold, 0.15);
+        color: $color-maroon;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+
+        &.live {
+          background: #FEE2E2;
+          color: #DC2626;
+          animation: ticker-pulse 1.5s infinite ease-in-out;
+        }
+      }
+
+      .notif-item-content {
+        flex: 1;
+        min-width: 0;
+
+        .notif-item-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 6px;
+          margin-bottom: 3px;
+
+          strong {
+            font-size: 0.88rem;
+            color: $color-maroon;
+            font-weight: 700;
+          }
+
+          .notif-time {
+            font-size: 0.72rem;
+            color: #94A3B8;
+            flex-shrink: 0;
+          }
+
+          .live-pill {
+            background: #DC2626;
+            color: #FFFFFF;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+          }
+        }
+
+        p {
+          font-size: 0.78rem;
+          color: #475569;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .notif-action-btn {
+          margin-top: 6px;
+          background: #DC2626;
+          color: #FFFFFF;
+          border: none;
+          font-size: 0.72rem;
+          font-weight: 700;
+          padding: 3px 10px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .notif-empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+
+      .empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      h4 {
+        font-family: 'Noto Serif Tamil', serif;
+        color: $color-maroon;
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin: 0 0 0.3rem 0;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: #64748B;
+        margin: 0;
+      }
+    }
+  }
+
+  .notif-modal-footer {
+    padding: 0.75rem 1rem;
+    background: #FAF6E8;
+    border-top: 1px solid rgba($color-gold, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .notif-primary-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+      color: #ECC876;
+      border: 1px solid #ECC876;
+      font-weight: 700;
+      font-size: 0.84rem;
+      padding: 0.6rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+
+    .notif-secondary-btn {
+      width: 100%;
+      background: transparent;
+      color: $color-maroon;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
     }
   }
 }
