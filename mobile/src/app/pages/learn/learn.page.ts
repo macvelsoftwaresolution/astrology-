@@ -2,8 +2,8 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth.service';
-
 import { BackButtonService } from '../../services/back-button.service';
+import { ExitModalService } from '../../services/exit-modal.service';
 
 export interface Chapter {
   title: string;
@@ -79,11 +79,12 @@ export class LearnPage implements OnInit {
     private route: ActivatedRoute,
     private ngZone: NgZone,
     private authService: AuthService,
-    private backButtonService: BackButtonService
+    private backButtonService: BackButtonService,
+    private exitModalService: ExitModalService
   ) { }
 
   ngOnInit() {
-    const loggedIn = this.authService.isLoggedIn();
+    const loggedIn = this.authService.isLoggedIn('education');
     if (loggedIn) {
       this.currentScreen = 'dashboard';
     } else {
@@ -134,30 +135,29 @@ export class LearnPage implements OnInit {
         this.onDashboardTabChange('home');
         return true;
       }
-      this.router.navigate(['/home']);
+      this.exitModalService.open();
       return true;
     }
     if (this.currentScreen === 'intro') {
-      return false;
+      this.exitModalService.open();
+      return true;
     }
     this.handleBack();
     return true;
   };
 
   ionViewWillEnter() {
-    const loggedIn = this.authService.isLoggedIn();
+    const loggedIn = this.authService.isLoggedIn('education');
     if (loggedIn) {
       this.currentScreen = 'dashboard';
+    } else {
+      this.currentScreen = 'intro';
     }
   }
 
   handleBack() {
     if (this.currentScreen === 'intro') {
-      if (this.authService.isLoggedIn()) {
-        this.router.navigate(['/home']);
-      } else {
-        this.router.navigate(['/welcome']);
-      }
+      this.exitModalService.open();
     } else if (this.currentScreen === 'rules') {
       this.currentScreen = 'intro';
     } else if (this.currentScreen === 'enroll') {
@@ -177,7 +177,7 @@ export class LearnPage implements OnInit {
     } else if (this.dashboardTab !== 'home') {
       this.onDashboardTabChange('home');
     } else {
-      this.router.navigate(['/home']);
+      this.exitModalService.open();
     }
   }
 
@@ -266,7 +266,7 @@ export class LearnPage implements OnInit {
   }
 
   logoutCourse() {
-    this.authService.logout();
+    this.authService.logout('education');
     this.currentScreen = 'intro';
     this.router.navigate(['/welcome'], { replaceUrl: true });
   }
