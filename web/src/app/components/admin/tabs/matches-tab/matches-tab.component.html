@@ -21,8 +21,6 @@
             <th>ID</th>
             <th>{{ 'matches.boyDetails' | translate }}</th>
             <th>{{ 'matches.girlDetails' | translate }}</th>
-            <th>{{ 'matches.points' | translate }}</th>
-            <th>Verdict</th>
             <th>{{ 'common.status' | translate }}</th>
             <th>{{ 'services.bookingDate' | translate }}</th>
             <th>{{ 'common.actions' | translate }}</th>
@@ -51,16 +49,6 @@
                 <small class="muted">{{ m.girl_rasi }} &bull; {{ m.girl_nakshatra }}</small>
               </td>
               <td>
-                <span class="score-badge" [ngClass]="m.match_score >= 6 ? 'good' : 'bad'">
-                  {{ m.match_score }} / 10
-                </span>
-              </td>
-              <td>
-                <strong [style.color]="m.match_score >= 6 ? '#059669' : '#dc2626'">
-                  {{ m.verdict || (m.match_score >= 6 ? 'Match Approved' : 'Low Match') }}
-                </strong>
-              </td>
-              <td>
                 <span class="status-pill" [ngClass]="(m.admin_status || m.consultation_status || 'Pending').toLowerCase()">
                   {{ m.admin_status || m.consultation_status || 'Pending' }}
                 </span>
@@ -74,7 +62,7 @@
               <td>
                 <div style="display:flex;gap:6px;">
                   <button class="btn-sm" (click)="selectedMatch = m">
-                    <i class="bi bi-list-check"></i> {{ 'matches.viewReport' | translate }}
+                    <i class="bi bi-eye-fill"></i> விவரம்
                   </button>
                   <button class="btn-sm" (click)="openEditMatchStatus(m)">
                     <i class="bi bi-pencil"></i> {{ 'common.status' | translate }}
@@ -95,55 +83,53 @@
     </div>
   }
 
-  <!-- MODAL: 10 PORUTHAM BREAKDOWN -->
+  <!-- End Table -->
+
+  <!-- MODAL: VIEW FULL DETAILS -->
   @if (selectedMatch) {
     <div class="modal-overlay" (click)="selectedMatch = null">
-      <div class="match-modal-box" (click)="$event.stopPropagation()">
-        <!-- Fixed Header -->
-        <div class="match-modal-header">
-          <div>
-            <h3><i class="bi bi-heart-fill" style="color:#e11d48;"></i>{{ selectedMatch.boy_name }} & {{ selectedMatch.girl_name }}</h3>
-            <span style="font-size:12px;color:#64748b;font-weight:500;">10 பொருத்தங்கள் பகுப்பாய்வு அறிக்கை (10 Poruthams Report)</span>
-          </div>
-          <button class="close-btn" (click)="selectedMatch = null" title="Close"><i class="bi bi-x-lg"></i></button>
+      <div class="modal-box large-modal" style="max-width: 600px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3><i class="bi bi-person-lines-fill" style="color:#d97706;margin-right:6px;"></i>முழு விவரங்கள் (Full Details)</h3>
+          <button class="close-btn" (click)="selectedMatch = null"><i class="bi bi-x-lg"></i></button>
         </div>
-
-        <!-- Scrollable Body -->
-        <div class="match-modal-body">
-          <!-- Top Score Card -->
-          <div class="match-score-card">
-            <div class="match-score-badge-large" [ngClass]="selectedMatch.match_score >= 6 ? 'good' : 'bad'">
-              {{ selectedMatch.match_score }} / 10
-            </div>
-            <div>
-              <div class="match-verdict-title">{{ selectedMatch.verdict || (selectedMatch.match_score >= 6 ? 'நல்ல பொருத்தம்' : 'சுமாரான பொருத்தம்') }}</div>
-              <small class="muted" style="font-size:12px;display:block;">
-                {{ selectedMatch.boy_rasi }} ({{ selectedMatch.boy_nakshatra }}) &bull; {{ selectedMatch.girl_rasi }} ({{ selectedMatch.girl_nakshatra }})
-              </small>
-            </div>
+        <div class="modal-body p-2" style="max-height: 70vh; overflow-y: auto;">
+          <!-- Boy Details -->
+          <h4 style="color:#2563eb; font-size:15px; margin-bottom:10px;"><i class="bi bi-gender-male"></i> ஆண் விவரங்கள் (Groom)</h4>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px; border: 1px solid #e2e8f0;">
+            <div><span class="muted">பெயர்:</span> <strong>{{ selectedMatch.boy_name }}</strong></div>
+            <div><span class="muted">பிறந்த தேதி:</span> <strong>{{ selectedMatch.boy_dob }}</strong></div>
+            <div><span class="muted">பிறந்த நேரம்:</span> <strong>{{ selectedMatch.boy_tob || '-' }}</strong></div>
+            <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ selectedMatch.boy_pob || '-' }}</strong></div>
+            <div><span class="muted">ராசி:</span> <strong>{{ selectedMatch.boy_rasi }}</strong></div>
+            <div><span class="muted">நட்சத்திரம்:</span> <strong>{{ selectedMatch.boy_nakshatra }}</strong></div>
           </div>
 
-          <!-- 10 Porutham Cards List -->
-          <div class="match-items-list">
-            @for (item of getMatchDetailsArray(selectedMatch.match_details); track item.name) {
-              <div class="match-item-card" [class.is-matched]="item.match" [class.is-unmatched]="!item.match">
-                <div>
-                  <strong style="color:#0f172a;font-size:13px;display:block;">{{ item.tamil_name }}</strong>
-                  <small class="muted" style="font-size:11px;display:block;color:#64748b;margin-top:1px;">
-                    {{ item.name }} {{ item.desc ? '• ' + item.desc : '' }}
-                  </small>
-                </div>
-                <div class="match-status-tag" [class.yes]="item.match" [class.no]="!item.match">
-                  <i class="bi" [ngClass]="item.match ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
-                  {{ item.match ? 'பொருத்தம் உண்டு (Matched)' : 'பொருத்தம் இல்லை (Not Matched)' }}
-                </div>
-              </div>
-            }
+          <!-- Girl Details -->
+          <h4 style="color:#e11d48; font-size:15px; margin-bottom:10px;"><i class="bi bi-gender-female"></i> பெண் விவரங்கள் (Bride)</h4>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px; border: 1px solid #e2e8f0;">
+            <div><span class="muted">பெயர்:</span> <strong>{{ selectedMatch.girl_name }}</strong></div>
+            <div><span class="muted">பிறந்த தேதி:</span> <strong>{{ selectedMatch.girl_dob }}</strong></div>
+            <div><span class="muted">பிறந்த நேரம்:</span> <strong>{{ selectedMatch.girl_tob || '-' }}</strong></div>
+            <div><span class="muted">பிறந்த இடம்:</span> <strong>{{ selectedMatch.girl_pob || '-' }}</strong></div>
+            <div><span class="muted">ராசி:</span> <strong>{{ selectedMatch.girl_rasi }}</strong></div>
+            <div><span class="muted">நட்சத்திரம்:</span> <strong>{{ selectedMatch.girl_nakshatra }}</strong></div>
           </div>
+          
+          <!-- Extra Requirements -->
+          @if (selectedMatch.education_job || selectedMatch.preferences) {
+            <h4 style="color:#64748b; font-size:15px; margin-bottom:10px;"><i class="bi bi-info-circle"></i> கூடுதல் விவரங்கள்</h4>
+            <div style="font-size:13px; background:#f8fafc; padding:12px; border-radius:8px; border: 1px solid #e2e8f0;">
+              @if (selectedMatch.education_job) {
+                <div style="margin-bottom:6px;"><span class="muted">கல்வி / வேலை:</span> <strong>{{ selectedMatch.education_job }}</strong></div>
+              }
+              @if (selectedMatch.preferences) {
+                <div><span class="muted">எதிர்பார்ப்புகள்:</span> <strong>{{ selectedMatch.preferences }}</strong></div>
+              }
+            </div>
+          }
         </div>
-
-        <!-- Fixed Footer -->
-        <div class="match-modal-footer">
+        <div class="modal-btns mt-3">
           <button type="button" class="btn-cancel" (click)="selectedMatch = null">{{ 'common.close' | translate }}</button>
         </div>
       </div>

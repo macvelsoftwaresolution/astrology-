@@ -190,8 +190,16 @@
           </div>
         }
 
+        <!-- Article / Text Player Row (If Text Type) -->
+        @if (selectedLesson?.type === 'text' || selectedLesson?.type === 'document') {
+          <div class="audio-player-box" style="background:#f0f9ff; border-left:4px solid #0284c7; padding: 20px;">
+            <h3 style="color: #0f172a; font-size: 18px; margin-bottom: 16px;"><i class="bi bi-card-text me-2" style="color: #0284c7;"></i>{{ selectedLesson?.title }}</h3>
+            <div style="font-size:15px; color:#334155; line-height:1.7; white-space: pre-wrap;">{{ selectedLesson?.description || 'உரை தரவு எதுவும் இல்லை.' }}</div>
+          </div>
+        }
+
         <!-- Description (Dynamic from DB) -->
-        @if (selectedLesson?.description) {
+        @if (selectedLesson?.description && selectedLesson?.type !== 'text' && selectedLesson?.type !== 'document') {
           <div class="lesson-desc-box">
             <h3><i class="bi bi-lightbulb-fill me-2" style="color: #f59e0b;"></i>விளக்கவுரை</h3>
             <p>{{ selectedLesson?.description }}</p>
@@ -228,6 +236,7 @@
                           @if (l.type === 'pdf') { <i class="bi bi-file-earmark-pdf-fill"></i> }
                           @if (l.type === 'live') { <i class="bi bi-broadcast"></i> }
                           @if (l.type === 'image') { <i class="bi bi-image-fill"></i> }
+                          @if (l.type === 'text' || l.type === 'document') { <i class="bi bi-card-text"></i> }
                         </span>
                         <div class="l-details">
                           <h4>{{ l.title }}</h4>

@@ -104,11 +104,8 @@
 
             <!-- ACTION BUTTONS -->
             <div style="display:flex;gap:8px;margin-top:auto;">
-              <button class="btn-xs-pro gold" style="flex:1;" (click)="openSyllabusDrawer(course)">
-                <i class="bi bi-journal-text"></i> {{ 'lms.viewSyllabus' | translate }}
-              </button>
-              <button class="btn-xs-pro" (click)="openAddModule(course.id)">
-                {{ 'lms.addModule' | translate }}
+              <button class="btn-xs-pro gold" style="flex:1;" (click)="editCourse(course)">
+                <i class="bi bi-pencil-square"></i> திருத்து (Edit)
               </button>
               <button class="btn-xs-pro danger" (click)="deleteCourse(course.id)" [title]="'common.delete' | translate">
                 <i class="bi bi-trash3-fill"></i>
@@ -681,9 +678,14 @@
                               <span style="font-size:13px;font-weight:600;color:#334155;">{{ lIdx + 1 }}. {{ les.title }}</span>
                               <span style="font-size:10px;background:#e2e8f0;padding:2px 6px;border-radius:4px;color:#475569;">{{ les.content_type | uppercase }}</span>
                             </div>
-                            <button type="button" class="btn-xs" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-size:13px;" (click)="removeLessonInWizard(m.id, les.id)" title="Remove Lesson">
-                              <i class="bi bi-trash-fill"></i>
-                            </button>
+                            <div style="display:flex;gap:4px;">
+                              <button type="button" class="btn-xs" style="background:transparent;color:#2563eb;border:none;cursor:pointer;font-size:13px;" (click)="editInlineLesson(m.id, les)" title="Edit Lesson">
+                                <i class="bi bi-pencil-fill"></i>
+                              </button>
+                              <button type="button" class="btn-xs" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-size:13px;" (click)="removeLessonInWizard(m.id, les.id)" title="Remove Lesson">
+                                <i class="bi bi-trash-fill"></i>
+                              </button>
+                            </div>
                           </div>
                         }
                       </div>

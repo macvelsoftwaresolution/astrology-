@@ -322,9 +322,22 @@ export class MarriageMatchingComponent implements OnInit {
   }
 
   payForRegistration() {
-    setTimeout(() => {
-      this.serviceStep = 3;
-    }, 800);
+    this.submittingToAdmin = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/matrimony-profiles`, this.regForm, headers).subscribe({
+      next: (res) => {
+        this.submittingToAdmin = false;
+        if (res.success) {
+          this.serviceStep = 3;
+        } else {
+          alert('பதிவு செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+        }
+      },
+      error: () => {
+        this.submittingToAdmin = false;
+        alert('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
+      }
+    });
   }
 
   resetApp() {

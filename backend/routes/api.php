@@ -11,6 +11,7 @@ use App\Http\Controllers\JathagamController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\MatrimonyProfileController;
 use App\Http\Middleware\CheckRole;
 
 // =====================================================================
@@ -43,6 +44,7 @@ Route::get('/public/exams/{level}', [\App\Http\Controllers\ExamController::class
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
 Route::post('/jathagam/varan-search', [JathagamController::class, 'submitVaranSearch']);
 Route::post('/jathagam/para-reading', [JathagamController::class, 'paraJathagamReading']);
+Route::post('/matrimony-profiles',    [MatrimonyProfileController::class, 'store']);
 
 // Booking & Payment (public — payment gateway does auth externally)
 Route::post('/bookings/create',        [AstrologyController::class, 'createBooking']);
@@ -160,6 +162,10 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/marriage-matches',                 [JathagamController::class, 'adminGetMatches']);
     Route::put('/marriage-matches/{id}',            [JathagamController::class, 'adminUpdateMatch']);
     Route::delete('/marriage-matches/{id}',         [JathagamController::class, 'adminDeleteMatch']);
+
+    // Matrimony Profiles (Registration)
+    Route::get('/matrimony-profiles',               [MatrimonyProfileController::class, 'adminIndex']);
+    Route::put('/matrimony-profiles/{id}/status',   [MatrimonyProfileController::class, 'adminUpdateStatus']);
 
     // User Profiles
     Route::get('/users',                            [UserProfileController::class, 'adminGetUsers']);

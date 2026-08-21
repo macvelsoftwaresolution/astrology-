@@ -17,6 +17,7 @@ import { GradingTabComponent } from './tabs/grading-tab/grading-tab.component';
 import { ServicesTabComponent } from './tabs/services-tab/services-tab.component';
 import { RasiEditorTabComponent } from './tabs/rasi-editor-tab/rasi-editor-tab.component';
 import { MatchesTabComponent } from './tabs/matches-tab/matches-tab.component';
+import { MatrimonyTab } from './tabs/matrimony-tab/matrimony-tab';
 import { PaymentsTabComponent } from './tabs/payments-tab/payments-tab.component';
 import { BroadcastTabComponent } from './tabs/broadcast-tab/broadcast-tab.component';
 import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
@@ -36,6 +37,7 @@ import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
     ServicesTabComponent,
     RasiEditorTabComponent,
     MatchesTabComponent,
+    MatrimonyTab,
     PaymentsTabComponent,
     BroadcastTabComponent,
     UsersTabComponent
@@ -252,6 +254,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'services': 'nav.services',
       'rasi-editor': 'nav.rasi_editor',
       'matches': 'nav.matches',
+      'matrimony': 'nav.matrimony',
       'lms': 'nav.lms',
       'courier': 'nav.courier',
       'grading': 'nav.grading',
@@ -277,7 +280,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isAstrologyActive(): boolean {
-    return ['team', 'services', 'rasi-editor', 'matches'].includes(this.currentTab);
+    return ['team', 'services', 'rasi-editor', 'matches', 'matrimony'].includes(this.currentTab);
   }
 
   isLearnActive(): boolean {

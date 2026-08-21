@@ -694,6 +694,13 @@ export class LmsTabComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  editInlineLesson(moduleId: number, lesson: any): void {
+    this.activeLessonForm = { moduleId, type: 'video' };
+    this.newInlineLesson = { ...lesson };
+    this.isUploadingLessonFile = false;
+    this.cdr.detectChanges();
+  }
+
   cancelInlineLessonForm(): void {
     this.activeLessonForm = null;
     this.cdr.detectChanges();
@@ -717,7 +724,14 @@ export class LmsTabComponent implements OnInit {
     const module = this.wizardModules.find(m => m.id === this.activeLessonForm!.moduleId);
     if (module) {
       if (!module.lessons) module.lessons = [];
-      module.lessons.push({ ...this.newInlineLesson, id: Date.now() });
+      if (this.newInlineLesson.id) {
+        const idx = module.lessons.findIndex((l: any) => l.id === this.newInlineLesson.id);
+        if (idx !== -1) {
+          module.lessons[idx] = { ...this.newInlineLesson };
+        }
+      } else {
+        module.lessons.push({ ...this.newInlineLesson, id: Date.now() });
+      }
     }
     this.activeLessonForm = null;
     this.cdr.detectChanges();
