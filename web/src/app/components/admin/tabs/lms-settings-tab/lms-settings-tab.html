@@ -1,4 +1,4 @@
-﻿<div class="matches-container">
+<div class="matches-container">
   <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
     <div>
       <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
@@ -38,13 +38,13 @@
         </button>
       </div>
 
-      @for (topic of topics; track ) {
+      @for (topic of topics; track $index) {
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="flex: 1;">
             <input type="text" [(ngModel)]="topic.title" placeholder="தலைப்பு (எ.கா: ராசி மண்டலம்)" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; font-weight: 600;">
             <textarea [(ngModel)]="topic.desc" rows="2" placeholder="விளக்கம்..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;"></textarea>
           </div>
-          <button (click)="removeTopic()" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+          <button (click)="removeTopic($index)" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
             <i class="bi bi-trash-fill"></i>
           </button>
         </div>
@@ -65,13 +65,13 @@
         </button>
       </div>
 
-      @for (rule of rules; track ) {
+      @for (rule of rules; track $index) {
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="flex: 1;">
             <input type="text" [(ngModel)]="rule.title" placeholder="தலைப்பு (எ.கா: காலம் தவறாமை)" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; font-weight: 600;">
             <textarea [(ngModel)]="rule.desc" rows="2" placeholder="விளக்கம்..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;"></textarea>
           </div>
-          <button (click)="removeRule()" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+          <button (click)="removeRule($index)" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
             <i class="bi bi-trash-fill"></i>
           </button>
         </div>

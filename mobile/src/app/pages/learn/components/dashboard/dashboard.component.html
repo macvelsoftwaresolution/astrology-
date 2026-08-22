@@ -15,18 +15,22 @@
 </div>
 
 <!-- ================= PASSING MESSAGE MARQUEE / TICKER ================= -->
-<div class="announcement-ticker-bar" (click)="openNotificationsModal()">
-  <div class="ticker-badge">
-    <i class="bi bi-megaphone-fill ticker-icon"></i>
-    <span>அறிவிப்பு</span>
-  </div>
-  <div class="ticker-content-wrapper">
-    <div class="ticker-text-marquee">
-      <span>{{ marqueeMessage }}</span>
+@if (marqueeMessage && !hideTicker && (dashboardTab === 'home' || hasActiveLiveClass)) {
+  <div class="announcement-ticker-bar">
+    <div class="ticker-badge" (click)="openNotificationsModal()">
+      <i class="bi bi-megaphone-fill ticker-icon"></i>
+      <span>அறிவிப்பு</span>
     </div>
+    <div class="ticker-content-wrapper" (click)="openNotificationsModal()">
+      <div class="ticker-text-marquee">
+        <span>{{ marqueeMessage }}</span>
+      </div>
+    </div>
+    <button type="button" class="ticker-close-btn" (click)="dismissTicker($event)" title="அறிவிப்பை மறை">
+      <i class="bi bi-x"></i>
+    </button>
   </div>
-  <span class="ticker-arrow"><i class="bi bi-chevron-right"></i></span>
-</div>
+}
 
 <!-- ================= SUB-TAB 1: HOME ================= -->
 @if (dashboardTab === 'home') {
@@ -92,19 +96,22 @@
       <h3>கருத்தரங்க வைப்புகள்</h3>
     </div>
     <div class="webinar-scroller">
-      @for (s of seminars; track s) {
-        <div class="webinar-card" [class.live]="s.status === 'live'" (click)="openMeeting(s.join_url)">
+      @for (s of seminars; track s.title) {
+        <div class="webinar-card" [class.live]="s.status === 'live'" [class.past]="s.status === 'past'" (click)="openMeeting(s.join_url, s.status, s)">
           @if (s.status === 'live') {
             <span class="web-status-badge"><i class="bi bi-broadcast me-1"></i>நேரலை</span>
           }
           <h4>{{ s.title }}</h4>
           <span class="web-speaker"><i class="bi bi-person-fill me-1"></i> {{ s.speaker }}</span>
-          <span class="web-date"><i class="bi bi-calendar3 me-1"></i> {{ s.date }} • {{ s.time }}</span>
+          <span class="web-date"><i class="bi bi-calendar3 me-1"></i> {{ s.date_text || s.date || 'இன்று' }} • {{ s.time_text || s.time }}</span>
           @if (s.status === 'live') {
-            <button class="web-btn" (click)="openMeeting(s.join_url); $event.stopPropagation()">சேர்</button>
+            <button class="web-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">சேர்</button>
           }
           @if (s.status === 'past') {
-            <button class="web-btn past" (click)="$event.stopPropagation()">மீண்டும் பார்க்க</button>
+            <button class="web-btn past" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">முடிந்தது</button>
+          }
+          @if (s.status === 'upcoming' || !s.status) {
+            <button class="web-btn" style="background: #FFF8E7; color: #A27B38; border: 1px solid #ECC876;" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">திட்டமிடப்பட்டது</button>
           }
         </div>
       }
@@ -537,6 +544,9 @@
                 <strong>{{ lc.title }}</strong>
                 <span class="live-pill">நேரலை</span>
               </div>
+              <div style="font-size:11px;color:#d97706;font-weight:600;margin:2px 0 4px 0;">
+                <i class="bi bi-calendar3 me-1"></i>{{ lc.date_text || 'இன்று' }} • <i class="bi bi-clock me-1"></i>{{ lc.time_text || 'மாலை 06:00 - 07:30' }}
+              </div>
               <p>{{ lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.' }}</p>
               <button class="notif-action-btn">வகுப்பில் சேர் ➔</button>
             </div>
@@ -583,3 +593,19 @@
     </div>
   </div>
 }
+
+<!-- ================= LUXURY ANIMATED TOAST NOTIFICATION ================= -->
+@if (activeToast) {
+  <div class="custom-floating-toast" [class.toast-fade-out]="activeToast.isClosing" (click)="dismissToast()">
+    <div class="toast-content-pill">
+      <div class="toast-icon-circle">
+        <i [class]="activeToast.icon"></i>
+      </div>
+      <span class="toast-message-text">{{ activeToast.message }}</span>
+      <button class="toast-close-btn" (click)="dismissToast(); $event.stopPropagation()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+}
+

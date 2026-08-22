@@ -201,8 +201,48 @@ class SuperAdminController extends Controller
         if ($level) {
             $query->where('level', strtoupper($level));
         }
-        $seminars = $query->orderBy('id', 'desc')->get();
+        $seminars = $query->orderBy('id', 'desc')->get()->map(function ($s) {
+            $s->status = $this->evaluateSeminarStatus($s);
+            return $s;
+        });
         return response()->json(['seminars' => $seminars]);
+    }
+
+    private function evaluateSeminarStatus($seminar): string
+    {
+        if ($seminar->status === 'past') {
+            return 'past';
+        }
+
+        $timeStr = $seminar->time_text ?? '';
+        $dateStr = $seminar->date_text ?? '';
+
+        // Check if time range has end time, e.g. " - 07:30" or " - 19:30"
+        if (preg_match('/-\s*(\d{1,2}):(\d{2})\s*(AM|PM|மாலை|காலை|இரவு)?/ui', $timeStr, $matches)) {
+            $hour = (int)$matches[1];
+            $min = (int)$matches[2];
+            $meridiem = mb_strtolower($matches[3] ?? '');
+
+            $isPm = str_contains($meridiem, 'pm') || str_contains($meridiem, 'மாலை') || str_contains($meridiem, 'இரவு')
+                || str_contains(mb_strtolower($timeStr), 'மாலை') || str_contains(mb_strtolower($timeStr), 'இரவு');
+
+            if ($isPm && $hour < 12) {
+                $hour += 12;
+            }
+
+            $today = now()->format('Y-m-d');
+            $isToday = str_contains(mb_strtolower($dateStr), 'இன்று') || str_contains(mb_strtolower($dateStr), 'today') || str_contains($dateStr, $today);
+
+            if ($isToday) {
+                $nowHour = (int)now()->format('H');
+                $nowMin = (int)now()->format('i');
+                if ($nowHour > $hour || ($nowHour === $hour && $nowMin > $min)) {
+                    return 'past';
+                }
+            }
+        }
+
+        return $seminar->status ?? 'upcoming';
     }
 
     public function saveSeminar(Request $request, $id = null)
@@ -227,12 +267,31 @@ class SuperAdminController extends Controller
             $seminar = DB::table('seminars')->where('id', $newId)->first();
         }
 
+        // Automatic notification creation on publish/save
+        if ($seminar && $seminar->status !== 'past') {
+            NotificationController::broadcastToUsers(
+                "🎙️ புதிய கருத்தரங்கம்: " . $seminar->title,
+                ($seminar->speaker ? "வழங்குபவர்: {$seminar->speaker} | " : "") . "நேரம்: {$seminar->date_text} {$seminar->time_text}",
+                'seminar',
+                [
+                    'join_url' => $seminar->join_url,
+                    'seminar_id' => $seminar->id,
+                    'date_text' => $seminar->date_text,
+                    'time_text' => $seminar->time_text
+                ]
+            );
+        }
+
         return response()->json(['success' => true, 'seminar' => $seminar]);
     }
 
     public function deleteSeminar($id)
     {
         DB::table('seminars')->where('id', $id)->delete();
+        // Remove associated notifications automatically
+        DB::table('notifications')
+            ->where('data->seminar_id', $id)
+            ->delete();
         return response()->json(['success' => true, 'message' => 'Seminar deleted.']);
     }
 
@@ -289,18 +348,51 @@ class SuperAdminController extends Controller
         if ($level) {
             $query->where('level', strtoupper($level));
         }
-        $liveClasses = $query->orderBy('created_at', 'desc')->get();
+        $todayShort = strtolower(now()->format('D')); // mon, tue, wed, thu, fri, sat, sun
+        $todayTamil = match($todayShort) {
+            'mon' => 'திங்கள்',
+            'tue' => 'செவ்வாய்',
+            'wed' => 'புதன்',
+            'thu' => 'வியாழன்',
+            'fri' => 'வெள்ளி',
+            'sat' => 'சனி',
+            'sun' => 'ஞாயிறு',
+            default => ''
+        };
+
+        $liveClasses = $query->orderBy('created_at', 'desc')->get()->map(function ($lc) use ($todayShort, $todayTamil) {
+            $days = [];
+            if ($lc->days_of_week) {
+                $days = is_string($lc->days_of_week) ? json_decode($lc->days_of_week, true) : (array)$lc->days_of_week;
+            }
+            $lc->days_of_week = $days ?: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            $lc->is_today = empty($days) || in_array($todayShort, $lc->days_of_week);
+            $lc->today_name = $todayTamil;
+            return $lc;
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $liveClasses // returning array of live classes
+            'data' => $liveClasses
         ]);
     }
 
     public function saveLiveClassInfo(Request $request, $id = null)
     {
+        $days = $request->input('days_of_week', []);
+        if (is_string($days)) {
+            $decoded = json_decode($days, true);
+            $days = is_array($decoded) ? $decoded : array_map('trim', explode(',', $days));
+        }
+
         $data = [
             'title' => $request->input('title', 'நேரடி வகுப்பு'),
             'description' => $request->input('description', ''),
+            'days_of_week' => json_encode($days),
+            'date_text' => $request->input('date_text', 'இன்று'),
+            'time_text' => $request->input('time_text', 'மாலை 06:00 - 07:30'),
+            'start_time' => $request->input('start_time', '18:00'),
+            'end_time' => $request->input('end_time', '19:30'),
             'link' => $request->input('link', ''),
             'is_active' => $request->boolean('is_active', false),
             'level' => $request->input('level', 'ILANILAI'),
@@ -316,12 +408,38 @@ class SuperAdminController extends Controller
             $liveClass = DB::table('live_classes')->where('id', $newId)->first();
         }
 
+        // Automatic notification creation on active live class publish
+        if ($liveClass && $liveClass->is_active) {
+            NotificationController::broadcastToUsers(
+                "🔴 நேரலை வகுப்பு: " . $liveClass->title,
+                ($liveClass->description ? "{$liveClass->description} | " : "") . "நேரம்: {$liveClass->date_text} {$liveClass->time_text}",
+                'course',
+                [
+                    'link' => $liveClass->link,
+                    'live_class_id' => $liveClass->id,
+                    'level' => $liveClass->level,
+                    'date_text' => $liveClass->date_text,
+                    'time_text' => $liveClass->time_text,
+                    'days_of_week' => $days
+                ]
+            );
+        } else if ($liveClass && !$liveClass->is_active) {
+            // When deactivated, remove past live notifications
+            DB::table('notifications')
+                ->where('data->live_class_id', $liveClass->id)
+                ->delete();
+        }
+
         return response()->json(['success' => true, 'data' => $liveClass]);
     }
 
     public function deleteLiveClass($id)
     {
         DB::table('live_classes')->where('id', $id)->delete();
+        // Remove associated notifications automatically
+        DB::table('notifications')
+            ->where('data->live_class_id', $id)
+            ->delete();
         return response()->json(['success' => true, 'message' => 'Live class deleted.']);
     }
 }

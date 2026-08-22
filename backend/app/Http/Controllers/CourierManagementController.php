@@ -157,8 +157,16 @@ class CourierManagementController extends Controller
 
             $coverImagePath = null;
             if ($request->hasFile('cover_image')) {
-                $path = $request->file('cover_image')->store('books', 'public');
-                $coverImagePath = url('storage/' . $path);
+                try {
+                    $uploaded = cloudinary()->upload($request->file('cover_image')->getRealPath(), [
+                        'folder' => 'astrology/books',
+                        'resource_type' => 'image'
+                    ]);
+                    $coverImagePath = $uploaded->getSecurePath();
+                } catch (\Throwable $e) {
+                    $path = $request->file('cover_image')->store('books', 'public');
+                    $coverImagePath = url('storage/' . $path);
+                }
             } elseif (is_string($request->cover_image) && !empty($request->cover_image)) {
                 $coverImagePath = $request->cover_image;
             }
@@ -166,8 +174,16 @@ class CourierManagementController extends Controller
             $bookImagesPaths = [];
             if ($request->hasFile('book_images')) {
                 foreach ($request->file('book_images') as $file) {
-                    $path = $file->store('books/images', 'public');
-                    $bookImagesPaths[] = url('storage/' . $path);
+                    try {
+                        $uploaded = cloudinary()->upload($file->getRealPath(), [
+                            'folder' => 'astrology/books/gallery',
+                            'resource_type' => 'image'
+                        ]);
+                        $bookImagesPaths[] = $uploaded->getSecurePath();
+                    } catch (\Throwable $e) {
+                        $path = $file->store('books/images', 'public');
+                        $bookImagesPaths[] = url('storage/' . $path);
+                    }
                 }
             } elseif (is_array($request->book_images)) {
                 $bookImagesPaths = $request->book_images;
@@ -233,11 +249,16 @@ class CourierManagementController extends Controller
 
     public function getMyBookOrders(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user('sanctum') ?? $request->user();
         if (!$user) return response()->json(['success' => false, 'orders' => []], 401);
 
         $orders = DB::table('book_orders')
-            ->where('student_id', $user->id)
+            ->where(function($query) use ($user) {
+                $query->where('student_id', $user->id);
+                if (!empty($user->phone)) {
+                    $query->orWhere('phone', $user->phone);
+                }
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

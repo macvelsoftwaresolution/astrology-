@@ -1,4 +1,4 @@
-﻿import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +40,7 @@ export class LmsSettingsTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     
     // Load Vilakaurai
-    this.http.get<any>(\${environment.apiUrl}/settings/lms_vilakaurai\, headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_vilakaurai`, headers).subscribe({
       next: (res) => {
         if (res && res.value) {
           this.vilakaurai = res.value;
@@ -50,7 +50,7 @@ export class LmsSettingsTabComponent implements OnInit {
     });
 
     // Load Topics
-    this.http.get<any>(\${environment.apiUrl}/settings/lms_topics\, headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_topics`, headers).subscribe({
       next: (res) => {
         if (res && res.value) {
           try {
@@ -62,7 +62,7 @@ export class LmsSettingsTabComponent implements OnInit {
     });
 
     // Load Rules
-    this.http.get<any>(\${environment.apiUrl}/settings/lms_rules_list\, headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_rules_list`, headers).subscribe({
       next: (res) => {
         if (res && res.value) {
           try {
@@ -94,9 +94,9 @@ export class LmsSettingsTabComponent implements OnInit {
     this.isSaving = true;
     const headers = this.authService.getAuthHeaders();
 
-    const p1 = this.http.post<any>(\${environment.apiUrl}/settings/lms_vilakaurai\, { value: this.vilakaurai }, headers).toPromise();
-    const p2 = this.http.post<any>(\${environment.apiUrl}/settings/lms_topics\, { value: JSON.stringify(this.topics) }, headers).toPromise();
-    const p3 = this.http.post<any>(\${environment.apiUrl}/settings/lms_rules_list\, { value: JSON.stringify(this.rules) }, headers).toPromise();
+    const p1 = this.http.post<any>(`${environment.apiUrl}/settings/lms_vilakaurai`, { value: this.vilakaurai }, headers).toPromise();
+    const p2 = this.http.post<any>(`${environment.apiUrl}/settings/lms_topics`, { value: JSON.stringify(this.topics) }, headers).toPromise();
+    const p3 = this.http.post<any>(`${environment.apiUrl}/settings/lms_rules_list`, { value: JSON.stringify(this.rules) }, headers).toPromise();
 
     Promise.all([p1, p2, p3]).then(() => {
       this.isSaving = false;

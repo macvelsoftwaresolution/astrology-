@@ -13,65 +13,51 @@ class CourseDataSeeder extends Seeder
      */
     public function run(): void
     {
-        Schema::disableForeignKeyConstraints();
-        DB::table('courses')->truncate();
-        DB::table('syllabus_modules')->truncate();
-        DB::table('lessons')->truncate();
-        DB::table('assessments')->truncate();
-        DB::table('seminars')->truncate();
-        DB::table('course_materials')->truncate();
-        Schema::enableForeignKeyConstraints();
+        $now = now();
 
-        // 1. Create Course: Ilanilai (Diploma)
-        $courseId = DB::table('courses')->insertGetId([
-            'title' => 'இளநிலை ஜோதிடம் (Diploma in Astrology)',
-            'description' => 'ஜோதிடத்தின் அடிப்படை கூறுகள், ராசி, நட்சத்திரங்கள், நவகிரகங்கள் பற்றிய முழுமையான ஆரம்ப நிலை கல்வி.',
-            'price' => 5000.00,
-            'thumbnail' => 'https://example.com/ilanilai-thumb.jpg', // Placeholder
-            'category' => 'Astrology',
-            'level' => 'ILANILAI',
-            'status' => 'published',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 1. Create/Update Course: Ilanilai (Diploma)
+        DB::table('courses')->updateOrInsert(
+            ['title' => 'இளநிலை ஜோதிடம் (Diploma in Astrology)', 'level' => 'ILANILAI'],
+            [
+                'description' => 'ஜோதிடத்தின் அடிப்படை கூறுகள், ராசி, நட்சத்திரங்கள், நவகிரகங்கள் பற்றிய முழுமையான ஆரம்ப நிலை கல்வி.',
+                'price' => 5000.00,
+                'thumbnail' => 'assets/images/temple_sunrise.png',
+                'category' => 'Astrology',
+                'status' => 'published',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]
+        );
+        $courseId = DB::table('courses')->where('title', 'இளநிலை ஜோதிடம் (Diploma in Astrology)')->where('level', 'ILANILAI')->value('id');
 
-        // 2. Create Module 1
-        $module1Id = DB::table('syllabus_modules')->insertGetId([
-            'course_id' => $courseId,
-            'title' => 'அத்தியாயம் 1: ஜோதிட அடிப்படைகள்',
-            'order_index' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 2. Create/Update Module 1
+        DB::table('syllabus_modules')->updateOrInsert(
+            ['course_id' => $courseId, 'title' => 'அத்தியாயம் 1: ஜோதிட அடிப்படைகள்'],
+            ['order_index' => 1, 'created_at' => $now, 'updated_at' => $now]
+        );
+        $module1Id = DB::table('syllabus_modules')->where('course_id', $courseId)->where('title', 'அத்தியாயம் 1: ஜோதிட அடிப்படைகள்')->value('id');
 
         // Lessons for Module 1
-        DB::table('lessons')->insert([
+        $lessons1 = [
             [
-                'module_id' => $module1Id,
                 'title' => 'ஜோதிடம் என்றால் என்ன? (அறிமுகம்)',
                 'content_type' => 'video',
-                'content_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Sample video link
+                'content_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'description' => 'ஜோதிடத்தின் தோற்றம் மற்றும் அடிப்படை தத்துவங்கள்',
                 'duration' => '45 mins',
                 'is_free_preview' => true,
                 'order_index' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'module_id' => $module1Id,
                 'title' => '12 ராசிகள் மற்றும் அதன் தன்மைகள் (பாடக்குறிப்பு)',
                 'content_type' => 'pdf',
-                'content_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Sample PDF
+                'content_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 'description' => 'மேஷம் முதல் மீனம் வரை 12 ராசிகளின் விவரங்கள்',
                 'duration' => '10 pages',
                 'is_free_preview' => true,
                 'order_index' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'module_id' => $module1Id,
                 'title' => 'நேரலை வகுப்பு பதிவு (Live Class Link)',
                 'content_type' => 'live_link',
                 'content_url' => 'https://meet.google.com/abc-defg-hij',
@@ -79,24 +65,25 @@ class CourseDataSeeder extends Seeder
                 'duration' => '60 mins',
                 'is_free_preview' => false,
                 'order_index' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
-        ]);
+        ];
+        foreach ($lessons1 as $l) {
+            DB::table('lessons')->updateOrInsert(
+                ['module_id' => $module1Id, 'title' => $l['title']],
+                array_merge($l, ['created_at' => $now, 'updated_at' => $now])
+            );
+        }
 
-        // 3. Create Module 2
-        $module2Id = DB::table('syllabus_modules')->insertGetId([
-            'course_id' => $courseId,
-            'title' => 'அத்தியாயம் 2: நட்சத்திரங்கள் மற்றும் கிரகங்கள்',
-            'order_index' => 2,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 3. Create/Update Module 2
+        DB::table('syllabus_modules')->updateOrInsert(
+            ['course_id' => $courseId, 'title' => 'அத்தியாயம் 2: நட்சத்திரங்கள் மற்றும் கிரகங்கள்'],
+            ['order_index' => 2, 'created_at' => $now, 'updated_at' => $now]
+        );
+        $module2Id = DB::table('syllabus_modules')->where('course_id', $courseId)->where('title', 'அத்தியாயம் 2: நட்சத்திரங்கள் மற்றும் கிரகங்கள்')->value('id');
 
         // Lessons for Module 2
-        DB::table('lessons')->insert([
+        $lessons2 = [
             [
-                'module_id' => $module2Id,
                 'title' => '27 நட்சத்திரங்கள்',
                 'content_type' => 'video',
                 'content_url' => 'https://www.youtube.com/watch?v=dummy_video',
@@ -104,11 +91,8 @@ class CourseDataSeeder extends Seeder
                 'duration' => '50 mins',
                 'is_free_preview' => false,
                 'order_index' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'module_id' => $module2Id,
                 'title' => 'நவகிரகங்களின் காரகத்துவங்கள்',
                 'content_type' => 'pdf',
                 'content_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -116,11 +100,8 @@ class CourseDataSeeder extends Seeder
                 'duration' => '15 pages',
                 'is_free_preview' => false,
                 'order_index' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'module_id' => $module2Id,
                 'title' => 'பயிற்சி வினாக்கள் (External Link)',
                 'content_type' => 'document',
                 'content_url' => 'https://docs.google.com/forms/d/e/dummy/viewform',
@@ -128,25 +109,30 @@ class CourseDataSeeder extends Seeder
                 'duration' => '20 mins',
                 'is_free_preview' => false,
                 'order_index' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
-        ]);
+        ];
+        foreach ($lessons2 as $l) {
+            DB::table('lessons')->updateOrInsert(
+                ['module_id' => $module2Id, 'title' => $l['title']],
+                array_merge($l, ['created_at' => $now, 'updated_at' => $now])
+            );
+        }
 
-        // 4. Create Assessment (Exam)
-        DB::table('assessments')->insert([
-            'course_id' => $courseId,
-            'title' => 'அத்தியாயம் 1 தேர்வு (Chapter 1 Exam)',
-            'passing_percentage' => 40,
-            'questions_json' => json_encode([
-                ['q' => 'ஜோதிடத்தின் தந்தை யார்?', 'options' => ['பராசரர்', 'அகத்தியர்'], 'ans' => 'பராசரர்']
-            ]),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 4. Create/Update Assessment (Exam)
+        DB::table('assessments')->updateOrInsert(
+            ['course_id' => $courseId, 'title' => 'அத்தியாயம் 1 தேர்வு (Chapter 1 Exam)'],
+            [
+                'passing_percentage' => 40,
+                'questions_json' => json_encode([
+                    ['q' => 'ஜோதிடத்தின் தந்தை யார்?', 'options' => ['பராசரர்', 'அகத்தியர்'], 'ans' => 'பராசரர்']
+                ]),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]
+        );
 
-        // 5. Create Seminars
-        DB::table('seminars')->insert([
+        // 5. Create/Update Seminars
+        $seminars = [
             [
                 'title' => 'ஜோதிடத்தின் முக்கியத்துவம்',
                 'speaker' => 'ஜெக சீனிவாசன்',
@@ -155,8 +141,6 @@ class CourseDataSeeder extends Seeder
                 'status' => 'upcoming',
                 'join_url' => 'https://meet.google.com/xyz',
                 'level' => 'ILANILAI',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'title' => 'கிரகங்களின் பெயர்ச்சி',
@@ -166,21 +150,23 @@ class CourseDataSeeder extends Seeder
                 'status' => 'past',
                 'join_url' => 'https://meet.google.com/abc',
                 'level' => 'ILANILAI',
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
-        ]);
+        ];
+        foreach ($seminars as $s) {
+            DB::table('seminars')->updateOrInsert(
+                ['title' => $s['title'], 'speaker' => $s['speaker']],
+                array_merge($s, ['created_at' => $now, 'updated_at' => $now])
+            );
+        }
 
-        // 6. Create Course Materials (PDF Notes)
-        DB::table('course_materials')->insert([
+        // 6. Create/Update Course Materials (PDF Notes)
+        $materials = [
             [
                 'course_id' => $courseId,
                 'title' => '12 ராசிகளின் குணாதிசயங்கள்',
                 'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 'pages_text' => '25 பக்கங்கள்',
                 'level' => 'ILANILAI',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'course_id' => $courseId,
@@ -188,10 +174,14 @@ class CourseDataSeeder extends Seeder
                 'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 'pages_text' => '15 பக்கங்கள்',
                 'level' => 'ILANILAI',
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
-        ]);
+        ];
+        foreach ($materials as $m) {
+            DB::table('course_materials')->updateOrInsert(
+                ['course_id' => $m['course_id'], 'title' => $m['title']],
+                array_merge($m, ['created_at' => $now, 'updated_at' => $now])
+            );
+        }
 
         $this->command->info('Ilanilai Course, Exams, Seminars, and PDFs seeded successfully!');
     }
