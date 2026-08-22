@@ -1,0 +1,98 @@
+﻿<div class="matches-container">
+  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-gear-fill" style="color:#d97706;"></i>விளக்கவுரை & விதிமுறைகள் (LMS Settings)
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">பயிலரங்கத்தின் விளக்கவுரை மற்றும் விதிமுறைகளை இங்கு திருத்தவும்.</p>
+    </div>
+  </div>
+
+  <div class="card-box" style="padding: 24px;">
+    @if (saveMsg) {
+      <div style="background-color: #d1fae5; color: #065f46; padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ saveMsg }}
+      </div>
+    }
+
+    <!-- Vilakaurai Textarea -->
+    <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+      <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 8px; font-size: 16px;">
+        1. விளக்கவுரை (Vilakaurai - Introduction)
+      </label>
+      <textarea 
+        [(ngModel)]="vilakaurai" 
+        rows="4" 
+        style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; line-height: 1.6;" 
+        placeholder="விளக்கவுரையை இங்கு தட்டச்சு செய்யவும்..."></textarea>
+    </div>
+
+    <!-- Topics Dynamic List -->
+    <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <label style="font-weight: 700; color: #1e293b; display: block; font-size: 16px;">
+          2. நீங்கள் கற்கவிருப்பது (What You Will Learn - Topics)
+        </label>
+        <button class="btn-primary" style="font-size: 12px; padding: 6px 12px;" (click)="addTopic()">
+          <i class="bi bi-plus-circle me-1"></i> புதிய தலைப்பு சேர்
+        </button>
+      </div>
+
+      @for (topic of topics; track ) {
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="flex: 1;">
+            <input type="text" [(ngModel)]="topic.title" placeholder="தலைப்பு (எ.கா: ராசி மண்டலம்)" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; font-weight: 600;">
+            <textarea [(ngModel)]="topic.desc" rows="2" placeholder="விளக்கம்..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;"></textarea>
+          </div>
+          <button (click)="removeTopic()" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+      }
+      @if (topics.length === 0) {
+        <p style="color: #94a3b8; font-size: 13px; font-style: italic;">எந்த தலைப்பும் சேர்க்கப்படவில்லை...</p>
+      }
+    </div>
+
+    <!-- Rules Dynamic List -->
+    <div class="form-group" style="margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <label style="font-weight: 700; color: #1e293b; display: block; font-size: 16px;">
+          3. விதிமுறைகள் (Rules & Regulations)
+        </label>
+        <button class="btn-primary" style="font-size: 12px; padding: 6px 12px;" (click)="addRule()">
+          <i class="bi bi-plus-circle me-1"></i> புதிய விதிமுறை சேர்
+        </button>
+      </div>
+
+      @for (rule of rules; track ) {
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="flex: 1;">
+            <input type="text" [(ngModel)]="rule.title" placeholder="தலைப்பு (எ.கா: காலம் தவறாமை)" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; font-weight: 600;">
+            <textarea [(ngModel)]="rule.desc" rows="2" placeholder="விளக்கம்..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;"></textarea>
+          </div>
+          <button (click)="removeRule()" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+      }
+      @if (rules.length === 0) {
+        <p style="color: #94a3b8; font-size: 13px; font-style: italic;">எந்த விதிமுறையும் சேர்க்கப்படவில்லை...</p>
+      }
+    </div>
+
+    <div style="text-align: right; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+      <button 
+        class="btn-primary" 
+        style="padding: 10px 24px; font-size: 15px;" 
+        (click)="saveSettings()" 
+        [disabled]="isSaving">
+        @if (isSaving) {
+          <i class="bi bi-hourglass-split me-2"></i> சேமிக்கப்படுகிறது...
+        } @else {
+          <i class="bi bi-floppy2-fill me-2"></i> சேமி (Save Settings)
+        }
+      </button>
+    </div>
+  </div>
+</div>

@@ -243,10 +243,21 @@
         <input type="tel" [(ngModel)]="regForm.phone2" placeholder="எண் 2">
       </div>
     </div>
-    <div class="input-row">
-      <label class="checkbox-label">
-        <input type="checkbox" [(ngModel)]="regForm.photoAttached"> புகைப்படம் இணைக்கப்பட்டுள்ளதா?
-      </label>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>புகைப்படம் (Photo)</label>
+        <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="image/*">
+        @if (regForm.photoUrl) {
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+        }
+      </div>
+      <div class="input-row">
+        <label>ஜாதக கட்டம் (Horoscope)</label>
+        <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="image/*,application/pdf">
+        @if (regForm.jadhagamUrl) {
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+        }
+      </div>
     </div>
     <button (click)="goToRegPayment()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">கட்டணம் செலுத்த (பதிவு கட்டணம்)</button>
   </div>
@@ -345,6 +356,22 @@
         <input type="time" [(ngModel)]="matchingForm.girlTob">
       </div>
     </div>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>புகைப்படம் (Photo)</label>
+        <input type="file" (change)="uploadDocument($event, 'match', 'girlPhoto')" accept="image/*">
+        @if (matchingForm.girlPhoto) {
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+        }
+      </div>
+      <div class="input-row">
+        <label>ஜாதக கட்டம் (Horoscope)</label>
+        <input type="file" (change)="uploadDocument($event, 'match', 'girlJadhagam')" accept="image/*,application/pdf">
+        @if (matchingForm.girlJadhagam) {
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+        }
+      </div>
+    </div>
     <div class="form-divider"></div>
     <!-- Boy Inputs -->
     <div class="form-section-title"><i class="bi bi-gender-male text-primary me-1"></i> ஆண் விவரங்கள் (ஜாதகர்)</div>
@@ -384,6 +411,22 @@
       <div class="input-row">
         <label>பிறந்த நேரம்</label>
         <input type="time" [(ngModel)]="matchingForm.boyTob">
+      </div>
+    </div>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>புகைப்படம் (Photo)</label>
+        <input type="file" (change)="uploadDocument($event, 'match', 'boyPhoto')" accept="image/*">
+        @if (matchingForm.boyPhoto) {
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+        }
+      </div>
+      <div class="input-row">
+        <label>ஜாதக கட்டம் (Horoscope)</label>
+        <input type="file" (change)="uploadDocument($event, 'match', 'boyJadhagam')" accept="image/*,application/pdf">
+        @if (matchingForm.boyJadhagam) {
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+        }
       </div>
     </div>
     <button (click)="calculatePorutham()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">

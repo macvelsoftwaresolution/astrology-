@@ -21,7 +21,7 @@ export class ServicesTabComponent implements OnInit {
 
   selectedBookingForView: any = null;
   selectedBookingForFulfill: any = null;
-  fulfillForm = { status: 'Completed', chart_url: '' };
+  fulfillForm = { status: 'Completed', chart_url: '', parigaram: '' };
   isUploadingFulfillChart = false;
 
   manualBookingModalOpen = false;
@@ -96,7 +96,8 @@ export class ServicesTabComponent implements OnInit {
     this.selectedBookingForFulfill = booking;
     this.fulfillForm = {
       status: booking.status || 'Completed',
-      chart_url: booking.chart_url || ''
+      chart_url: booking.chart_url || '',
+      parigaram: booking.parigaram || ''
     };
   }
 

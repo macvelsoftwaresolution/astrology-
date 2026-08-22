@@ -108,7 +108,8 @@ export class MarriageMatchingComponent implements OnInit {
     contactPersonName: '',
     phone1: '',
     phone2: '',
-    photoAttached: false
+    photoUrl: '',
+    jadhagamUrl: ''
   };
 
   // Form model for Option 2: 2 Jathagam Matching (திருமணப் பொருத்தம்)
@@ -127,7 +128,11 @@ export class MarriageMatchingComponent implements OnInit {
     boyPob: '',
     boyRasi: 'சிம்மம்',
     boyStar: 'பூரம்',
-    requesterPhone: ''
+    requesterPhone: '',
+    boyPhoto: '',
+    boyJadhagam: '',
+    girlPhoto: '',
+    girlJadhagam: ''
   };
 
   // Calculated 11 Poruthams & Elements Result Sheet
@@ -175,6 +180,31 @@ export class MarriageMatchingComponent implements OnInit {
     } else {
       this.serviceStep = 0;
     }
+  }
+
+  uploadDocument(event: any, formType: 'reg' | 'match', fieldName: string) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'marriage_documents');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res.url) {
+          if (formType === 'reg') {
+            (this.regForm as any)[fieldName] = res.url;
+          } else {
+            (this.matchingForm as any)[fieldName] = res.url;
+          }
+        }
+      },
+      error: (err) => {
+        console.error('File upload failed', err);
+        alert('Failed to upload file.');
+      }
+    });
   }
 
   selectOption(option: 'register' | 'match') {

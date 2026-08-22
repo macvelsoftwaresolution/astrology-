@@ -347,6 +347,14 @@
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
                 </a>
                 }
+
+                <!-- Parigaram (Remedies) if available -->
+                @if (b.parigaram) {
+                <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:12px; margin-top:12px;">
+                  <h4 style="color:#b45309; font-size:13px; margin:0 0 6px 0; font-weight:700;"><i class="bi bi-brightness-high-fill me-1"></i> பரிகாரம் (Remedies)</h4>
+                  <p style="color:#78350f; font-size:13px; line-height:1.5; margin:0; white-space:pre-wrap;">{{ b.parigaram }}</p>
+                </div>
+                }
               </div>
               }
             </div>

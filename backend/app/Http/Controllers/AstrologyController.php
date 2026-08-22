@@ -425,6 +425,12 @@ class AstrologyController extends Controller
             'bio' => $request->input('bio', ''),
             'avatar_icon' => $request->input('avatar_icon', 'bi bi-person-fill'),
             'avatar_url' => $request->input('avatar_url', null),
+            'is_phone_call_available' => filter_var($request->input('is_phone_call_available', true), FILTER_VALIDATE_BOOLEAN),
+            'phone_call_fee' => $request->input('phone_call_fee', 499.00),
+            'is_video_call_available' => filter_var($request->input('is_video_call_available', true), FILTER_VALIDATE_BOOLEAN),
+            'video_call_fee' => $request->input('video_call_fee', 699.00),
+            'is_audio_call_available' => filter_var($request->input('is_audio_call_available', true), FILTER_VALIDATE_BOOLEAN),
+            'audio_call_fee' => $request->input('audio_call_fee', 499.00),
             'available_slots' => json_encode($slots ?: []),
             'blocked_dates' => json_encode($blockedDates ?: []),
             'status' => $request->input('status', 'Available'),
@@ -469,6 +475,12 @@ class AstrologyController extends Controller
             'consultation_count' => $request->input('consultation_count', $astro->consultation_count ?? 500),
             'avatar_url' => $request->input('avatar_url', $astro->avatar_url ?? null),
             'avatar_icon' => $request->input('avatar_icon', $astro->avatar_icon ?? 'bi bi-person-fill'),
+            'is_phone_call_available' => $request->has('is_phone_call_available') ? filter_var($request->input('is_phone_call_available'), FILTER_VALIDATE_BOOLEAN) : ($astro->is_phone_call_available ?? true),
+            'phone_call_fee' => $request->input('phone_call_fee', $astro->phone_call_fee ?? 499.00),
+            'is_video_call_available' => $request->has('is_video_call_available') ? filter_var($request->input('is_video_call_available'), FILTER_VALIDATE_BOOLEAN) : ($astro->is_video_call_available ?? true),
+            'video_call_fee' => $request->input('video_call_fee', $astro->video_call_fee ?? 699.00),
+            'is_audio_call_available' => $request->has('is_audio_call_available') ? filter_var($request->input('is_audio_call_available'), FILTER_VALIDATE_BOOLEAN) : ($astro->is_audio_call_available ?? true),
+            'audio_call_fee' => $request->input('audio_call_fee', $astro->audio_call_fee ?? 499.00),
             'updated_at' => now()
         ];
 
@@ -651,7 +663,8 @@ class AstrologyController extends Controller
     {
         $request->validate([
             'status' => 'nullable|string',
-            'chart_url' => 'nullable|string'
+            'chart_url' => 'nullable|string',
+            'parigaram' => 'nullable|string'
         ]);
 
         $booking = DB::table('bookings')->where('id', $id)->first();
@@ -667,6 +680,7 @@ class AstrologyController extends Controller
             ->update([
                 'status' => $status,
                 'chart_url' => $request->chart_url ?? $booking->chart_url,
+                'parigaram' => $request->parigaram ?? $booking->parigaram,
                 'updated_at' => now()
             ]);
 

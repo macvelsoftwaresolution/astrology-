@@ -21,6 +21,7 @@ import { MatrimonyTab } from './tabs/matrimony-tab/matrimony-tab';
 import { PaymentsTabComponent } from './tabs/payments-tab/payments-tab.component';
 import { BroadcastTabComponent } from './tabs/broadcast-tab/broadcast-tab.component';
 import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
+import { LmsSettingsTabComponent } from './tabs/lms-settings-tab/lms-settings-tab';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -32,6 +33,7 @@ import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
     OverviewTabComponent,
     TeamTabComponent,
     LmsTabComponent,
+    LmsSettingsTabComponent,
     CourierTabComponent,
     GradingTabComponent,
     ServicesTabComponent,

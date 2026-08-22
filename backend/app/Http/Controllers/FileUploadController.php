@@ -45,10 +45,20 @@ class FileUploadController extends Controller
                 'mime_type' => $file->getMimeType()
             ]);
         } catch (\Exception $e) {
+            // Fallback to local storage
+            $path = $file->storeAs("public/uploads/{$folder}", "{$safeName}.{$extension}");
+            $url = asset('storage/uploads/' . $folder . '/' . "{$safeName}.{$extension}");
+
             return response()->json([
-                'success' => false,
-                'message' => 'Cloudinary upload failed: ' . $e->getMessage()
-            ], 500);
+                'success' => true,
+                'url' => $url,
+                'path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+                'fallback' => true,
+                'message' => 'Cloudinary upload failed, used local storage. Error: ' . $e->getMessage()
+            ]);
         }
     }
 }

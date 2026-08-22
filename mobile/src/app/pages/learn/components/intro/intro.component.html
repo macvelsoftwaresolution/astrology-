@@ -1,4 +1,4 @@
-<div class="wizard-container">
+﻿<div class="wizard-container">
   <div class="course-intro-banner">
     <div class="banner-overlay"></div>
     <img src="assets/images/spiritual_education_bg.png" alt="Fundamentals" class="banner-img">
@@ -8,40 +8,17 @@
 
   <div class="section-block">
     <h3 class="section-title">விளக்கவுரை (Vilakkavurai)</h3>
-    <p class="section-desc">
-      இந்தப் பாடநெறி பழமையான வேத ஜோதிடத்தின் ரகசியங்களை நவீன முறைப்படி கற்றுக்கொள்ள வடிவமமைக்கப்பட்டுள்ளது. கிரகங்களின் இயக்கங்கள் நமது வாழ்வை எவ்வாறு பாதிக்கின்றன என்பதை ஆழமாகப் புரிந்துகொள்ளும் இது ஒரு தெய்வீகத் தொடக்கம்.
-    </p>
+    <p class="section-desc" style="white-space: pre-wrap;">{{ vilakauraiText }}</p>
   </div>
 
   <div class="section-block">
     <h3 class="section-title"><i class="bi bi-lightbulb-fill text-gold me-2"></i>நீங்கள் கற்கவிருப்பது</h3>
     <div class="topics-grid">
-      <div class="topic-item">
-        <div class="topic-icon box-gold"><i class="bi bi-stars"></i></div>
+      <div class="topic-item" *ngFor="let topic of topics; let i = index">
+        <div class="topic-icon" [ngClass]="getColorClass(i)"><i class="bi" [ngClass]="getIcon(i)"></i></div>
         <div>
-          <strong>ராசி மண்டலம்</strong>
-          <p>12 ராசிகள் மற்றும் அவற்றின் குணாதிசயங்கள் பற்றிய தெளிவான புரிதல்.</p>
-        </div>
-      </div>
-      <div class="topic-item">
-        <div class="topic-icon box-peach"><i class="bi bi-sun-fill"></i></div>
-        <div>
-          <strong>நவக்கிரகங்கள்</strong>
-          <p>9 கிரகங்களின் தன்மைகள் மற்றும் அவை ஏற்படுத்தும் தாக்கங்கள்.</p>
-        </div>
-      </div>
-      <div class="topic-item">
-        <div class="topic-icon box-ivory"><i class="bi bi-journal-bookmark-fill"></i></div>
-        <div>
-          <strong>ஜாதக கணிப்பு</strong>
-          <p>அடிப்படை ஜாதக கட்டங்களை அமைக்கும் முறை மற்றும் வாசிக்கும் திறன்.</p>
-        </div>
-      </div>
-      <div class="topic-item">
-        <div class="topic-icon box-red"><i class="bi bi-shield-fill-check"></i></div>
-        <div>
-          <strong>பரிகாரங்கள்</strong>
-          <p>கிரக தோஷங்களுக்கான எளிய மற்றும் நடைமுறை தீர்வுகள்.</p>
+          <strong>{{ topic.title }}</strong>
+          <p>{{ topic.desc }}</p>
         </div>
       </div>
     </div>

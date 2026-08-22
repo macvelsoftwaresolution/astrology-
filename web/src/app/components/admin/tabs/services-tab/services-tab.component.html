@@ -374,6 +374,11 @@
           }
         </div>
 
+        <div class="form-group">
+          <label>பரிகாரம் (Remedies) (Optional):</label>
+          <textarea [(ngModel)]="fulfillForm.parigaram" name="f_parigaram" class="ctrl" rows="3" placeholder="பரிகாரங்களை இங்கே தட்டச்சு செய்யவும்..."></textarea>
+        </div>
+
         <div class="modal-btns">
           <button type="button" class="btn-cancel" (click)="selectedBookingForFulfill = null">{{ 'common.cancel' |
             translate }}</button>

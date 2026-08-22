@@ -187,7 +187,13 @@ export class TeamTabComponent implements OnInit {
       blocked_dates: [],
       status: 'Available',
       rating: 4.90,
-      consultation_count: 0
+      consultation_count: 0,
+      is_phone_call_available: true,
+      phone_call_fee: 499,
+      is_video_call_available: true,
+      video_call_fee: 699,
+      is_audio_call_available: true,
+      audio_call_fee: 499
     };
     this.astrologerManageTab = 'profile';
     this.astrologerCalendarDate = new Date();

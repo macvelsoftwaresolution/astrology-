@@ -131,6 +131,9 @@
           </div>
           <div class="cmc-footer">
             <span class="cmc-badge-tag"><i [class]="cat.icon" class="me-1"></i> {{ cat.badge }}</span>
+            @if (hasBookedService(cat.title)) {
+              <span style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">முன்பதிவு செய்யப்பட்டது (Booked)</span>
+            }
             <span class="cmc-arrow"><i class="bi bi-chevron-right"></i></span>
           </div>
         </div>
@@ -319,6 +322,34 @@
           </div>
         </div>
 
+        <!-- Call Option Selection -->
+        <div class="form-input-card">
+          <label>அழைப்பு முறை (Call Type) <span class="required-star">*</span></label>
+          <div class="slots-pill-grid">
+            @if (selectedAstrologer.is_phone_call_available) {
+              <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Phone'"
+                (click)="astrologerBookingForm.call_type = 'Phone'">
+                <i class="bi" [ngClass]="astrologerBookingForm.call_type === 'Phone' ? 'bi-check-circle-fill' : 'bi-telephone-inbound-fill'"></i>
+                <span>Phone (₹{{ selectedAstrologer.phone_call_fee }})</span>
+              </button>
+            }
+            @if (selectedAstrologer.is_video_call_available) {
+              <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Video'"
+                (click)="astrologerBookingForm.call_type = 'Video'">
+                <i class="bi" [ngClass]="astrologerBookingForm.call_type === 'Video' ? 'bi-check-circle-fill' : 'bi-camera-video-fill'"></i>
+                <span>Video (₹{{ selectedAstrologer.video_call_fee }})</span>
+              </button>
+            }
+            @if (selectedAstrologer.is_audio_call_available) {
+              <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Audio'"
+                (click)="astrologerBookingForm.call_type = 'Audio'">
+                <i class="bi" [ngClass]="astrologerBookingForm.call_type === 'Audio' ? 'bi-check-circle-fill' : 'bi-mic-fill'"></i>
+                <span>Audio (₹{{ selectedAstrologer.audio_call_fee }})</span>
+              </button>
+            }
+          </div>
+        </div>
+
         <!-- Optional Questions / Notes -->
         <div class="form-input-card">
           <label>கேள்விகள் / குறிப்புகள் (விருப்பத்தேர்வு)</label>
@@ -372,8 +403,12 @@
             <strong>{{ astrologerBookingForm.slot }}</strong>
           </div>
           <div class="pm-row sub-row">
+            <span>ஆலோசனை முறை:</span>
+            <span>{{ astrologerBookingForm.call_type }}</span>
+          </div>
+          <div class="pm-row sub-row">
             <span>ஆலோசனை கட்டணம்:</span>
-            <span>₹{{ selectedAstrologer.fee }}</span>
+            <span>₹{{ totalAstrologerFee }}</span>
           </div>
           <div class="pm-row sub-row">
             <span>தளம் & சேவைக் கட்டணம்:</span>
@@ -381,7 +416,7 @@
           </div>
           <div class="pm-row total-highlight">
             <span>செலுத்த வேண்டிய மொத்தத் தொகை:</span>
-            <strong class="total-fee">₹{{ selectedAstrologer.fee }}</strong>
+            <strong class="total-fee">₹{{ totalAstrologerFee }}</strong>
           </div>
         </div>
 
@@ -389,7 +424,7 @@
           @if (isProcessingPayment) {
             <span>செயலாக்கப்படுகிறது...</span>
           } @else {
-            <span>₹{{ selectedAstrologer.fee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒</span>
+            <span>₹{{ totalAstrologerFee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒</span>
           }
         </button>
 

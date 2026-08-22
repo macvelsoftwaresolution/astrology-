@@ -48,6 +48,7 @@ export class HomePage implements OnInit {
     pob: '',
     date: '',
     slot: '',
+    call_type: 'Phone',
     notes: ''
   };
 
@@ -260,6 +261,21 @@ export class HomePage implements OnInit {
     });
   }
 
+  fetchRasiIcons() {
+    this.http.get<any>(`${environment.apiUrl}/rasi-icons`).subscribe({
+      next: (res) => {
+        if (res) {
+          this.rasis.forEach(r => {
+            if (res[r.name]) {
+              r.imagePath = res[r.name];
+            }
+          });
+        }
+      },
+      error: () => {}
+    });
+  }
+
   ngOnInit() {
     this.checkAuth();
     this.startSlider();
@@ -268,6 +284,7 @@ export class HomePage implements OnInit {
     this.loadAstrologers();
     this.loadUserOrders();
     this.loadNotificationsCount();
+    this.fetchRasiIcons();
 
     this.route.queryParams.subscribe(params => {
       if (params['tab'] && ['home', 'services', 'matching', 'profile'].includes(params['tab'])) {
@@ -385,13 +402,18 @@ export class HomePage implements OnInit {
               status: b.status || 'Pending',
               details: parsedDetails?.notes || (typeof b.details === 'string' && !b.details.startsWith('{') ? b.details : ''),
               parsedDetails: parsedDetails,
-              chart_url: b.chart_url || null
+              chart_url: b.chart_url || null,
+              parigaram: b.parigaram || null
             };
           });
         }
       },
       error: () => {}
     });
+  }
+
+  hasBookedService(serviceTitle: string): boolean {
+    return this.userOrders.some(o => o.service === serviceTitle);
   }
 
   private checkAuth() {
@@ -489,6 +511,22 @@ export class HomePage implements OnInit {
     }
   }
 
+  get totalAstrologerFee(): number {
+    if (!this.selectedAstrologer) return 0;
+    
+    // Check which call type is selected and return its specific fee
+    if (this.astrologerBookingForm.call_type === 'Phone' && this.selectedAstrologer.is_phone_call_available) {
+      return this.selectedAstrologer.phone_call_fee;
+    } else if (this.astrologerBookingForm.call_type === 'Video' && this.selectedAstrologer.is_video_call_available) {
+      return this.selectedAstrologer.video_call_fee;
+    } else if (this.astrologerBookingForm.call_type === 'Audio' && this.selectedAstrologer.is_audio_call_available) {
+      return this.selectedAstrologer.audio_call_fee;
+    }
+    
+    // Fallback to base fee if the selected option somehow became unavailable
+    return this.selectedAstrologer.fee || 0;
+  }
+
   startAstrologerBooking(astro: any) {
     this.selectedAstrologer = astro;
     const user = this.authService.getCurrentUser();
@@ -500,6 +538,7 @@ export class HomePage implements OnInit {
       pob: '',
       date: new Date().toISOString().split('T')[0],
       slot: (astro.available_slots && astro.available_slots.length > 0) ? astro.available_slots[0] : '10:00 AM - 11:00 AM',
+      call_type: 'Phone',
       notes: ''
     };
     this.activeServiceFlow = 'astrologer_consultation';
@@ -521,7 +560,7 @@ export class HomePage implements OnInit {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const amount = astro.fee || 499;
+    const amount = this.totalAstrologerFee;
 
     // 1. Create Razorpay Order via Backend
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }, { headers }).subscribe({
@@ -592,7 +631,7 @@ export class HomePage implements OnInit {
       user_name: this.astrologerBookingForm.name || currentUser?.name || 'பயனர்',
       user_phone: this.astrologerBookingForm.phone || currentUser?.phone || '',
       service_type: `${astro.name} (${astro.role_title})`,
-      price: astro.fee || 499,
+      price: this.totalAstrologerFee,
       astrologer_id: astro.id,
       preferred_date: this.astrologerBookingForm.date,
       preferred_time: this.astrologerBookingForm.slot,
@@ -605,6 +644,7 @@ export class HomePage implements OnInit {
         role_title: astro.role_title,
         date: this.astrologerBookingForm.date,
         slot: this.astrologerBookingForm.slot,
+        call_type: this.astrologerBookingForm.call_type,
         dob: this.astrologerBookingForm.dob,
         tob: this.astrologerBookingForm.tob,
         pob: this.astrologerBookingForm.pob,

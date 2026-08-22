@@ -12,6 +12,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MatrimonyProfileController;
+use App\Http\Controllers\SystemSettingsController;
 use App\Http\Middleware\CheckRole;
 
 // =====================================================================
@@ -39,6 +40,8 @@ Route::get('/public/seminars/{level?}',      [SuperAdminController::class, 'getP
 Route::get('/public/materials/{level?}',     [SuperAdminController::class, 'getPublicMaterials']);
 Route::get('/public/live-class/{level?}',    [SuperAdminController::class, 'getLiveClassInfo']);
 Route::get('/public/exams/{level}', [\App\Http\Controllers\ExamController::class, 'getExams']);
+Route::get('/rasi-icons',           [SystemSettingsController::class, 'getRasiIcons']);
+Route::get('/settings/{key}',        [SystemSettingsController::class, 'getSetting']);
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
@@ -157,6 +160,8 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     // Rasi Palan Management (CRUD for all 12 rasis)
     Route::put('/rasi-palan',                       [AstrologyController::class, 'updateRasiPalan']);
     Route::put('/panchangam',                       [AstrologyController::class, 'updatePanchangam']);
+    Route::post('/rasi-icons',                      [SystemSettingsController::class, 'saveRasiIcons']);
+    Route::post('/settings/{key}',                  [SystemSettingsController::class, 'saveSetting']);
 
     // Marriage Match Logs & Phone Consultation Updates
     Route::get('/marriage-matches',                 [JathagamController::class, 'adminGetMatches']);

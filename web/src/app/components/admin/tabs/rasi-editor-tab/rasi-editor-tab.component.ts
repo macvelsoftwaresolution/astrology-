@@ -21,6 +21,8 @@ export class RasiEditorTabComponent implements OnInit {
   rasiPublishing = false;
   rasiSaveSuccessMsg = '';
   selectedRasiIndex: number | null = null;
+  isComingSoon: boolean = false;
+  private backupPredictions: any[] = [];
 
   openRasiEditor(index: number): void {
     this.selectedRasiIndex = index;
@@ -50,18 +52,18 @@ export class RasiEditorTabComponent implements OnInit {
   ];
 
   rasiEditorList = [
-    { name: 'மேஷம்', symbol: '♈', englishName: 'Aries', dates: 'Mar 21 - Apr 19' },
-    { name: 'ரிஷபம்', symbol: '♉', englishName: 'Taurus', dates: 'Apr 20 - May 20' },
-    { name: 'மிதுனம்', symbol: '♊', englishName: 'Gemini', dates: 'May 21 - Jun 20' },
-    { name: 'கடகம்', symbol: '♋', englishName: 'Cancer', dates: 'Jun 21 - Jul 22' },
-    { name: 'சிம்மம்', symbol: '♌', englishName: 'Leo', dates: 'Jul 23 - Aug 22' },
-    { name: 'கன்னி', symbol: '♍', englishName: 'Virgo', dates: 'Aug 23 - Sep 22' },
-    { name: 'துலாம்', symbol: '♎', englishName: 'Libra', dates: 'Sep 23 - Oct 22' },
-    { name: 'விருச்சிகம்', symbol: '♏', englishName: 'Scorpio', dates: 'Oct 23 - Nov 21' },
-    { name: 'தனுசு', symbol: '♐', englishName: 'Sagittarius', dates: 'Nov 22 - Dec 21' },
-    { name: 'மகரம்', symbol: '♑', englishName: 'Capricorn', dates: 'Dec 22 - Jan 19' },
-    { name: 'கும்பம்', symbol: '♒', englishName: 'Aquarius', dates: 'Jan 20 - Feb 18' },
-    { name: 'மீனம்', symbol: '♓', englishName: 'Pisces', dates: 'Feb 19 - Mar 20' }
+    { name: 'மேஷம்', symbol: '♈', englishName: 'Aries', dates: 'Mar 21 - Apr 19', customIcon: '' },
+    { name: 'ரிஷபம்', symbol: '♉', englishName: 'Taurus', dates: 'Apr 20 - May 20', customIcon: '' },
+    { name: 'மிதுனம்', symbol: '♊', englishName: 'Gemini', dates: 'May 21 - Jun 20', customIcon: '' },
+    { name: 'கடகம்', symbol: '♋', englishName: 'Cancer', dates: 'Jun 21 - Jul 22', customIcon: '' },
+    { name: 'சிம்மம்', symbol: '♌', englishName: 'Leo', dates: 'Jul 23 - Aug 22', customIcon: '' },
+    { name: 'கன்னி', symbol: '♍', englishName: 'Virgo', dates: 'Aug 23 - Sep 22', customIcon: '' },
+    { name: 'துலாம்', symbol: '♎', englishName: 'Libra', dates: 'Sep 23 - Oct 22', customIcon: '' },
+    { name: 'விருச்சிகம்', symbol: '♏', englishName: 'Scorpio', dates: 'Oct 23 - Nov 21', customIcon: '' },
+    { name: 'தனுசு', symbol: '♐', englishName: 'Sagittarius', dates: 'Nov 22 - Dec 21', customIcon: '' },
+    { name: 'மகரம்', symbol: '♑', englishName: 'Capricorn', dates: 'Dec 22 - Jan 19', customIcon: '' },
+    { name: 'கும்பம்', symbol: '♒', englishName: 'Aquarius', dates: 'Jan 20 - Feb 18', customIcon: '' },
+    { name: 'மீனம்', symbol: '♓', englishName: 'Pisces', dates: 'Feb 19 - Mar 20', customIcon: '' }
   ];
 
   rasiPredictions: { rasi_name: string; prediction_text: string; audio_url: string; video_url: string }[] = this.rasiEditorList.map(r => ({
@@ -101,6 +103,32 @@ export class RasiEditorTabComponent implements OnInit {
     if (h === 0) h = 12;
     const hh = h < 10 ? '0' + h : '' + h;
     return `${hh}:${m} ${ampm}`;
+  }
+
+  toggleComingSoon(): void {
+    if (this.isComingSoon) {
+      if (confirm('Are you sure you want to mark all 12 Rasis as "Coming Soon" for this date?')) {
+        this.backupPredictions = JSON.parse(JSON.stringify(this.rasiPredictions));
+        this.rasiPredictions.forEach(r => {
+          r.prediction_text = 'விரைவில் பதிவேற்றப்படும்...';
+          r.video_url = '';
+          r.audio_url = '';
+        });
+        this.publishRasiPalan();
+      } else {
+        setTimeout(() => this.isComingSoon = false, 0);
+      }
+    } else {
+      if (this.backupPredictions.length > 0) {
+        this.rasiPredictions = JSON.parse(JSON.stringify(this.backupPredictions));
+      } else {
+        this.rasiPredictions.forEach(r => {
+          if (r.prediction_text === 'விரைவில் பதிவேற்றப்படும்...') {
+            r.prediction_text = '';
+          }
+        });
+      }
+    }
   }
 
   updateRahukalamFromPickers(): void {
@@ -147,9 +175,64 @@ export class RasiEditorTabComponent implements OnInit {
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
+      this.loadRasiIcons();
       this.loadRasiPredictions();
       this.loadPanchangam();
     }
+  }
+
+  loadRasiIcons(): void {
+    this.http.get<any>(`${environment.apiUrl}/rasi-icons`).subscribe({
+      next: (res) => {
+        if (res) {
+          this.rasiEditorList.forEach(r => {
+            if (res[r.name]) {
+              r.customIcon = res[r.name];
+            }
+          });
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  uploadRasiIcon(event: any, rasi: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'rasi_icons');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res.url) {
+          rasi.customIcon = res.url;
+          this.saveAllRasiIcons();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to upload rasi icon', err);
+        alert('Failed to upload icon.');
+      }
+    });
+  }
+
+  saveAllRasiIcons(): void {
+    const payload: any = {};
+    this.rasiEditorList.forEach(r => {
+      if (r.customIcon) {
+        payload[r.name] = r.customIcon;
+      }
+    });
+    this.http.post<any>(`${environment.apiUrl}/rasi-icons`, payload).subscribe({
+      next: (res) => {
+        this.rasiSaveSuccessMsg = 'Rasi icon updated successfully!';
+        setTimeout(() => this.rasiSaveSuccessMsg = '', 3000);
+      },
+      error: () => {}
+    });
   }
 
   loadRasiPredictions(): void {
@@ -167,6 +250,7 @@ export class RasiEditorTabComponent implements OnInit {
               video_url: found?.video_url || ''
             };
           });
+          this.isComingSoon = this.rasiPredictions.length > 0 && this.rasiPredictions.every(r => r.prediction_text === 'விரைவில் பதிவேற்றப்படும்...');
         } else {
           this.rasiPredictions = this.rasiEditorList.map(r => ({
             rasi_name: r.name,
@@ -174,6 +258,7 @@ export class RasiEditorTabComponent implements OnInit {
             audio_url: '',
             video_url: ''
           }));
+          this.isComingSoon = false;
         }
         this.rasiPredictionsLoading = false;
         this.cdr.detectChanges();
