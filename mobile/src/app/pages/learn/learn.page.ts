@@ -66,16 +66,20 @@ export class LearnPage implements OnInit {
   // Form input variables for login screen
   loginIdInput = '';
   loginPasswordInput = '';
+  showLoginPassword = false;
   loginErrorMessage = '';
 
   // Shared form state
   enrollForm = {
     fullName: '',
+    emailAddress: '',
+    mobileNumber: '',
     dob: '',
     tob: '',
     pob: '',
     qualification: '',
-    reason: ''
+    reason: '',
+    courseLevel: 'ilanilai'
   };
 
   constructor(
@@ -232,24 +236,39 @@ export class LearnPage implements OnInit {
   }
 
   payAndStart() {
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    this.generatedLoginId = `EDU-${randomId}`;
-    this.generatedPassword = '654321';
-
-    const newUser = {
-      fullName: this.enrollForm.fullName || 'கல்வி பயனர்',
-      mobileNumber: this.generatedLoginId,
-      emailAddress: `student_${randomId}@gmail.com`,
-      password: this.generatedPassword
-    };
-    this.authService.register(newUser, 'education').subscribe({
-      next: () => {
+    this.authService.studentRegister(this.enrollForm).subscribe({
+      next: (res) => {
+        if (res && res.success) {
+          this.generatedLoginId = res.login_id || res.email;
+          this.generatedPassword = res.password;
+        } else {
+          const twoDigitYear = new Date().getFullYear().toString().slice(-2);
+          const randomId = Math.floor(10 + Math.random() * 90);
+          this.generatedLoginId = `${twoDigitYear}AR${randomId}`;
+          this.generatedPassword = '654321';
+        }
+        // Do NOT auto fill input fields - user enters manually after checking Gmail
+        this.loginIdInput = '';
+        this.loginPasswordInput = '';
+        this.loginErrorMessage = '';
         this.currentScreen = 'post-payment-login';
       },
-      error: () => {
+      error: (err) => {
+        console.error('Student registration API error:', err);
+        const twoDigitYear = new Date().getFullYear().toString().slice(-2);
+        const randomId = Math.floor(10 + Math.random() * 90);
+        this.generatedLoginId = `${twoDigitYear}AR${randomId}`;
+        this.generatedPassword = '654321';
+        this.loginIdInput = '';
+        this.loginPasswordInput = '';
+        this.loginErrorMessage = '';
         this.currentScreen = 'post-payment-login';
       }
     });
+  }
+
+  toggleShowLoginPassword() {
+    this.showLoginPassword = !this.showLoginPassword;
   }
 
   loginToCourse() {

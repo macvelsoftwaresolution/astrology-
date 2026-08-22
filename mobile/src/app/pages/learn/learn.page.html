@@ -40,14 +40,15 @@
       @if (generatedLoginId) {
         <div class="success-card">
           <span class="success-icon">🎉</span>
-          <h2>கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!</h2>
+          <h2>சேர்க்கை & கட்டணம் வெற்றிகரமாக முடிந்தது!</h2>
           <p class="success-info-text">
-            வகுப்பின் உள்நுழைவு விவரங்கள் உங்களது மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.
+            ✉️ உங்களது மின்னஞ்சல் முகவரிக்கு <strong>({{ enrollForm.emailAddress || 'Gmail' }})</strong> பயனர் ஐடி மற்றும் கடவுச்சொல் அனுப்பப்பட்டுள்ளது. தயவுசெய்து மின்னஞ்சலைச் சரிபார்த்து கீழே உள்ளிடவும்.
           </p>
           <div class="details-alert-box">
-            <p><strong>உள்நுழைவு பயனர் ஐடி:</strong> {{ generatedLoginId }}</p>
-            <p><strong>கடவுச்சொல்:</strong> {{ generatedPassword }}</p>
-            <span class="test-notice-label">* (சோதனை நோக்கத்திற்காக இது திரையில் காட்டப்படுகிறது)</span>
+            <p><strong>மின்னஞ்சல் முகவரி:</strong> {{ enrollForm.emailAddress || 'உங்கள் Gmail' }}</p>
+            <p><strong>பயனர் ஐடி வடிவம் (Demo Format):</strong> 26AR01</p>
+            <p><strong>கடவுச்சொல் வடிவம் (Demo Format):</strong> ******</p>
+            <span class="test-notice-label">* (உங்கள் Gmail Inbox-ஐ சரிபார்த்து உங்களது பயனர் ஐடி & கடவுச்சொல்லைக் கீழே உள்ளிடவும்)</span>
           </div>
         </div>
       } @else {
@@ -60,12 +61,23 @@
       <div class="login-form-box">
         <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
         <div class="input-field-group">
-          <label>பயனர் ஐடி / அலைபேசி எண் / மின்னஞ்சல் (User ID / Phone) *</label>
-          <input type="text" [(ngModel)]="loginIdInput" placeholder="எ.கா: EDU-1001 அல்லது 9876543210">
+          <label>பயனர் ஐடி / அலைபேசி எண் / மின்னஞ்சல் (User ID / Email / Phone) *</label>
+          <input type="text" [(ngModel)]="loginIdInput" placeholder="எ.கா: 26AR01 அல்லது student@gmail.com">
         </div>
         <div class="input-field-group">
           <label>கடவுச்சொல் (Password) *</label>
-          <input type="password" [(ngModel)]="loginPasswordInput" placeholder="கடவுச்சொல் உள்ளிடவும்">
+          <div style="position: relative; display: flex; align-items: center;">
+            <input
+              [type]="showLoginPassword ? 'text' : 'password'"
+              [(ngModel)]="loginPasswordInput"
+              placeholder="கடவுச்சொல் உள்ளிடவும்"
+              style="width: 100%; padding-right: 42px;">
+            <span
+              (click)="toggleShowLoginPassword()"
+              style="position: absolute; right: 12px; cursor: pointer; color: #777; font-size: 1.2rem; user-select: none;">
+              <i class="bi" [ngClass]="showLoginPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+            </span>
+          </div>
         </div>
         @if (loginErrorMessage) {
           <p class="error-msg-txt">{{ loginErrorMessage }}</p>
