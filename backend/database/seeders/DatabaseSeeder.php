@@ -217,6 +217,12 @@ class DatabaseSeeder extends Seeder
                 ]
             ]);
         }
+         $this->call([
+            CourseDataSeeder::class,
+            DemoDataSeeder::class,
+            LmsDataSeeder::class,
+            MockLmsDataSeeder::class,           
+        ]);
 
     }
 }

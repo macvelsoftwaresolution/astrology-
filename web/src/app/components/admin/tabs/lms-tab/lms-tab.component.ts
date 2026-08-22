@@ -286,11 +286,34 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
+  weekDaysList = [
+    { key: 'mon', label: 'திங்கள்', short: 'Mon' },
+    { key: 'tue', label: 'செவ்வாய்', short: 'Tue' },
+    { key: 'wed', label: 'புதன்', short: 'Wed' },
+    { key: 'thu', label: 'வியாழன்', short: 'Thu' },
+    { key: 'fri', label: 'வெள்ளி', short: 'Fri' },
+    { key: 'sat', label: 'சனி', short: 'Sat' },
+    { key: 'sun', label: 'ஞாயிறு', short: 'Sun' }
+  ];
+
+  timePresets = [
+    { label: '🌅 காலை 06:00 - 07:30', start: '06:00', end: '07:30', text: 'காலை 06:00 - 07:30' },
+    { label: '☀️ காலை 10:00 - 11:30', start: '10:00', end: '11:30', text: 'காலை 10:00 - 11:30' },
+    { label: '🌆 மாலை 06:00 - 07:30', start: '18:00', end: '19:30', text: 'மாலை 06:00 - 07:30' },
+    { label: '🌙 இரவு 07:30 - 09:00', start: '19:30', end: '21:00', text: 'இரவு 07:30 - 09:00' },
+    { label: '🌙 இரவு 08:00 - 09:30', start: '20:00', end: '21:30', text: 'இரவு 08:00 - 09:30' }
+  ];
+
   openNewLiveClass(): void {
     this.editingLiveClass = {
       id: null,
       title: '',
       description: '',
+      days_of_week: ['mon', 'tue', 'wed', 'thu', 'fri'],
+      date_text: 'திங்கள் - வெள்ளி',
+      start_time: '18:00',
+      end_time: '19:30',
+      time_text: 'மாலை 06:00 - 07:30',
       link: '',
       is_active: true
     };
@@ -298,13 +321,104 @@ export class LmsTabComponent implements OnInit {
   }
 
   editLiveClass(liveClass: any): void {
-    this.editingLiveClass = { ...liveClass };
+    let days = liveClass.days_of_week;
+    if (typeof days === 'string') {
+      try {
+        days = JSON.parse(days);
+      } catch {
+        days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+      }
+    }
+    if (!Array.isArray(days)) {
+      days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+    }
+
+    this.editingLiveClass = {
+      ...liveClass,
+      days_of_week: days,
+      start_time: liveClass.start_time || '18:00',
+      end_time: liveClass.end_time || '19:30',
+      date_text: liveClass.date_text || 'திங்கள் - வெள்ளி',
+      time_text: liveClass.time_text || 'மாலை 06:00 - 07:30'
+    };
     this.openLiveClassModal = true;
+  }
+
+  toggleLiveClassDay(key: string): void {
+    if (!this.editingLiveClass.days_of_week) {
+      this.editingLiveClass.days_of_week = [];
+    }
+    const idx = this.editingLiveClass.days_of_week.indexOf(key);
+    if (idx > -1) {
+      this.editingLiveClass.days_of_week.splice(idx, 1);
+    } else {
+      this.editingLiveClass.days_of_week.push(key);
+    }
+    this.updateDaysSummary();
+  }
+
+  isDaySelected(key: string): boolean {
+    return this.editingLiveClass?.days_of_week?.includes(key) ?? false;
+  }
+
+  selectDaysPreset(type: 'all' | 'weekdays' | 'weekends'): void {
+    if (type === 'all') {
+      this.editingLiveClass.days_of_week = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    } else if (type === 'weekdays') {
+      this.editingLiveClass.days_of_week = ['mon', 'tue', 'wed', 'thu', 'fri'];
+    } else if (type === 'weekends') {
+      this.editingLiveClass.days_of_week = ['sat', 'sun'];
+    }
+    this.updateDaysSummary();
+  }
+
+  updateDaysSummary(): void {
+    const days = this.editingLiveClass.days_of_week || [];
+    if (days.length === 7) {
+      this.editingLiveClass.date_text = 'தினசரி (அனைத்து நாட்களும்)';
+    } else if (days.length === 5 && !days.includes('sat') && !days.includes('sun')) {
+      this.editingLiveClass.date_text = 'திங்கள் - வெள்ளி (Mon - Fri)';
+    } else if (days.length === 2 && days.includes('sat') && days.includes('sun')) {
+      this.editingLiveClass.date_text = 'சனி, ஞாயிறு (வார இறுதி)';
+    } else if (days.length === 0) {
+      this.editingLiveClass.date_text = 'நாட்கள் தேர்வு செய்யப்படவில்லை';
+    } else {
+      const labels = this.weekDaysList.filter(d => days.includes(d.key)).map(d => d.label);
+      this.editingLiveClass.date_text = labels.join(', ');
+    }
+  }
+
+  selectTimePreset(preset: any): void {
+    this.editingLiveClass.start_time = preset.start;
+    this.editingLiveClass.end_time = preset.end;
+    this.editingLiveClass.time_text = preset.text;
+  }
+
+  onCustomTimeChange(): void {
+    const start = this.editingLiveClass.start_time || '18:00';
+    const end = this.editingLiveClass.end_time || '19:30';
+
+    const formatHour = (t: string) => {
+      const [h, m] = t.split(':').map(Number);
+      const isPm = h >= 12;
+      const h12 = h % 12 || 12;
+      const padM = String(m).padStart(2, '0');
+      const prefix = h < 12 ? 'காலை' : (h < 16 ? 'மதியம்' : (h < 20 ? 'மாலை' : 'இரவு'));
+      return { str: `${String(h12).padStart(2, '0')}:${padM}`, prefix };
+    };
+
+    const s = formatHour(start);
+    const e = formatHour(end);
+    this.editingLiveClass.time_text = `${s.prefix} ${s.str} - ${e.str}`;
   }
 
   saveLiveClass(): void {
     if (!this.editingLiveClass.title || !this.editingLiveClass.link) {
       alert('Title and Link are required.');
+      return;
+    }
+    if (!this.editingLiveClass.days_of_week || this.editingLiveClass.days_of_week.length === 0) {
+      alert('தயவுசெய்து நேரடி வகுப்பிற்கான வார நாட்களைத் தேர்வு செய்யவும்.');
       return;
     }
     this.editingLiveClass.level = this.selectedCategory || 'ILANILAI';

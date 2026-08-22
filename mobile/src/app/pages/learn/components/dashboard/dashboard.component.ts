@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -68,7 +68,8 @@ export class LearnDashboardComponent implements OnInit {
     private toastController: ToastController,
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -120,27 +121,41 @@ export class LearnDashboardComponent implements OnInit {
     });
   }
 
+  hideTicker = false;
+  get hasActiveLiveClass(): boolean {
+    return !!(this.liveClasses && this.liveClasses.length > 0);
+  }
+
+  dismissTicker(e?: Event) {
+    if (e) e.stopPropagation();
+    this.hideTicker = true;
+  }
+
   updateMarqueeMessage() {
     const parts: string[] = [];
 
     // 1. Live class announcements
     if (this.liveClasses && this.liveClasses.length > 0) {
       const lc = this.liveClasses[0];
-      parts.push(`🔴 நேரலை வகுப்பு: ${lc.title} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
+      const dayPrefix = lc.is_today ? '🔴 இன்றைய நேரலை வகுப்பு' : `📅 நேரலை வகுப்பு (${lc.date_text || ''})`;
+      parts.push(`${dayPrefix}: ${lc.title} • ${lc.time_text || ''} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
     }
 
-    // 2. Recent notifications
+    // 2. Meaningful real notifications (skip dummy/test words if any)
     if (this.notifications && this.notifications.length > 0) {
-      const recent = this.notifications.slice(0, 3);
-      recent.forEach((n: any) => {
+      const validNotes = this.notifications
+        .filter((n: any) => n.title && n.title.toLowerCase() !== 'hello' && n.title.toLowerCase() !== 'test')
+        .slice(0, 2);
+      validNotes.forEach((n: any) => {
         parts.push(`🔔 ${n.title}: ${n.body || n.message || ''}`);
       });
     }
 
-    // 3. Educational / LMS reminders
-    parts.push('📢 ஆருத்ரா ஜோதிட பயிலரங்கம்: அனைத்து பாடங்களையும் முழுமையாக கற்று தேர்வு எழுதி சான்றிதழ் பெற்றிடுங்கள்!');
-    parts.push('✨ உங்கள் சந்தேகங்களை நேரலை வகுப்புகளில் ஆசிரியரிடம் நேரடியாக கேட்டுத் தெரிந்து கொள்ளலாம்.');
-    parts.push('📚 புதிய ஜோதிட ஆய்வுப் புத்தகங்கள் மற்றும் குறிப்புகள் நூலகப் பகுதியில் பதிவேற்றப்பட்டுள்ளன.');
+    // 3. Educational / LMS reminders only if no active announcements
+    if (parts.length === 0) {
+      parts.push('📢 ஆருத்ரா ஜோதிட பயிலரங்கம்: அனைத்து பாடங்களையும் முழுமையாக கற்று தேர்வு எழுதி சான்றிதழ் பெற்றிடுங்கள்!');
+      parts.push('✨ உங்கள் சந்தேகங்களை நேரலை வகுப்புகளில் ஆசிரியரிடம் நேரடியாக கேட்டுத் தெரிந்து கொள்ளலாம்.');
+    }
 
     this.marqueeMessage = parts.join('   ✦✦   ');
   }
@@ -182,12 +197,12 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   loadMyBookOrders() {
-    if (!this.authService.isLoggedIn()) {
+    if (!this.authService.isLoggedIn('education') && !this.authService.isLoggedIn()) {
       this.loadBooks();
       return;
     }
     this.isLoadingOrders = true;
-    const authHeaders = this.authService.getAuthHeaders().headers;
+    const authHeaders = this.authService.getAuthHeaders('education').headers;
     this.http.get<any>(`${environment.apiUrl}/user/book-orders`, { headers: authHeaders }).subscribe({
       next: (res) => {
         if (res && res.orders) {
@@ -208,7 +223,9 @@ export class LearnDashboardComponent implements OnInit {
   syncBooksWithOrders() {
     if (this.books.length > 0 && this.myBookOrders.length > 0) {
       this.books.forEach(b => {
-        const order = this.myBookOrders.find(o => o.book_title === b.title);
+        const order = this.myBookOrders.find(o => 
+          o.book_title && b.title && o.book_title.trim().toLowerCase() === b.title.trim().toLowerCase()
+        );
         if (order) {
           b.bought = true;
           b.order = order;
@@ -348,21 +365,23 @@ export class LearnDashboardComponent implements OnInit {
   initiateBuyBook(book: Book) {
     this.selectedCheckoutBook = book;
     this.activeBookCheckout = true;
+    const user = this.authService.getCurrentUser('education') || this.authService.getCurrentUser('astrology') || this.authService.getCurrentUser();
     this.checkoutForm = {
-      name: this.enrollForm?.fullName || '',
-      phone: '',
-      address: ''
+      name: this.enrollForm?.fullName || user?.name || user?.fullName || '',
+      phone: this.enrollForm?.phone || user?.phone || user?.mobileNumber || '',
+      address: this.enrollForm?.address || ''
     };
   }
 
   async confirmCheckoutPayment() {
     if (this.selectedCheckoutBook) {
-      if (!this.checkoutForm.name || !this.checkoutForm.phone || !this.checkoutForm.address) {
+      if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
         const toast = await this.toastController.create({
           message: 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).',
           duration: 2500,
           color: 'warning',
-          position: 'bottom'
+          position: 'bottom',
+          cssClass: 'custom-astrology-toast'
         });
         await toast.present();
         return;
@@ -375,35 +394,40 @@ export class LearnDashboardComponent implements OnInit {
         phone: this.checkoutForm.phone
       };
 
-      const authHeaders = this.authService.getAuthHeaders().headers;
+      const authHeaders = this.authService.getAuthHeaders('education').headers;
       this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
         next: async (res) => {
           if (this.selectedCheckoutBook) {
             this.selectedCheckoutBook.bought = true;
+            this.selectedCheckoutBook.order = res.order || {
+              book_title: orderPayload.book_title,
+              order_number: res.order_number,
+              status: 'Processing',
+              created_at: new Date().toISOString()
+            };
           }
           this.activeBookCheckout = false;
+          this.loadMyBookOrders();
           const toast = await this.toastController.create({
             message: `${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`,
             duration: 3000,
             color: 'success',
-            position: 'bottom'
+            position: 'bottom',
+            cssClass: 'custom-astrology-toast'
           });
           await toast.present();
           this.selectedCheckoutBook = null;
         },
-        error: async () => {
-          if (this.selectedCheckoutBook) {
-            this.selectedCheckoutBook.bought = true;
-          }
-          this.activeBookCheckout = false;
+        error: async (err) => {
+          console.error('Error placing book order:', err);
           const toast = await this.toastController.create({
-            message: `${this.selectedCheckoutBook?.title} வெற்றிகரமாக வாங்கப்பட்டது!`,
-            duration: 2000,
-            color: 'success',
-            position: 'bottom'
+            message: 'ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.',
+            duration: 3000,
+            color: 'danger',
+            position: 'bottom',
+            cssClass: 'custom-astrology-toast'
           });
           await toast.present();
-          this.selectedCheckoutBook = null;
         }
       });
     }
@@ -508,10 +532,23 @@ export class LearnDashboardComponent implements OnInit {
     this.playVideo();
   }
 
-  openMeeting(url?: string) {
+  activeToast: { message: string, icon: string, type: string, isClosing?: boolean } | null = null;
+  private toastTimer: any = null;
+
+  openMeeting(url?: string, status?: string, seminar?: any) {
+    if (status === 'past') {
+      this.showToast('இந்தக் கருத்தரங்க நேரம் முடிந்துவிட்டது.', 'warning');
+      return;
+    }
+    if (status === 'upcoming' || (!status && !url)) {
+      const timeInfo = seminar ? `${seminar.date_text || seminar.date || ''} ${seminar.time_text || seminar.time || ''}`.trim() : '';
+      const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
+      this.showToast(msg, 'info');
+      return;
+    }
     if (url) {
       window.open(url, '_blank');
-      this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success');
+      this.showToast('நேரலை வகுப்பில் இணைகிறது...', 'success');
     } else {
       this.openMockGoogleMeet();
     }
@@ -524,13 +561,7 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   async openDiary() {
-    const toast = await this.toastController.create({
-      message: 'ஆன்மீக நாட்குறிப்பு திறக்கப்பட்டது',
-      duration: 2000,
-      color: 'dark',
-      position: 'bottom'
-    });
-    await toast.present();
+    this.showToast('ஆன்மீக நாட்குறிப்பு திறக்கப்பட்டது', 'info');
   }
 
   playLiveClass(link: string) {
@@ -543,22 +574,41 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   async playVideo() {
-    const toast = await this.toastController.create({
-      message: 'வீடியோ வகுப்பு பிளே செய்யப்படுகிறது...',
-      duration: 2000,
-      color: 'success',
-      position: 'bottom'
-    });
-    await toast.present();
+    this.showToast('வீடியோ வகுப்பு பிளே செய்யப்படுகிறது...', 'success');
   }
 
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
+  showToast(message: string, type: 'info' | 'success' | 'warning' | 'secondary' | string = 'info') {
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+    let icon = 'bi bi-info-circle-fill';
+    if (type === 'success') icon = 'bi bi-check-circle-fill';
+    if (type === 'warning') icon = 'bi bi-clock-history';
+    if (message.includes('தொடங்கும்') || message.includes('நேரம்')) icon = 'bi bi-calendar-event-fill';
+
+    // Clean any leading emoji
+    const cleanMsg = message.replace(/^[📢⏳✅✨🔔]\s*/, '');
+
+    this.activeToast = {
+      message: cleanMsg,
+      icon,
+      type,
+      isClosing: false
+    };
+    this.cdr.detectChanges();
+
+    this.toastTimer = setTimeout(() => {
+      this.dismissToast();
+    }, 3500);
+  }
+
+  dismissToast() {
+    if (!this.activeToast) return;
+    this.activeToast.isClosing = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.activeToast = null;
+      this.cdr.detectChanges();
+    }, 280);
   }
 }

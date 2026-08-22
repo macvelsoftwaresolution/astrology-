@@ -33,12 +33,16 @@ export interface Book {
 }
 
 export interface Seminar {
+  id?: number | string;
   title: string;
   speaker: string;
-  date: string;
-  time: string;
+  date?: string;
+  time?: string;
+  date_text?: string;
+  time_text?: string;
   status: 'live' | 'upcoming' | 'past';
   join_url?: string;
+  level?: string;
 }
 
 @Component({

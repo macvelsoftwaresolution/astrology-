@@ -187,6 +187,9 @@
                   </span>
                 </div>
                 <h4 style="margin:0 0 4px 0;font-size:14px;color:#0f172a;font-weight:700;">{{ lc.title }}</h4>
+                <div style="font-size:11.5px;color:#d97706;font-weight:600;margin-bottom:4px;">
+                  <i class="bi bi-calendar3 me-1"></i>{{ lc.date_text || 'இன்று' }} • <i class="bi bi-clock me-1"></i>{{ lc.time_text || 'மாலை 06:00 - 07:30' }}
+                </div>
                 <p style="margin:0 0 6px 0;font-size:12px;color:#64748b;">{{ lc.description }}</p>
                 <div style="font-size:11px;color:#2563eb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                   <i class="bi bi-link-45deg me-1"></i>{{ lc.link }}
@@ -332,32 +335,157 @@
   <!-- MODAL: ADD / EDIT LIVE CLASS -->
   @if (openLiveClassModal && editingLiveClass) {
     <div class="modal-overlay" (click)="openLiveClassModal = false">
-      <div class="modal-box" style="max-width:480px;" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3 style="margin:0;"><i class="bi bi-camera-video-fill" style="color:#dc2626;margin-right:6px;"></i>{{ editingLiveClass.id ? 'வகுப்பு திருத்து' : 'புதிய வகுப்பு' }}</h3>
+      <div class="modal-box" style="max-width: 560px; max-height: 90vh; overflow-y: auto;" (click)="$event.stopPropagation()">
+        <div class="modal-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+              <i class="bi bi-camera-video-fill"></i>
+            </div>
+            <div>
+              <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">{{ editingLiveClass.id ? 'வகுப்பு திருத்து (Edit Live Class)' : 'புதிய நேரலை வகுப்பு (New Live Class)' }}</h3>
+              <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">மாணவர்களுக்கான நேரலை வகுப்பு விவரங்களை உள்ளிடவும்</p>
+            </div>
+          </div>
           <button class="close-btn" (click)="openLiveClassModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:12px;margin:14px 0;">
+
+        <div style="display: flex; flex-direction: column; gap: 16px; margin: 18px 0;">
+          <!-- Title -->
           <div>
-            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">தலைப்பு (Title) *</label>
-            <input type="text" [(ngModel)]="editingLiveClass.title" class="ctrl" placeholder="எ.கா. நேரடி வகுப்பு - கிரக மாற்றங்கள்"/>
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
+              வகுப்பு தலைப்பு (Class Title) <span style="color: #dc2626;">*</span>
+            </label>
+            <input type="text" [(ngModel)]="editingLiveClass.title" class="ctrl" placeholder="எ.கா. நேரடி வகுப்பு - கிரக மாற்றங்கள்" style="border-radius: 8px; font-size: 13.5px;"/>
           </div>
+
+          <!-- Description -->
           <div>
-            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">விளக்கம் (Description)</label>
-            <input type="text" [(ngModel)]="editingLiveClass.description" class="ctrl" placeholder="இன்றைய கிரக பெயர்ச்சி மற்றும் அதன் பலன்கள்"/>
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
+              சுருக்க விளக்கம் (Short Description)
+            </label>
+            <input type="text" [(ngModel)]="editingLiveClass.description" class="ctrl" placeholder="இன்றைய கிரக பெயர்ச்சி மற்றும் அதன் பலன்கள்" style="border-radius: 8px; font-size: 13.5px;"/>
           </div>
+
+          <!-- DAYS OF WEEK SELECTOR (Clean Card) -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <label style="font-size: 12.5px; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-calendar-week" style="color: #4f46e5;"></i>
+                <span>நடைபெறும் நாட்கள் (Live Days) <span style="color: #dc2626;">*</span></span>
+              </label>
+              <!-- Quick Presets -->
+              <div style="display: flex; gap: 5px;">
+                <button type="button" 
+                  (click)="selectDaysPreset('all')"
+                  style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.15s;">
+                  தினசரி
+                </button>
+                <button type="button" 
+                  (click)="selectDaysPreset('weekdays')"
+                  style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.15s;">
+                  திங்கள் - வெள்ளி
+                </button>
+                <button type="button" 
+                  (click)="selectDaysPreset('weekends')"
+                  style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.15s;">
+                  சனி - ஞாயிறு
+                </button>
+              </div>
+            </div>
+
+            <!-- Day Pills -->
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+              @for (d of weekDaysList; track d.key) {
+                <button type="button" 
+                  (click)="toggleLiveClassDay(d.key)"
+                  [style.background]="isDaySelected(d.key) ? '#4f46e5' : '#ffffff'"
+                  [style.color]="isDaySelected(d.key) ? '#ffffff' : '#334155'"
+                  [style.border-color]="isDaySelected(d.key) ? '#4f46e5' : '#cbd5e1'"
+                  [style.box-shadow]="isDaySelected(d.key) ? '0 2px 6px rgba(79, 70, 229, 0.25)' : 'none'"
+                  style="border: 1px solid; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 5px;">
+                  @if (isDaySelected(d.key)) {
+                    <i class="bi bi-check-lg" style="font-weight: bold;"></i>
+                  }
+                  {{ d.label }}
+                </button>
+              }
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px; background: #e0e7ff; color: #3730a3; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600;">
+              <i class="bi bi-info-circle-fill"></i>
+              <span>தேர்வு: {{ editingLiveClass.date_text }}</span>
+            </div>
+          </div>
+
+          <!-- TIME SELECTOR & PRESETS (Clean Card) -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+            <label style="font-size: 12.5px; font-weight: 700; color: #1e293b; margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;">
+              <i class="bi bi-clock-history" style="color: #0284c7;"></i>
+              <span>வகுப்பு நேரம் (Class Timing) <span style="color: #dc2626;">*</span></span>
+            </label>
+
+            <!-- Quick Time Presets -->
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+              @for (tp of timePresets; track tp.label) {
+                <button type="button" 
+                  (click)="selectTimePreset(tp)"
+                  [style.background]="editingLiveClass.start_time === tp.start && editingLiveClass.end_time === tp.end ? '#0284c7' : '#ffffff'"
+                  [style.color]="editingLiveClass.start_time === tp.start && editingLiveClass.end_time === tp.end ? '#ffffff' : '#0369a1'"
+                  [style.border-color]="editingLiveClass.start_time === tp.start && editingLiveClass.end_time === tp.end ? '#0284c7' : '#bae6fd'"
+                  [style.box-shadow]="editingLiveClass.start_time === tp.start && editingLiveClass.end_time === tp.end ? '0 2px 6px rgba(2, 132, 199, 0.25)' : 'none'"
+                  style="border: 1px solid; border-radius: 8px; padding: 5px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s;">
+                  {{ tp.label }}
+                </button>
+              }
+            </div>
+
+            <!-- Custom Start & End Time Inputs -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+              <div>
+                <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">
+                  <i class="bi bi-play-circle me-1"></i>தொடங்கும் நேரம் (Start Time)
+                </label>
+                <input type="time" [(ngModel)]="editingLiveClass.start_time" (change)="onCustomTimeChange()" class="ctrl" style="font-size: 13px; padding: 7px; border-radius: 8px;"/>
+              </div>
+              <div>
+                <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">
+                  <i class="bi bi-stop-circle me-1"></i>முடியும் நேரம் (End Time)
+                </label>
+                <input type="time" [(ngModel)]="editingLiveClass.end_time" (change)="onCustomTimeChange()" class="ctrl" style="font-size: 13px; padding: 7px; border-radius: 8px;"/>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600;">
+              <i class="bi bi-clock-fill"></i>
+              <span>அட்டவணை நேரம்: {{ editingLiveClass.time_text }}</span>
+            </div>
+          </div>
+
+          <!-- Meet Link -->
           <div>
-            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">இணைப்பு (Meet / Zoom Link) *</label>
-            <input type="text" [(ngModel)]="editingLiveClass.link" class="ctrl" placeholder="https://meet.google.com/..."/>
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
+              இணைப்பு (Meet / Zoom Link) <span style="color: #dc2626;">*</span>
+            </label>
+            <div style="position: relative;">
+              <input type="text" [(ngModel)]="editingLiveClass.link" class="ctrl" placeholder="https://meet.google.com/xyz-abc-def" style="border-radius: 8px; font-size: 13.5px; padding-left: 34px;"/>
+              <i class="bi bi-link-45deg" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 1.15rem; color: #64748b;"></i>
+            </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
-            <input type="checkbox" [(ngModel)]="editingLiveClass.is_active" id="lc_active" style="width: 18px; height: 18px; accent-color: #dc2626;">
-            <label for="lc_active" style="font-size: 13px; font-weight: 600; color: #475569; cursor: pointer;">Active (காண்பி)</label>
+
+          <!-- Active Toggle -->
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <input type="checkbox" [(ngModel)]="editingLiveClass.is_active" id="lc_active" style="width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer;">
+            <label for="lc_active" style="font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; margin: 0;">
+              Active (பயனர்களுக்கு நேரலை அட்டவணையில் காண்பி)
+            </label>
           </div>
         </div>
-        <div class="modal-btns">
+
+        <div class="modal-btns" style="border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 4px;">
           <button type="button" class="btn-cancel" (click)="openLiveClassModal = false">ரத்து</button>
-          <button type="button" class="btn-primary" style="background:#dc2626;border:none;" (click)="saveLiveClass()"><i class="bi bi-floppy"></i> சேமி</button>
+          <button type="button" class="btn-primary" style="background: #4f46e5; border: none; border-radius: 8px; padding: 9px 18px; font-weight: 600; display: flex; align-items: center; gap: 6px;" (click)="saveLiveClass()">
+            <i class="bi bi-floppy"></i> சேமி (Save)
+          </button>
         </div>
       </div>
     </div>

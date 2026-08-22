@@ -64,3 +64,23 @@ ion-icon {
   font-family: inherit;
   display: inline-block;
 }
+
+/* ----------------------------------------------------------------------------
+ * Clean Floating Toast Styling
+ * ---------------------------------------------------------------------------- */
+.custom-astrology-toast {
+  --background: #2D1B08 !important;
+  --color: #FFF8E7 !important;
+  --border-radius: 12px !important;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  font-family: 'Noto Serif Tamil', serif !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  margin-bottom: 24px !important;
+
+  &::part(message) {
+    text-align: center;
+    line-height: 1.4;
+  }
+}
+

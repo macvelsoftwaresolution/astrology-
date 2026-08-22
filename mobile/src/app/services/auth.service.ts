@@ -93,21 +93,43 @@ export class AuthService {
     }
   }
 
-  isLoggedIn(service: 'astrology' | 'education' = 'astrology'): boolean {
-    const key = this.getTokenKey(service);
-    return !!localStorage.getItem(key);
+  isLoggedIn(service?: 'astrology' | 'education'): boolean {
+    if (service) {
+      const key = this.getTokenKey(service);
+      return !!localStorage.getItem(key);
+    }
+    return !!(
+      localStorage.getItem('edu_auth_token') ||
+      localStorage.getItem('astro_auth_token') ||
+      localStorage.getItem('auth_token')
+    );
   }
 
-  getCurrentUser(service: 'astrology' | 'education' = 'astrology'): User | null {
-    const data = localStorage.getItem(this.getUserKey(service));
+  getCurrentUser(service?: 'astrology' | 'education'): User | null {
+    if (service) {
+      const data = localStorage.getItem(this.getUserKey(service));
+      if (data) return JSON.parse(data);
+    }
+    const data =
+      localStorage.getItem('edu_auth_user') ||
+      localStorage.getItem('astro_auth_user') ||
+      localStorage.getItem('auth_user');
     return data ? JSON.parse(data) : null;
   }
 
-  getToken(service: 'astrology' | 'education' = 'astrology'): string | null {
-    return localStorage.getItem(this.getTokenKey(service));
+  getToken(service?: 'astrology' | 'education'): string | null {
+    if (service) {
+      const t = localStorage.getItem(this.getTokenKey(service));
+      if (t) return t;
+    }
+    return (
+      localStorage.getItem('edu_auth_token') ||
+      localStorage.getItem('astro_auth_token') ||
+      localStorage.getItem('auth_token')
+    );
   }
 
-  getAuthHeaders(service: 'astrology' | 'education' = 'astrology'): { headers: { [header: string]: string } } {
+  getAuthHeaders(service?: 'astrology' | 'education'): { headers: { [header: string]: string } } {
     const token = this.getToken(service);
     return {
       headers: {

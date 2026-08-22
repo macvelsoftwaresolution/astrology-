@@ -345,6 +345,29 @@ class NotificationController extends Controller
     }
 
     /**
+     * Helper: Broadcast notification to all regular users
+     */
+    public static function broadcastToUsers(string $title, string $body, string $type, ?array $data = null): void
+    {
+        $users = DB::table('users')->where('role', 'user')->pluck('id');
+        $now = now();
+        $rows = $users->map(fn($uid) => [
+            'user_id'    => $uid,
+            'title'      => $title,
+            'body'       => $body,
+            'type'       => $type,
+            'is_read'    => false,
+            'data'       => $data ? json_encode($data) : null,
+            'created_at' => $now,
+            'updated_at' => $now
+        ])->toArray();
+
+        if (!empty($rows)) {
+            DB::table('notifications')->insert($rows);
+        }
+    }
+
+    /**
      * Helper: Create notification for a specific user (used internally by other controllers)
      */
     public static function createForUser(int $userId, string $title, string $body, string $type, ?array $data = null): void

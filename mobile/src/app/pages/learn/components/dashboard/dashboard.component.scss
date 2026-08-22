@@ -1194,30 +1194,35 @@ $color-orange: #F49320;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1rem;
   box-sizing: border-box;
 
   .checkout-modal-card {
     background-color: $color-beige;
     width: 100%;
-    max-width: 360px;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    max-width: 380px;
+    max-height: 90vh;
+    border-radius: 20px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.3);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     animation: slideUp 0.25s ease-out;
 
     .checkout-modal-header {
+      flex-shrink: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.1rem 1.25rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px dashed rgba($color-gold, 0.3);
+      background-color: #FAF4E6;
 
       h3 {
         color: $color-maroon;
@@ -1233,6 +1238,8 @@ $color-orange: #F49320;
         font-size: 1.4rem;
         color: $color-maroon;
         cursor: pointer;
+        line-height: 1;
+        padding: 4px;
       }
     }
 
@@ -1241,6 +1248,10 @@ $color-orange: #F49320;
       display: flex;
       flex-direction: column;
       gap: 1.15rem;
+      overflow-y: auto;
+      flex: 1;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
 
       .checkout-book-summary {
         display: flex;
@@ -1708,6 +1719,30 @@ $color-orange: #F49320;
     align-items: center;
     flex-shrink: 0;
   }
+
+  .ticker-close-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #ECC876;
+    font-size: 1.25rem;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    margin-left: 6px;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+
+    &:hover, &:active {
+      background: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+  }
 }
 
 @keyframes marquee-scroll {
@@ -1792,13 +1827,25 @@ $color-orange: #F49320;
     }
 
     .close-checkout-btn {
-      color: #FFFDF7;
-      font-size: 1.6rem;
-      background: transparent;
-      border: none;
+      color: #ECC876 !important;
+      font-size: 1.35rem !important;
+      background: rgba(255, 255, 255, 0.15) !important;
+      border: 1px solid rgba(236, 200, 118, 0.4) !important;
+      border-radius: 50% !important;
+      width: 32px !important;
+      height: 32px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       cursor: pointer;
       line-height: 1;
       padding: 0;
+      transition: all 0.2s ease;
+
+      &:hover, &:active {
+        background: rgba(255, 255, 255, 0.3) !important;
+        color: #FFFFFF !important;
+      }
     }
   }
 
@@ -1970,3 +2017,105 @@ $color-orange: #F49320;
     }
   }
 }
+
+/* ==========================================================================
+   LUXURY ANIMATED FLOATING TOAST (Gold & Maroon Theme)
+   ========================================================================== */
+.custom-floating-toast {
+  position: fixed;
+  bottom: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  width: auto;
+  max-width: 90vw;
+  animation: toastSpringIn 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: auto;
+
+  &.toast-fade-out {
+    animation: toastFadeOut 0.28s ease-in forwards;
+  }
+
+  .toast-content-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #2D140D 0%, #160704 100%);
+    border: 1.5px solid rgba(236, 200, 118, 0.6);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.25);
+    border-radius: 50px;
+    padding: 9px 16px 9px 12px;
+    color: #FFF8E7;
+    backdrop-filter: blur(10px);
+  }
+
+  .toast-icon-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ECC876 0%, #B8860B 100%);
+    color: #2D140D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+  }
+
+  .toast-message-text {
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #FFF8E7;
+    white-space: normal;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .toast-close-btn {
+    background: transparent;
+    border: none;
+    color: rgba(236, 200, 118, 0.7);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s;
+
+    &:active {
+      color: #FFF;
+      transform: scale(0.9);
+    }
+  }
+}
+
+@keyframes toastSpringIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 35px) scale(0.88);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes toastFadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 25px) scale(0.9);
+  }
+}
+
