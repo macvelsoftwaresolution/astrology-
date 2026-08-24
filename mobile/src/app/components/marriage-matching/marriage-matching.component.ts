@@ -3,6 +3,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 
+declare var Razorpay: any;
+
 export interface NakshatraData {
   star: string;
   rasi: string;
@@ -360,9 +362,56 @@ export class MarriageMatchingComponent implements OnInit {
     });
   }
 
+  isProcessingPayment: boolean = false;
+
   payForMatching() {
-    this.sendMatchingToAdmin();
-    this.serviceStep = 5;
+    if (this.isProcessingPayment) return;
+    this.isProcessingPayment = true;
+    
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 100 }, headers).subscribe({
+      next: (orderRes) => {
+        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+          const options = {
+            key: orderRes.key_id,
+            amount: 10000, // 100 INR in paise
+            currency: 'INR',
+            name: 'ஆருத்ரா ஜோதிடம்',
+            description: 'திருமணப் பொருத்தம்',
+            order_id: orderRes.order_id,
+            theme: { color: '#4A0E17' },
+            handler: (response: any) => {
+              this.isProcessingPayment = false;
+              this.sendMatchingToAdmin();
+              this.serviceStep = 5;
+            },
+            modal: {
+              ondismiss: () => {
+                this.isProcessingPayment = false;
+              }
+            }
+          };
+          try {
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (resp: any) => {
+              this.isProcessingPayment = false;
+              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+            });
+            rzp.open();
+          } catch (e: any) {
+            this.isProcessingPayment = false;
+            alert('Razorpay popup பிழை: ' + (e?.message || e));
+          }
+        } else {
+          this.isProcessingPayment = false;
+          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
+        }
+      },
+      error: () => {
+        this.isProcessingPayment = false;
+        alert('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
+      }
+    });
   }
 
   downloadAdminResult() {
@@ -398,6 +447,55 @@ export class MarriageMatchingComponent implements OnInit {
   }
 
   payForRegistration() {
+    if (this.isProcessingPayment) return;
+    this.isProcessingPayment = true;
+    
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 500 }, headers).subscribe({
+      next: (orderRes) => {
+        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+          const options = {
+            key: orderRes.key_id,
+            amount: 50000,
+            currency: 'INR',
+            name: 'ஆருத்ரா ஜோதிடம்',
+            description: 'திருமணப் பதிவு',
+            order_id: orderRes.order_id,
+            theme: { color: '#4A0E17' },
+            handler: (response: any) => {
+              this.isProcessingPayment = false;
+              this.submitRegistrationData();
+            },
+            modal: {
+              ondismiss: () => {
+                this.isProcessingPayment = false;
+              }
+            }
+          };
+          try {
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (resp: any) => {
+              this.isProcessingPayment = false;
+              alert('கட்டணம் செலுத்துவதில் பிழை');
+            });
+            rzp.open();
+          } catch (e: any) {
+            this.isProcessingPayment = false;
+            alert('Razorpay popup பிழை: ' + (e?.message || e));
+          }
+        } else {
+          this.isProcessingPayment = false;
+          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
+        }
+      },
+      error: () => {
+        this.isProcessingPayment = false;
+        alert('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
+      }
+    });
+  }
+
+  submitRegistrationData() {
     this.submittingToAdmin = true;
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/matrimony-profiles`, this.regForm, headers).subscribe({

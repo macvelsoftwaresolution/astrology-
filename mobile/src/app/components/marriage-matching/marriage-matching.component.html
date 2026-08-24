@@ -279,7 +279,9 @@
         <span>விண்ணப்பதாரர்:</span>
         <strong>{{ regForm.name }}</strong>
       </div>
-      <button class="btn-app-gold btn-pay-now" (click)="payForRegistration()">இப்போதே செலுத்தவும் 🔒</button>
+      <button class="btn-app-gold btn-pay-now" (click)="payForRegistration()" [disabled]="isProcessingPayment">
+        {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
+      </button>
     </div>
   </div>
 }
@@ -482,7 +484,9 @@
         <span>ஜாதகர்:</span>
         <strong>{{ matchingForm.boyName }} & {{ matchingForm.girlName }}</strong>
       </div>
-      <button class="btn-app-gold btn-pay-now" (click)="payForMatching()">இப்போதே செலுத்தவும் 🔒</button>
+      <button class="btn-app-gold btn-pay-now" (click)="payForMatching()" [disabled]="isProcessingPayment">
+        {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
+      </button>
     </div>
   </div>
 }
