@@ -7,27 +7,27 @@
     <!-- Top Row: Thithi & Star -->
     <div class="panch-item top-left">
       <span class="panch-label">திதி</span>
-      <span class="panch-value value-highlight">{{ panchangam.thithi || 'துவாதசி' }}</span>
+      <span class="panch-value value-highlight">{{ panchangam.thithi || '-' }}</span>
     </div>
     <div class="panch-item top-right">
       <span class="panch-label">நட்சத்திரம்</span>
-      <span class="panch-value value-highlight">{{ panchangam.star || 'ரோகிணி' }}</span>
+      <span class="panch-value value-highlight">{{ panchangam.star || '-' }}</span>
     </div>
 
     <!-- Middle Row: Nalla Neram -->
     <div class="panch-item middle-full">
       <span class="panch-label label-gold"><i class="bi bi-clock-fill me-1"></i> நல்ல நேரம் (சுப காலம்)</span>
-      <span class="panch-value value-gold">{{ panchangam.nalla_neram || '06:15 AM - 07:15 AM' }}</span>
+      <span class="panch-value value-gold">{{ panchangam.nalla_neram || '-' }}</span>
     </div>
 
     <!-- Bottom Row: Rahukalam & Yamagandam -->
     <div class="panch-item bottom-left">
       <span class="panch-label label-red"><i class="bi bi-exclamation-triangle-fill me-1"></i> இராகு காலம்</span>
-      <span class="panch-value value-red">{{ panchangam.rahukalam || '10:30 AM - 12:00 PM' }}</span>
+      <span class="panch-value value-red">{{ panchangam.rahukalam || '-' }}</span>
     </div>
     <div class="panch-item bottom-right">
       <span class="panch-label label-orange"><i class="bi bi-shield-exclamation me-1"></i> எமகண்டம்</span>
-      <span class="panch-value value-orange">{{ panchangam.yamagandam || '09:15 AM - 10:15 AM' }}</span>
+      <span class="panch-value value-orange">{{ panchangam.yamagandam || '-' }}</span>
     </div>
   </div>
   <div class="panch-footer-icon">

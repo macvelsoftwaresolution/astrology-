@@ -211,11 +211,9 @@
   }
 
   <!-- 3. MATCHMAKING TAB COMPONENT -->
-  @if (currentTab === 'matching' && !activeServiceFlow) {
-  <div class="tab-content">
+  <div class="tab-content" [style.display]="(currentTab === 'matching' && !activeServiceFlow) ? 'flex' : 'none'">
     <app-marriage-matching [rasis]="rasis"></app-marriage-matching>
   </div>
-  }
 
   <!-- 4. PROFILE TAB COMPONENT -->
   @if (currentTab === 'profile' && !activeServiceFlow) {

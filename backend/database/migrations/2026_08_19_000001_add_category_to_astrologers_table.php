@@ -16,16 +16,7 @@ return new class extends Migration
                 });
             }
 
-            // Backfill standard categories for the default 3 astrologers
-            DB::table('astrologers')->where('id', 1)->update([
-                'category' => 'ஜாதகம் எழுதுதல்'
-            ]);
-            DB::table('astrologers')->where('id', 2)->update([
-                'category' => 'வாஸ்து சாஸ்திரம்'
-            ]);
-            DB::table('astrologers')->where('id', 3)->update([
-                'category' => 'எண்கணிதம் / நியூமராலஜி'
-            ]);
+
         }
     }
 

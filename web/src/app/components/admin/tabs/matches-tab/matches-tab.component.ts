@@ -1,5 +1,5 @@
 import { environment } from '../../../../../environments/environment';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -71,6 +71,53 @@ export class MatchesTabComponent implements OnInit {
         this.loadMatches();
       },
       error: () => alert('Failed to update match status.')
+    });
+  }
+
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  uploadingMatchId: number | null = null;
+
+  triggerUpload(matchId: number): void {
+    this.uploadingMatchId = matchId;
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file || !this.uploadingMatchId) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'marriage_documents');
+
+    this.isLoading = true;
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res.url) {
+          this.saveResultDocument(this.uploadingMatchId!, res.url);
+        } else {
+          this.isLoading = false;
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        alert('File upload failed.');
+      }
+    });
+  }
+
+  saveResultDocument(matchId: number, url: string): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.put<any>(`${environment.apiUrl}/admin/marriage-matches/${matchId}`, { result_document: url }, headers).subscribe({
+      next: () => {
+        alert('Result document uploaded successfully!');
+        this.uploadingMatchId = null;
+        this.loadMatches();
+      },
+      error: () => {
+        this.isLoading = false;
+        alert('Failed to save result document.');
+      }
     });
   }
 }

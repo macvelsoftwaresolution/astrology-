@@ -420,7 +420,7 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
-    const userStr = localStorage.getItem('auth_user');
+    const userStr = sessionStorage.getItem('auth_user');
     if (userStr) {
       const user = JSON.parse(userStr);
       this.userName = user.name;
@@ -434,7 +434,7 @@ export class ProfilePage implements OnInit {
     this.loadPreferences();
   }
 
-  get token() { return localStorage.getItem('auth_token') || ''; }
+  get token() { return sessionStorage.getItem('auth_token') || ''; }
   get headers() { return { headers: { Authorization: `Bearer ${this.token}` } }; }
 
   loadProfile() {

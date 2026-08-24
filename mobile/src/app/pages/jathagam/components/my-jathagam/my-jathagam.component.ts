@@ -195,7 +195,7 @@ export class MyJathagamComponent implements OnInit {
   ngOnInit() { this.loadSaved(); }
 
   loadSaved() {
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     if (!token) return;
     this.loading = true;
     this.http.get<any>(`${environment.apiUrl}/user/jathagam`, {
@@ -218,7 +218,7 @@ export class MyJathagamComponent implements OnInit {
       this.errorMsg = 'பிறந்த தேதி மற்றும் ராசி கட்டாயம்.';
       return;
     }
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     if (!token) { this.errorMsg = 'உள்நுழைவு செய்யவும்.'; return; }
     this.saving = true;
     this.errorMsg = '';

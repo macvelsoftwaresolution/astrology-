@@ -24,18 +24,17 @@ class AstrologyController extends Controller
         }
 
         if (!$panchangam) {
-            // Seed a live initial row into DB so it's always in database
-            $initialId = DB::table('panchangams')->insertGetId([
+            // Return empty response if no panchangam is found at all
+            return response()->json([
+                'success' => true,
+                'panchangam' => null,
                 'date' => $today,
-                'thithi' => 'சுக்கில பட்ச துவாதசி (Dwadashi)',
-                'star' => 'ரோகிணி (Rohini)',
-                'rahukalam' => '10:30 AM - 12:00 PM',
-                'yamagandam' => '09:15 AM - 10:15 AM',
-                'nalla_neram' => '06:15 AM - 07:15 AM',
-                'created_at' => now(),
-                'updated_at' => now()
+                'thithi' => '-',
+                'star' => '-',
+                'rahukalam' => '-',
+                'yamagandam' => '-',
+                'nalla_neram' => '-'
             ]);
-            $panchangam = DB::table('panchangams')->where('id', $initialId)->first();
         }
 
         return response()->json([
@@ -46,7 +45,7 @@ class AstrologyController extends Controller
             'star' => $panchangam->star,
             'rahukalam' => $panchangam->rahukalam,
             'yamagandam' => $panchangam->yamagandam,
-            'nalla_neram' => $panchangam->nalla_neram ?? ''
+            'nalla_neram' => $panchangam->nalla_neram ?? '-'
         ]);
     }
 

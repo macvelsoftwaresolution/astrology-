@@ -30,6 +30,7 @@ export class MarriageMatchingComponent implements OnInit {
   // 3: Matrimony Success
   // 4: 2 Jathagam Porutham Form
   // 5: Traditional Matching Sheet Result
+  currentMatchId: number | null = null;
   serviceStep: number = 0;
   submittingToAdmin: boolean = false;
   adminSubmittedSuccess: boolean = false;
@@ -100,8 +101,8 @@ export class MarriageMatchingComponent implements OnInit {
     propertyDetails: '',
     partnerExpectation: '',
     lagnam: '',
-    rasi: 'மேஷம்',
-    star: 'அஸ்வினி',
+    rasi: '',
+    star: '',
     dasaBalance: '',
     address: '',
     contactPersonRelation: 'சுயவிவரம்',
@@ -119,15 +120,15 @@ export class MarriageMatchingComponent implements OnInit {
     girlDob: '',
     girlTob: '',
     girlPob: '',
-    girlRasi: 'ரிஷபம்',
-    girlStar: 'ரோகிணி',
+    girlRasi: '',
+    girlStar: '',
     boyName: '',
     boyAge: '',
     boyDob: '',
     boyTob: '',
     boyPob: '',
-    boyRasi: 'சிம்மம்',
-    boyStar: 'பூரம்',
+    boyRasi: '',
+    boyStar: '',
     requesterPhone: '',
     boyPhoto: '',
     boyJadhagam: '',
@@ -172,6 +173,8 @@ export class MarriageMatchingComponent implements OnInit {
   // Navigation Methods
   goBack() {
     if (this.serviceStep === 5) {
+      this.serviceStep = 4;
+    } else if (this.serviceStep === 6) {
       this.serviceStep = 4;
     } else if (this.serviceStep === 4 || this.serviceStep === 1) {
       this.serviceStep = 0;
@@ -310,7 +313,7 @@ export class MarriageMatchingComponent implements OnInit {
       this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் மட்டுமே உள்ளன. குலதெய்வப் பிரார்த்தனை செய்து முடிவெடுக்கலாம்.';
     }
 
-    this.serviceStep = 5; // Show Traditional Result Sheet
+    this.serviceStep = 6; // Go to Payment Step first
   }
 
   // Send request to Admin backend
@@ -339,9 +342,12 @@ export class MarriageMatchingComponent implements OnInit {
 
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/jathagam/match`, payload, headers).subscribe({
-      next: () => {
+      next: (res) => {
         this.submittingToAdmin = false;
         this.adminSubmittedSuccess = true;
+        if (res.match_id) {
+          this.currentMatchId = res.match_id;
+        }
       },
       error: () => {
         this.submittingToAdmin = false;
@@ -349,6 +355,34 @@ export class MarriageMatchingComponent implements OnInit {
       }
     });
   }
+
+  payForMatching() {
+    this.sendMatchingToAdmin();
+    this.serviceStep = 5;
+  }
+
+  downloadAdminResult() {
+    if (!this.currentMatchId) {
+      alert('அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை. காத்திருக்கவும்.');
+      return;
+    }
+
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/jathagam/match/${this.currentMatchId}`, headers).subscribe({
+      next: (res) => {
+        if (res.success && res.match && res.match.result_document) {
+          // Open the uploaded document
+          window.open(res.match.result_document, '_blank');
+        } else {
+          alert('அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை. காத்திருக்கவும்.');
+        }
+      },
+      error: () => {
+        alert('Server Error: அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை.');
+      }
+    });
+  }
+
 
   // Registration Flow
   goToRegPayment() {

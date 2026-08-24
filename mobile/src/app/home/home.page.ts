@@ -75,18 +75,18 @@ export class HomePage implements OnInit {
 
   // 12 Zodiac list
   rasis = [
-    { name: 'மேஷம்', english: 'Aries', image: '♈', imagePath: 'assets/images/zodiac/aries.png' },
-    { name: 'ரிஷபம்', english: 'Taurus', image: '♉', imagePath: 'assets/images/zodiac/taurus.png' },
-    { name: 'மிதுனம்', english: 'Gemini', image: '♊', imagePath: 'assets/images/zodiac/gemini.png' },
-    { name: 'கடகம்', english: 'Cancer', image: '♋', imagePath: 'assets/images/zodiac/cancer.png' },
-    { name: 'சிம்மம்', english: 'Leo', image: '♌', imagePath: 'assets/images/zodiac/leo.png' },
-    { name: 'கன்னி', english: 'Virgo', image: '♍', imagePath: 'assets/images/zodiac/virgo.png' },
-    { name: 'துலாம்', english: 'Libra', image: '♎', imagePath: 'assets/images/zodiac/libra.png' },
-    { name: 'விருச்சிகம்', english: 'Scorpio', image: '♏', imagePath: 'assets/images/zodiac/scorpio.png' },
-    { name: 'தனுசு', english: 'Sagittarius', image: '♐', imagePath: 'assets/images/zodiac/sagittarius.png' },
-    { name: 'மகரம்', english: 'Capricorn', image: '♑', imagePath: 'assets/images/zodiac/capricorn.png' },
-    { name: 'கும்பம்', english: 'Aquarius', image: '♒', imagePath: 'assets/images/zodiac/aquarius.png' },
-    { name: 'மீனம்', english: 'Pisces', image: '♓', imagePath: 'assets/images/zodiac/pisces.png' }
+    { name: 'மேஷம்', english: 'Aries', image: '♈', imagePath: '' },
+    { name: 'ரிஷபம்', english: 'Taurus', image: '♉', imagePath: '' },
+    { name: 'மிதுனம்', english: 'Gemini', image: '♊', imagePath: '' },
+    { name: 'கடகம்', english: 'Cancer', image: '♋', imagePath: '' },
+    { name: 'சிம்மம்', english: 'Leo', image: '♌', imagePath: '' },
+    { name: 'கன்னி', english: 'Virgo', image: '♍', imagePath: '' },
+    { name: 'துலாம்', english: 'Libra', image: '♎', imagePath: '' },
+    { name: 'விருச்சிகம்', english: 'Scorpio', image: '♏', imagePath: '' },
+    { name: 'தனுசு', english: 'Sagittarius', image: '♐', imagePath: '' },
+    { name: 'மகரம்', english: 'Capricorn', image: '♑', imagePath: '' },
+    { name: 'கும்பம்', english: 'Aquarius', image: '♒', imagePath: '' },
+    { name: 'மீனம்', english: 'Pisces', image: '♓', imagePath: '' }
   ];
 
   // Today's Panchangam values (Populated directly from Live DB/API)
@@ -296,7 +296,7 @@ export class HomePage implements OnInit {
   }
 
   loadNotificationsCount() {
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     if (!token) return;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     this.http.get<any>(`${environment.apiUrl}/user/notifications`, headers).subscribe({
@@ -421,7 +421,7 @@ export class HomePage implements OnInit {
   }
 
   loadUserOrders() {
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     if (!token) return;
     this.http.get<any>(`${environment.apiUrl}/user/bookings`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -606,7 +606,7 @@ export class HomePage implements OnInit {
 
     const currentUser = this.authService.getCurrentUser();
     const astro = this.selectedAstrologer;
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     const headers: any = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -670,7 +670,7 @@ export class HomePage implements OnInit {
   completeBooking(razorpayOrderId?: string, razorpayPaymentId?: string, razorpaySignature?: string) {
     const currentUser = this.authService.getCurrentUser();
     const astro = this.selectedAstrologer;
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     const headers: any = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

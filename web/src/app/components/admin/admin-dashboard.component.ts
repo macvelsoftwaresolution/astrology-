@@ -94,10 +94,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentUser = this.authService.getUser();
     
-    // Load read notifications from localStorage
+    // Load read notifications from sessionStorage
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('admin_read_notifications');
+        const stored = sessionStorage.getItem('admin_read_notifications');
         if (stored) {
           this.readNotificationIds = new Set(JSON.parse(stored));
         }
@@ -182,7 +182,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     n.is_read = true;
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
+        sessionStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
       } catch {}
     }
     this.unreadNotificationsCount = this.notifications.filter(item => !item.is_read).length;
@@ -204,7 +204,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
+        sessionStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
       } catch {}
     }
     this.unreadNotificationsCount = 0;

@@ -45,15 +45,15 @@ export class AuthService {
         if (res.success && res.token) {
           const tKey = this.getTokenKey(service);
           const uKey = this.getUserKey(service);
-          localStorage.setItem(tKey, res.token);
+          sessionStorage.setItem(tKey, res.token);
           if (service === 'astrology') {
-            localStorage.setItem('auth_token', res.token);
+            sessionStorage.setItem('auth_token', res.token);
           }
           
           const userToSave = { ...res.user, profileImage: user.profileImage };
-          localStorage.setItem(uKey, JSON.stringify(userToSave));
+          sessionStorage.setItem(uKey, JSON.stringify(userToSave));
           if (service === 'astrology') {
-            localStorage.setItem('auth_user', JSON.stringify(userToSave));
+            sessionStorage.setItem('auth_user', JSON.stringify(userToSave));
           }
         }
       })
@@ -71,11 +71,11 @@ export class AuthService {
         if (res.success && res.token) {
           const tKey = this.getTokenKey(service);
           const uKey = this.getUserKey(service);
-          localStorage.setItem(tKey, res.token);
-          localStorage.setItem(uKey, JSON.stringify(res.user));
+          sessionStorage.setItem(tKey, res.token);
+          sessionStorage.setItem(uKey, JSON.stringify(res.user));
           if (service === 'astrology') {
-            localStorage.setItem('auth_token', res.token);
-            localStorage.setItem('auth_user', JSON.stringify(res.user));
+            sessionStorage.setItem('auth_token', res.token);
+            sessionStorage.setItem('auth_user', JSON.stringify(res.user));
           }
         }
       })
@@ -85,47 +85,47 @@ export class AuthService {
   logout(service: 'astrology' | 'education' = 'astrology'): void {
     const tKey = this.getTokenKey(service);
     const uKey = this.getUserKey(service);
-    localStorage.removeItem(tKey);
-    localStorage.removeItem(uKey);
+    sessionStorage.removeItem(tKey);
+    sessionStorage.removeItem(uKey);
     if (service === 'astrology') {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
+      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_user');
     }
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
     if (service) {
       const key = this.getTokenKey(service);
-      return !!localStorage.getItem(key);
+      return !!sessionStorage.getItem(key);
     }
     return !!(
-      localStorage.getItem('edu_auth_token') ||
-      localStorage.getItem('astro_auth_token') ||
-      localStorage.getItem('auth_token')
+      sessionStorage.getItem('edu_auth_token') ||
+      sessionStorage.getItem('astro_auth_token') ||
+      sessionStorage.getItem('auth_token')
     );
   }
 
   getCurrentUser(service?: 'astrology' | 'education'): User | null {
     if (service) {
-      const data = localStorage.getItem(this.getUserKey(service));
+      const data = sessionStorage.getItem(this.getUserKey(service));
       if (data) return JSON.parse(data);
     }
     const data =
-      localStorage.getItem('edu_auth_user') ||
-      localStorage.getItem('astro_auth_user') ||
-      localStorage.getItem('auth_user');
+      sessionStorage.getItem('edu_auth_user') ||
+      sessionStorage.getItem('astro_auth_user') ||
+      sessionStorage.getItem('auth_user');
     return data ? JSON.parse(data) : null;
   }
 
   getToken(service?: 'astrology' | 'education'): string | null {
     if (service) {
-      const t = localStorage.getItem(this.getTokenKey(service));
+      const t = sessionStorage.getItem(this.getTokenKey(service));
       if (t) return t;
     }
     return (
-      localStorage.getItem('edu_auth_token') ||
-      localStorage.getItem('astro_auth_token') ||
-      localStorage.getItem('auth_token')
+      sessionStorage.getItem('edu_auth_token') ||
+      sessionStorage.getItem('astro_auth_token') ||
+      sessionStorage.getItem('auth_token')
     );
   }
 
