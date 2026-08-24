@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
 import { ToastController } from '@ionic/angular';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
+import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching.component';
 import { environment } from '../../environments/environment';
 
 interface Order {
@@ -29,6 +30,7 @@ declare var Razorpay: any;
 })
 export class HomePage implements OnInit {
   @ViewChild(RasiPalanComponent) rasiComponent?: RasiPalanComponent;
+  @ViewChild(MarriageMatchingComponent) matchingComponent?: MarriageMatchingComponent;
 
   // Navigation Tabs State
   currentTab: 'home' | 'services' | 'matching' | 'profile' = 'home';
@@ -176,7 +178,14 @@ export class HomePage implements OnInit {
       return true;
     }
 
-    // 3. If in Services tab inside a Selected Category / Astrologer Profile (Level 2 -> Level 1)
+    // 3. If on Matching Tab and inside a sub-step, step back inside matching first
+    if (this.currentTab === 'matching') {
+      if (this.matchingComponent && this.matchingComponent.handleBack()) {
+        return true;
+      }
+    }
+
+    // 4. If in Services tab inside a Selected Category / Astrologer Profile (Level 2 -> Level 1)
     if (this.currentTab === 'services' && this.selectedCategory) {
       this.selectedCategory = null;
       this.selectedAstrologer = null;
@@ -184,7 +193,7 @@ export class HomePage implements OnInit {
       return true;
     }
 
-    // 4. If on Services / Matching / Profile tab (Level 1 -> Home Tab)
+    // 5. If on Services / Matching / Profile tab (Level 1 -> Home Tab)
     if (this.currentTab !== 'home') {
       this.selectTab('home');
       return true;

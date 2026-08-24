@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { BackButtonService } from '../../services/back-button.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -18,12 +19,30 @@ export class NotificationsPage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private backButtonService: BackButtonService
   ) { }
 
   ngOnInit() {
     this.loadNotifications();
   }
+
+  ionViewDidEnter() {
+    this.backButtonService.registerHandler(this.customBackHandler);
+  }
+
+  ionViewWillLeave() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  ngOnDestroy() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  customBackHandler = () => {
+    this.goBack();
+    return true;
+  };
 
   ionViewWillEnter() {
     this.loadNotifications();

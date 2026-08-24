@@ -182,6 +182,14 @@ export class MarriageMatchingComponent implements OnInit {
     }
   }
 
+  handleBack(): boolean {
+    if (this.serviceStep !== 0) {
+      this.goBack();
+      return true;
+    }
+    return false;
+  }
+
   uploadDocument(event: any, formType: 'reg' | 'match', fieldName: string) {
     const file = event.target.files[0];
     if (!file) return;

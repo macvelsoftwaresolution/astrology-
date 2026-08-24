@@ -45,30 +45,26 @@
   <!-- Payment Methods -->
   <div class="pay-method-block">
     <h3>பணம் செலுத்தும் முறை</h3>
-    <label class="pay-method-label">
-      <input type="radio" name="payOpt" checked>
-      <span class="pay-icon box-gold"><i class="bi bi-phone-fill"></i></span>
+    <label class="pay-method-label" [class.selected]="isRazorpaySelected">
+      <input type="checkbox" [(ngModel)]="isRazorpaySelected">
+      <span class="pay-icon box-gold"><i class="bi bi-shield-check"></i></span>
       <div>
-        <strong>UPI</strong>
-        <span>GPay, PhonePe, Paytm</span>
-      </div>
-    </label>
-    <label class="pay-method-label">
-      <input type="radio" name="payOpt">
-      <span class="pay-icon box-peach"><i class="bi bi-credit-card-2-front-fill"></i></span>
-      <div>
-        <strong>Credit / Debit Card</strong>
-        <span>Visa, Mastercard, RuPay</span>
+        <strong>Razorpay Payment Gateway</strong>
+        <span>UPI, Credit / Debit Card, NetBanking, Wallets (100% Secure)</span>
       </div>
     </label>
   </div>
 
   <div class="secure-checkout-note">
-    <span><i class="bi bi-shield-lock-fill text-success me-1"></i> 100% பாதுகாப்பான பரிவர்த்தனை</span>
+    <span><i class="bi bi-shield-lock-fill text-success me-1"></i> 100% பாதுகாப்பான பரிவர்த்தனை (Razorpay Encrypted)</span>
   </div>
 
-  <button class="action-submit-btn" (click)="next.emit()">
-    <span>கட்டணம் செலுத்தி கற்கத் தொடங்குங்கள்</span>
-    <i class="bi bi-arrow-right ms-2"></i>
+  <button class="action-submit-btn" [disabled]="!isRazorpaySelected || isProcessing" (click)="onProceed()">
+    @if (isProcessing) {
+      <span>தயவுசெய்து காத்திருக்கவும்...</span>
+    } @else {
+      <span>கட்டணம் செலுத்தி கற்கத் தொடங்குங்கள்</span>
+      <i class="bi bi-arrow-right ms-2"></i>
+    }
   </button>
 </div>

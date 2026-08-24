@@ -31,7 +31,7 @@
     <app-learn-enroll [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
   }
   @if (currentScreen === 'payment') {
-    <app-learn-payment (next)="payAndStart()"></app-learn-payment>
+    <app-learn-payment [isProcessing]="isProcessingPayment" (next)="payAndStart()"></app-learn-payment>
   }
 
   <!-- Student Login Screen -->

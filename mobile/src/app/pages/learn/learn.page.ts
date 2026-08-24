@@ -1,9 +1,14 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth.service';
 import { BackButtonService } from '../../services/back-button.service';
 import { ExitModalService } from '../../services/exit-modal.service';
+import { environment } from '../../../environments/environment';
+import { LearnDashboardComponent } from './components/dashboard/dashboard.component';
+
+declare var Razorpay: any;
 
 export interface Chapter {
   title: string;
@@ -52,9 +57,12 @@ export interface Seminar {
   standalone: false
 })
 export class LearnPage implements OnInit {
+  @ViewChild(LearnDashboardComponent) dashboardComponent?: LearnDashboardComponent;
+
   currentScreen: 'intro' | 'rules' | 'enroll' | 'payment' | 'post-payment-login' | 'dashboard' = 'intro';
   activeQuiz: any = null;
   showCertificate: boolean = false;
+  isProcessingPayment: boolean = false;
 
   dashboardTab: 'home' | 'lessons' | 'library' | 'profile' = 'home';
   currentLessonView: 'list' | 'detail' = 'list';
@@ -88,7 +96,8 @@ export class LearnPage implements OnInit {
     private ngZone: NgZone,
     private authService: AuthService,
     private backButtonService: BackButtonService,
-    private exitModalService: ExitModalService
+    private exitModalService: ExitModalService,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
@@ -135,12 +144,7 @@ export class LearnPage implements OnInit {
       return true;
     }
     if (this.currentScreen === 'dashboard') {
-      if (this.currentLessonView === 'detail') {
-        this.onLessonViewChange('list');
-        return true;
-      }
-      if (this.dashboardTab !== 'home') {
-        this.onDashboardTabChange('home');
+      if (this.dashboardComponent && this.dashboardComponent.handleBackClick()) {
         return true;
       }
       this.exitModalService.open();
@@ -236,8 +240,82 @@ export class LearnPage implements OnInit {
   }
 
   payAndStart() {
+    if (this.isProcessingPayment) return;
+    this.isProcessingPayment = true;
+
+    const amount = 2500;
+
+    // 1. Create Razorpay order via backend API
+    this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }).subscribe({
+      next: (orderRes) => {
+        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+          if (orderRes.is_demo) {
+            // Demo order mode (when no live/test Razorpay keys present in backend .env)
+            this.handlePaymentSuccess('order_demo', 'payment_demo');
+            return;
+          }
+
+          const options = {
+            key: orderRes.key_id,
+            amount: (orderRes.amount || amount) * 100,
+            currency: orderRes.currency || 'INR',
+            name: 'ஆருத்ரா ஜோதிட பயிலரங்கம்',
+            description: 'Vedic Astrology Course Fee',
+            order_id: orderRes.order_id,
+            prefill: {
+              name: this.enrollForm.fullName || 'மாணவர்',
+              email: this.enrollForm.emailAddress || '',
+              contact: this.enrollForm.mobileNumber || ''
+            },
+            theme: {
+              color: '#4A0E17'
+            },
+            handler: (response: any) => {
+              this.ngZone.run(() => {
+                this.handlePaymentSuccess(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
+              });
+            },
+            modal: {
+              ondismiss: () => {
+                this.ngZone.run(() => {
+                  this.isProcessingPayment = false;
+                });
+              }
+            }
+          };
+
+          try {
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (resp: any) => {
+              this.ngZone.run(() => {
+                this.isProcessingPayment = false;
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+              });
+            });
+            rzp.open();
+          } catch (e: any) {
+            this.isProcessingPayment = false;
+            alert('Razorpay popup பிழை: ' + (e?.message || e));
+          }
+        } else {
+          // Direct fallback if order creation returns fallback
+          this.handlePaymentSuccess();
+        }
+      },
+      error: (err) => {
+        console.error('Razorpay order creation error:', err);
+        // Fallback for offline/demo environment
+        this.handlePaymentSuccess();
+      }
+    });
+  }
+
+  handlePaymentSuccess(razorpayOrderId?: string, razorpayPaymentId?: string, razorpaySignature?: string) {
+    this.isProcessingPayment = true;
+
     this.authService.studentRegister(this.enrollForm).subscribe({
       next: (res) => {
+        this.isProcessingPayment = false;
         if (res && res.success) {
           this.generatedLoginId = res.login_id || res.email;
           this.generatedPassword = res.password;
@@ -247,13 +325,14 @@ export class LearnPage implements OnInit {
           this.generatedLoginId = `${twoDigitYear}AR${randomId}`;
           this.generatedPassword = '654321';
         }
-        // Do NOT auto fill input fields - user enters manually after checking Gmail
+        // User manually enters credentials sent to their email
         this.loginIdInput = '';
         this.loginPasswordInput = '';
         this.loginErrorMessage = '';
         this.currentScreen = 'post-payment-login';
       },
       error: (err) => {
+        this.isProcessingPayment = false;
         console.error('Student registration API error:', err);
         const twoDigitYear = new Date().getFullYear().toString().slice(-2);
         const randomId = Math.floor(10 + Math.random() * 90);

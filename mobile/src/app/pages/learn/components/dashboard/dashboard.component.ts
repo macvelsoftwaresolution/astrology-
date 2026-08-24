@@ -463,16 +463,35 @@ export class LearnDashboardComponent implements OnInit {
     this.dashboardTabChange.emit(tab);
   }
 
-  handleBackClick() {
+  handleBackClick(): boolean {
+    if (this.showOrderStatusModal) {
+      this.showOrderStatusModal = false;
+      return true;
+    }
+    if (this.showMyOrdersModal) {
+      this.showMyOrdersModal = false;
+      return true;
+    }
+    if (this.activeBookCheckout) {
+      this.activeBookCheckout = false;
+      return true;
+    }
+    if (this.showNotificationsModal) {
+      this.showNotificationsModal = false;
+      return true;
+    }
     if (this.currentLessonView === 'detail') {
       this.currentLessonView = 'list';
       this.currentLessonViewChange.emit('list');
       sessionStorage.removeItem('current_selected_lesson');
-    } else if (this.dashboardTab !== 'home') {
-      this.setTab('home');
-    } else {
-      this.back.emit();
+      return true;
     }
+    if (this.dashboardTab !== 'home') {
+      this.setTab('home');
+      return true;
+    }
+    this.back.emit();
+    return false;
   }
 
   goToExams() {
