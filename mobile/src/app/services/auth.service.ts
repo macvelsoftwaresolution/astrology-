@@ -145,13 +145,10 @@ export class AuthService {
   }
 
   studentRegister(enrollData: any): Observable<any> {
-    const payload = {
-      fullName: enrollData.fullName,
-      email: enrollData.emailAddress,
-      phone: enrollData.mobileNumber,
-      courseLevel: enrollData.courseLevel || 'ilanilai'
-    };
+    return this.http.post<any>(`${this.apiUrl}/auth/student-register`, enrollData);
+  }
 
-    return this.http.post<any>(`${this.apiUrl}/auth/student-register`, payload);
+  fetchStudentDetails(query: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/auth/fetch-student-details`, { query });
   }
 }

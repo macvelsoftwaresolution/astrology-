@@ -21,75 +21,83 @@
 
 <ion-content [fullscreen]="true" class="edu-content">
 
-  @if (currentScreen === 'intro') {
-    <app-learn-intro (next)="goToRules()" (login)="goToLogin()"></app-learn-intro>
-  }
-  @if (currentScreen === 'rules') {
-    <app-learn-rules (next)="agreeAndContinue()"></app-learn-rules>
-  }
-  @if (currentScreen === 'enroll') {
-    <app-learn-enroll [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
-  }
-  @if (currentScreen === 'payment') {
-    <app-learn-payment [isProcessing]="isProcessingPayment" (next)="payAndStart()"></app-learn-payment>
-  }
-
-  <!-- Student Login Screen -->
-  @if (currentScreen === 'post-payment-login') {
-    <div class="post-payment-login-container">
-      @if (generatedLoginId) {
-        <div class="success-card">
-          <span class="success-icon">🎉</span>
-          <h2>சேர்க்கை & கட்டணம் வெற்றிகரமாக முடிந்தது!</h2>
-          <p class="success-info-text">
-            ✉️ உங்களது மின்னஞ்சல் முகவரிக்கு <strong>({{ enrollForm.emailAddress || 'Gmail' }})</strong> பயனர் ஐடி மற்றும் கடவுச்சொல் அனுப்பப்பட்டுள்ளது. தயவுசெய்து மின்னஞ்சலைச் சரிபார்த்து கீழே உள்ளிடவும்.
-          </p>
-          <div class="details-alert-box">
-            <p><strong>மின்னஞ்சல் முகவரி:</strong> {{ enrollForm.emailAddress || 'உங்கள் Gmail' }}</p>
-            <p><strong>பயனர் ஐடி வடிவம் (Demo Format):</strong> 26AR01</p>
-            <p><strong>கடவுச்சொல் வடிவம் (Demo Format):</strong> ******</p>
-            <span class="test-notice-label">* (உங்கள் Gmail Inbox-ஐ சரிபார்த்து உங்களது பயனர் ஐடி & கடவுச்சொல்லைக் கீழே உள்ளிடவும்)</span>
-          </div>
-        </div>
-      } @else {
-        <div class="success-card" style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); color: #FFFFFF; text-align: center; padding: 1.5rem 1rem; border-radius: 16px; margin-bottom: 1.25rem;">
-          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🎓</div>
-          <h2 style="color: #FFD700; font-family: 'Noto Serif Tamil', serif; font-size: 1.3rem; margin: 0 0 0.4rem 0;">ஜோதிட பயிலரங்கம் - மாணவர் உள்நுழைவு</h2>
-          <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0;">உங்கள் பயனர் ஐடி / அலைபேசி எண் மற்றும் கடவுச்சொல் உள்ளிட்டு வகுப்பைத் தொடரவும்.</p>
+  @if (currentScreen !== 'dashboard') {
+    <div class="screen-transition-container">
+      @if (currentScreen === 'intro') {
+        <div class="screen-pane">
+          <app-learn-intro (next)="goToRules()" (login)="goToLogin()"></app-learn-intro>
         </div>
       }
-      <div class="login-form-box">
-        <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
-        <div class="input-field-group">
-          <label>பயனர் ஐடி / அலைபேசி எண் / மின்னஞ்சல் (User ID / Email / Phone) *</label>
-          <input type="text" [(ngModel)]="loginIdInput" placeholder="எ.கா: 26AR01 அல்லது student@gmail.com">
+      @if (currentScreen === 'rules') {
+        <div class="screen-pane">
+          <app-learn-rules (next)="agreeAndContinue()"></app-learn-rules>
         </div>
-        <div class="input-field-group">
-          <label>கடவுச்சொல் (Password) *</label>
-          <div style="position: relative; display: flex; align-items: center;">
-            <input
-              [type]="showLoginPassword ? 'text' : 'password'"
-              [(ngModel)]="loginPasswordInput"
-              placeholder="கடவுச்சொல் உள்ளிடவும்"
-              style="width: 100%; padding-right: 42px;">
-            <span
-              (click)="toggleShowLoginPassword()"
-              style="position: absolute; right: 12px; cursor: pointer; color: #777; font-size: 1.2rem; user-select: none;">
-              <i class="bi" [ngClass]="showLoginPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
-            </span>
+      }
+      @if (currentScreen === 'enroll') {
+        <div class="screen-pane">
+          <app-learn-enroll [form]="enrollForm" (next)="submitEnrollment($event)"></app-learn-enroll>
+        </div>
+      }
+      @if (currentScreen === 'payment') {
+        <div class="screen-pane">
+          <app-learn-payment [isProcessing]="isProcessingPayment" (next)="payAndStart()"></app-learn-payment>
+        </div>
+      }
+
+      <!-- Student Login Screen -->
+      @if (currentScreen === 'post-payment-login') {
+        <div class="screen-pane">
+          <div class="post-payment-login-container">
+            @if (generatedLoginId) {
+              <div class="success-card">
+                <span class="success-icon">🎉</span>
+                <h2>சேர்க்கை & கட்டணம் வெற்றிகரமாக முடிந்தது!</h2>
+                <p class="success-info-text">
+                  ✉️ உங்களது மின்னஞ்சல் முகவரிக்கு <strong>({{ enrollForm.emailAddress || 'Gmail' }})</strong> பயனர் ஐடி மற்றும் கடவுச்சொல் அனுப்பப்பட்டுள்ளது. தயவுசெய்து மின்னஞ்சலைச் சரிபார்த்து கீழே உள்ளிடவும்.
+                </p>
+              </div>
+            } @else {
+              <div class="success-card" style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); color: #FFFFFF; text-align: center; padding: 1.5rem 1rem; border-radius: 16px; margin-bottom: 1.25rem;">
+                <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🎓</div>
+                <h2 style="color: #FFD700; font-family: 'Noto Serif Tamil', serif; font-size: 1.3rem; margin: 0 0 0.4rem 0;">ஜோதிட பயிலரங்கம் - மாணவர் உள்நுழைவு</h2>
+                <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0;">உங்கள் பயனர் ஐடி / அலைபேசி எண் மற்றும் கடவுச்சொல் உள்ளிட்டு வகுப்பைத் தொடரவும்.</p>
+              </div>
+            }
+            <div class="login-form-box">
+              <h3>படிப்பைத் தொடங்க உள்நுழைக</h3>
+              <div class="input-field-group">
+                <label>பயனர் ஐடி / அலைபேசி எண் / மின்னஞ்சல் (User ID / Email / Phone) *</label>
+                <input type="text" [(ngModel)]="loginIdInput" placeholder="எ.கா: 26AR01 அல்லது student@gmail.com">
+              </div>
+              <div class="input-field-group">
+                <label>கடவுச்சொல் (Password) *</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                  <input
+                    [type]="showLoginPassword ? 'text' : 'password'"
+                    [(ngModel)]="loginPasswordInput"
+                    placeholder="கடவுச்சொல் உள்ளிடவும்"
+                    style="width: 100%; padding-right: 42px;">
+                  <span
+                    (click)="toggleShowLoginPassword()"
+                    style="position: absolute; right: 12px; cursor: pointer; color: #777; font-size: 1.2rem; user-select: none;">
+                    <i class="bi" [ngClass]="showLoginPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+                  </span>
+                </div>
+              </div>
+              @if (loginErrorMessage) {
+                <p class="error-msg-txt">{{ loginErrorMessage }}</p>
+              }
+              <button class="action-login-btn" (click)="loginToCourse()">உள்நுழைக ➔</button>
+
+              <div style="margin-top: 1rem; text-align: center;">
+                <button type="button" style="background: none; border: none; color: #A27B38; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline;" (click)="currentScreen = 'intro'; scrollToTop()">
+                  ← புதிய சேர்க்கை பக்கத்திற்குச் செல்ல (Back to Intro)
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        @if (loginErrorMessage) {
-          <p class="error-msg-txt">{{ loginErrorMessage }}</p>
-        }
-        <button class="action-login-btn" (click)="loginToCourse()">உள்நுழைக ➔</button>
-
-        <div style="margin-top: 1rem; text-align: center;">
-          <button type="button" style="background: none; border: none; color: #A27B38; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline;" (click)="currentScreen = 'intro'">
-            ← புதிய சேர்க்கை பக்கத்திற்குச் செல்ல (Back to Intro)
-          </button>
-        </div>
-      </div>
+      }
     </div>
   }
 

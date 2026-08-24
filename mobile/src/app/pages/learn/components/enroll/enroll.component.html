@@ -1,132 +1,340 @@
 <div class="wizard-container">
+  
+  <!-- Form Header matching Physical Form -->
   <div class="form-intro-header">
-    <h3>மாணவர் சேர்க்கை படிவம்</h3>
-    <p>தெய்வீக துல்லியத்துடன் உங்கள் பயணத்தைத் தொடங்குங்கள்</p>
+    <h2 class="brand-vidhyalaya-title">ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+    <p class="form-sub-title">
+      {{ localForm.courseLevel === 'mudhunilai' ? 'முதுநிலை ஜோதிட சாஸ்திர மாணவர் சேர்க்கை விண்ணப்ப படிவம்' : 'விரைவு பயிற்சி மாணவர் சேர்க்கை விண்ணப்ப படிவம் (இளநிலை)' }}
+    </p>
   </div>
 
+  <!-- TOP COURSE LEVEL SELECTOR (இளநிலை / முதுநிலை) -->
+  <div class="course-level-selector-box">
+    <div class="selector-label-heading">
+      <i class="bi bi-mortarboard-fill text-gold"></i>
+      <span>சேர்க்கை நிலை (Select Category) *</span>
+    </div>
+    <div class="level-cards-grid">
+      <!-- Ilanilai Card -->
+      <div class="level-select-card" 
+           [class.active]="localForm.courseLevel === 'ilanilai'"
+           (click)="setCourseLevel('ilanilai')">
+        <div class="card-radio-bubble">
+          <i class="bi" [ngClass]="localForm.courseLevel === 'ilanilai' ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+        </div>
+        <div class="level-card-icon">🎓</div>
+        <div class="level-card-info">
+          <h4>இளநிலை</h4>
+          <span class="level-badge-tag">Ilanilai • Fast Track</span>
+          <p>அடிப்படை ஜோதிட சாஸ்திரம் & விதிகள்</p>
+        </div>
+      </div>
+
+      <!-- Mudhunilai Card -->
+      <div class="level-select-card" 
+           [class.active]="localForm.courseLevel === 'mudhunilai'"
+           (click)="setCourseLevel('mudhunilai')">
+        <div class="card-radio-bubble">
+          <i class="bi" [ngClass]="localForm.courseLevel === 'mudhunilai' ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+        </div>
+        <div class="level-card-icon">📜</div>
+        <div class="level-card-info">
+          <h4>முதுநிலை</h4>
+          <span class="level-badge-tag advanced">Mudhunilai • Master</span>
+          <p>உயர்நிலை ஆய்வுக் கணிப்புகள்</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MUDHUNILAI INSTANT AUTO-FILL BOX -->
+  @if (localForm.courseLevel === 'mudhunilai') {
+    <div class="fetch-ilanilai-card">
+      <div class="fetch-card-header">
+        <div class="fetch-icon">⚡</div>
+        <div class="fetch-info">
+          <h4>ஏற்கனவே இளநிலை பயின்றவரா?</h4>
+          <p>உங்கள் இளநிலை ஐடி (எ.கா: 26AR01) அல்லது அலைபேசி எண் உள்ளிட்டு விவரங்களை தானாக நிரப்பவும்.</p>
+        </div>
+      </div>
+      <div class="fetch-input-row">
+        <div class="fetch-search-input-wrap">
+          <input type="text" 
+                 [(ngModel)]="ilanilaiSearchQuery" 
+                 placeholder="ஐடி (26AR01) அல்லது மொபைல் எண்"
+                 (keyup.enter)="fetchIlanilaiDetails()">
+        </div>
+        <button type="button" class="btn-fetch-trigger" (click)="fetchIlanilaiDetails()" [disabled]="isFetchingIlanilai">
+          @if (isFetchingIlanilai) {
+            <i class="bi bi-hourglass-split me-1"></i> தேடுகிறது...
+          } @else {
+            <i class="bi bi-magic me-1"></i> விவரங்களை எடு
+          }
+        </button>
+      </div>
+      @if (fetchSuccessMsg) {
+        <div class="fetch-msg success"><i class="bi bi-check-circle-fill me-1"></i> {{ fetchSuccessMsg }}</div>
+      }
+      @if (fetchErrorMsg) {
+        <div class="fetch-msg error"><i class="bi bi-exclamation-circle-fill me-1"></i> {{ fetchErrorMsg }}</div>
+      }
+    </div>
+  }
+
   <div class="enroll-form">
-    <div class="form-group">
-      <label>முழு பெயர் (Full Name) *</label>
-      <div class="input-with-icon">
-        <input type="text" [(ngModel)]="localForm.fullName" placeholder="உங்கள் பெயரை உள்ளிடவும்">
-        <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+
+    <!-- ================= SECTION 1: PERSONAL DETAILS ================= -->
+    <div class="form-section-card">
+      <div class="section-card-title">
+        <i class="bi bi-person-lines-fill"></i>
+        <span>1. தனிப்பட்ட விவரங்கள் (Personal Details)</span>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label>மின்னஞ்சல் முகவரி (Email / Gmail Address) *</label>
-      <div class="input-with-icon">
-        <input type="email" [(ngModel)]="localForm.emailAddress" placeholder="உதாரணமாக: student@gmail.com">
-        <span class="input-icon"><i class="bi bi-envelope-fill"></i></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>அலைபேசி எண் (Mobile / Phone Number) *</label>
-      <div class="input-with-icon">
-        <input type="tel" [(ngModel)]="localForm.mobileNumber" placeholder="அலைபேசி எண் உள்ளிடவும்">
-        <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>பிறந்த தேதி (Date of Birth) *</label>
-      <div class="input-with-icon">
-        <input type="date" [(ngModel)]="localForm.dob">
-        <span class="input-icon"><i class="bi bi-calendar-event-fill"></i></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>பிறந்த நேரம் (Time of Birth) *</label>
-      <div class="input-with-icon">
-        <input type="time" [(ngModel)]="localForm.tob">
-        <span class="input-icon"><i class="bi bi-clock-fill"></i></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>பிறந்த இடம் (Place of Birth) *</label>
-      <div class="input-with-icon">
-        <input type="text" [(ngModel)]="localForm.pob" placeholder="பிறந்த இடம்/ஊர்">
-        <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>கல்வித் தகுதி (Educational Qualification) *</label>
-      <div class="input-with-icon">
-        <select [(ngModel)]="localForm.qualification">
-          <option value="">தேர்ந்தெடுக்கவும்...</option>
-          <option value="diploma">டிப்ளமோ (Diploma)</option>
-          <option value="degree">பட்டப்படிப்பு (Degree)</option>
-          <option value="postgraduate">முதுகலை (PG)</option>
-          <option value="other">இதர (Other)</option>
-        </select>
-        <span class="input-icon"><i class="bi bi-mortarboard-fill"></i></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>வகுப்பு நிலை (Course Level) *</label>
-      <select [(ngModel)]="localForm.courseLevel">
-        <option value="ilanilai">இளநிலை (Ilanilai / Junior)</option>
-        <option value="mudhunilai">முதுநிலை (Mudhunilai / Senior)</option>
-      </select>
-    </div>
-
-    <!-- Extra fields for mudhunilai -->
-    @if (localForm.courseLevel === 'mudhunilai') {
       <div class="form-group">
-        <label>இளநிலை சான்றிதழ் (Ilanilai Certificate) *</label>
-        <div class="file-upload-wrapper">
-          <input type="file" id="cert-upload" (change)="onFileChange($event)" accept="image/*,application/pdf" style="display: none;">
-          <label for="cert-upload" class="custom-file-upload">
-            📁 {{ localForm.prevCertificate || 'சான்றிதழ் பதிவேற்றவும் (Upload PDF/Image)' }}
+        <label>1. மாணவர் பெயர் (தமிழில்) <span class="optional-txt">(விருப்பப்பட்டால்)</span></label>
+        <div class="input-with-icon">
+          <input type="text" [(ngModel)]="localForm.studentNameTamil" placeholder="எ.கா: கார்த்திக்">
+          <span class="input-icon"><i class="bi bi-pencil-fill"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>2. பெயர் (ஆங்கிலத்தில் / Name in English) *</label>
+        <div class="input-with-icon">
+          <input type="text" [(ngModel)]="localForm.fullName" placeholder="ENTER FULL NAME IN BLOCK LETTERS">
+          <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>3. தந்தை / கணவர் பெயர் (Father's / Husband's Name)</label>
+        <div class="input-with-icon">
+          <input type="text" [(ngModel)]="localForm.fatherName" placeholder="தந்தை / கணவர் பெயர் உள்ளிடவும்">
+          <span class="input-icon"><i class="bi bi-people-fill"></i></span>
+        </div>
+      </div>
+
+      <!-- RESPONSIVE DOB & AGE ROW -->
+      <div class="form-row-dob-age">
+        <div class="form-group dob-group">
+          <label>4. பிறந்த தேதி (DOB) *</label>
+          <div class="date-input-wrapper">
+            <input type="date" [(ngModel)]="localForm.dob" (change)="calculateAge()" (ngModelChange)="calculateAge()" class="native-date-input">
+          </div>
+        </div>
+        <div class="form-group age-group">
+          <label>வயது (Age)</label>
+          <div class="age-display-box" [class.has-age]="localForm.age">
+            @if (localForm.age) {
+              <span class="age-val">
+                <i class="bi bi-hourglass-split"></i>
+                <span>{{ localForm.age }}</span>
+              </span>
+            } @else {
+              <span class="age-placeholder">தானாக வரும்</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>5. பாலினம் (Gender) *</label>
+        <div class="gender-radio-group">
+          <label class="radio-chip" [class.selected]="localForm.gender === 'ஆண்'">
+            <input type="radio" name="gender" value="ஆண்" [(ngModel)]="localForm.gender">
+            <span>ஆண் (Male)</span>
+          </label>
+          <label class="radio-chip" [class.selected]="localForm.gender === 'பெண்'">
+            <input type="radio" name="gender" value="பெண்" [(ngModel)]="localForm.gender">
+            <span>பெண் (Female)</span>
+          </label>
+          <label class="radio-chip" [class.selected]="localForm.gender === 'இதர'">
+            <input type="radio" name="gender" value="இதர" [(ngModel)]="localForm.gender">
+            <span>இதர (Other)</span>
           </label>
         </div>
       </div>
-    }
 
-    @if (localForm.courseLevel === 'mudhunilai') {
-      <div class="form-group">
-        <label>எப்போது முடித்தீர்கள்? (Completion Date/Year) *</label>
-        <input type="text" [(ngModel)]="localForm.completionYear" placeholder="உதாரணமாக: மே 2023">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>6. தொழில் (Profession)</label>
+          <div class="input-with-icon">
+            <input type="text" [(ngModel)]="localForm.occupation" placeholder="உங்கள் தொழில்">
+            <span class="input-icon"><i class="bi bi-briefcase-fill"></i></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>தாய் மொழி (Language)</label>
+          <div class="input-with-icon">
+            <input type="text" [(ngModel)]="localForm.motherTongue" placeholder="தமிழ்">
+            <span class="input-icon"><i class="bi bi-translate"></i></span>
+          </div>
+        </div>
       </div>
-    }
+    </div>
 
-    @if (localForm.courseLevel === 'mudhunilai') {
-      <div class="form-group">
-        <label>மதிப்பெண்கள் எவ்வளவு? (Marks Obtained) *</label>
-        <input type="text" [(ngModel)]="localForm.prevMarks" placeholder="உதாரணமாக: 85% அல்லது 850/1000">
+    <!-- ================= SECTION 2: ADDRESS & CONTACT ================= -->
+    <div class="form-section-card">
+      <div class="section-card-title">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>2. தொடர்பு & முகவரி (Contact & Address)</span>
       </div>
-    }
 
-    @if (localForm.courseLevel === 'mudhunilai') {
       <div class="form-group">
-        <label>இளநிலை பயனர் ஐடி & கடவுச்சொல் (Ilanilai User ID & Password) *</label>
+        <label>7. அஞ்சல் முகவரி (Postal Address) *</label>
+        <div class="input-with-icon text-area-icon">
+          <textarea [(ngModel)]="localForm.postalAddress" rows="2" placeholder="கதவு எண், தெரு, ஊர், மாவட்டம்"></textarea>
+          <span class="input-icon"><i class="bi bi-house-door-fill"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>பின் கோடு (Pincode) *</label>
         <div class="input-with-icon">
-          <input type="text" [(ngModel)]="localForm.prevUserId" placeholder="உதாரணமாக: EDU-1234 & pwd">
-          <span class="input-icon"><i class="bi bi-person-badge-fill"></i></span>
+          <input type="number" [(ngModel)]="localForm.pincode" placeholder="எ.கா: 625605">
+          <span class="input-icon"><i class="bi bi-pin-map-fill"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>8. அலைபேசி எண் (Primary Phone Number) *</label>
+        <div class="input-with-icon">
+          <input type="tel" [(ngModel)]="localForm.mobileNumber" placeholder="Primary Mobile Number">
+          <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>9. வாட்ஸ்அப் எண் (WhatsApp Number) <span class="optional-txt">(விருப்பப்பட்டால்)</span></label>
+        <div class="input-with-icon">
+          <input type="tel" [(ngModel)]="localForm.altMobileNumber" placeholder="WhatsApp Number">
+          <span class="input-icon"><i class="bi bi-whatsapp"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>13. மின்னஞ்சல் முகவரி (Email Address) *</label>
+        <div class="input-with-icon">
+          <input type="email" [(ngModel)]="localForm.emailAddress" placeholder="student@gmail.com">
+          <span class="input-icon"><i class="bi bi-envelope-fill"></i></span>
+        </div>
+        <span class="hint-txt">💡 லாகின் விவரங்கள் மற்றும் சான்றிதழ் இந்த மின்னஞ்சலுக்கு அனுப்பப்படும்.</span>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 3: COURSE & PREFERENCES ================= -->
+    <div class="form-section-card">
+      <div class="section-card-title">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>3. கல்வி & வகுப்பு விருப்பங்கள் (Course Details)</span>
+      </div>
+
+      <div class="form-group">
+        <label>10. கல்வி தகுதி (Educational Qualification)</label>
+        <div class="input-with-icon">
+          <select [(ngModel)]="localForm.qualification">
+            <option value="">தேர்ந்தெடுக்கவும்...</option>
+            <option value="10th / 12th">10th / 12th (பள்ளிக் கல்வி)</option>
+            <option value="diploma">டிப்ளமோ (Diploma)</option>
+            <option value="degree">பட்டப்படிப்பு (Degree - UG)</option>
+            <option value="postgraduate">முதுகலை (PG / Master)</option>
+            <option value="other">இதர (Other)</option>
+          </select>
+          <span class="input-icon"><i class="bi bi-award-fill"></i></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>16. பயிற்சியின் நோக்கம் (Training Purpose)</label>
+        <select [(ngModel)]="localForm.trainingPurpose">
+          <option value="தொழிலாக கொள்ள">1. தொழிலாக கொள்ள (Professional Practice)</option>
+          <option value="சொந்த உபயோகத்திற்கு">2. சொந்த உபயோகத்திற்கு (Personal Use)</option>
+          <option value="ஆராய்ச்சி செய்ய">3. ஆராய்ச்சி செய்ய (Astrology Research)</option>
+          <option value="பொது நல சேவைக்காக">4. பொது நல சேவைக்காக (Social Service)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>17. பயில விரும்பும் பயிற்று முறை (Learning Mode)</label>
+        <select [(ngModel)]="localForm.trainingMode">
+          <option value="1_day">1. ஒரு நாள் வகுப்பு (9 மணி நேர வகுப்பு)</option>
+          <option value="5_day">2. 5 நாள் வார வகுப்பு (2 மணி நேர வகுப்பு)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>18. பயில விரும்பும் வகுப்பின் பிரிவு (Preferred Batch Timing)</label>
+        <select [(ngModel)]="localForm.batchTiming">
+          <option value="A">திங்கள் கிழமை ➔ A பிரிவு</option>
+          <option value="B">புதன் கிழமை ➔ B பிரிவு</option>
+          <option value="C">வெள்ளிக்கிழமை ➔ C பிரிவு</option>
+          <option value="D">மாலை நேரம் ➔ D பிரிவு</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>மாணவர் புகைப்படம் (Passport Photo Upload)</label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="student-photo-upload" (change)="onPhotoChange($event)" accept="image/*" style="display: none;">
+          <label for="student-photo-upload" class="custom-file-upload">
+            📷 {{ localForm.studentPhoto || 'புகைப்படம் பதிவேற்றவும் (Upload Photo)' }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 4: MUDHUNILAI SPECIFIC ================= -->
+    @if (localForm.courseLevel === 'mudhunilai') {
+      <div class="form-section-card mudhunilai-card">
+        <div class="section-card-title">
+          <i class="bi bi-patch-check-fill text-gold"></i>
+          <span>முதுநிலை சான்றிதழ் விவரங்கள் (Senior Verification)</span>
+        </div>
+
+        <div class="form-group">
+          <label>இளநிலை சான்றிதழ் (Ilanilai Certificate) *</label>
+          <div class="file-upload-wrapper">
+            <input type="file" id="cert-upload" (change)="onCertificateChange($event)" accept="image/*,application/pdf" style="display: none;">
+            <label for="cert-upload" class="custom-file-upload">
+              📁 {{ localForm.prevCertificate || 'இளநிலை சான்றிதழ் பதிவேற்றவும் (Upload PDF/Image)' }}
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>முடித்த ஆண்டு *</label>
+            <input type="text" [(ngModel)]="localForm.completionYear" placeholder="எ.கா: 2024">
+          </div>
+          <div class="form-group">
+            <label>பெற்ற மதிப்பெண் *</label>
+            <input type="text" [(ngModel)]="localForm.prevMarks" placeholder="எ.கா: 85%">
+          </div>
         </div>
       </div>
     }
 
-    <div class="form-group">
-      <label>இடற்பாடில் சேருவதற்கான காரணம் (Reason for joining this course) *</label>
-      <div class="input-with-icon text-area-icon">
-        <textarea [(ngModel)]="localForm.reason" rows="3" placeholder="உங்கள் பதிலை உள்ளிடவும்"></textarea>
-        <span class="input-icon"><i class="bi bi-chat-left-text-fill"></i></span>
-      </div>
+    <!-- ================= SECTION 5: DECLARATION ================= -->
+    <div class="declaration-box">
+      <label class="checkbox-label">
+        <input type="checkbox" [(ngModel)]="localForm.agreedDeclaration">
+        <span>
+          <strong>உறுதி மொழி:</strong> ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயத்தின் விரைவு பயிற்சியின் விதிமுறைகளை முழு சம்மதத்துடன் ஏற்று, தவறாமல் கடைபிடித்து நடந்து கொள்வேன் என்று உறுதியளிக்கிறேன்.
+        </span>
+      </label>
     </div>
 
     @if (errorMessage) {
-      <p class="error-msg-txt" style="color: #dc3545; font-size: 13px; font-weight: bold; margin-bottom: 15px; text-align: center;">{{ errorMessage }}</p>
+      <p class="error-msg-txt"><i class="bi bi-exclamation-triangle-fill me-1"></i> {{ errorMessage }}</p>
     }
 
-    <button class="action-submit-btn" (click)="onSubmit()">
-      <span>கட்டணம் செலுத்த தொடரவும்</span>
-      <i class="bi bi-arrow-right ms-2"></i>
-    </button>
+    <div class="submit-button-container">
+      <button class="action-submit-btn" (click)="onSubmit()">
+        <span>கட்டணம் செலுத்தி சேர்க்கை பெறுக (Enroll Now)</span>
+        <i class="bi bi-arrow-right ms-2"></i>
+      </button>
+    </div>
+
   </div>
 </div>
+

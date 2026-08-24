@@ -31,6 +31,26 @@ export class AppComponent implements OnInit {
       this.isExitModalOpen = open;
     });
 
+    if (typeof window !== 'undefined') {
+      window.addEventListener('popstate', () => {
+        this.ngZone.run(() => {
+          if (this.isExitModalOpen) {
+            this.cancelExit();
+            return;
+          }
+
+          const currentUrl = this.router.url;
+          if (currentUrl === '/home' || currentUrl.startsWith('/home?') || currentUrl === '/learn' || currentUrl.startsWith('/learn?') || currentUrl === '/welcome') {
+            window.history.pushState(null, '', window.location.href);
+            const handled = this.backButtonService.handleBack();
+            if (!handled) {
+              this.exitModalService.open();
+            }
+          }
+        });
+      });
+    }
+
     this.platform.ready().then(() => {
       this.platform.backButton.subscribeWithPriority(10, (processNextHandler) => {
         this.ngZone.run(() => {
@@ -46,8 +66,8 @@ export class AppComponent implements OnInit {
             return;
           }
 
-          // If we are at root path (/home or /welcome), show exit confirmation dialog
-          if (this.router.url === '/home' || this.router.url.startsWith('/home?') || this.router.url === '/welcome') {
+          // If we are at root path (/home, /learn or /welcome), show exit confirmation dialog
+          if (this.router.url === '/home' || this.router.url.startsWith('/home?') || this.router.url === '/learn' || this.router.url.startsWith('/learn?') || this.router.url === '/welcome') {
             this.exitModalService.open();
           } else {
             // Standard history back navigation

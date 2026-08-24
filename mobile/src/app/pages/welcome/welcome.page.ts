@@ -23,13 +23,13 @@ export class WelcomePage implements OnInit {
 
   selectAstrologyServices() {
     if (this.authService.isLoggedIn('astrology')) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home'], { replaceUrl: true });
     } else {
-      this.router.navigate(['/login'], { queryParams: { service: 'astrology' } });
+      this.router.navigate(['/login'], { queryParams: { service: 'astrology' }, replaceUrl: true });
     }
   }
 
   selectSpiritualEducation() {
-    this.router.navigate(['/learn']);
+    this.router.navigate(['/learn'], { replaceUrl: true });
   }
 }

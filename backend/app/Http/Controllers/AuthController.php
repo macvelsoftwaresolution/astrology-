@@ -234,27 +234,54 @@ class AuthController extends Controller
         // Unique secure 6-character random password (e.g. K8N9P2)
         $password = strtoupper(Str::random(6));
 
+        $details = [
+            'studentNameTamil' => $request->input('studentNameTamil', ''),
+            'fullName'         => $fullName,
+            'fatherName'       => $request->input('fatherName', ''),
+            'dob'              => $request->input('dob', ''),
+            'gender'           => $request->input('gender', 'ஆண்'),
+            'age'              => $request->input('age', ''),
+            'occupation'       => $request->input('occupation', ''),
+            'motherTongue'     => $request->input('motherTongue', 'தமிழ்'),
+            'postalAddress'    => $request->input('postalAddress', ''),
+            'pincode'          => $request->input('pincode', ''),
+            'altMobileNumber'  => $request->input('altMobileNumber', ''),
+            'qualification'    => $request->input('qualification', ''),
+            'courseLevel'      => $courseLevel,
+            'trainingPurpose'  => $request->input('trainingPurpose', 'தொழிலாக கொள்ள'),
+            'trainingMode'     => $request->input('trainingMode', '1_day'),
+            'batchTiming'      => $request->input('batchTiming', 'A'),
+            'prevCertificate'  => $request->input('prevCertificate', ''),
+            'completionYear'   => $request->input('completionYear', ''),
+            'prevMarks'        => $request->input('prevMarks', ''),
+            'prevUserId'       => $request->input('prevUserId', ''),
+        ];
+
         if ($user) {
             // Update password & student_id for existing student
             $loginId = $user->student_id ?: $loginId;
             $user->update([
-                'name'       => $fullName,
-                'student_id' => $loginId,
-                'password'   => Hash::make($password),
-                'status'     => 'active',
+                'name'             => $fullName,
+                'student_id'       => $loginId,
+                'password'         => Hash::make($password),
+                'status'           => 'active',
+                'address'          => $request->input('postalAddress', $user->address),
+                'jathagam_details' => json_encode($details),
             ]);
             if ($phone) {
                 $user->update(['phone' => $phone]);
             }
         } else {
             $user = User::create([
-                'name'       => $fullName,
-                'email'      => $email,
-                'student_id' => $loginId,
-                'phone'      => $phone ?: $loginId,
-                'password'   => Hash::make($password),
-                'role'       => 'user',
-                'status'     => 'active',
+                'name'             => $fullName,
+                'email'            => $email,
+                'student_id'       => $loginId,
+                'phone'            => $phone ?: $loginId,
+                'password'         => Hash::make($password),
+                'role'             => 'user',
+                'status'           => 'active',
+                'address'          => $request->input('postalAddress', ''),
+                'jathagam_details' => json_encode($details),
             ]);
         }
 
@@ -280,5 +307,57 @@ class AuthController extends Controller
                 'role'  => $user->role,
             ]
         ], 201);
+    }
+
+    /**
+     * Fetch existing student details by Student ID, Phone, or Email for Mudhunilai enrollment
+     */
+    public function fetchStudentDetails(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string',
+        ]);
+
+        $query = trim($request->input('query'));
+        $user = User::where('student_id', $query)
+            ->orWhere('phone', $query)
+            ->orWhere('email', $query)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'மாணவர் விவரங்கள் கிடைக்கவில்லை (Student Record Not Found).'
+            ], 404);
+        }
+
+        $jathagam = $user->jathagam_details
+            ? (is_string($user->jathagam_details) ? json_decode($user->jathagam_details, true) : (array)$user->jathagam_details)
+            : [];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'இளநிலை மாணவர் விவரங்கள் வெற்றிகரமாக மீட்டெடுக்கப்பட்டன!',
+            'student' => [
+                'prevUserId'        => $user->student_id,
+                'studentNameTamil'  => $jathagam['studentNameTamil'] ?? $user->name,
+                'fullName'          => $user->name,
+                'fatherName'        => $jathagam['fatherName'] ?? '',
+                'dob'               => $jathagam['dob'] ?? '',
+                'gender'            => $jathagam['gender'] ?? 'ஆண்',
+                'age'               => $jathagam['age'] ?? '',
+                'occupation'        => $jathagam['occupation'] ?? '',
+                'motherTongue'      => $jathagam['motherTongue'] ?? 'தமிழ்',
+                'postalAddress'     => $user->address ?: ($jathagam['postalAddress'] ?? ''),
+                'pincode'           => $jathagam['pincode'] ?? '',
+                'mobileNumber'      => $user->phone,
+                'altMobileNumber'   => $jathagam['altMobileNumber'] ?? '',
+                'emailAddress'      => $user->email,
+                'qualification'     => $jathagam['qualification'] ?? '',
+                'completionYear'    => $jathagam['completionYear'] ?? date('Y'),
+                'prevMarks'         => $jathagam['prevMarks'] ?? '',
+                'prevCertificate'   => $jathagam['prevCertificate'] ?? '',
+            ]
+        ]);
     }
 }

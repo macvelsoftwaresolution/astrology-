@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
-import { ToastController } from '@ionic/angular';
+import { ToastController, IonContent } from '@ionic/angular';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
 import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching.component';
 import { environment } from '../../environments/environment';
@@ -29,6 +29,7 @@ declare var Razorpay: any;
   standalone: false,
 })
 export class HomePage implements OnInit {
+  @ViewChild(IonContent, { static: false }) content?: IonContent;
   @ViewChild(RasiPalanComponent) rasiComponent?: RasiPalanComponent;
   @ViewChild(MarriageMatchingComponent) matchingComponent?: MarriageMatchingComponent;
 
@@ -202,6 +203,42 @@ export class HomePage implements OnInit {
     // 5. At Root Home Tab -> Open Exit App Confirmation Dialog
     this.exitModalService.open();
     return true;
+  }
+
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(0);
+      this.content.getScrollElement().then(el => {
+        if (el) el.scrollTop = 0;
+      }).catch(() => {});
+    }
+    const ionEl = document.querySelector('ion-content') as any;
+    if (ionEl) {
+      if (ionEl.scrollToTop) ionEl.scrollToTop(0);
+      if (ionEl.getScrollElement) {
+        ionEl.getScrollElement().then((el: HTMLElement) => {
+          if (el) el.scrollTop = 0;
+        }).catch(() => {});
+      }
+    }
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    setTimeout(() => {
+      if (this.content) {
+        this.content.scrollToTop(0);
+        this.content.getScrollElement().then(el => {
+          if (el) el.scrollTop = 0;
+        }).catch(() => {});
+      }
+      if (ionEl?.getScrollElement) {
+        ionEl.getScrollElement().then((el: HTMLElement) => {
+          if (el) el.scrollTop = 0;
+        }).catch(() => {});
+      }
+      window.scrollTo(0, 0);
+    }, 40);
   }
 
   private syncQueryParams() {
@@ -428,7 +465,11 @@ export class HomePage implements OnInit {
 
   private checkAuth() {
     if (!this.authService.isLoggedIn('astrology')) {
-      this.router.navigate(['/welcome']);
+      if (this.authService.isLoggedIn('education')) {
+        this.router.navigate(['/learn'], { replaceUrl: true });
+      } else {
+        this.router.navigate(['/welcome'], { replaceUrl: true });
+      }
     }
   }
 
@@ -439,6 +480,7 @@ export class HomePage implements OnInit {
     this.selectedCategory = null;
     this.selectedAstrologer = null;
     this.serviceStep = 1;
+    this.scrollToTop();
 
     this.router.navigate([], {
       relativeTo: this.route,

@@ -1,6 +1,7 @@
 import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { IonContent } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth.service';
 import { BackButtonService } from '../../services/back-button.service';
@@ -57,6 +58,7 @@ export interface Seminar {
   standalone: false
 })
 export class LearnPage implements OnInit {
+  @ViewChild(IonContent, { static: false }) content?: IonContent;
   @ViewChild(LearnDashboardComponent) dashboardComponent?: LearnDashboardComponent;
 
   currentScreen: 'intro' | 'rules' | 'enroll' | 'payment' | 'post-payment-login' | 'dashboard' = 'intro';
@@ -151,7 +153,7 @@ export class LearnPage implements OnInit {
       return true;
     }
     if (this.currentScreen === 'intro') {
-      this.exitModalService.open();
+      this.router.navigate(['/welcome']);
       return true;
     }
     this.handleBack();
@@ -167,17 +169,57 @@ export class LearnPage implements OnInit {
     }
   }
 
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(0);
+      this.content.getScrollElement().then(el => {
+        if (el) el.scrollTop = 0;
+      }).catch(() => {});
+    }
+    const ionEl = document.querySelector('ion-content.edu-content') as any;
+    if (ionEl) {
+      if (ionEl.scrollToTop) ionEl.scrollToTop(0);
+      if (ionEl.getScrollElement) {
+        ionEl.getScrollElement().then((el: HTMLElement) => {
+          if (el) el.scrollTop = 0;
+        }).catch(() => {});
+      }
+    }
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    setTimeout(() => {
+      if (this.content) {
+        this.content.scrollToTop(0);
+        this.content.getScrollElement().then(el => {
+          if (el) el.scrollTop = 0;
+        }).catch(() => {});
+      }
+      if (ionEl?.getScrollElement) {
+        ionEl.getScrollElement().then((el: HTMLElement) => {
+          if (el) el.scrollTop = 0;
+        }).catch(() => {});
+      }
+      window.scrollTo(0, 0);
+    }, 40);
+  }
+
   handleBack() {
     if (this.currentScreen === 'intro') {
-      this.exitModalService.open();
+      this.router.navigate(['/welcome']);
     } else if (this.currentScreen === 'rules') {
       this.currentScreen = 'intro';
+      this.scrollToTop();
     } else if (this.currentScreen === 'enroll') {
       this.currentScreen = 'rules';
+      this.scrollToTop();
     } else if (this.currentScreen === 'payment') {
       this.currentScreen = 'enroll';
+      this.scrollToTop();
     } else if (this.currentScreen === 'post-payment-login') {
       this.currentScreen = 'intro';
+      this.scrollToTop();
     } else if (this.currentScreen === 'dashboard') {
       this.handleDashboardBack();
     }
@@ -195,6 +237,7 @@ export class LearnPage implements OnInit {
 
   onDashboardTabChange(tab: 'home' | 'lessons' | 'library' | 'profile') {
     this.dashboardTab = tab;
+    this.scrollToTop();
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { 
@@ -207,6 +250,7 @@ export class LearnPage implements OnInit {
 
   onLessonViewChange(view: 'list' | 'detail') {
     this.currentLessonView = view;
+    this.scrollToTop();
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { 
@@ -219,6 +263,7 @@ export class LearnPage implements OnInit {
 
   goToRules() {
     this.currentScreen = 'rules';
+    this.scrollToTop();
   }
 
   goToLogin() {
@@ -228,15 +273,18 @@ export class LearnPage implements OnInit {
     this.loginPasswordInput = '';
     this.loginErrorMessage = '';
     this.currentScreen = 'post-payment-login';
+    this.scrollToTop();
   }
 
   agreeAndContinue() {
     this.currentScreen = 'enroll';
+    this.scrollToTop();
   }
 
   submitEnrollment(formData: any) {
     this.enrollForm = { ...this.enrollForm, ...formData };
     this.currentScreen = 'payment';
+    this.scrollToTop();
   }
 
   payAndStart() {
