@@ -287,6 +287,22 @@ class JathagamController extends Controller
     }
 
     /**
+     * Get a specific marriage match by ID
+     */
+    public function getMatch($id)
+    {
+        $match = DB::table('marriage_matches')->where('id', $id)->first();
+        if (!$match) {
+            return response()->json(['success' => false, 'message' => 'Match not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'match' => $match
+        ]);
+    }
+
+    /**
      * Get user's past marriage match records (auth required)
      */
     public function getMyMatches(Request $request)
@@ -430,13 +446,19 @@ class JathagamController extends Controller
         $adminStatus = $request->input('admin_status') ?? $request->input('consultation_status') ?? 'Pending';
         $adminNotes  = $request->input('admin_notes') ?? '';
 
+        $updateData = [
+            'admin_status' => $adminStatus,
+            'admin_notes'  => $adminNotes,
+            'updated_at'   => now()
+        ];
+        
+        if ($request->has('result_document')) {
+            $updateData['result_document'] = $request->input('result_document');
+        }
+
         DB::table('marriage_matches')
             ->where('id', $id)
-            ->update([
-                'admin_status' => $adminStatus,
-                'admin_notes'  => $adminNotes,
-                'updated_at'   => now()
-            ]);
+            ->update($updateData);
 
         return response()->json([
             'success' => true,

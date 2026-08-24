@@ -132,7 +132,13 @@
           @for (item of viewingProfile.extra_details | keyvalue; track item.key) {
             <div class="detail-group">
               <label>{{ item.key }}</label>
-              <p>{{ item.value || '-' }}</p>
+              @if (isImageUrl(item.value)) {
+                <div style="margin-top: 8px;">
+                  <img [src]="item.value" alt="{{ item.key }}" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #cbd5e1; object-fit: contain;">
+                </div>
+              } @else {
+                <p>{{ item.value || '-' }}</p>
+              }
             </div>
           }
         </div>

@@ -59,4 +59,9 @@ export class MatrimonyTab implements OnInit {
     this.isViewModalOpen = false;
     this.viewingProfile = null;
   }
+
+  isImageUrl(value: any): boolean {
+    if (typeof value !== 'string') return false;
+    return value.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) != null || value.includes('cloudinary');
+  }
 }

@@ -311,11 +311,6 @@
       <button class="btn-back" (click)="goBack()">◀</button>
       <h2>திருமணப் பொருத்தம்</h2>
     </div>
-    <div class="matching-header-badge">
-      <span class="badge-om">ஓம் நமச்சிவாய</span>
-      <h3>ஓம் பிரகஸ்பதி ஜோதிடாலயம்</h3>
-      <p>பெரியகுளம் • 10 திருமணப் பொருத்தப் படிவம்</p>
-    </div>
     <!-- Girl Inputs -->
     <div class="form-section-title"><i class="bi bi-gender-female text-danger me-1"></i> பெண் விவரங்கள் (ஜாதகி)</div>
     <div class="input-grid">
@@ -442,6 +437,14 @@
       <button class="btn-back" (click)="goBack()">◀</button>
       <h2>பொருத்தப் படிவம்</h2>
     </div>
+    
+    <!-- Action buttons at the top -->
+    <div class="sheet-actions" style="margin-bottom: 15px; display: flex; justify-content: center;">
+      <button class="btn-app-gold" (click)="downloadAdminResult()">
+        <i class="bi bi-download me-1"></i> பொருத்த சீட்டை டவுன்லோட் செய்க
+      </button>
+    </div>
+
     <div class="sheet-paper">
       <!-- Center Header -->
       <div class="sheet-header">
@@ -488,52 +491,47 @@
           @for (p of matchResult.poruthams; track p; let i = $index) {
             <tr>
               <td class="p-name">{{ p.no }}. {{ p.name }}</td>
-              <td class="p-status" [class.match-yes]="p.match" [class.match-no]="!p.match">
-                @if (p.match) {
-                  <span>✔ சுபம்</span>
-                }
-                @if (!p.match) {
-                  <span>✖ அசுபம்</span>
-                }
+              <td class="p-status">
+                <!-- Blank -->
               </td>
               <!-- Elements Right Column mapping (first 5 rows) -->
               @if (i === 0) {
                 <td class="el-title">மிருகம்</td>
-                <td class="el-val">{{ matchResult.girlElements?.mrugam }}</td>
-                <td class="el-val">{{ matchResult.boyElements?.mrugam }}</td>
+                <td class="el-val"></td>
+                <td class="el-val"></td>
               }
               @if (i === 1) {
                 <td class="el-title">பட்சி</td>
-                <td class="el-val">{{ matchResult.girlElements?.patchi }}</td>
-                <td class="el-val">{{ matchResult.boyElements?.patchi }}</td>
+                <td class="el-val"></td>
+                <td class="el-val"></td>
               }
               @if (i === 2) {
                 <td class="el-title">மரம்</td>
-                <td class="el-val">{{ matchResult.girlElements?.maram }}</td>
-                <td class="el-val">{{ matchResult.boyElements?.maram }}</td>
+                <td class="el-val"></td>
+                <td class="el-val"></td>
               }
               @if (i === 3) {
                 <td class="el-title">கணம்</td>
-                <td class="el-val">{{ matchResult.girlElements?.ganam }}</td>
-                <td class="el-val">{{ matchResult.boyElements?.ganam }}</td>
+                <td class="el-val"></td>
+                <td class="el-val"></td>
               }
               @if (i === 4) {
                 <td class="el-title">நாடி</td>
-                <td class="el-val">{{ matchResult.girlElements?.nadi }}</td>
-                <td class="el-val">{{ matchResult.boyElements?.nadi }}</td>
+                <td class="el-val"></td>
+                <td class="el-val"></td>
               }
               <!-- Score & Summaries mapping (rows 5 to 9) -->
               @if (i === 5) {
-                <td class="el-title" colspan="3"><strong>மொத்தப் பொருத்தம் :</strong> {{ matchResult.totalMatches }} / 10</td>
+                <td class="el-title" colspan="3"><strong>மொத்தப் பொருத்தம் :</strong> </td>
               }
               @if (i === 6) {
-                <td class="el-title" colspan="3"><strong>ரஜ்ஜு நிலை :</strong> {{ matchResult.rajjuMatch ? '✔ சுப ரஜ்ஜு பொருத்தம்' : '✖ ஏக ரஜ்ஜு' }}</td>
+                <td class="el-title" colspan="3"><strong>ரஜ்ஜு நிலை :</strong> </td>
               }
               @if (i === 7) {
-                <td class="el-title" colspan="3" rowspan="2"><strong>முக்கிய பொருத்தம் :</strong><br>{{ matchResult.keyMatchesText }}</td>
+                <td class="el-title" colspan="3" rowspan="2"><strong>முக்கிய பொருத்தம் :</strong><br></td>
               }
               @if (i === 9) {
-                <td class="el-title" colspan="3"><strong>முடிவு :</strong><br>{{ matchResult.verdictTitle }}</td>
+                <td class="el-title" colspan="3"><strong>முடிவு :</strong><br></td>
               }
             </tr>
           }
@@ -550,32 +548,32 @@
           </thead>
           <tbody>
             <tr>
-              <td><strong>2மிடம் :</strong> {{ matchResult.houseAnalysis.house2.girl }}</td>
-              <td><strong>2மிடம் :</strong> {{ matchResult.houseAnalysis.house2.boy }}</td>
+              <td><strong>2மிடம் :</strong> </td>
+              <td><strong>2மிடம் :</strong> </td>
             </tr>
             <tr>
-              <td><strong>5மிடம் :</strong> {{ matchResult.houseAnalysis.house5.girl }}</td>
-              <td><strong>5மிடம் :</strong> {{ matchResult.houseAnalysis.house5.boy }}</td>
+              <td><strong>5மிடம் :</strong> </td>
+              <td><strong>5மிடம் :</strong> </td>
             </tr>
             <tr>
-              <td><strong>7மிடம் :</strong> {{ matchResult.houseAnalysis.house7.girl }}</td>
-              <td><strong>7மிடம் :</strong> {{ matchResult.houseAnalysis.house7.boy }}</td>
+              <td><strong>7மிடம் :</strong> </td>
+              <td><strong>7மிடம் :</strong> </td>
             </tr>
             <tr>
-              <td><strong>குருபலம் :</strong> {{ matchResult.houseAnalysis.guruBalam.girl }}</td>
-              <td><strong>குருபலம் :</strong> {{ matchResult.houseAnalysis.guruBalam.boy }}</td>
+              <td><strong>குருபலம் :</strong> </td>
+              <td><strong>குருபலம் :</strong> </td>
             </tr>
             <tr>
-              <td><strong>தோஷ அமைவுகள் :</strong> {{ matchResult.houseAnalysis.dosham.girl }}</td>
-              <td><strong>தோஷ அமைவுகள் :</strong> {{ matchResult.houseAnalysis.dosham.boy }}</td>
+              <td><strong>தோஷ அமைவுகள் :</strong> </td>
+              <td><strong>தோஷ அமைவுகள் :</strong> </td>
             </tr>
             <tr>
-              <td><strong>திசா சந்தி :</strong> {{ matchResult.houseAnalysis.dasaSandhi.girl }}</td>
-              <td><strong>திசா சந்தி :</strong> {{ matchResult.houseAnalysis.dasaSandhi.boy }}</td>
+              <td><strong>திசா சந்தி :</strong> </td>
+              <td><strong>திசா சந்தி :</strong> </td>
             </tr>
             <tr class="analysis-conclusion-row">
               <td colspan="2">
-                <strong>ஜோதிடர் ஆய்வு & முடிவு :</strong> {{ matchResult.verdictNotes }}
+                <strong>ஜோதிடர் ஆய்வு & முடிவு :</strong> 
               </td>
             </tr>
           </tbody>
@@ -589,19 +587,32 @@
         <p class="free-reg-note">இங்கு அனைத்து ஜாதி இனத்தவருக்கும் ஆண், பெண் பொருத்தமான வரன்கள் உள்ளன • பதிவு இலவசம்</p>
       </div>
     </div>
-    <!-- Action buttons -->
-    <div class="sheet-actions">
-      <button class="btn-app-gold" (click)="sendMatchingToAdmin()" [disabled]="submittingToAdmin || adminSubmittedSuccess">
-        @if (!adminSubmittedSuccess) {
-          <span><i class="bi bi-send-fill me-1"></i> அட்மினுக்கு அனுப்பவும்</span>
-        }
-        @if (adminSubmittedSuccess) {
-          <span><i class="bi bi-check-circle-fill me-1"></i> அட்மினுக்கு அனுப்பப்பட்டது</span>
-        }
-      </button>
+    <!-- Bottom Action buttons -->
+    <div class="sheet-actions" style="margin-top: 15px;">
       <button class="btn-secondary-pill" (click)="serviceStep = 4">
         <i class="bi bi-arrow-repeat me-1"></i> புதிய பொருத்தம்
       </button>
+    </div>
+  </div>
+}
+
+<!-- Step 6: Matching Payment -->
+@if (serviceStep === 6) {
+  <div class="match-result-container">
+    <div class="overlay-header-inline">
+      <button class="btn-back" (click)="goBack()">◀</button>
+      <h2>கட்டண விவரம்</h2>
+    </div>
+    <div class="payment-card" style="margin-top: 1rem;">
+      <div class="pm-row">
+        <span>பொருத்தம் பார்க்க கட்டணம்:</span>
+        <strong>₹100</strong>
+      </div>
+      <div class="pm-row">
+        <span>ஜாதகர்:</span>
+        <strong>{{ matchingForm.boyName }} & {{ matchingForm.girlName }}</strong>
+      </div>
+      <button class="btn-app-gold btn-pay-now" (click)="payForMatching()">இப்போதே செலுத்தவும் 🔒</button>
     </div>
   </div>
 }

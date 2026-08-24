@@ -46,6 +46,7 @@ Route::get('/settings/{key}',        [SystemSettingsController::class, 'getSetti
 
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
+Route::get('/jathagam/match/{id}',    [JathagamController::class, 'getMatch']);
 Route::post('/jathagam/varan-search', [JathagamController::class, 'submitVaranSearch']);
 Route::post('/jathagam/para-reading', [JathagamController::class, 'paraJathagamReading']);
 Route::post('/matrimony-profiles',    [MatrimonyProfileController::class, 'store']);
