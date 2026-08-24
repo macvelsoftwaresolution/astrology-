@@ -445,147 +445,17 @@
       </button>
     </div>
 
-    <div class="sheet-paper">
-      <!-- Center Header -->
-      <div class="sheet-header">
-        <div class="om-text">ஓம் நமச்சிவாய</div>
-        <h1 class="center-name">ஓம் பிரகஸ்பதி ஜோதிடாலயம்</h1>
-        <p class="center-addr">G.H. ரோடு, வள்ளுவர் சிலை அருகில், தென்கரை, பெரியகுளம் • Cell: 9566166963, 9442257639</p>
-        <p class="astro-qualification">ஜோதிட பேராசிரியர், "ஜோதிட ரத்னா" "ஜோதிட கலாநிதி" <strong>கரு.மதிவதனன்</strong> (B.A.Dip.Astro)</p>
-        <div class="sheet-main-title">திருமணப் பொருத்தம்</div>
-      </div>
-      <!-- Basic Details Table -->
-      <table class="astro-table basic-info-table">
-        <tbody>
-          <tr>
-            <td class="lbl">பெண் நட்சத்திரம் :</td>
-            <td class="val"><strong>{{ matchingForm.girlStar }} ({{ matchingForm.girlRasi }})</strong></td>
-            <td class="lbl">ஜாதகி பெயர் :</td>
-            <td class="val"><strong>{{ matchingForm.girlName }}</strong></td>
-          </tr>
-          <tr>
-            <td class="lbl">ஆண் நட்சத்திரம் :</td>
-            <td class="val"><strong>{{ matchingForm.boyStar }} ({{ matchingForm.boyRasi }})</strong></td>
-            <td class="lbl">ஜாதகர் பெயர் :</td>
-            <td class="val"><strong>{{ matchingForm.boyName }}</strong></td>
-          </tr>
-          <tr>
-            <td class="lbl">பெண் வயது :</td>
-            <td class="val">{{ matchingForm.girlAge ? matchingForm.girlAge + ' வயது' : '-' }}</td>
-            <td class="lbl">ஆண் வயது :</td>
-            <td class="val">{{ matchingForm.boyAge ? matchingForm.boyAge + ' வயது' : '-' }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- 10 Poruthams & Elements Side-by-Side Table -->
-      <table class="astro-table porutham-elements-table">
-        <thead>
-          <tr>
-            <th colspan="2" style="width: 50%;">10 திருமணப் பொருத்தங்கள்</th>
-            <th style="width: 25%;">அம்சங்கள்</th>
-            <th style="width: 12.5%;">பெண்</th>
-            <th style="width: 12.5%;">ஆண்</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (p of matchResult.poruthams; track p; let i = $index) {
-            <tr>
-              <td class="p-name">{{ p.no }}. {{ p.name }}</td>
-              <td class="p-status">
-                <!-- Blank -->
-              </td>
-              <!-- Elements Right Column mapping (first 5 rows) -->
-              @if (i === 0) {
-                <td class="el-title">மிருகம்</td>
-                <td class="el-val"></td>
-                <td class="el-val"></td>
-              }
-              @if (i === 1) {
-                <td class="el-title">பட்சி</td>
-                <td class="el-val"></td>
-                <td class="el-val"></td>
-              }
-              @if (i === 2) {
-                <td class="el-title">மரம்</td>
-                <td class="el-val"></td>
-                <td class="el-val"></td>
-              }
-              @if (i === 3) {
-                <td class="el-title">கணம்</td>
-                <td class="el-val"></td>
-                <td class="el-val"></td>
-              }
-              @if (i === 4) {
-                <td class="el-title">நாடி</td>
-                <td class="el-val"></td>
-                <td class="el-val"></td>
-              }
-              <!-- Score & Summaries mapping (rows 5 to 9) -->
-              @if (i === 5) {
-                <td class="el-title" colspan="3"><strong>மொத்தப் பொருத்தம் :</strong> </td>
-              }
-              @if (i === 6) {
-                <td class="el-title" colspan="3"><strong>ரஜ்ஜு நிலை :</strong> </td>
-              }
-              @if (i === 7) {
-                <td class="el-title" colspan="3" rowspan="2"><strong>முக்கிய பொருத்தம் :</strong><br></td>
-              }
-              @if (i === 9) {
-                <td class="el-title" colspan="3"><strong>முடிவு :</strong><br></td>
-              }
-            </tr>
-          }
-        </tbody>
-      </table>
-      <!-- Jathaga Porutham 2, 5, 7 House Comparison -->
-      <div class="jathaga-comparison-block">
-        <table class="astro-table house-table">
-          <thead>
-            <tr>
-              <th style="width: 50%;">ஜாதகப் பொருத்தம் பெண்</th>
-              <th style="width: 50%;">ஜாதகப் பொருத்தம் ஆண்</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>2மிடம் :</strong> </td>
-              <td><strong>2மிடம் :</strong> </td>
-            </tr>
-            <tr>
-              <td><strong>5மிடம் :</strong> </td>
-              <td><strong>5மிடம் :</strong> </td>
-            </tr>
-            <tr>
-              <td><strong>7மிடம் :</strong> </td>
-              <td><strong>7மிடம் :</strong> </td>
-            </tr>
-            <tr>
-              <td><strong>குருபலம் :</strong> </td>
-              <td><strong>குருபலம் :</strong> </td>
-            </tr>
-            <tr>
-              <td><strong>தோஷ அமைவுகள் :</strong> </td>
-              <td><strong>தோஷ அமைவுகள் :</strong> </td>
-            </tr>
-            <tr>
-              <td><strong>திசா சந்தி :</strong> </td>
-              <td><strong>திசா சந்தி :</strong> </td>
-            </tr>
-            <tr class="analysis-conclusion-row">
-              <td colspan="2">
-                <strong>ஜோதிடர் ஆய்வு & முடிவு :</strong> 
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!-- Sheet Footer -->
-      <div class="sheet-footer">
-        <div class="subham-txt">சுபம்</div>
-        <div class="matrimony-footer-brand">சிவசக்தி திருமண தகவல் மையம்</div>
-        <p>(ஓம் பிரகஸ்பதி ஜோதிடாலயம்) • G.H. ரோடு, வள்ளுவர் சிலை, தென்கரை பெரியகுளம்-626501</p>
-        <p class="free-reg-note">இங்கு அனைத்து ஜாதி இனத்தவருக்கும் ஆண், பெண் பொருத்தமான வரன்கள் உள்ளன • பதிவு இலவசம்</p>
-      </div>
+    <div class="sheet-paper" style="display: none;">
+      <!-- Hidden because user only wants to see it in profile after admin uploads, or maybe they just don't want to see the dummy sheet -->
+    </div>
+    
+    <div style="text-align: center; padding: 30px 15px;">
+      <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #10b981;"></i>
+      <h3 style="margin-top: 15px; color: #064e3b;">கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!</h3>
+      <p style="color: #475569; margin-top: 10px; line-height: 1.5;">
+        உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது. 
+        முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் (Profile) -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை பதிவிறக்கம் செய்து கொள்ளலாம்.
+      </p>
     </div>
     <!-- Bottom Action buttons -->
     <div class="sheet-actions" style="margin-top: 15px;">

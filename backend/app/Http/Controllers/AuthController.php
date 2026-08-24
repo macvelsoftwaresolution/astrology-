@@ -120,11 +120,12 @@ class AuthController extends Controller
             'success' => true,
             'token'   => $token,
             'user'    => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'role'  => $user->role,
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'phone'      => $user->phone,
+                'role'       => $user->role,
+                'avatar_url' => $user->avatar_url,
             ]
         ]);
     }
@@ -154,14 +155,15 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'பதிவு வெற்றிகரமாக முடிந்தது!',
+            'message' => 'கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது.',
             'token'   => $token,
             'user'    => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'role'  => $user->role,
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'phone'      => $user->phone,
+                'role'       => $user->role,
+                'avatar_url' => $user->avatar_url,
             ]
         ], 201);
     }

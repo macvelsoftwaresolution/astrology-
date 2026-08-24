@@ -89,6 +89,8 @@ export class UserProfileComponent implements OnInit, OnChanges {
               price: Number(b.price) || 0,
               status: b.status || 'Pending',
               chart_url: b.chart_url,
+              parigaram: b.parigaram,
+              parigaram_document: b.parigaram_document,
               razorpay_payment_id: details.razorpay_payment_id || b.razorpay_payment_id,
               razorpay_order_id: details.razorpay_order_id || b.razorpay_order_id,
               notes: details.notes || details.query || '',
@@ -234,6 +236,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
           this.currentUser.mobileNumber = this.personDetails.phone;
           this.currentUser.profileImage = this.personDetails.profileImageUrl;
           sessionStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+          sessionStorage.setItem('astro_auth_user', JSON.stringify(this.currentUser));
         }
       },
       error: () => {}
