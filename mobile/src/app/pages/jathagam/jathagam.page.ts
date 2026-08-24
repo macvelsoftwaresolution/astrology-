@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-
+import { Component, OnDestroy } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
+import { BackButtonService } from '../../services/back-button.service';
 
 @Component({
   selector: 'app-jathagam',
@@ -90,10 +90,27 @@ import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
     .card-sub { font-size: 9px; color: #8a8ab0; }
   `]
 })
-export class JathagamPage {
+export class JathagamPage implements OnDestroy {
   activeTab = 'rasi-palan';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private backButtonService: BackButtonService) {}
+
+  ionViewDidEnter() {
+    this.backButtonService.registerHandler(this.customBackHandler);
+  }
+
+  ionViewWillLeave() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  ngOnDestroy() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  customBackHandler = () => {
+    this.goBack();
+    return true;
+  };
 
   goBack() {
     this.router.navigate(['/home']);

@@ -12,6 +12,8 @@ export class LearnEnrollComponent implements OnInit {
 
   localForm = {
     fullName: '',
+    emailAddress: '',
+    mobileNumber: '',
     dob: '',
     tob: '',
     pob: '',
@@ -24,10 +26,14 @@ export class LearnEnrollComponent implements OnInit {
     prevUserId: ''
   };
 
+  errorMessage: string = '';
+
   ngOnInit() {
     if (this.form) {
       this.localForm = {
         fullName: '',
+        emailAddress: '',
+        mobileNumber: '',
         dob: '',
         tob: '',
         pob: '',
@@ -51,6 +57,11 @@ export class LearnEnrollComponent implements OnInit {
   }
 
   onSubmit() {
+    if (!this.localForm.fullName || !this.localForm.emailAddress || !this.localForm.mobileNumber) {
+      this.errorMessage = 'தயவுசெய்து பெயர், மின்னஞ்சல் முகவரி மற்றும் அலைபேசி எண்ணை உள்ளிடவும்.';
+      return;
+    }
+    this.errorMessage = '';
     this.next.emit(this.localForm);
   }
 }

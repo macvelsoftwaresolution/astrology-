@@ -143,4 +143,15 @@ export class AuthService {
   forgotPassword(mobileNumber: string, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/auth/forgot-password`, { phone: mobileNumber });
   }
+
+  studentRegister(enrollData: any): Observable<any> {
+    const payload = {
+      fullName: enrollData.fullName,
+      email: enrollData.emailAddress,
+      phone: enrollData.mobileNumber,
+      courseLevel: enrollData.courseLevel || 'ilanilai'
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/auth/student-register`, payload);
+  }
 }

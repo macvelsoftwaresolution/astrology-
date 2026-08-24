@@ -26,6 +26,7 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
+        'student_id',
         'status',
         'address',
         'jathagam_details',

@@ -35,6 +35,13 @@ $color-purple-dark: #200438;
   &:active {
     transform: scale(0.98);
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 .payment-intro-card {
@@ -172,9 +179,19 @@ $color-purple-dark: #200438;
   border-radius: 16px;
   padding: 0.85rem 1rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 
-  input[type="radio"] {
+  &.selected {
+    border-color: $color-maroon;
+    box-shadow: 0 0 0 1px $color-maroon;
+    background-color: #FFF8E7;
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
     accent-color: $color-maroon;
+    width: 18px;
+    height: 18px;
   }
 
   .pay-icon {

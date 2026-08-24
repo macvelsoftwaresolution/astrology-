@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Mail\StudentCredentialsMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -70,7 +74,10 @@ class AuthController extends Controller
         ]);
 
         $input = trim($request->input('email'));
-        $user = User::where('email', $input)->orWhere('phone', $input)->first();
+        $user = User::where('email', $input)
+            ->orWhere('phone', $input)
+            ->orWhere('student_id', $input)
+            ->first();
 
         // Support demo login seamlessly
         if (!$user && $input === '9876543210' && in_array($request->password, ['123456', 'test123'])) {
@@ -198,5 +205,80 @@ class AuthController extends Controller
                 'phone' => $user->phone
             ]
         ]);
+    }
+
+    /**
+     * Learn Student Registration with Mail Integration
+     */
+    public function studentRegister(Request $request)
+    {
+        $request->validate([
+            'fullName'    => 'required|string|max:255',
+            'email'       => 'required|email',
+            'phone'       => 'nullable|string',
+            'courseLevel' => 'nullable|string',
+        ]);
+
+        $fullName    = trim($request->input('fullName'));
+        $email       = trim($request->input('email'));
+        $phone       = trim($request->input('phone', ''));
+        $courseLevel = $request->input('courseLevel', 'ilanilai');
+
+        $user = User::where('email', $email)->first();
+
+        // User ID format: 2-digit Year + AR + 2-digit sequential number (e.g. 26AR01, 26AR02, 27AR01)
+        $twoDigitYear = date('y');
+        $studentCount = User::where('role', 'user')->count() + 1;
+        $loginId      = $twoDigitYear . 'AR' . sprintf('%02d', $studentCount);
+
+        // Unique secure 6-character random password (e.g. K8N9P2)
+        $password = strtoupper(Str::random(6));
+
+        if ($user) {
+            // Update password & student_id for existing student
+            $loginId = $user->student_id ?: $loginId;
+            $user->update([
+                'name'       => $fullName,
+                'student_id' => $loginId,
+                'password'   => Hash::make($password),
+                'status'     => 'active',
+            ]);
+            if ($phone) {
+                $user->update(['phone' => $phone]);
+            }
+        } else {
+            $user = User::create([
+                'name'       => $fullName,
+                'email'      => $email,
+                'student_id' => $loginId,
+                'phone'      => $phone ?: $loginId,
+                'password'   => Hash::make($password),
+                'role'       => 'user',
+                'status'     => 'active',
+            ]);
+        }
+
+        // Send Email Notification to Student
+        try {
+            Mail::to($email)->send(new StudentCredentialsMail($fullName, $email, $loginId, $password, $courseLevel));
+            Log::info("Student credentials email dispatched successfully to: {$email}");
+        } catch (\Throwable $e) {
+            Log::error("Failed to send student credentials email to {$email}: " . $e->getMessage());
+        }
+
+        return response()->json([
+            'success'   => true,
+            'message'   => 'மாணவர் பதிவு வெற்றிகரமாக முடிந்தது! உள்நுழைவு விவரங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது.',
+            'login_id'  => $loginId,
+            'password'  => $password,
+            'email'     => $email,
+            'user'      => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'role'  => $user->role,
+            ]
+        ], 201);
     }
 }

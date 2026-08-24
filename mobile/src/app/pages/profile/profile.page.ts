@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { BackButtonService } from '../../services/back-button.service';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
@@ -391,7 +392,28 @@ export class ProfilePage implements OnInit {
   prefMsg = '';
   prefSuccess = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private backButtonService: BackButtonService
+  ) {}
+
+  ionViewDidEnter() {
+    this.backButtonService.registerHandler(this.customBackHandler);
+  }
+
+  ionViewWillLeave() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  ngOnDestroy() {
+    this.backButtonService.unregisterHandler(this.customBackHandler);
+  }
+
+  customBackHandler = () => {
+    this.goBack();
+    return true;
+  };
 
   goBack() {
     this.router.navigate(['/home']);
