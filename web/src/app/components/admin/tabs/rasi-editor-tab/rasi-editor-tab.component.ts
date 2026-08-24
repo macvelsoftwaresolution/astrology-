@@ -226,7 +226,7 @@ export class RasiEditorTabComponent implements OnInit {
         payload[r.name] = r.customIcon;
       }
     });
-    this.http.post<any>(`${environment.apiUrl}/rasi-icons`, payload).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/admin/rasi-icons`, payload, this.authService.getAuthHeaders()).subscribe({
       next: (res) => {
         this.rasiSaveSuccessMsg = 'Rasi icon updated successfully!';
         setTimeout(() => this.rasiSaveSuccessMsg = '', 3000);

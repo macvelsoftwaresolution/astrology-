@@ -314,6 +314,7 @@ export class HomePage implements OnInit {
     this.loadAstrologers();
     this.loadUserOrders();
     this.loadNotificationsCount();
+    this.fetchRasiIcons();
   }
 
   loadBanners() {
