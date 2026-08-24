@@ -595,7 +595,7 @@ export class TranslationService {
 
   private initLanguage(): void {
     if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem('astro_admin_lang') as LanguageCode;
+      const savedLang = sessionStorage.getItem('astro_admin_lang') as LanguageCode;
       if (savedLang === 'ta' || savedLang === 'en') {
         this.currentLanguageSignal.set(savedLang);
       }
@@ -645,7 +645,7 @@ export class TranslationService {
     this.currentLanguageSignal.set(lang);
     this.version.update((v) => v + 1);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('astro_admin_lang', lang);
+      sessionStorage.setItem('astro_admin_lang', lang);
     }
   }
 

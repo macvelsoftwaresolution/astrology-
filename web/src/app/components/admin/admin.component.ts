@@ -35,8 +35,8 @@ export class AdminComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    const token = localStorage.getItem('auth_token');
-    const userData = localStorage.getItem('user_data');
+    const token = sessionStorage.getItem('auth_token');
+    const userData = sessionStorage.getItem('user_data');
     if (token && userData) {
       try {
         const u = JSON.parse(userData);
@@ -161,8 +161,8 @@ export class AdminComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         if (res.success && res.token) {
-          localStorage.setItem('auth_token', res.token);
-          localStorage.setItem('user_data', JSON.stringify(res.user));
+          sessionStorage.setItem('auth_token', res.token);
+          sessionStorage.setItem('user_data', JSON.stringify(res.user));
           this.isLoggedIn = true;
           this.loginError = '';
           this.loadBookings();
@@ -177,8 +177,8 @@ export class AdminComponent implements OnInit {
   }
 
   logout() {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('user_data');
     this.isLoggedIn = false;
     this.username = '';
     this.password = '';

@@ -49,7 +49,7 @@ export class NotificationsPage implements OnInit {
   }
 
   get token() {
-    return localStorage.getItem('auth_token') || '';
+    return sessionStorage.getItem('auth_token') || '';
   }
 
   get headers() {

@@ -233,7 +233,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
           this.currentUser.fullName = this.personDetails.name;
           this.currentUser.mobileNumber = this.personDetails.phone;
           this.currentUser.profileImage = this.personDetails.profileImageUrl;
-          localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+          sessionStorage.setItem('auth_user', JSON.stringify(this.currentUser));
         }
       },
       error: () => {}

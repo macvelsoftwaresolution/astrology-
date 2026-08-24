@@ -64,16 +64,7 @@
           </div>
         }
       </div>
-      <!-- Bottom Prediction Card -->
-      <div class="prediction-card">
-        <div class="prediction-header">
-          <span class="sparkle-icon"><i class="bi bi-sparkles text-gold"></i></span>
-          <h3>இன்றைய சிறப்பு பலன்</h3>
-        </div>
-        <p class="prediction-text">
-          இன்று மேஷ ராசிக்காரர்களுக்கு யோகமான நாள். தொழில் மற்றும் வியாபாரத்தில் புதிய வாய்ப்புகள் தேடி வரும். குடும்பத்தில் மகிழ்ச்சி நிலவும்...
-        </p>
-      </div>
+
       <!-- Empty space to fix scrolling issue -->
       <div style="height: 90px;"></div>
     }
@@ -103,15 +94,8 @@
         <div class="info-box">
           <span class="info-icon"><i class="bi bi-calendar-check-fill text-gold"></i></span>
           <div class="info-text">
-            <span>இன்றைய தேதி</span>
-            <strong>அக்டோபர் 24, 2023</strong>
-          </div>
-        </div>
-        <div class="info-box">
-          <span class="info-icon"><i class="bi bi-person-fill text-gold"></i></span>
-          <div class="info-text">
-            <span>குரு பெயர்</span>
-            <strong>ஸ்ரீ ராகவேந்திரர்</strong>
+            <span>கணிப்பு தேதி</span>
+            <strong>{{ predictionData?.prediction_date || '-' }}</strong>
           </div>
         </div>
       </div>

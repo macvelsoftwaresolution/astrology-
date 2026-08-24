@@ -208,7 +208,7 @@ export class LmsTabComponent implements OnInit {
     // Usually we just pass headers without Content-Type. Let's see.
     this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/import-pdf`, formData, {
       headers: {
-        Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+        Authorization: `Bearer ${typeof window !== 'undefined' ? sessionStorage.getItem('token') : ''}`
       }
     }).subscribe({
       next: (res) => {

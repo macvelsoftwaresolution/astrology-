@@ -31,32 +31,32 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/web-login`, credentials).pipe(
       tap(res => {
         if (res.success && res.token) {
-          localStorage.setItem('auth_token', res.token);
-          localStorage.setItem('user_data', JSON.stringify(res.user));
+          sessionStorage.setItem('auth_token', res.token);
+          sessionStorage.setItem('user_data', JSON.stringify(res.user));
         }
       })
     );
   }
 
   logout(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('user_data');
   }
 
   getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('auth_token');
+    return sessionStorage.getItem('auth_token');
   }
 
   getUser(): User | null {
     if (typeof window === 'undefined') return null;
-    const data = localStorage.getItem('user_data');
+    const data = sessionStorage.getItem('user_data');
     return data ? JSON.parse(data) : null;
   }
 
   setUser(user: User): void {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('user_data', JSON.stringify(user));
+      sessionStorage.setItem('user_data', JSON.stringify(user));
     }
   }
 
