@@ -21,7 +21,7 @@ export class ServicesTabComponent implements OnInit {
 
   selectedBookingForView: any = null;
   selectedBookingForFulfill: any = null;
-  fulfillForm = { status: 'Completed', chart_url: '', parigaram: '' };
+  fulfillForm = { status: 'Completed', chart_url: '', parigaram: '', parigaram_document: '' };
   isUploadingFulfillChart = false;
 
   manualBookingModalOpen = false;
@@ -97,7 +97,8 @@ export class ServicesTabComponent implements OnInit {
     this.fulfillForm = {
       status: booking.status || 'Completed',
       chart_url: booking.chart_url || '',
-      parigaram: booking.parigaram || ''
+      parigaram: booking.parigaram || '',
+      parigaram_document: booking.parigaram_document || ''
     };
   }
 
@@ -121,6 +122,33 @@ export class ServicesTabComponent implements OnInit {
       error: () => {
         alert('Chart upload failed.');
         this.isUploadingFulfillChart = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  isUploadingFulfillParigaram: boolean = false;
+
+  uploadFulfillParigaram(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingFulfillParigaram = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'parigarams');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.fulfillForm) {
+          this.fulfillForm.parigaram_document = res.url;
+        }
+        this.isUploadingFulfillParigaram = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Parigaram document upload failed.');
+        this.isUploadingFulfillParigaram = false;
         this.cdr.detectChanges();
       }
     });

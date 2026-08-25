@@ -181,9 +181,8 @@ $color-white: #FFFFFF;
 
 /* NEW STYLES */
 .options-container {
-  padding: 1rem;
-  text-align: center;
-  
+  padding: 0.5rem 0.25rem;
+
   .subtitle {
     color: $color-text-muted;
     font-size: 0.85rem;
@@ -191,39 +190,200 @@ $color-white: #FFFFFF;
   }
 }
 
+/* Hero Banner */
+.matching-hero-banner {
+  background: linear-gradient(135deg, $color-maroon 0%, #2e070d 100%);
+  border: 1.5px solid $color-gold;
+  border-radius: 20px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: $color-white;
+  box-shadow: 0 8px 24px rgba($color-maroon, 0.18);
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba($color-gold-light, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-icon-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba($color-gold, 0.2);
+    border: 1px solid $color-gold-light;
+    color: $color-gold-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 0.75rem auto;
+    box-shadow: 0 0 16px rgba($color-gold-light, 0.3);
+  }
+
+  .hero-title {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-gold-light;
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem 0;
+  }
+
+  .hero-subtitle {
+    color: rgba($color-white, 0.88);
+    font-size: 0.82rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+  }
+
+  .hero-tags {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+
+    .hero-tag {
+      background: rgba($color-white, 0.1);
+      border: 1px solid rgba($color-gold, 0.3);
+      color: $color-white;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 50px;
+      backdrop-filter: blur(4px);
+    }
+  }
+}
+
+.section-sub-heading {
+  color: $color-maroon;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+  margin: 0 0 0.85rem 0.2rem;
+  font-family: 'Noto Serif Tamil', serif;
+}
+
+/* Premium Card Options */
 .options-grid {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.option-card {
+.option-card.premium-card {
   background-color: $color-white;
-  border: 1px solid rgba($color-gold, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem 1rem;
-  box-shadow: 0 4px 12px rgba($color-maroon, 0.05);
+  border: 1.5px solid rgba($color-gold, 0.3);
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 6px 20px rgba($color-maroon, 0.06);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  
-  h3 {
-    color: $color-maroon;
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
-  }
-  
-  p {
-    color: $color-text-muted;
-    font-size: 0.8rem;
-    margin-bottom: 1rem;
-  }
-}
+  align-items: stretch;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 
-.option-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  &:hover, &:active {
+    transform: translateY(-2px);
+    border-color: $color-gold;
+    box-shadow: 0 10px 28px rgba($color-maroon, 0.12);
+  }
+
+  .option-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+
+    .option-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+
+      &.box-gold-glow {
+        background: linear-gradient(135deg, #FAF0D6, #F3E4C2);
+        color: #A27B38;
+        box-shadow: 0 4px 12px rgba(162, 123, 56, 0.2);
+      }
+
+      &.box-rose-glow {
+        background: linear-gradient(135deg, #FDE8E8, #F8D9D9);
+        color: #B91C1C;
+        box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+      }
+    }
+
+    .card-badge {
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 0.35rem 0.85rem;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+
+      &.badge-gold {
+        background-color: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FCD34D;
+      }
+
+      &.badge-rose {
+        background-color: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+      }
+    }
+  }
+
+  .card-title {
+    font-family: 'Noto Serif Tamil', serif;
+    color: $color-maroon;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem 0;
+  }
+
+  .card-desc {
+    color: $color-text-muted;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0 0 1.15rem 0;
+  }
+
+  .btn-app-gold-elevated {
+    background: linear-gradient(135deg, $color-maroon, #2e070d);
+    color: $color-gold-light;
+    border: 1px solid $color-gold;
+    padding: 0.85rem 1.25rem;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-shadow: 0 4px 14px rgba($color-maroon, 0.2);
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+      background: #2e070d;
+    }
+  }
 }
 
 .text-gold { color: $color-gold; }

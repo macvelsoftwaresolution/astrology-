@@ -2792,4 +2792,123 @@
     left: 12px;
     width: auto;
   }
+}
+
+/* ANIMATED BELL RING FOR UNREAD ACTIVITY ALERTS */
+.notif-bell-btn.has-unread i,
+.sidebar-bell-btn.has-unread i {
+  animation: bellSwingAdmin 1.8s ease-in-out infinite;
+  color: #f59e0b !important;
+  display: inline-block;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+@keyframes bellSwingAdmin {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(18deg); }
+  20% { transform: rotate(-18deg); }
+  30% { transform: rotate(12deg); }
+  40% { transform: rotate(-12deg); }
+  50% { transform: rotate(6deg); }
+  60% { transform: rotate(-6deg); }
+  70%, 100% { transform: rotate(0); }
+}
+
+/* FLOATING SLIDE-DOWN ANIMATED TOAST BANNER FOR ADMIN LIVE ALERTS */
+.admin-floating-alert-banner {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  z-index: 999999;
+  max-width: 440px;
+  width: calc(100% - 48px);
+  background: linear-gradient(135deg, #1e1b4b 0%, #31103f 100%);
+  border: 1.5px solid #f59e0b;
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  animation: adminSlideDown 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-floating-alert-banner .banner-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.admin-floating-alert-banner .banner-icon-box i {
+  animation: bellSwingAdmin 1.8s ease-in-out infinite;
+}
+
+.admin-floating-alert-banner .banner-content {
+  flex: 1;
+}
+
+.admin-floating-alert-banner .banner-content h4 {
+  margin: 0 0 3px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.admin-floating-alert-banner .banner-content p {
+  margin: 0;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
+}
+
+.admin-floating-alert-banner .banner-action-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0f172a;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.admin-floating-alert-banner .banner-action-btn:hover {
+  transform: scale(1.04);
+}
+
+.admin-floating-alert-banner .banner-close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  transition: color 0.15s;
+}
+
+.admin-floating-alert-banner .banner-close-btn:hover {
+  color: #ffffff;
+}
+
+@keyframes adminSlideDown {
+  from {
+    transform: translateY(-40px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }

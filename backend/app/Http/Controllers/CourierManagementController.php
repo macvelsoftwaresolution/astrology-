@@ -82,6 +82,20 @@ class CourierManagementController extends Controller
             'updated_at' => now(),
         ]);
 
+        // Real notification for user
+        try {
+            DB::table('notifications')->insert([
+                'user_id'    => $studentId,
+                'title'      => 'புத்தக ஆர்டர் பெறப்பட்டது (Book Order Placed)',
+                'body'       => 'உங்கள் ' . $request->book_title . ' புத்தக ஆர்டர் #' . $orderNumber . ' பெறப்பட்டு தயாரிக்கப்படுகிறது.',
+                'type'       => 'book_order',
+                'is_read'    => false,
+                'data'       => json_encode(['order_number' => $orderNumber]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {}
+
         return response()->json([
             'success' => true,
             'message' => 'Book order placed successfully.',
@@ -129,6 +143,22 @@ class CourierManagementController extends Controller
             'courier_partner' => $request->courier_partner,
             'updated_at' => now(),
         ]);
+
+        // Real notification to user
+        $order = DB::table('book_orders')->where('id', $id)->first();
+        if ($order && $order->student_id) {
+            try {
+                DB::table('notifications')->insert([
+                    'user_id'    => $order->student_id,
+                    'title'      => 'புத்தக ஆர்டர் நிலை: ' . $request->status,
+                    'body'       => 'உங்கள் ' . $order->book_title . ' புத்தக ஆர்டர் #' . $order->order_number . ' நிலை: ' . $request->status . ($request->awb_number ? ' (AWB: ' . $request->awb_number . ')' : ''),
+                    'type'       => 'book_order',
+                    'is_read'    => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
+        }
 
         return response()->json([
             'success' => true,

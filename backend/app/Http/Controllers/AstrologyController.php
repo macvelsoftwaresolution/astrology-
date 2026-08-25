@@ -186,6 +186,22 @@ class AstrologyController extends Controller
             );
         }
 
+        // Insert Real Notification for User
+        if ($userId) {
+            try {
+                DB::table('notifications')->insert([
+                    'user_id'    => $userId,
+                    'title'      => 'முன்பதிவு பெறப்பட்டது! (Booking Received)',
+                    'body'       => 'உங்கள் ' . ($request->service_type ?: 'ஜோதிட ஆலோசனை') . ' முன்பதிவு #' . $orderId . ' பெறப்பட்டது.',
+                    'type'       => 'booking',
+                    'is_read'    => false,
+                    'data'       => json_encode(['booking_id' => $orderId]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Booking initialized successfully',
@@ -667,7 +683,8 @@ class AstrologyController extends Controller
         $request->validate([
             'status' => 'nullable|string',
             'chart_url' => 'nullable|string',
-            'parigaram' => 'nullable|string'
+            'parigaram' => 'nullable|string',
+            'parigaram_document' => 'nullable|string'
         ]);
 
         $booking = DB::table('bookings')->where('id', $id)->first();
@@ -684,6 +701,7 @@ class AstrologyController extends Controller
                 'status' => $status,
                 'chart_url' => $request->chart_url ?? $booking->chart_url,
                 'parigaram' => $request->parigaram ?? $booking->parigaram,
+                'parigaram_document' => $request->parigaram_document ?? $booking->parigaram_document,
                 'updated_at' => now()
             ]);
 

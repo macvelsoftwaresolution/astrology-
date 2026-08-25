@@ -68,7 +68,7 @@
             <i class="bi bi-file-earmark-text-fill"></i>
           </div>
           <div class="option-text">
-            <h4>ஜாதக கோரிக்கைகள்</h4>
+            <h4>ஜாதக பரிகாரம்</h4>
             <p>உங்கள் ஜாதக நிலவரம்</p>
           </div>
         </div>
@@ -151,11 +151,12 @@
 
   <!-- A. DYNAMIC EDIT PROFILE MODAL -->
   @if (showEditModal) {
-  <div class="modal-overlay">
-    <div class="modal-card">
+  <div class="modal-overlay" (click)="closeOptionDetail()">
+    <div class="modal-card bottom-sheet-card" (click)="$event.stopPropagation()">
+      <div class="sheet-drag-handle"></div>
       <div class="modal-header">
-        <h3>சுயவிவரத்தைத் திருத்து</h3>
-        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+        <h3><i class="bi bi-pencil-square me-2 text-gold"></i>சுயவிவரத்தைத் திருத்து</h3>
+        <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="modal-body">
         <!-- Profile Image Upload in Edit Modal -->
@@ -222,8 +223,9 @@
   <!-- B. PAYMENTS & ACTIVITIES DETAIL MODAL -->
   @if (selectedOption === 'payments' || selectedOption === 'services' || selectedOption === 'horoscope' ||
   selectedOption === 'marriage') {
-  <div class="modal-overlay">
-    <div class="modal-card">
+  <div class="modal-overlay" (click)="closeOptionDetail()">
+    <div class="modal-card bottom-sheet-card" (click)="$event.stopPropagation()">
+      <div class="sheet-drag-handle"></div>
       <div class="modal-header">
         @if (selectedOption === 'payments') {
         <h3><i class="bi bi-receipt me-2 text-gold"></i>பணம் செலுத்திய வரலாறு</h3>
@@ -232,12 +234,12 @@
         <h3><i class="bi bi-calendar-check-fill me-2 text-gold"></i>பதிவு செய்யப்பட்ட சேவைகள்</h3>
         }
         @if (selectedOption === 'horoscope') {
-        <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக கோரிக்கைகள்</h3>
+        <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக பரிகாரம்</h3>
         }
         @if (selectedOption === 'marriage') {
         <h3><i class="bi bi-heart-fill me-2 text-gold"></i>திருமண கோரிக்கைகள்</h3>
         }
-        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+        <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
 
       <div class="modal-body">
@@ -343,8 +345,15 @@
 
                 <!-- Download Completed Chart if available -->
                 @if (b.chart_url) {
-                <a [href]="b.chart_url" target="_blank" class="btn-download-chart">
+                <a [href]="b.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
+                </a>
+                }
+
+                <!-- Download Parigaram Document if available -->
+                @if (b.parigaram_document) {
+                <a [href]="b.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
+                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
                 </a>
                 }
 
@@ -384,8 +393,13 @@
                   <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
                 </div>
                 @if (h.chart_url) {
-                <a [href]="h.chart_url" target="_blank" class="btn-download-chart">
+                <a [href]="h.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
+                </a>
+                }
+                @if (h.parigaram_document) {
+                <a [href]="h.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
+                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
                 </a>
                 }
               </div>
@@ -394,7 +408,7 @@
             } @else {
             <div class="empty-activity-state">
               <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem;"></i>
-              <p>ஜாதகக் கோரிக்கைகள் ஏதுமில்லை</p>
+              <p>ஜாதக பரிகாரம் ஏதுமில்லை</p>
             </div>
             }
             }
@@ -422,6 +436,13 @@
                     <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
                   </div>
                 </div>
+                @if (m.result_document) {
+                <div class="mmc-footer-actions" style="margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 12px; text-align: center;">
+                  <a [href]="m.result_document" target="_blank" class="btn-download-chart" style="display: inline-block; width: 100%;">
+                    <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பொருத்தம் அறிக்கை பதிவிறக்கம் (Download)
+                  </a>
+                </div>
+                }
               </div>
               }
             </div>
@@ -433,49 +454,56 @@
             }
             }
 
-          </div>
-          <button class="btn-app-gold-full" (click)="closeOptionDetail()" style="margin-top: 10px;">மூடுக
-            (Close)</button>
-        </div>
       </div>
-      }
 
-      <!-- C. SETTINGS / POLICY MODAL -->
-      @if (selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms') {
-      <div class="modal-overlay">
-        <div class="modal-card">
-          <div class="modal-header">
-            @if (selectedOption === 'settings') {
-            <h3>அமைப்புகள்</h3>
-            }
-            @if (selectedOption === 'privacy') {
-            <h3>தனியுரிமைக் கொள்கை</h3>
-            }
-            @if (selectedOption === 'terms') {
-            <h3>விதிமுறைகள் மற்றும் நிபந்தனைகள்</h3>
-            }
-            <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
-          </div>
-          <div class="modal-body">
-            <p class="text-muted fs-sm">
-              ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
-            </p>
-            <div class="person-detail-row mt-2">
-              <span class="p-label">கணக்கு உரியவர்:</span>
-              <strong class="p-val">{{ personDetails.name }}</strong>
-            </div>
-            <div class="person-detail-row">
-              <span class="p-label">மின்னஞ்சல்:</span>
-              <strong class="p-val">{{ personDetails.email }}</strong>
-            </div>
-            <div class="person-detail-row">
-              <span class="p-label">தொலைபேசி:</span>
-              <strong class="p-val">{{ personDetails.phone }}</strong>
-            </div>
-          </div>
-          <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+      <div class="modal-footer-box">
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- C. SETTINGS / POLICY MODAL -->
+  @if (selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms') {
+  <div class="modal-overlay" (click)="closeOptionDetail()">
+    <div class="modal-card bottom-sheet-card" (click)="$event.stopPropagation()">
+      <div class="sheet-drag-handle"></div>
+      <div class="modal-header">
+        @if (selectedOption === 'settings') {
+        <h3><i class="bi bi-gear-fill me-2 text-gold"></i>அமைப்புகள்</h3>
+        }
+        @if (selectedOption === 'privacy') {
+        <h3><i class="bi bi-shield-check me-2 text-gold"></i>தனியுரிமைக் கொள்கை</h3>
+        }
+        @if (selectedOption === 'terms') {
+        <h3><i class="bi bi-file-text-fill me-2 text-gold"></i>விதிமுறைகள் மற்றும் நிபந்தனைகள்</h3>
+        }
+        <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="text-muted fs-sm">
+          ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
+        </p>
+        <div class="person-detail-row mt-2">
+          <span class="p-label">கணக்கு உரியவர்:</span>
+          <strong class="p-val">{{ personDetails.name }}</strong>
+        </div>
+        <div class="person-detail-row">
+          <span class="p-label">மின்னஞ்சல்:</span>
+          <strong class="p-val">{{ personDetails.email }}</strong>
+        </div>
+        <div class="person-detail-row">
+          <span class="p-label">தொலைபேசி:</span>
+          <strong class="p-val">{{ personDetails.phone }}</strong>
         </div>
       </div>
-      }
+
+      <div class="modal-footer-box">
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+      </div>
+    </div>
+  </div>
+  }
 
     </div>

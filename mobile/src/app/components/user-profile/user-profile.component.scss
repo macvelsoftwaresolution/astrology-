@@ -234,31 +234,54 @@ $color-white: #FFFFFF;
   }
 }
 
-/* ================= MODAL STYLING ================= */
+/* ================= MODAL & BOTTOM SHEET STYLING ================= */
+:host ::ng-deep .modal-overlay,
+body > .modal-overlay,
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  z-index: 99999;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  height: 100vh !important;
+  background: rgba(15, 8, 10, 0.65) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  z-index: 9999999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  animation: backdropFadeIn 0.25s ease-out;
 
   .modal-card {
     background: $color-beige;
     width: 100%;
     max-width: 500px;
-    border-radius: 24px 24px 0 0;
-    padding: 1.5rem 1.5rem calc(1.5rem + 70px) 1.5rem;
-    max-height: 88vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
-    animation: slideUp 0.3s ease-out;
+    border-radius: 28px 28px 0 0;
+    border-top: 2px solid $color-gold-bright;
+    padding: 12px 20px 24px 20px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -12px 35px rgba(0, 0, 0, 0.4);
+    animation: sheetSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
+
+    .sheet-drag-handle {
+      width: 42px;
+      height: 5px;
+      background-color: rgba($color-gold, 0.4);
+      border-radius: 10px;
+      margin: 4px auto 14px auto;
+      flex-shrink: 0;
+    }
   }
 
   .modal-header {
@@ -266,31 +289,59 @@ $color-white: #FFFFFF;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba($color-gold, 0.25);
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.85rem;
     margin-bottom: 1rem;
+    flex-shrink: 0;
 
     h3 {
       font-family: 'Noto Serif Tamil', serif;
       color: $color-maroon;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       margin: 0;
+      display: flex;
+      align-items: center;
+
+      .text-gold {
+        color: $color-gold-bright;
+      }
     }
 
     .btn-modal-close {
-      background: none;
+      background: rgba($color-maroon, 0.08);
       border: none;
-      font-size: 1.6rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
       color: $color-maroon;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:active {
+        background: rgba($color-maroon, 0.2);
+      }
     }
   }
 
   .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
-    margin-bottom: 1.5rem;
+    padding-right: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .modal-footer-box {
+    padding-top: 8px;
+    flex-shrink: 0;
   }
 
   .form-input-group {
@@ -322,6 +373,8 @@ $color-white: #FFFFFF;
   .modal-footer-row {
     display: flex;
     gap: 0.75rem;
+    padding-top: 8px;
+    flex-shrink: 0;
 
     .btn-cancel {
       flex: 1;
@@ -364,7 +417,7 @@ $color-white: #FFFFFF;
   .person-detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    padding: 0.65rem 0;
     border-bottom: 1px dashed rgba($color-gold, 0.2);
 
     .p-label {
@@ -381,34 +434,40 @@ $color-white: #FFFFFF;
 
   .btn-app-gold-full {
     width: 100%;
-    background-color: $color-maroon;
+    background: linear-gradient(135deg, $color-maroon, #33080e);
     color: $color-white;
     border: none;
-    padding: 0.85rem;
+    padding: 0.9rem;
     border-radius: 14px;
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 4px 14px rgba($color-maroon, 0.2);
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+    }
   }
 }
 
-@keyframes slideUp {
-  from {
+@keyframes sheetSlideUp {
+  0% {
     transform: translateY(100%);
+    opacity: 0.5;
   }
-  to {
+  100% {
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
-@keyframes fadeIn {
-  from {
+@keyframes backdropFadeIn {
+  0% {
     opacity: 0;
-    transform: translateY(-10px);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
