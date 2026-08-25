@@ -2,33 +2,33 @@
 
   <!-- Header Banner -->
   <div class="form-intro-header">
-    <h2 class="brand-vidhyalaya-title">ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்</h2>
-    <p class="form-sub-title">மாணவர் சேர்க்கை விண்ணப்பப் படிவம்</p>
+    <h2 class="brand-vidhyalaya-title">{{ 'learn.subtitle' | translate }}</h2>
+    <p class="form-sub-title">{{ 'learn.admissionTitle' | translate }}</p>
   </div>
 
   <!-- SIMPLE STEPPER BAR -->
   <div class="wizard-stepper-bar">
     <div class="step-item" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" (click)="setStep(1)">
       <div class="step-circle">@if (currentStep > 1) { <i class="bi bi-check-lg"></i> } @else { 1 }</div>
-      <span class="step-label">சுய விவரம்</span>
+      <span class="step-label">{{ 'learn.step1' | translate }}</span>
     </div>
     <div class="step-line" [class.completed]="currentStep > 1"></div>
 
     <div class="step-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" (click)="setStep(2)">
       <div class="step-circle">@if (currentStep > 2) { <i class="bi bi-check-lg"></i> } @else { 2 }</div>
-      <span class="step-label">முகவரி</span>
+      <span class="step-label">{{ 'learn.step2' | translate }}</span>
     </div>
     <div class="step-line" [class.completed]="currentStep > 2"></div>
 
     <div class="step-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" (click)="setStep(3)">
       <div class="step-circle">@if (currentStep > 3) { <i class="bi bi-check-lg"></i> } @else { 3 }</div>
-      <span class="step-label">வகுப்பு</span>
+      <span class="step-label">{{ 'learn.step3' | translate }}</span>
     </div>
     <div class="step-line" [class.completed]="currentStep > 3"></div>
 
     <div class="step-item" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" (click)="setStep(4)">
       <div class="step-circle">@if (currentStep > 4) { <i class="bi bi-check-lg"></i> } @else { 4 }</div>
-      <span class="step-label">கட்டணம்</span>
+      <span class="step-label">{{ 'learn.step4' | translate }}</span>
     </div>
   </div>
 

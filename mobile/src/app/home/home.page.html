@@ -25,7 +25,7 @@
       <!-- Title / Header Titles -->
       <div class="top-nav-title-box">
         @if (currentTab === 'home' && !activeServiceFlow) {
-        <span class="top-nav-subtitle">வணக்கம்,</span>
+        <span class="top-nav-subtitle">{{ 'home.greeting' | translate }},</span>
         }
         <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
       </div>
@@ -74,7 +74,7 @@
     <div class="search-bar-container">
       <div class="search-bar">
         <span class="search-icon"><i class="bi bi-search"></i></span>
-        <input type="text" placeholder="சேவைகளைத் தேடுங்கள்...">
+        <input type="text" [placeholder]="'home.searchPlaceholder' | translate">
       </div>
     </div>
 
@@ -100,31 +100,31 @@
 
     <!-- Quick Services Grid -->
     <div class="section-title-row">
-      <h3><span class="title-icon"><i class="bi bi-star-fill text-gold me-1"></i></span> முக்கிய சேவைகள்</h3>
+      <h3><span class="title-icon"><i class="bi bi-star-fill text-gold me-1"></i></span> {{ 'home.keyServices' | translate }}</h3>
     </div>
     <div class="quick-services-grid">
       <div class="quick-service-box" (click)="startServiceFlow('rasi-palan')">
         <div class="box-icon-wrapper"><span class="box-icon"><i
               class="bi bi-brightness-high-fill text-warning"></i></span></div>
-        <strong>ராசி பலன்</strong>
-        <span>தினசரி கணக்கீடு</span>
+        <strong>{{ 'home.dailyRasiPalan' | translate }}</strong>
+        <span>{{ 'home.dailyCalc' | translate }}</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('matching')">
         <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-heart-fill text-danger"></i></span></div>
-        <strong>திருமண பொருத்தம்</strong>
-        <span>ஜாதக இணைப்பு</span>
+        <strong>{{ 'home.matrimonyMatch' | translate }}</strong>
+        <span>{{ 'home.horoscopeMatch' | translate }}</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('services'); selectServiceCategory(displayCategories[0])">
         <div class="box-icon-wrapper"><span class="box-icon"><i
               class="bi bi-journal-bookmark-fill text-primary"></i></span></div>
-        <strong>ஜாதகம் எழுத</strong>
-        <span>புதிய ஜாதகம்</span>
+        <strong>{{ 'home.writeHoroscope' | translate }}</strong>
+        <span>{{ 'home.newHoroscope' | translate }}</span>
       </div>
       <div class="quick-service-box" (click)="selectTab('services')">
         <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-grid-3x3-gap-fill text-info"></i></span>
         </div>
-        <strong>சேவைகள்</strong>
-        <span>அனைத்தும்</span>
+        <strong>{{ 'home.allServices' | translate }}</strong>
+        <span>{{ 'home.viewAll' | translate }}</span>
       </div>
     </div>
     <!-- Panchangam Widget Component -->
@@ -150,7 +150,7 @@
           <div class="cmc-header">
             <h3>{{ cat.title }}</h3>
             <span class="cmc-expert-count"><i class="bi bi-person-badge-fill me-1"></i> {{
-              getAstrologersForCategory(cat).length }} நிபுணர்கள்</span>
+              getAstrologersForCategory(cat).length }} {{ 'home.expertsCount' | translate }}</span>
           </div>
           <div class="cmc-footer">
             <span class="cmc-badge-tag"><i [class]="cat.icon" class="me-1"></i> {{ cat.badge }}</span>
@@ -539,19 +539,19 @@
   <div class="tabs-row">
     <div class="tab-button" [class.active]="currentTab === 'home'" (click)="selectTab('home')">
       <span class="tab-icon"><i class="bi bi-house-door-fill"></i></span>
-      <span class="tab-label">முகப்பு</span>
+      <span class="tab-label">{{ 'nav.home' | translate }}</span>
     </div>
     <div class="tab-button" [class.active]="currentTab === 'services'" (click)="selectTab('services')">
       <span class="tab-icon"><i class="bi bi-moon-stars-fill"></i></span>
-      <span class="tab-label">சேவைகள்</span>
+      <span class="tab-label">{{ 'nav.astrology' | translate }}</span>
     </div>
     <div class="tab-button" [class.active]="currentTab === 'matching'" (click)="selectTab('matching')">
       <span class="tab-icon"><i class="bi bi-heart-fill"></i></span>
-      <span class="tab-label">பொருத்தம்</span>
+      <span class="tab-label">{{ 'nav.matching' | translate }}</span>
     </div>
     <div class="tab-button" [class.active]="currentTab === 'profile'" (click)="selectTab('profile')">
       <span class="tab-icon"><i class="bi bi-person-fill"></i></span>
-      <span class="tab-label">சுயவிவரம்</span>
+      <span class="tab-label">{{ 'nav.profile' | translate }}</span>
     </div>
   </div>
 </ion-footer>

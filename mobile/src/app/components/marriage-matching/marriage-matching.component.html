@@ -2,7 +2,7 @@
 @if (serviceStep === 0) {
   <div class="options-container">
     
-    <p class="section-sub-heading"><i class="bi bi-hand-index-thumb-fill me-1 text-gold"></i> உங்கள் தேவையைத் தேர்ந்தெடுக்கவும்</p>
+    <p class="section-sub-heading"><i class="bi bi-hand-index-thumb-fill me-1 text-gold"></i> {{ 'matching.selectNeed' | translate }}</p>
 
     <div class="options-grid">
       <!-- Card 1: Registration -->
@@ -11,12 +11,12 @@
           <div class="option-icon-box box-gold-glow">
             <i class="bi bi-file-earmark-person-fill"></i>
           </div>
-          <span class="card-badge badge-gold"><i class="bi bi-award-fill me-1"></i> வரன் பதிவு</span>
+          <span class="card-badge badge-gold"><i class="bi bi-award-fill me-1"></i> {{ 'matching.varanRegBadge' | translate }}</span>
         </div>
-        <h3 class="card-title">திருமண பதிவு</h3>
-        <p class="card-desc">புதிய வரன் விவரங்களை பதிவு செய்து பொருத்தமான வாழ்க்கைத்துணையைக் கண்டறியலாம்.</p>
+        <h3 class="card-title">{{ 'matching.varanRegTitle' | translate }}</h3>
+        <p class="card-desc">{{ 'matching.varanRegDesc' | translate }}</p>
         <button class="btn-app-gold-elevated">
-          <span><i class="bi bi-person-plus-fill me-1"></i> பதிவு செய்க</span>
+          <span><i class="bi bi-person-plus-fill me-1"></i> {{ 'matching.registerBtn' | translate }}</span>
           <i class="bi bi-arrow-right fs-5"></i>
         </button>
       </div>
@@ -27,12 +27,12 @@
           <div class="option-icon-box box-rose-glow">
             <i class="bi bi-heart-pulse-fill"></i>
           </div>
-          <span class="card-badge badge-rose"><i class="bi bi-stars me-1"></i> 10 பொருத்தம்</span>
+          <span class="card-badge badge-rose"><i class="bi bi-stars me-1"></i> {{ 'matching.porutham10Badge' | translate }}</span>
         </div>
-        <h3 class="card-title">திருமண பொருத்தம்</h3>
-        <p class="card-desc">ஆண் மற்றும் பெண் ஜாதகங்களை ஒப்பிட்டு 10 பொருத்தங்களின் அளவீட்டை அறியலாம்.</p>
+        <h3 class="card-title">{{ 'matching.porutham10Title' | translate }}</h3>
+        <p class="card-desc">{{ 'matching.porutham10Desc' | translate }}</p>
         <button class="btn-app-gold-elevated">
-          <span><i class="bi bi-suit-heart-fill me-1"></i> பொருத்தம் பார்க்க</span>
+          <span><i class="bi bi-suit-heart-fill me-1"></i> {{ 'matching.checkPoruthamBtn' | translate }}</span>
           <i class="bi bi-arrow-right fs-5"></i>
         </button>
       </div>
@@ -41,7 +41,7 @@
     @if ((myMatches && myMatches.length > 0) || (myProfiles && myProfiles.length > 0)) {
     <div class="option-card premium-card" style="margin-top:24px; padding: 14px; cursor: pointer; text-align: center; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05);" (click)="showHistory = !showHistory">
       <strong style="color:#0f172a; font-size:14px; display: flex; justify-content: center; align-items: center;">
-        <i class="bi bi-clock-history text-gold me-2"></i> முந்தைய பதிவுகளின் வரலாறு
+        <i class="bi bi-clock-history text-gold me-2"></i> {{ 'matching.historyToggle' | translate }}
         <i class="bi ms-2" [class.bi-chevron-down]="!showHistory" [class.bi-chevron-up]="showHistory"></i>
       </strong>
     </div>
@@ -50,13 +50,13 @@
     @if (showHistory) {
       @if (myMatches && myMatches.length > 0) {
       <div style="margin-top:24px;">
-        <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-suit-heart-fill me-1 text-rose"></i> திருமண பொருத்தம் பதிவுகள்</p>
+        <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-suit-heart-fill me-1 text-rose"></i> {{ 'matching.matchRecords' | translate }}</p>
         <div style="display:flex; flex-direction:column; gap:12px;">
           @for (m of myMatches; track m.id) {
             <div style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <strong style="color:#0f172a; font-size:13px;">
-                    <i class="bi bi-suit-heart-fill" style="color:#e11d48; margin-right:4px;"></i> பொருத்தம்
+                    <i class="bi bi-suit-heart-fill" style="color:#e11d48; margin-right:4px;"></i> {{ 'matching.porutham10Title' | translate }}
                 </strong>
                 <span style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{ m.admin_status || m.consultation_status || 'Pending' }}</span>
               </div>
@@ -70,7 +70,7 @@
               <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
                 <span>{{ m.created_at | date:'dd MMM yyyy' }}</span>
                 @if (m.result_document) {
-                  <a [href]="m.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> முடிவு தரவிறக்கம்</a>
+                  <a [href]="m.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
                 }
               </div>
             </div>
@@ -81,13 +81,13 @@
 
       @if (myProfiles && myProfiles.length > 0) {
       <div style="margin-top:24px;">
-        <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-file-earmark-person-fill me-1 text-gold"></i> திருமணப் பதிவு விவரங்கள்</p>
+        <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-file-earmark-person-fill me-1 text-gold"></i> {{ 'matching.regRecords' | translate }}</p>
         <div style="display:flex; flex-direction:column; gap:12px;">
           @for (p of myProfiles; track p.id) {
             <div style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <strong style="color:#0f172a; font-size:13px;">
-                    <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> பதிவு
+                    <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> {{ 'matching.varanRegBadge' | translate }}
                 </strong>
                 <span style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{ p.status || 'Pending' }}</span>
               </div>
@@ -103,7 +103,7 @@
               <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
                 <span>{{ p.created_at | date:'dd MMM yyyy' }}</span>
                 @if (p.result_document) {
-                  <a [href]="p.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> முடிவு தரவிறக்கம்</a>
+                  <a [href]="p.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
                 }
               </div>
             </div>

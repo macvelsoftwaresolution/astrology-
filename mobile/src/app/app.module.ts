@@ -36,6 +36,7 @@ import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha
 
 // Profile Module (standalone)
 import { ProfilePage } from './pages/profile/profile.page';
+import { TranslatePipe } from './pipes/translate.pipe';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,9 @@ import { ProfilePage } from './pages/profile/profile.page';
     FormsModule,
     HttpClientModule,
     IonicModule.forRoot(),
+    IonicModule,
     AppRoutingModule,
+    TranslatePipe,
     // Standalone components imported here
     JathagamPage,
     RasiPalanComponent,

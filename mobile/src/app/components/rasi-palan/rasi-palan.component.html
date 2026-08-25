@@ -19,7 +19,7 @@
     @if (!selectedRasi) {
       <!-- Title Section -->
       <div class="title-section">
-        <h2 class="page-title">ராசி பலன்</h2>
+        <h2 class="page-title">{{ 'astrology.rasiPalan' | translate }}</h2>
         <p class="page-subtitle">உங்கள் நட்சத்திரங்களின்<br>வழிகாட்டுதலைக் கண்டறியவும்</p>
       </div>
       <!-- Tabs Section -->
@@ -46,7 +46,7 @@
       </div>
       <!-- Zodiac Grid Section -->
       <div class="zodiac-section-header">
-        <h3>உங்கள் ராசியைத்<br>தேர்ந்தெடுக்கவும்</h3>
+        <h3>{{ 'astrology.selectRasi' | translate }}</h3>
         <span class="filter-icon"><i class="bi bi-sliders"></i></span>
       </div>
       <div class="zodiac-grid">
@@ -60,7 +60,7 @@
                 <span class="zodiac-glyph">{{ r.image }}&#xFE0E;</span>
               }
             </div>
-            <span class="zodiac-name">{{ r.name }}</span>
+            <span class="zodiac-name">{{ currentLang === 'en' ? r.english : r.name }}</span>
           </div>
         }
       </div>

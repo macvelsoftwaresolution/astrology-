@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy, ChangeDe
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
+import { TranslationService, LanguageCode } from '../../services/translation.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -44,8 +45,21 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     private authService: AuthService,
     private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public translationService: TranslationService
   ) {}
+
+  get currentLang(): LanguageCode {
+    return this.translationService.currentLanguage();
+  }
+
+  setLanguage(lang: LanguageCode) {
+    this.translationService.setLanguage(lang);
+  }
+
+  toggleLanguage() {
+    this.translationService.toggleLanguage();
+  }
 
   get token() {
     return this.authService.getToken() || '';

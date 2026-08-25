@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { TranslationService } from '../services/translation.service';
 import { App } from '@capacitor/app';
 import { IonContent } from '@ionic/angular';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
@@ -110,7 +111,8 @@ export class HomePage implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private backButtonService: BackButtonService,
-    private exitModalService: ExitModalService
+    private exitModalService: ExitModalService,
+    public translationService: TranslationService
   ) { }
 
   // Navigation History Stack for step-by-step ("line by line") back navigation
@@ -265,20 +267,20 @@ export class HomePage implements OnInit {
 
     // 2. Active Service Flows
     if (this.activeServiceFlow === 'astrologer_consultation') {
-      return this.selectedCategory ? this.selectedCategory.title : 'ஜோதிட ஆலோசனை';
+      return this.selectedCategory ? this.selectedCategory.title : this.translationService.translate('astrology.services', 'ஜோதிட ஆலோசனை');
     }
-    if (this.activeServiceFlow === 'rasi-palan') return 'இன்றைய ராசி பலன்';
+    if (this.activeServiceFlow === 'rasi-palan') return this.translationService.translate('astrology.rasiPalan', 'இன்றைய ராசி பலன்');
 
     // 3. Services Tab
     if (this.currentTab === 'services') {
       if (this.selectedCategory) return this.selectedCategory.title;
-      return 'ஜோதிட சேவைகள்';
+      return this.translationService.translate('astrology.title', 'ஜோதிட சேவைகள்');
     }
 
     // 4. Other Tabs
     switch (this.currentTab) {
-      case 'matching': return 'திருமண பொருத்தம்';
-      case 'profile': return 'சுயவிவரம்';
+      case 'matching': return this.translationService.translate('astrology.matching', 'திருமண பொருத்தம்');
+      case 'profile': return this.translationService.translate('profile.title', 'சுயவிவரம்');
       default: return this.userName || 'ஆருத்ரா ஜோதிடம்';
     }
   }
@@ -528,7 +530,7 @@ export class HomePage implements OnInit {
             title: catName,
             subtitle: `${catName} நேரடி ஆலோசனைகள் மற்றும் துல்லிய வழிகாட்டுதல்`,
             tag: catName,
-            badge: 'நிபுணர் ஆலோசனை',
+            badge: this.translationService.translate('home.expertConsultation', 'நிபுணர் ஆலோசனை'),
             image: astro.avatar_url || 'assets/images/temple_sunrise.png',
             icon: 'bi bi-stars'
           });

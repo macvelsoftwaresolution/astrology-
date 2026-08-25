@@ -6,12 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonSpinner],
+  imports: [CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonSpinner, TranslatePipe],
   template: `
     <ion-header class="ion-no-border">
       <ion-toolbar color="dark">
@@ -19,7 +21,13 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
           <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 22px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
             <i class="bi bi-arrow-left"></i>
           </button>
-          <span class="brand" style="font-size: 18px; margin-left: 4px;"><i class="bi bi-person-fill me-1"></i> சுயவிவரம்</span>
+          <span class="brand" style="font-size: 18px; margin-left: 4px;"><i class="bi bi-person-fill me-1"></i> {{ 'profile.title' | translate }}</span>
+          
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 8px; padding-right: 8px;">
+            <button type="button" (click)="toggleLang()" style="background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); color: #ffd700; border-radius: 12px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+              <i class="bi bi-translate"></i> {{ currentLang === 'ta' ? 'English' : 'தமிழ்' }}
+            </button>
+          </div>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -43,7 +51,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
         @for (t of tabs; track t.key) {
           <button [class.active]="activeTab === t.key" (click)="activeTab = t.key">
             <i [class]="t.icon" style="font-size: 16px;"></i>
-            <span>{{ t.label }}</span>
+            <span>{{ t.labelKey | translate }}</span>
           </button>
         }
       </div>
@@ -52,18 +60,18 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       @if (activeTab === 'profile') {
         <div class="tab-content">
           <div class="section-title">
-            <h3>சுயவிவரம் திருத்தம்</h3>
-            <p>உங்கள் தனிப்பட்ட தகவல்களை புதுப்பிக்கவும்</p>
+            <h3>{{ 'profile.editTitle' | translate }}</h3>
+            <p>{{ 'profile.editSubtitle' | translate }}</p>
           </div>
           <div class="form-card">
-            <div class="form-group"><label>பெயர்</label><input [(ngModel)]="editProfile.name" class="field" placeholder="உங்கள் பெயர்"/></div>
-            <div class="form-group"><label>தொலைபேசி</label><input type="tel" [(ngModel)]="editProfile.phone" class="field" placeholder="தொலைபேசி எண்"/></div>
-            <div class="form-group"><label>முகவரி</label><textarea [(ngModel)]="editProfile.address" class="field textarea" placeholder="முகவரி" rows="2"></textarea></div>
+            <div class="form-group"><label>{{ 'profile.name' | translate }}</label><input [(ngModel)]="editProfile.name" class="field" [placeholder]="'profile.name' | translate"/></div>
+            <div class="form-group"><label>{{ 'profile.phone' | translate }}</label><input type="tel" [(ngModel)]="editProfile.phone" class="field" [placeholder]="'profile.phone' | translate"/></div>
+            <div class="form-group"><label>{{ 'profile.address' | translate }}</label><textarea [(ngModel)]="editProfile.address" class="field textarea" [placeholder]="'profile.address' | translate" rows="2"></textarea></div>
             <button class="save-btn" (click)="saveProfile()" [disabled]="savingProfile">
               @if (savingProfile) {
                 <ion-spinner name="crescent" style="width:16px;height:16px"></ion-spinner>
               } @else {
-                <span><i class="bi bi-floppy-fill me-1"></i> புதுப்பி</span>
+                <span><i class="bi bi-floppy-fill me-1"></i> {{ 'profile.updateBtn' | translate }}</span>
               }
             </button>
             @if (profileMsg) {
@@ -74,14 +82,14 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
           <!-- Astrology Profile Card -->
           @if (jathagam) {
             <div class="astro-card">
-              <h4><i class="bi bi-star-fill text-warning me-1"></i> ஜோதிட சுயவிவரம்</h4>
+              <h4><i class="bi bi-star-fill text-warning me-1"></i> {{ 'profile.astroTitle' | translate }}</h4>
               <div class="astro-grid">
-                <div class="astro-item"><span class="al">ராசி</span><span class="av gold">{{ jathagam.rasi }}</span></div>
-                <div class="astro-item"><span class="al">நட்சத்திரம்</span><span class="av">{{ jathagam.nakshatra || 'N/A' }}</span></div>
-                <div class="astro-item"><span class="al">லக்னம்</span><span class="av">{{ jathagam.lagnam || 'N/A' }}</span></div>
-                <div class="astro-item"><span class="al">பிறந்த தேதி</span><span class="av">{{ jathagam.dob | date:'dd MMM yyyy' }}</span></div>
-                <div class="astro-item"><span class="al">பிறந்த நேரம்</span><span class="av">{{ jathagam.tob || 'N/A' }}</span></div>
-                <div class="astro-item"><span class="al">பிறந்த ஊர்</span><span class="av">{{ jathagam.pob || 'N/A' }}</span></div>
+                <div class="astro-item"><span class="al">{{ 'profile.rasi' | translate }}</span><span class="av gold">{{ jathagam.rasi }}</span></div>
+                <div class="astro-item"><span class="al">{{ 'profile.star' | translate }}</span><span class="av">{{ jathagam.nakshatra || 'N/A' }}</span></div>
+                <div class="astro-item"><span class="al">{{ 'profile.lagnam' | translate }}</span><span class="av">{{ jathagam.lagnam || 'N/A' }}</span></div>
+                <div class="astro-item"><span class="al">{{ 'profile.dob' | translate }}</span><span class="av">{{ jathagam.dob | date:'dd MMM yyyy' }}</span></div>
+                <div class="astro-item"><span class="al">{{ 'profile.tob' | translate }}</span><span class="av">{{ jathagam.tob || 'N/A' }}</span></div>
+                <div class="astro-item"><span class="al">{{ 'profile.pob' | translate }}</span><span class="av">{{ jathagam.pob || 'N/A' }}</span></div>
               </div>
             </div>
           }
@@ -91,14 +99,14 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       <!-- TAB: BOOKING HISTORY -->
       @if (activeTab === 'history') {
         <div class="tab-content">
-          <div class="section-title"><h3><i class="bi bi-calendar-event me-1"></i> Appointment வரலாறு</h3><p>உங்கள் அனைத்து bookings பட்டியல்</p></div>
+          <div class="section-title"><h3><i class="bi bi-calendar-event me-1"></i> {{ 'profile.historyTitle' | translate }}</h3><p>{{ 'profile.historySubtitle' | translate }}</p></div>
           @if (loadingHistory) {
             <ion-spinner name="crescent" color="warning"></ion-spinner>
           } @else {
             <div>
               @if (bookings.length === 0) {
                 <div class="empty-state">
-                  <i class="bi bi-journal-text" style="font-size: 32px; color: #8a8ab0;"></i><p>இதுவரை எந்த booking-ம் இல்லை.</p>
+                  <i class="bi bi-journal-text" style="font-size: 32px; color: #8a8ab0;"></i><p>{{ 'profile.noHistory' | translate }}</p>
                 </div>
               }
               @for (b of bookings; track b.id) {
@@ -118,7 +126,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
                     </div>
                   }
                   @if (b.chart_url && b.status === 'Completed') {
-                    <a [href]="b.chart_url" target="_blank" class="chart-link"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Chart PDF பதிவிறக்கம்</a>
+                    <a [href]="b.chart_url" target="_blank" class="chart-link"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Chart PDF</a>
                   }
                 </div>
               }
@@ -130,14 +138,14 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       <!-- TAB: PAYMENT HISTORY -->
       @if (activeTab === 'payments') {
         <div class="tab-content">
-          <div class="section-title"><h3><i class="bi bi-credit-card me-1"></i> Payment வரலாறு</h3><p>அனைத்து பரிவர்த்தனைகள்</p></div>
+          <div class="section-title"><h3><i class="bi bi-credit-card me-1"></i> {{ 'profile.paymentsTitle' | translate }}</h3><p>{{ 'profile.paymentsSubtitle' | translate }}</p></div>
           @if (loadingPayments) {
             <ion-spinner name="crescent" color="warning"></ion-spinner>
           } @else {
             <div>
               @if (payments.length === 0) {
                 <div class="empty-state">
-                  <i class="bi bi-credit-card" style="font-size: 32px; color: #8a8ab0;"></i><p>இதுவரை எந்த payment-ம் இல்லை.</p>
+                  <i class="bi bi-credit-card" style="font-size: 32px; color: #8a8ab0;"></i><p>{{ 'profile.noPayments' | translate }}</p>
                 </div>
               }
               @for (p of payments; track p.id) {
@@ -169,9 +177,9 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       @if (activeTab === 'notifications') {
         <div class="tab-content">
           <div class="section-title-row">
-            <h3><i class="bi bi-bell-fill me-1"></i> Notifications</h3>
+            <h3><i class="bi bi-bell-fill me-1"></i> {{ 'profile.notifsTitle' | translate }}</h3>
             @if (unreadCount > 0) {
-              <button class="mark-all-btn" (click)="markAllRead()">அனைத்தும் படித்தவை</button>
+              <button class="mark-all-btn" (click)="markAllRead()">{{ 'profile.markAllRead' | translate }}</button>
             }
           </div>
           @if (loadingNotifs) {
@@ -180,7 +188,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
             <div>
               @if (notifications.length === 0) {
                 <div class="empty-state">
-                  <i class="bi bi-bell" style="font-size: 32px; color: #8a8ab0;"></i><p>புதிய notifications இல்லை.</p>
+                  <i class="bi bi-bell" style="font-size: 32px; color: #8a8ab0;"></i><p>{{ 'profile.noNotifs' | translate }}</p>
                 </div>
               }
               @for (n of notifications; track n.id) {
@@ -201,20 +209,51 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
         </div>
       }
 
-      <!-- TAB: NOTIFICATION PREFERENCES -->
+      <!-- TAB: NOTIFICATION PREFERENCES & LANGUAGE SETTING -->
       @if (activeTab === 'preferences') {
         <div class="tab-content">
           <div class="section-title">
-            <h3><i class="bi bi-gear-fill me-1"></i> அறிவிப்பு விருப்பத்தேர்வுகள்</h3>
-            <p>உங்கள் அறிவிப்பு அமைப்புகளை நிர்வகிக்கவும்</p>
+            <h3><i class="bi bi-gear-fill me-1"></i> {{ 'profile.settingsTitle' | translate }}</h3>
+            <p>{{ 'profile.settingsSubtitle' | translate }}</p>
           </div>
+
+          <!-- App Language Selector Card -->
+          <div class="pref-card" style="margin-bottom: 16px;">
+            <div class="pref-row">
+              <div class="pref-info">
+                <span class="pref-icon"><i class="bi bi-translate text-warning" style="font-size: 22px;"></i></span>
+                <div>
+                  <strong>{{ 'profile.languageSetting' | translate }}</strong>
+                  <p class="muted">Select Language / மொழியைத் தேர்வு செய்க</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" 
+                  (click)="setLang('ta')" 
+                  [style.background]="currentLang === 'ta' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.1)'"
+                  [style.color]="currentLang === 'ta' ? '#000' : '#fff'"
+                  style="border: none; padding: 7px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                  தமிழ்
+                </button>
+                <button type="button" 
+                  (click)="setLang('en')" 
+                  [style.background]="currentLang === 'en' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.1)'"
+                  [style.color]="currentLang === 'en' ? '#000' : '#fff'"
+                  style="border: none; padding: 7px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                  English
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notification Preference -->
           <div class="pref-card">
             <div class="pref-row">
               <div class="pref-info">
                 <span class="pref-icon"><i class="bi bi-star-fill text-warning" style="font-size: 20px;"></i></span>
                 <div>
-                  <strong>தினசரி ராசி பலன்</strong>
-                  <p class="muted">ஒவ்வொரு காலையிலும் 6 மணிக்கு உங்கள் ராசி பலன் அறிவிப்பு</p>
+                  <strong>{{ 'profile.dailyNotif' | translate }}</strong>
+                  <p class="muted">{{ 'profile.dailyNotifDesc' | translate }}</p>
                 </div>
               </div>
               <label class="toggle-switch">
@@ -362,11 +401,11 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
 })
 export class ProfilePage implements OnInit {
   tabs = [
-    { key: 'profile', icon: 'bi bi-person-fill', label: 'சுயவிவரம்' },
-    { key: 'history', icon: 'bi bi-clock-history', label: 'History' },
-    { key: 'payments', icon: 'bi bi-credit-card-fill', label: 'Payments' },
-    { key: 'notifications', icon: 'bi bi-bell-fill', label: 'Notifs' },
-    { key: 'preferences', icon: 'bi bi-gear-fill', label: 'Settings' },
+    { key: 'profile', icon: 'bi bi-person-fill', labelKey: 'profile.tabProfile' },
+    { key: 'history', icon: 'bi bi-clock-history', labelKey: 'profile.tabHistory' },
+    { key: 'payments', icon: 'bi bi-credit-card-fill', labelKey: 'profile.tabPayments' },
+    { key: 'notifications', icon: 'bi bi-bell-fill', labelKey: 'profile.tabNotifs' },
+    { key: 'preferences', icon: 'bi bi-gear-fill', labelKey: 'profile.tabSettings' },
   ];
   activeTab = 'profile';
 
@@ -397,8 +436,21 @@ export class ProfilePage implements OnInit {
     private http: HttpClient,
     private router: Router,
     private backButtonService: BackButtonService,
-    private authService: AuthService
+    private authService: AuthService,
+    public translationService: TranslationService
   ) { }
+
+  get currentLang(): LanguageCode {
+    return this.translationService.currentLanguage();
+  }
+
+  setLang(lang: LanguageCode) {
+    this.translationService.setLanguage(lang);
+  }
+
+  toggleLang() {
+    this.translationService.toggleLanguage();
+  }
 
   ionViewDidEnter() {
     this.backButtonService.registerHandler(this.customBackHandler);
@@ -450,11 +502,11 @@ export class ProfilePage implements OnInit {
     this.profileMsg = '';
     this.http.put<any>(`${environment.apiUrl}/user/profile`, this.editProfile, this.headers).subscribe({
       next: (res: any) => {
-        this.profileMsg = 'சுயவிவரம் புதுப்பிக்கப்பட்டது!';
+        this.profileMsg = this.translationService.translate('common.success', 'சுயவிவரம் புதுப்பிக்கப்பட்டது!');
         this.profileSuccess = true;
         this.savingProfile = false;
       },
-      error: () => { this.profileMsg = 'பிழை ஏற்பட்டது.'; this.profileSuccess = false; this.savingProfile = false; }
+      error: () => { this.profileMsg = this.translationService.translate('common.error', 'பிழை ஏற்பட்டது.'); this.profileSuccess = false; this.savingProfile = false; }
     });
   }
 

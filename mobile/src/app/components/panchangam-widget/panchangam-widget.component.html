@@ -1,16 +1,16 @@
 <div class="panchangam-widget">
   <div class="widget-header">
-    <h3><i class="bi bi-calendar2-range-fill me-1 text-gold"></i> இன்றைய பஞ்சாங்கம்</h3>
-    <span class="widget-date"><i class="bi bi-stars text-gold"></i> துல்லிய கணிப்பு</span>
+    <h3><i class="bi bi-calendar2-range-fill me-1 text-gold"></i> {{ 'home.todayPanchangam' | translate }}</h3>
+    <span class="widget-date"><i class="bi bi-stars text-gold"></i> {{ 'home.accurateCalc' | translate }}</span>
   </div>
   <div class="panch-grid">
     <!-- Top Row: Thithi & Star -->
     <div class="panch-item top-left">
-      <span class="panch-label">திதி</span>
+      <span class="panch-label">{{ 'home.thithi' | translate }}</span>
       <span class="panch-value value-highlight">{{ panchangam.thithi || '-' }}</span>
     </div>
     <div class="panch-item top-right">
-      <span class="panch-label">நட்சத்திரம்</span>
+      <span class="panch-label">{{ 'home.nakshatra' | translate }}</span>
       <span class="panch-value value-highlight">{{ panchangam.star || '-' }}</span>
     </div>
 

@@ -10,12 +10,15 @@ import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.componen
 import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching.component';
 import { UserProfileComponent } from '../components/user-profile/user-profile.component';
 
+import { TranslatePipe } from '../pipes/translate.pipe';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    TranslatePipe
   ],
   declarations: [
     HomePage,

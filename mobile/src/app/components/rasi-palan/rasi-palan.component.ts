@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, Output, EventEmitter } from '@angular/core
 import { NavController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-rasi-palan',
@@ -27,7 +28,15 @@ export class RasiPalanComponent implements OnDestroy {
   predictionData: any = null;
   isLoading: boolean = false;
 
-  constructor(private navCtrl: NavController, private http: HttpClient) {}
+  constructor(
+    private navCtrl: NavController, 
+    private http: HttpClient,
+    public translationService: TranslationService
+  ) {}
+
+  get currentLang() {
+    return this.translationService.currentLanguage();
+  }
 
   openNotifications() {
     this.navCtrl.navigateForward('/notifications');

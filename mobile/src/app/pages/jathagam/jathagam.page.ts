@@ -2,11 +2,13 @@ import { Component, OnDestroy } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { BackButtonService } from '../../services/back-button.service';
+import { TranslationService } from '../../services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-jathagam',
   standalone: true,
-  imports: [RouterOutlet, IonContent, IonHeader, IonToolbar],
+  imports: [RouterOutlet, IonContent, IonHeader, IonToolbar, TranslatePipe],
   template: `
     <ion-header class="ion-no-border">
       <ion-toolbar color="dark">
@@ -14,7 +16,7 @@ import { BackButtonService } from '../../services/back-button.service';
           <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 22px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
             ←
           </button>
-          <span class="brand" style="font-size: 18px; margin-left: 4px;">✨ ஜாதகம்</span>
+          <span class="brand" style="font-size: 18px; margin-left: 4px;">✨ {{ 'astrology.title' | translate }}</span>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -24,27 +26,27 @@ import { BackButtonService } from '../../services/back-button.service';
       <div class="sub-nav-grid">
         <div class="sub-card" [class.active]="activeTab === 'rasi-palan'" (click)="navigate('rasi-palan')">
           <span class="card-icon">🌟</span>
-          <span class="card-title">ராசி பலன்</span>
-          <span class="card-sub">Rasi Palan</span>
+          <span class="card-title">{{ 'astrology.rasiPalan' | translate }}</span>
+          <span class="card-sub">Daily Rasi Palan</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'matching'" (click)="navigate('matching')">
           <span class="card-icon">💑</span>
-          <span class="card-title">திருமண பொருத்தம்</span>
+          <span class="card-title">{{ 'astrology.matching' | translate }}</span>
           <span class="card-sub">Marriage Matching</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'my-jathagam'" (click)="navigate('my-jathagam')">
           <span class="card-icon">📜</span>
-          <span class="card-title">என் ஜாதகம்</span>
+          <span class="card-title">{{ 'astrology.myJathagam' | translate }}</span>
           <span class="card-sub">My Birth Chart</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'para-jathagam'" (click)="navigate('para-jathagam')">
           <span class="card-icon">🔭</span>
-          <span class="card-title">பரஜாதகம்</span>
+          <span class="card-title">{{ 'astrology.paraJathagam' | translate }}</span>
           <span class="card-sub">Para Jathagam</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'vastu-kanitha'" (click)="navigate('vastu-kanitha')">
           <span class="card-icon">🏠</span>
-          <span class="card-title">வாஸ்து & கணிதம்</span>
+          <span class="card-title">{{ 'astrology.vastu' | translate }}</span>
           <span class="card-sub">Vastu & Numerology</span>
         </div>
       </div>
