@@ -21,8 +21,12 @@ class SuperAdminController extends Controller
                 (SELECT COUNT(*) FROM courses) as total_courses,
                 (SELECT COUNT(*) FROM bookings) as total_bookings,
                 (SELECT COUNT(*) FROM book_orders) as total_book_orders,
+                (SELECT COUNT(*) FROM marriage_matches) as total_matches,
+                (SELECT COUNT(*) FROM matrimony_profiles) as total_matrimony_profiles,
                 (SELECT COALESCE(SUM(price), 0) FROM bookings) as service_revenue,
-                (SELECT COALESCE(SUM(price), 0) FROM book_orders) as book_revenue
+                (SELECT COALESCE(SUM(price), 0) FROM book_orders) as book_revenue,
+                (SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE order_type IN ('marriage_matching', 'marriage_match', 'porutham')) as match_revenue,
+                (SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE order_type IN ('matrimony_registration', 'matrimony_reg', 'matrimony')) as matrimony_revenue
         ");
 
         $recentAdmins = User::whereIn('role', ['admin', 'super_admin'])->get();
@@ -47,7 +51,9 @@ class SuperAdminController extends Controller
         $courseEnrollmentRevenue = ($ilanilaiCount + $mudhunilaiCount) * 2500;
         $serviceRevenue = (float) ($data->service_revenue ?? 0);
         $bookRevenue = (float) ($data->book_revenue ?? 0);
-        $totalRevenue = $courseEnrollmentRevenue + $serviceRevenue + $bookRevenue;
+        $matchRevenue = (float) ($data->match_revenue ?? 0);
+        $matrimonyRevenue = (float) ($data->matrimony_revenue ?? 0);
+        $totalRevenue = $courseEnrollmentRevenue + $serviceRevenue + $bookRevenue + $matchRevenue + $matrimonyRevenue;
 
         return response()->json([
             'success' => true,
@@ -57,12 +63,16 @@ class SuperAdminController extends Controller
                 'total_courses' => (int) ($data->total_courses ?? 0),
                 'total_bookings' => (int) ($data->total_bookings ?? 0),
                 'total_book_orders' => (int) ($data->total_book_orders ?? 0),
+                'total_matches' => (int) ($data->total_matches ?? 0),
+                'total_matrimony_profiles' => (int) ($data->total_matrimony_profiles ?? 0),
                 'total_revenue' => $totalRevenue,
                 'ilanilai_applicants' => $ilanilaiCount,
                 'muthunilai_applicants' => $mudhunilaiCount,
                 'revenue_breakdown' => [
                     'courses' => $courseEnrollmentRevenue,
                     'services' => $serviceRevenue,
+                    'matches' => $matchRevenue,
+                    'matrimony' => $matrimonyRevenue,
                     'books' => $bookRevenue,
                 ]
             ],

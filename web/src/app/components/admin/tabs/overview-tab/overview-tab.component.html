@@ -4,17 +4,17 @@
     <div>
       <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
         <i class="bi bi-grid-1x2-fill" style="color:#d97706;"></i>{{ 'overview.title' | translate }}
+        @if (isLoading) {
+          <span style="font-size: 12px; font-weight: 600; color: #d97706; margin-left: 8px;">
+            <i class="bi bi-hourglass-split"></i>
+          </span>
+        }
       </h1>
       <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'overview.subtitle' | translate }}</p>
     </div>
   </div>
 
-  @if (isLoading) {
-    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
-    </div>
-  } @else {
-    <!-- METRICS GRID -->
+  <!-- METRICS GRID -->
     <div class="metrics-grid">
       <div class="metric-card gold">
         <div class="icon"><i class="bi bi-currency-rupee"></i></div>
@@ -49,6 +49,14 @@
         <div class="ledger-row">
           <span><i class="bi bi-stars" style="color:#9333ea;margin-right:6px;"></i>{{ 'overview.astrologyRevenue' | translate }}</span>
           <strong>₹{{ metrics?.revenue_breakdown?.services || 0 | number }}</strong>
+        </div>
+        <div class="ledger-row">
+          <span><i class="bi bi-heart-fill" style="color:#e11d48;margin-right:6px;"></i>{{ 'overview.marriageRevenue' | translate }}</span>
+          <strong>₹{{ metrics?.revenue_breakdown?.matches || 0 | number }}</strong>
+        </div>
+        <div class="ledger-row">
+          <span><i class="bi bi-person-lines-fill" style="color:#0284c7;margin-right:6px;"></i>{{ 'overview.matrimonyRevenue' | translate }}</span>
+          <strong>₹{{ metrics?.revenue_breakdown?.matrimony || 0 | number }}</strong>
         </div>
         <div class="ledger-row">
           <span><i class="bi bi-box-seam" style="color:#059669;margin-right:6px;"></i>{{ 'overview.booksRevenue' | translate }}</span>
@@ -145,7 +153,6 @@
         }
       </div>
     </div>
-  }
 
   <!-- MODAL: EDIT / CREATE BANNER -->
   @if (showBannerModal && editingBanner) {

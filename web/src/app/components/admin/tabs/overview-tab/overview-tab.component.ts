@@ -12,12 +12,16 @@ export interface Metrics {
   total_courses: number;
   total_bookings: number;
   total_book_orders: number;
+  total_matches?: number;
+  total_matrimony_profiles?: number;
   total_revenue: number;
   ilanilai_applicants: number;
   muthunilai_applicants: number;
   revenue_breakdown: {
     courses: number;
     services: number;
+    matches: number;
+    matrimony: number;
     books: number;
   };
 }
@@ -48,18 +52,23 @@ export class OverviewTabComponent implements OnInit {
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
-      this.loadMetrics();
-      this.loadTeamList();
-      this.loadBanners();
+      setTimeout(() => {
+        this.loadMetrics();
+        this.loadTeamList();
+        this.loadBanners();
+      }, 0);
     }
   }
 
   loadMetrics(): void {
     this.isLoading = true;
+    this.cdr.detectChanges();
     const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/admin/dashboard-metrics`, headers).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/dashboard-metrics?_t=${Date.now()}`, headers).subscribe({
       next: (res) => {
-        this.metrics = res.metrics;
+        if (res && res.metrics) {
+          this.metrics = res.metrics;
+        }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
