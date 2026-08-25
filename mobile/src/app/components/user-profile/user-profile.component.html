@@ -68,7 +68,7 @@
             <i class="bi bi-file-earmark-text-fill"></i>
           </div>
           <div class="option-text">
-            <h4>ஜாதக கோரிக்கைகள்</h4>
+            <h4>ஜாதக பரிகாரம்</h4>
             <p>உங்கள் ஜாதக நிலவரம்</p>
           </div>
         </div>
@@ -234,7 +234,7 @@
         <h3><i class="bi bi-calendar-check-fill me-2 text-gold"></i>பதிவு செய்யப்பட்ட சேவைகள்</h3>
         }
         @if (selectedOption === 'horoscope') {
-        <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக கோரிக்கைகள்</h3>
+        <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக பரிகாரம்</h3>
         }
         @if (selectedOption === 'marriage') {
         <h3><i class="bi bi-heart-fill me-2 text-gold"></i>திருமண கோரிக்கைகள்</h3>
@@ -345,8 +345,15 @@
 
                 <!-- Download Completed Chart if available -->
                 @if (b.chart_url) {
-                <a [href]="b.chart_url" target="_blank" class="btn-download-chart">
+                <a [href]="b.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
+                </a>
+                }
+
+                <!-- Download Parigaram Document if available -->
+                @if (b.parigaram_document) {
+                <a [href]="b.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
+                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
                 </a>
                 }
 
@@ -386,8 +393,13 @@
                   <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
                 </div>
                 @if (h.chart_url) {
-                <a [href]="h.chart_url" target="_blank" class="btn-download-chart">
+                <a [href]="h.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
+                </a>
+                }
+                @if (h.parigaram_document) {
+                <a [href]="h.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
+                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
                 </a>
                 }
               </div>
@@ -396,7 +408,7 @@
             } @else {
             <div class="empty-activity-state">
               <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem;"></i>
-              <p>ஜாதகக் கோரிக்கைகள் ஏதுமில்லை</p>
+              <p>ஜாதக பரிகாரம் ஏதுமில்லை</p>
             </div>
             }
             }
@@ -424,6 +436,13 @@
                     <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
                   </div>
                 </div>
+                @if (m.result_document) {
+                <div class="mmc-footer-actions" style="margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 12px; text-align: center;">
+                  <a [href]="m.result_document" target="_blank" class="btn-download-chart" style="display: inline-block; width: 100%;">
+                    <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பொருத்தம் அறிக்கை பதிவிறக்கம் (Download)
+                  </a>
+                </div>
+                }
               </div>
               }
             </div>

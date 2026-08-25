@@ -68,6 +68,11 @@ export class HomePage implements OnInit {
     return '🕉️';
   }
 
+  get userProfileImage(): string | null {
+    const user = this.authService.getCurrentUser();
+    return user?.profileImage || (user as any)?.avatar_url || null;
+  }
+
   // Hero Slider (Dynamic from DB)
   heroBanners: any[] = [];
   currentBannerIndex = 0;

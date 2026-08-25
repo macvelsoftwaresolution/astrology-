@@ -679,7 +679,8 @@ class AstrologyController extends Controller
         $request->validate([
             'status' => 'nullable|string',
             'chart_url' => 'nullable|string',
-            'parigaram' => 'nullable|string'
+            'parigaram' => 'nullable|string',
+            'parigaram_document' => 'nullable|string'
         ]);
 
         $booking = DB::table('bookings')->where('id', $id)->first();
@@ -696,6 +697,7 @@ class AstrologyController extends Controller
                 'status' => $status,
                 'chart_url' => $request->chart_url ?? $booking->chart_url,
                 'parigaram' => $request->parigaram ?? $booking->parigaram,
+                'parigaram_document' => $request->parigaram_document ?? $booking->parigaram_document,
                 'updated_at' => now()
             ]);
 

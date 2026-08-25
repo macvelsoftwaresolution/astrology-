@@ -98,11 +98,11 @@ class JathagamController extends Controller
     {
         $request->validate([
             'boy_name'      => 'required|string',
-            'boy_dob'       => 'required|date',
+            'boy_dob'       => 'nullable|date',
             'boy_rasi'      => 'required|string',
             'boy_nakshatra' => 'required|string',
             'girl_name'     => 'required|string',
-            'girl_dob'      => 'required|date',
+            'girl_dob'      => 'nullable|date',
             'girl_rasi'     => 'required|string',
             'girl_nakshatra'=> 'required|string',
         ]);

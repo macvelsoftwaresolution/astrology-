@@ -64,13 +64,33 @@ export class MatchesTabComponent implements OnInit {
   saveMatchStatus(): void {
     if (!this.editingMatch) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`${environment.apiUrl}/admin/marriage-matches/${this.editingMatch.id}`, this.matchStatusForm, headers).subscribe({
+    const payload = this.matchStatusForm;
+    this.http.put<any>(`${environment.apiUrl}/admin/marriage-matches/${this.editingMatch.id}`, payload, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Match consultation status updated successfully!');
-        this.editingMatch = null;
-        this.loadMatches();
+        if (res.success) {
+          this.editingMatch.admin_status = payload.admin_status;
+          this.editingMatch.admin_notes = payload.admin_notes;
+          this.editingMatch = null;
+        }
       },
-      error: () => alert('Failed to update match status.')
+      error: () => alert('Failed to update status')
+    });
+  }
+
+  deleteMatch(id: number): void {
+    if (!confirm('இந்த கோரிக்கையை நிச்சயமாக நீக்க விரும்புகிறீர்களா? (Are you sure you want to delete this?)')) return;
+    
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`${environment.apiUrl}/admin/marriage-matches/${id}`, headers).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.marriageMatches = this.marriageMatches.filter(m => m.id !== id);
+          if (this.selectedMatch && this.selectedMatch.id === id) {
+            this.selectedMatch = null;
+          }
+        }
+      },
+      error: () => alert('Failed to delete match')
     });
   }
 
