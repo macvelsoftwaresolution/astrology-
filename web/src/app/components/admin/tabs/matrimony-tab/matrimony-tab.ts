@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../environments/environment';
@@ -19,6 +19,9 @@ export class MatrimonyTab implements OnInit {
   // View Modal State
   isViewModalOpen: boolean = false;
   viewingProfile: any = null;
+  
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  uploadingProfileId: number | null = null;
 
   constructor(
     private http: HttpClient,
@@ -69,5 +72,53 @@ export class MatrimonyTab implements OnInit {
   isImageUrl(value: any): boolean {
     if (typeof value !== 'string') return false;
     return value.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) != null || value.includes('cloudinary');
+  }
+
+  triggerUpload(profileId: number): void {
+    this.uploadingProfileId = profileId;
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file || !this.uploadingProfileId) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'matrimony_documents');
+
+    this.loading = true;
+    this.cdr.detectChanges();
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res.url) {
+          this.saveResultDocument(this.uploadingProfileId!, res.url);
+        } else {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+        alert('File upload failed.');
+      }
+    });
+  }
+
+  saveResultDocument(profileId: number, url: string): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.put<any>(`${environment.apiUrl}/admin/matrimony-profiles/${profileId}`, { result_document: url }, headers).subscribe({
+      next: () => {
+        alert('Result document uploaded successfully!');
+        this.uploadingProfileId = null;
+        this.loadProfiles();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+        alert('Failed to save result document.');
+      }
+    });
   }
 }

@@ -81,6 +81,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Past Marriage Match History
     Route::get('/jathagam/my-matches', [JathagamController::class, 'getMyMatches']);
 
+    // Past Matrimony Registrations
+    Route::get('/user/matrimony-profiles', [MatrimonyProfileController::class, 'userIndex']);
+
     // Appointment Booking History
     Route::get('/user/bookings', [UserProfileController::class, 'getMyBookings']);
 

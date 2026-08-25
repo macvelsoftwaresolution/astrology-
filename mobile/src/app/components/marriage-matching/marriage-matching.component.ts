@@ -25,20 +25,36 @@ export interface NakshatraData {
 export class MarriageMatchingComponent implements OnInit {
   @Input() rasis: any[] = [];
   myMatches: any[] = [];
-  isLoadingMatches: boolean = false;
+  myProfiles: any[] = [];
+  loadingHistory: boolean = false;
+  loadingProfiles: boolean = false;
+  showHistory: boolean = false;
 
   loadMyMatches() {
     if (!this.authService.isLoggedIn()) return;
-    this.isLoadingMatches = true;
+    this.loadingHistory = true;
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, headers).subscribe({
       next: (res) => {
         this.myMatches = res.matches || [];
-        this.isLoadingMatches = false;
+        this.loadingHistory = false;
       },
-      error: (err) => {
-        console.error('Error fetching matches', err);
-        this.isLoadingMatches = false;
+      error: () => {
+        this.loadingHistory = false;
+      }
+    });
+  }
+
+  loadMyProfiles() {
+    this.loadingProfiles = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/user/matrimony-profiles`, headers).subscribe({
+      next: (res) => {
+        this.myProfiles = res.profiles || [];
+        this.loadingProfiles = false;
+      },
+      error: () => {
+        this.loadingProfiles = false;
       }
     });
   }
@@ -184,6 +200,7 @@ export class MarriageMatchingComponent implements OnInit {
 
   ngOnInit() {
     this.loadMyMatches();
+    this.loadMyProfiles();
     const user = this.authService.getCurrentUser();
     if (user && user.phone) {
       this.matchingForm.requesterPhone = user.phone;
@@ -247,10 +264,41 @@ export class MarriageMatchingComponent implements OnInit {
     }
   }
 
+  validationError: string = '';
+  regValidationError: string = '';
+
   // Calculate 11 Poruthams dynamically based on Girl & Boy Nakshatra
   calculatePorutham() {
-    if (!this.matchingForm.girlName || !this.matchingForm.boyName) {
-      alert('தயவுசெய்து மணமகள் மற்றும் மணமகன் இருவரின் பெயரையும் உள்ளிடவும்!');
+    this.validationError = '';
+
+    if (!this.matchingForm.girlName || this.matchingForm.girlName.trim().length < 2) {
+      this.validationError = 'தயவுசெய்து மணமகளின் பெயரைச் சரியாக உள்ளிடவும்!';
+      return;
+    }
+    if (!this.matchingForm.girlDob) {
+      this.validationError = 'தயவுசெய்து மணமகளின் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+      return;
+    }
+    if (!this.matchingForm.girlRasi || !this.matchingForm.girlStar) {
+      this.validationError = 'தயவுசெய்து மணமகளின் ராசி மற்றும் நட்சத்திரத்தைத் தேர்ந்தெடுக்கவும்!';
+      return;
+    }
+    if (!this.matchingForm.boyName || this.matchingForm.boyName.trim().length < 2) {
+      this.validationError = 'தயவுசெய்து மணமகனின் பெயரைச் சரியாக உள்ளிடவும்!';
+      return;
+    }
+    if (!this.matchingForm.boyDob) {
+      this.validationError = 'தயவுசெய்து மணமகனின் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+      return;
+    }
+    if (!this.matchingForm.boyRasi || !this.matchingForm.boyStar) {
+      this.validationError = 'தயவுசெய்து மணமகனின் ராசி மற்றும் நட்சத்திரத்தைத் தேர்ந்தெடுக்கவும்!';
+      return;
+    }
+
+    const cleanPhone = (this.matchingForm.requesterPhone || '').replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      this.validationError = 'தயவுசெய்து தொடர்பு கொள்ள வேண்டிய சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
       return;
     }
 
@@ -472,8 +520,18 @@ export class MarriageMatchingComponent implements OnInit {
 
   // Registration Flow
   goToRegPayment() {
-    if (!this.regForm.name || !this.regForm.phone1) {
-      alert('முக்கிய விவரங்களை (பெயர், அலைபேசி எண்) உள்ளிடவும்.');
+    this.regValidationError = '';
+    if (!this.regForm.name || this.regForm.name.trim().length < 2) {
+      this.regValidationError = 'தயவுசெய்து வரனின் பெயரைச் சரியாக உள்ளிடவும்!';
+      return;
+    }
+    if (!this.regForm.dob) {
+      this.regValidationError = 'தயவுசெய்து வரனின் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+      return;
+    }
+    const cleanPhone = (this.regForm.phone1 || '').replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      this.regValidationError = 'தயவுசெய்து தொடர்பு கொள்ள வேண்டிய சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
       return;
     }
     this.serviceStep = 2;
@@ -566,5 +624,7 @@ export class MarriageMatchingComponent implements OnInit {
     this.adminSubmittedSuccess = false;
     this.matchingForm.boyName = '';
     this.matchingForm.girlName = '';
+    this.loadMyMatches();
+    this.loadMyProfiles();
   }
 }
