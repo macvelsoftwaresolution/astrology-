@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
@@ -43,29 +43,24 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private authService: AuthService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   get token() {
-    return this.authService.getToken('astrology') || '';
+    return this.authService.getToken() || '';
   }
 
   get headers() {
-    return { headers: { Authorization: `Bearer ${this.token}` } };
+    return this.authService.getAuthHeaders();
   }
 
   ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser('astrology');
-    if (this.currentUser) {
-      this.personDetails.name = this.currentUser.fullName || this.currentUser.name || '';
-      this.personDetails.email = this.currentUser.emailAddress || this.currentUser.email || '';
-      this.personDetails.phone = this.currentUser.mobileNumber || this.currentUser.phone || '';
-      this.personDetails.profileImageUrl = this.currentUser.profileImage || '';
-    }
     if (this.initialOption) {
       this.selectedOption = this.initialOption;
       this.teleportModalToBody();
     }
+    // Directly fetch live fresh data from Database
     this.loadProfileFromDb();
     this.loadActivitiesData();
   }
@@ -93,9 +88,11 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   loadActivitiesData() {
     if (!this.token) return;
     this.isLoadingActivities = true;
+    this.cdr.detectChanges();
+    const timestamp = Date.now();
 
-    // 1. Load Bookings
-    this.http.get<any>(`${environment.apiUrl}/user/bookings`, this.headers).subscribe({
+    // 1. Load Bookings directly from database
+    this.http.get<any>(`${environment.apiUrl}/user/bookings?_t=${timestamp}`, this.headers).subscribe({
       next: (res) => {
         if (res && res.bookings && Array.isArray(res.bookings)) {
           this.bookingsList = res.bookings.map((b: any) => {
@@ -118,16 +115,20 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
               created_at: b.created_at
             };
           });
+        } else {
+          this.bookingsList = [];
         }
         this.isLoadingActivities = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isLoadingActivities = false;
+        this.cdr.detectChanges();
       }
     });
 
-    // 2. Load Payments
-    this.http.get<any>(`${environment.apiUrl}/user/payments`, this.headers).subscribe({
+    // 2. Load Payments directly from database
+    this.http.get<any>(`${environment.apiUrl}/user/payments?_t=${timestamp}`, this.headers).subscribe({
       next: (res) => {
         if (res && res.payments && Array.isArray(res.payments)) {
           this.paymentsList = res.payments.map((p: any) => ({
@@ -141,19 +142,29 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
             razorpay_order_id: p.razorpay_order_id,
             date: p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''
           }));
+        } else {
+          this.paymentsList = [];
         }
+        this.cdr.detectChanges();
       },
-      error: () => {}
+      error: () => {
+        this.cdr.detectChanges();
+      }
     });
 
-    // 3. Load Marriage Matches
-    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, this.headers).subscribe({
+    // 3. Load Marriage Matches directly from database
+    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches?_t=${timestamp}`, this.headers).subscribe({
       next: (res) => {
         if (res && res.matches && Array.isArray(res.matches)) {
           this.marriageMatches = res.matches;
+        } else {
+          this.marriageMatches = [];
         }
+        this.cdr.detectChanges();
       },
-      error: () => {}
+      error: () => {
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -174,13 +185,16 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   loadProfileFromDb() {
     if (!this.token) return;
     this.isLoading = true;
-    this.http.get<any>(`${environment.apiUrl}/user/profile`, this.headers).subscribe({
+    this.cdr.detectChanges();
+    const timestamp = Date.now();
+
+    this.http.get<any>(`${environment.apiUrl}/user/profile?_t=${timestamp}`, this.headers).subscribe({
       next: (res) => {
         if (res) {
-          this.personDetails.name = res.name || this.personDetails.name;
-          this.personDetails.email = res.email || this.personDetails.email;
-          this.personDetails.phone = res.phone || this.personDetails.phone;
-          this.personDetails.profileImageUrl = res.avatar_url || this.personDetails.profileImageUrl;
+          this.personDetails.name = res.name || '';
+          this.personDetails.email = res.email || '';
+          this.personDetails.phone = res.phone || '';
+          this.personDetails.profileImageUrl = res.avatar_url || '';
 
           const jd = res.jathagam_details;
           if (jd) {
@@ -194,9 +208,11 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           this.editForm = { ...this.personDetails };
         }
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -287,19 +303,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getPayments(): any[] {
-    if (this.paymentsList.length > 0) return this.paymentsList;
-    // Fallback from bookings if transactions not in ledger
-    return this.bookingsList.map(b => ({
-      id: b.id,
-      booking_id: b.id,
-      amount: b.price,
-      currency: 'INR',
-      status: 'Paid',
-      description: `நேரடி ஆலோசனை - ${b.astrologer_name}`,
-      razorpay_payment_id: b.razorpay_payment_id || `pay_${b.id}`,
-      razorpay_order_id: b.razorpay_order_id || b.id,
-      date: b.date
-    }));
+    return this.paymentsList;
   }
 
   getServices(): any[] {

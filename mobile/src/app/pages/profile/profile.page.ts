@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
+import { AuthService } from '../../services/auth.service';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
@@ -395,7 +396,8 @@ export class ProfilePage implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private backButtonService: BackButtonService
+    private backButtonService: BackButtonService,
+    private authService: AuthService
   ) {}
 
   ionViewDidEnter() {
@@ -420,13 +422,6 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
-    const userStr = sessionStorage.getItem('auth_user');
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      this.userName = user.name;
-      this.userEmail = user.email;
-      this.editProfile = { name: user.name, phone: user.phone || '', address: '' };
-    }
     this.loadProfile();
     this.loadHistory();
     this.loadPayments();
@@ -434,16 +429,19 @@ export class ProfilePage implements OnInit {
     this.loadPreferences();
   }
 
-  get token() { return sessionStorage.getItem('auth_token') || ''; }
-  get headers() { return { headers: { Authorization: `Bearer ${this.token}` } }; }
+  get token(): string { return this.authService.getToken() || ''; }
+  get headers(): any { return this.authService.getAuthHeaders(); }
 
   loadProfile() {
     this.http.get<any>(`${environment.apiUrl}/user/profile`, this.headers).subscribe({
-      next: res => {
-        this.editProfile = { name: res.name, phone: res.phone || '', address: res.address || '' };
-        this.jathagam = res.jathagam_details;
-        this.userName = res.name;
-      }
+      next: (res: any) => {
+        if (res) {
+          this.editProfile = { name: res.name || '', phone: res.phone || '', address: res.address || '' };
+          this.jathagam = res.jathagam_details;
+          this.userName = res.name || '';
+        }
+      },
+      error: () => {}
     });
   }
 
@@ -451,7 +449,7 @@ export class ProfilePage implements OnInit {
     this.savingProfile = true;
     this.profileMsg = '';
     this.http.put<any>(`${environment.apiUrl}/user/profile`, this.editProfile, this.headers).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.profileMsg = 'சுயவிவரம் புதுப்பிக்கப்பட்டது!';
         this.profileSuccess = true;
         this.savingProfile = false;
@@ -463,7 +461,7 @@ export class ProfilePage implements OnInit {
   loadHistory() {
     this.loadingHistory = true;
     this.http.get<any>(`${environment.apiUrl}/user/bookings`, this.headers).subscribe({
-      next: res => { this.bookings = res.bookings || []; this.loadingHistory = false; },
+      next: (res: any) => { this.bookings = res?.bookings || []; this.loadingHistory = false; },
       error: () => { this.loadingHistory = false; }
     });
   }
@@ -471,7 +469,7 @@ export class ProfilePage implements OnInit {
   loadPayments() {
     this.loadingPayments = true;
     this.http.get<any>(`${environment.apiUrl}/user/payments`, this.headers).subscribe({
-      next: res => { this.payments = res.payments || []; this.loadingPayments = false; },
+      next: (res: any) => { this.payments = res?.payments || []; this.loadingPayments = false; },
       error: () => { this.loadingPayments = false; }
     });
   }
@@ -479,9 +477,9 @@ export class ProfilePage implements OnInit {
   loadNotifications() {
     this.loadingNotifs = true;
     this.http.get<any>(`${environment.apiUrl}/user/notifications`, this.headers).subscribe({
-      next: res => {
-        this.notifications = res.notifications || [];
-        this.unreadCount = res.unread_count || 0;
+      next: (res: any) => {
+        this.notifications = res?.notifications || [];
+        this.unreadCount = res?.unread_count || 0;
         this.loadingNotifs = false;
       },
       error: () => { this.loadingNotifs = false; }
@@ -491,13 +489,15 @@ export class ProfilePage implements OnInit {
   markRead(n: any) {
     if (n.is_read) return;
     this.http.put<any>(`${environment.apiUrl}/user/notifications/${n.id}/read`, {}, this.headers).subscribe({
-      next: () => { n.is_read = true; this.unreadCount = Math.max(0, this.unreadCount - 1); }
+      next: (res: any) => { n.is_read = true; this.unreadCount = Math.max(0, this.unreadCount - 1); },
+      error: () => {}
     });
   }
 
   markAllRead() {
     this.http.put<any>(`${environment.apiUrl}/user/notifications/read-all`, {}, this.headers).subscribe({
-      next: () => { this.notifications.forEach(n => n.is_read = true); this.unreadCount = 0; }
+      next: (res: any) => { this.notifications.forEach(n => n.is_read = true); this.unreadCount = 0; },
+      error: () => {}
     });
   }
 
@@ -511,7 +511,8 @@ export class ProfilePage implements OnInit {
 
   loadPreferences() {
     this.http.get<any>(`${environment.apiUrl}/user/notification-preferences`, this.headers).subscribe({
-      next: res => { this.dailyNotifPref = res.daily_rasi_notification ?? true; }
+      next: (res: any) => { this.dailyNotifPref = res?.daily_rasi_notification ?? true; },
+      error: () => {}
     });
   }
 
@@ -519,9 +520,9 @@ export class ProfilePage implements OnInit {
     this.prefMsg = '';
     const newValue = !this.dailyNotifPref;
     this.http.put<any>(`${environment.apiUrl}/user/notification-preferences`, { daily_rasi_notification: newValue }, this.headers).subscribe({
-      next: res => {
-        this.dailyNotifPref = res.daily_rasi_notification;
-        this.prefMsg = res.message;
+      next: (res: any) => {
+        this.dailyNotifPref = res?.daily_rasi_notification;
+        this.prefMsg = res?.message || 'விருப்பம் புதுப்பிக்கப்பட்டது.';
         this.prefSuccess = true;
       },
       error: () => {
