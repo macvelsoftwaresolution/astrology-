@@ -99,14 +99,16 @@ $color-white: #FFFFFF;
     .top-nav-title {
       font-family: 'Noto Serif Tamil', 'Mukta Malar', 'Latha', serif;
       color: #3B0910;
-      font-size: 1.35rem;
+      font-size: 1.18rem;
       font-weight: 800;
       margin: 0;
-      padding-top: 4px;
+      padding-top: 2px;
       padding-bottom: 2px;
       white-space: nowrap;
-      overflow: visible;
-      line-height: 1.45;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      line-height: 1.4;
       letter-spacing: -0.2px;
     }
   }
@@ -2629,7 +2631,7 @@ $color-white: #FFFFFF;
 /* Floating Slide-Down In-App Notification Banner */
 .floating-notif-banner {
   position: fixed;
-  top: 75px;
+  top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 12px)) + 68px);
   left: 14px;
   right: 14px;
   z-index: 999999;

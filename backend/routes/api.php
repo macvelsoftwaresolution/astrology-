@@ -188,6 +188,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     // Notification Broadcast & Live Activity Alerts
     Route::get('/notifications/activity-alerts',                [NotificationController::class, 'getAdminActivityAlerts']);
     Route::post('/notifications/broadcast',                    [NotificationController::class, 'broadcastNotification']);
+    Route::get('/notifications/broadcast-history',            [NotificationController::class, 'getBroadcastHistory']);
     Route::get('/notifications/daily-rasi-status',             [NotificationController::class, 'getDailyNotificationStatus']);
     Route::put('/notifications/daily-rasi-toggle',             [NotificationController::class, 'toggleDailyNotificationFeature']);
 

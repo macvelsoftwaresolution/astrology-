@@ -107,12 +107,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.readNotificationIds = new Set();
       }
 
+      // Single initial fetch on dashboard load
       this.loadNotifications();
-
-      // Poll notifications every 20 seconds only when tab is active
-      this.notifInterval = setInterval(() => {
-        this.loadNotifications();
-      }, 20000);
     }
 
     this.route.queryParams.subscribe(params => {
@@ -147,14 +143,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   private isFetchingAlerts = false;
+  private lastFetchTime = 0;
 
-  loadNotifications(): void {
+  loadNotifications(force: boolean = false): void {
     if (typeof window === 'undefined') return;
-    if (this.isFetchingAlerts) return;
-    if (typeof document !== 'undefined' && document.hidden) return;
+
+    const now = Date.now();
+    // Block duplicate / rapid calls within 3 seconds unless forced
+    if (!force && (this.isFetchingAlerts || (now - this.lastFetchTime < 3000))) {
+      return;
+    }
 
     this.isFetchingAlerts = true;
+    this.lastFetchTime = now;
     this.isLoadingNotifications = true;
+
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/notifications/activity-alerts`, headers).subscribe({
       next: (res) => {
@@ -194,7 +197,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
     this.notificationsOpen = !this.notificationsOpen;
     if (this.notificationsOpen) {
-      this.loadNotifications();
+      this.loadNotifications(true);
     }
   }
 

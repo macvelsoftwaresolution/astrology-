@@ -165,29 +165,17 @@ class NotificationController extends Controller
             'enabled' => 'required|boolean',
         ]);
 
-        $setting = DB::table('system_settings')
-            ->where('key', 'daily_rasi_notification_enabled')
-            ->first();
-
-        if ($setting) {
-            DB::table('system_settings')
-                ->where('key', 'daily_rasi_notification_enabled')
-                ->update(['value' => $request->enabled ? '1' : '0', 'updated_at' => now()]);
-        } else {
-            DB::table('system_settings')->insert([
-                'key' => 'daily_rasi_notification_enabled',
-                'value' => $request->enabled ? '1' : '0',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        DB::table('system_settings')->updateOrInsert(
+            ['key' => 'daily_rasi_notification_enabled'],
+            ['value' => $request->enabled ? '1' : '0', 'updated_at' => now()]
+        );
 
         return response()->json([
             'success' => true,
             'message' => $request->enabled
                 ? 'தினசரி ராசி பலன் அறிவிப்பு இயக்கப்பட்டது.'
                 : 'தினசரி ராசி பலன் அறிவிப்பு நிறுத்தப்பட்டது.',
-            'enabled' => $request->enabled,
+            'enabled' => (bool)$request->enabled,
         ]);
     }
 
@@ -215,16 +203,18 @@ class NotificationController extends Controller
 
     /**
      * Admin: Get Live Activity Alerts for Admin Bell Notification Dropdown
+     * (100% Dynamic from Database `notifications` table - ZERO hardcoded titles or fallbacks)
      */
     public function getAdminActivityAlerts(Request $request)
     {
         $alerts = [];
 
-        // 1. Direct Notifications (Instant Single Query)
         try {
+            // Strictly query ONLY real records from the notifications database table
             $dbNotifs = DB::table('notifications')
+                ->whereIn('type', ['booking', 'book_order', 'submission', 'payment', 'marriage_match', 'user_registration', 'user'])
                 ->orderBy('id', 'desc')
-                ->limit(15)
+                ->limit(20)
                 ->get();
 
             foreach ($dbNotifs as $n) {
@@ -250,34 +240,6 @@ class NotificationController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        // 2. Recent Bookings if notifs sparse
-        if (count($alerts) < 5) {
-            try {
-                $bookings = DB::table('bookings')->orderBy('created_at', 'desc')->limit(5)->get();
-                foreach ($bookings as $b) {
-                    $alerts[] = [
-                        'id' => 'booking_' . $b->id,
-                        'title' => 'ஜோதிட முன்பதிவு',
-                        'title_en' => 'Astrology Booking',
-                        'message' => ($b->user_name ?? 'வாடிக்கையாளர்') . ' - ' . ($b->service_type ?? 'ஆலோசனை'),
-                        'type' => 'booking',
-                        'target_tab' => 'services',
-                        'status' => $b->status ?? 'Pending',
-                        'badge' => '₹' . (int)$b->price,
-                        'created_at' => $b->created_at,
-                        'is_pending' => in_array($b->status, ['Pending'])
-                    ];
-                }
-            } catch (\Throwable $e) {}
-        }
-
-        // Sort DESC
-        usort($alerts, function ($a, $b) {
-            return strtotime($b['created_at'] ?? '2000-01-01') - strtotime($a['created_at'] ?? '2000-01-01');
-        });
-
-        $alerts = array_slice($alerts, 0, 20);
-
         return response()->json([
             'success' => true,
             'alerts' => $alerts,
@@ -285,10 +247,29 @@ class NotificationController extends Controller
         ]);
     }
 
+    /**
+     * Admin: Get history of all broadcast / sent notifications from DB
+     */
+    public function getBroadcastHistory(Request $request)
+    {
+        $history = DB::table('notifications')
+            ->leftJoin('users', 'notifications.user_id', '=', 'users.id')
+            ->select(
+                'notifications.*',
+                'users.name as target_user_name',
+                'users.email as target_user_email'
+            )
+            ->orderBy('notifications.id', 'desc')
+            ->limit(100)
+            ->get()
+            ->map(function ($item) {
+                $item->target_display = $item->user_id ? ($item->target_user_name ?: ('User #' . $item->user_id)) : 'அனைத்து பயனர்கள் (All Users)';
+                return $item;
+            });
+
         return response()->json([
             'success' => true,
-            'alerts' => $alerts,
-            'total' => count($alerts)
+            'history' => $history
         ]);
     }
 

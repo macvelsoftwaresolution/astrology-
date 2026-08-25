@@ -15,8 +15,13 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
 })
 export class BroadcastTabComponent implements OnInit {
   dailyNotifEnabled = true;
-  dailyNotifOptedInCount = 148;
+  dailyNotifOptedInCount = 0;
   dailyNotifLoading = false;
+
+  showCreateForm = false; // Toggle view: false = History Table, true = Create Form
+
+  broadcastHistory: any[] = [];
+  isLoadingHistory = false;
 
   broadcastForm = {
     target: 'all',
@@ -31,11 +36,12 @@ export class BroadcastTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       this.loadNotificationStatus();
+      this.loadBroadcastHistory();
     }
   }
 
@@ -43,27 +49,57 @@ export class BroadcastTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/notifications/daily-rasi-status`, headers).subscribe({
       next: (res) => {
-        this.dailyNotifEnabled = res.enabled ?? true;
-        this.dailyNotifOptedInCount = res.opted_in_users ?? 0;
-        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.dailyNotifEnabled = res.enabled ?? true;
+          this.dailyNotifOptedInCount = res.opted_in_users ?? 0;
+          this.cdr.markForCheck();
+        }, 0);
       },
-      error: () => {}
+      error: () => { }
+    });
+  }
+
+  loadBroadcastHistory(): void {
+    this.isLoadingHistory = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/admin/notifications/broadcast-history`, headers).subscribe({
+      next: (res) => {
+        setTimeout(() => {
+          this.broadcastHistory = res.history || [];
+          this.isLoadingHistory = false;
+          this.cdr.markForCheck();
+        }, 0);
+      },
+      error: () => {
+        setTimeout(() => {
+          this.isLoadingHistory = false;
+          this.cdr.markForCheck();
+        }, 0);
+      }
     });
   }
 
   toggleDailyRasiNotification(): void {
+    if (this.dailyNotifLoading) return;
+
+    // Optimistic Instant UI Update (0ms Delay)
+    const targetStatus = !this.dailyNotifEnabled;
+    this.dailyNotifEnabled = targetStatus;
     this.dailyNotifLoading = true;
+    this.cdr.markForCheck();
+
     const headers = this.authService.getAuthHeaders();
-    const newStatus = !this.dailyNotifEnabled;
-    this.http.put<any>(`${environment.apiUrl}/admin/notifications/daily-rasi-toggle`, { enabled: newStatus }, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/notifications/daily-rasi-toggle`, { enabled: targetStatus }, headers).subscribe({
       next: (res) => {
         this.dailyNotifEnabled = res.enabled;
         this.dailyNotifLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
+        // Revert back on error
+        this.dailyNotifEnabled = !targetStatus;
         this.dailyNotifLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }
     });
   }
@@ -80,22 +116,17 @@ export class BroadcastTabComponent implements OnInit {
         this.broadcastMsg = res.message || '✅ புஷ் அறிவிப்பு வெற்றிகரமாக அனுப்பப்பட்டது!';
         this.broadcastForm.title = '';
         this.broadcastForm.body = '';
+        this.loadBroadcastHistory();
         setTimeout(() => {
           this.broadcastMsg = '';
-          this.cdr.detectChanges();
-        }, 4000);
-        this.cdr.detectChanges();
+          this.showCreateForm = false; // Switch back to History List
+          this.cdr.markForCheck();
+        }, 1000);
+        this.cdr.markForCheck();
       },
-      error: () => {
-        // Fallback simulated success if standalone endpoint
-        this.broadcastMsg = '✅ புஷ் அறிவிப்பு அனைத்து பயனர்களுக்கும் வெற்றிகரமாக அனுப்பப்பட்டது!';
-        this.broadcastForm.title = '';
-        this.broadcastForm.body = '';
-        setTimeout(() => {
-          this.broadcastMsg = '';
-          this.cdr.detectChanges();
-        }, 4000);
-        this.cdr.detectChanges();
+      error: (err) => {
+        this.broadcastMsg = '❌ அறிவிப்பை அனுப்புவதில் பிழை ஏற்பட்டது: ' + (err?.error?.message || 'Server error');
+        this.cdr.markForCheck();
       }
     });
   }
