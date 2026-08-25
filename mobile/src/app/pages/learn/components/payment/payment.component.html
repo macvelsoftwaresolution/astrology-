@@ -1,7 +1,7 @@
 <div class="wizard-container">
   <div class="payment-intro-card">
-    <h3 class="course-name-title">Vedic Astrology Fundamentals</h3>
-    <p class="course-subtitle-ta">வேத ஜோதிடத்தின் அடிப்படைகள்</p>
+    <h3 class="course-name-title">{{ getCourseTitle() }}</h3>
+    <p class="course-subtitle-ta">வேத ஜோதிடக் கல்வி & சான்றிதழ் பயிற்சி</p>
     
     <div class="instructor-row">
       <img src="assets/images/user_avatar.png" alt="Instructor" class="inst-avatar">
@@ -24,11 +24,11 @@
   <div class="invoice-box">
     <h3>கட்டண விவரங்கள்</h3>
     <div class="invoice-row">
-      <span>பாடத்தின் கட்டணம்</span>
-      <strong>₹2,500</strong>
+      <span>பாடத்தின் சேர்க்கைக் கட்டணம்</span>
+      <strong>₹{{ amount | number }}</strong>
     </div>
     <div class="invoice-row">
-      <span>தள்ளுபடி (Divine10)</span>
+      <span>தள்ளுபடி</span>
       <strong style="color: #2E7D32;">- ₹0</strong>
     </div>
     <div class="invoice-row">
@@ -38,7 +38,7 @@
     <hr>
     <div class="invoice-row total-row">
       <span>மொத்த தொகை</span>
-      <strong>₹2,500</strong>
+      <strong>₹{{ amount | number }}</strong>
     </div>
   </div>
 

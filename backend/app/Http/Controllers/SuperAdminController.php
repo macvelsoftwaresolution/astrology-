@@ -21,17 +21,33 @@ class SuperAdminController extends Controller
                 (SELECT COUNT(*) FROM courses) as total_courses,
                 (SELECT COUNT(*) FROM bookings) as total_bookings,
                 (SELECT COUNT(*) FROM book_orders) as total_book_orders,
-                (SELECT COALESCE(SUM(price), 0) FROM courses) as course_revenue,
                 (SELECT COALESCE(SUM(price), 0) FROM bookings) as service_revenue,
                 (SELECT COALESCE(SUM(price), 0) FROM book_orders) as book_revenue
         ");
 
         $recentAdmins = User::whereIn('role', ['admin', 'super_admin'])->get();
 
-        $courseRevenue = (float) ($data->course_revenue ?? 0);
+        // 1. Dynamic calculation of Ilanilai and Mudhunilai applicants
+        $students = User::where('role', 'user')->get(['jathagam_details']);
+        $ilanilaiCount = 0;
+        $mudhunilaiCount = 0;
+        foreach ($students as $student) {
+            if (empty($student->jathagam_details)) continue;
+            $details = json_decode($student->jathagam_details, true);
+            if (!is_array($details) || empty($details['courseLevel'])) continue;
+            $level = strtolower($details['courseLevel']);
+            if ($level === 'mudhunilai' || $level === 'muthunilai') {
+                $mudhunilaiCount++;
+            } else if ($level === 'ilanilai') {
+                $ilanilaiCount++;
+            }
+        }
+
+        // 2. Course Revenue = Total student enrollments * 2500 + Courses sum
+        $courseEnrollmentRevenue = ($ilanilaiCount + $mudhunilaiCount) * 2500;
         $serviceRevenue = (float) ($data->service_revenue ?? 0);
         $bookRevenue = (float) ($data->book_revenue ?? 0);
-        $totalRevenue = $courseRevenue + $serviceRevenue + $bookRevenue;
+        $totalRevenue = $courseEnrollmentRevenue + $serviceRevenue + $bookRevenue;
 
         return response()->json([
             'success' => true,
@@ -42,10 +58,10 @@ class SuperAdminController extends Controller
                 'total_bookings' => (int) ($data->total_bookings ?? 0),
                 'total_book_orders' => (int) ($data->total_book_orders ?? 0),
                 'total_revenue' => $totalRevenue,
-                'ilanilai_applicants' => 0,
-                'muthunilai_applicants' => 0,
+                'ilanilai_applicants' => $ilanilaiCount,
+                'muthunilai_applicants' => $mudhunilaiCount,
                 'revenue_breakdown' => [
-                    'courses' => $courseRevenue,
+                    'courses' => $courseEnrollmentRevenue,
                     'services' => $serviceRevenue,
                     'books' => $bookRevenue,
                 ]

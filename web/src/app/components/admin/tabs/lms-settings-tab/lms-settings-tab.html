@@ -15,10 +15,41 @@
       </div>
     }
 
+    <!-- 1. COURSE ADMISSION FEES CONFIGURATION -->
+    <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 18px 20px; border-radius: 12px; margin-bottom: 24px;">
+      <h3 style="font-size: 16px; font-weight: 700; color: #92400e; margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-cash-coin" style="font-size: 20px;"></i> சேர்க்கைக் கட்டண அமைப்புகள் (Course Admission Fees)
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <div class="form-group" style="margin: 0;">
+          <label style="font-weight: 700; color: #78350f; font-size: 13.5px; margin-bottom: 6px; display: block;">
+            🎓 இளநிலை கட்டணம் (Ilanilai Fee - ₹) *
+          </label>
+          <input 
+            type="number" 
+            [(ngModel)]="ilanilaiFee" 
+            style="width: 100%; padding: 10px 14px; border: 1px solid #fcd34d; border-radius: 8px; font-size: 15px; font-weight: 700; color: #0f172a; background: #fff;" 
+            placeholder="2500"
+          />
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label style="font-weight: 700; color: #78350f; font-size: 13.5px; margin-bottom: 6px; display: block;">
+            🎓 முதுநிலை கட்டணம் (Muthunilai Fee - ₹) *
+          </label>
+          <input 
+            type="number" 
+            [(ngModel)]="mudhunilaiFee" 
+            style="width: 100%; padding: 10px 14px; border: 1px solid #fcd34d; border-radius: 8px; font-size: 15px; font-weight: 700; color: #0f172a; background: #fff;" 
+            placeholder="3500"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Vilakaurai Textarea -->
     <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
       <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 8px; font-size: 16px;">
-        1. விளக்கவுரை (Vilakaurai - Introduction)
+        2. விளக்கவுரை (Vilakaurai - Introduction)
       </label>
       <textarea 
         [(ngModel)]="vilakaurai" 

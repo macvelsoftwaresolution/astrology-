@@ -40,7 +40,12 @@
       }
       @if (currentScreen === 'payment') {
         <div class="screen-pane">
-          <app-learn-payment [isProcessing]="isProcessingPayment" (next)="payAndStart()"></app-learn-payment>
+          <app-learn-payment 
+            [isProcessing]="isProcessingPayment" 
+            [amount]="getCurrentCourseFee()"
+            [courseLevel]="enrollForm.courseLevel"
+            (next)="payAndStart()">
+          </app-learn-payment>
         </div>
       }
 

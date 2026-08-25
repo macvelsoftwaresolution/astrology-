@@ -157,7 +157,7 @@
             </button>
             <button [class.active]="currentTab === 'lms-settings'" (click)="selectTab('lms-settings')">
               <i class="bi bi-gear-fill nav-icon"></i>
-              <span>விளக்கவுரை & விதிமுறைகள்</span>
+              <span>{{ 'nav.lmsSettings' | translate }}</span>
             </button>
             <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
               <i class="bi bi-box-seam-fill nav-icon"></i>

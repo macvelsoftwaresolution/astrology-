@@ -212,19 +212,30 @@ class AuthController extends Controller
      */
     public function studentRegister(Request $request)
     {
-        $request->validate([
-            'fullName'    => 'required|string|max:255',
-            'email'       => 'required|email',
-            'phone'       => 'nullable|string',
-            'courseLevel' => 'nullable|string',
-        ]);
-
-        $fullName    = trim($request->input('fullName'));
-        $email       = trim($request->input('email'));
-        $phone       = trim($request->input('phone', ''));
+        $fullName    = trim($request->input('fullName', $request->input('name', '')));
+        $email       = trim($request->input('email', $request->input('emailAddress', '')));
+        $phone       = trim($request->input('phone', $request->input('mobileNumber', '')));
         $courseLevel = $request->input('courseLevel', 'ilanilai');
 
-        $user = User::where('email', $email)->first();
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'சரியான மின்னஞ்சல் முகவரி அவசியம் (Valid email address is required).'
+            ], 422);
+        }
+
+        if (empty($fullName)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'மாணவர் பெயர் அவசியம் (Full name is required).'
+            ], 422);
+        }
+
+        $userQuery = User::where('email', $email);
+        if (!empty($phone)) {
+            $userQuery->orWhere('phone', $phone);
+        }
+        $user = $userQuery->first();
 
         // User ID format: 2-digit Year + AR + 2-digit sequential number (e.g. 26AR01, 26AR02, 27AR01)
         $twoDigitYear = date('y');

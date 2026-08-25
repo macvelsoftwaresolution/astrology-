@@ -146,7 +146,7 @@ class UserProfileController extends Controller
     {
         $users = DB::table('users')
             ->where('role', '!=', 'admin')
-            ->select('id', 'name', 'email', 'phone', 'role', 'status', 'jathagam_details', 'created_at')
+            ->select('id', 'name', 'email', 'phone', 'role', 'status', 'student_id', 'address', 'jathagam_details', 'created_at')
             ->orderBy('id', 'desc')
             ->get()
             ->map(function ($u) {
