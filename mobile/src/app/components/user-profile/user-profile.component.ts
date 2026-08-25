@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./user-profile.component.scss'],
   standalone: false
 })
-export class UserProfileComponent implements OnInit, OnChanges {
+export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   @Input() orders: any[] = [];
   @Input() initialOption: string | null = null;
 
@@ -64,9 +64,30 @@ export class UserProfileComponent implements OnInit, OnChanges {
     }
     if (this.initialOption) {
       this.selectedOption = this.initialOption;
+      this.teleportModalToBody();
     }
     this.loadProfileFromDb();
     this.loadActivitiesData();
+  }
+
+  ngOnDestroy() {
+    this.removeModalFromBody();
+  }
+
+  private teleportModalToBody() {
+    setTimeout(() => {
+      const modalOverlays = document.querySelectorAll('.user-profile-wrapper .modal-overlay');
+      modalOverlays.forEach((el) => {
+        document.body.appendChild(el);
+      });
+    }, 0);
+  }
+
+  private removeModalFromBody() {
+    const bodyModals = document.querySelectorAll('body > .modal-overlay');
+    bodyModals.forEach((el) => {
+      el.remove();
+    });
   }
 
   loadActivitiesData() {
@@ -181,6 +202,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
   openEditModal() {
     this.editForm = { ...this.personDetails };
     this.showEditModal = true;
+    this.teleportModalToBody();
   }
 
   isUploadingAvatar = false;
@@ -210,6 +232,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
   saveProfile() {
     this.personDetails = { ...this.editForm };
     this.showEditModal = false;
+    this.removeModalFromBody();
     this.isSavedNotification = true;
 
     const payload = {
@@ -247,11 +270,13 @@ export class UserProfileComponent implements OnInit, OnChanges {
   openOptionDetail(optionKey: string) {
     this.selectedOption = optionKey;
     this.loadActivitiesData();
+    this.teleportModalToBody();
   }
 
   closeOptionDetail() {
     this.selectedOption = null;
     this.showEditModal = false;
+    this.removeModalFromBody();
     this.router.navigate([], {
       queryParams: { option: null },
       queryParamsHandling: 'merge'

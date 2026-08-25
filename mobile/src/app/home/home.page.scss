@@ -2602,6 +2602,118 @@ $color-white: #FFFFFF;
   }
 }
 
+/* Animated Bell Icon with Unread Pulse */
+.bell-btn {
+  position: relative;
+
+  &.has-unread {
+    i {
+      animation: bellSwing 1.8s ease-in-out infinite;
+      color: #ECC876 !important;
+      text-shadow: 0 0 10px rgba(236, 200, 118, 0.6);
+    }
+  }
+}
+
+@keyframes bellSwing {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(18deg); }
+  20% { transform: rotate(-18deg); }
+  30% { transform: rotate(12deg); }
+  40% { transform: rotate(-12deg); }
+  50% { transform: rotate(6deg); }
+  60% { transform: rotate(-6deg); }
+  70%, 100% { transform: rotate(0); }
+}
+
+/* Floating Slide-Down In-App Notification Banner */
+.floating-notif-banner {
+  position: fixed;
+  top: 75px;
+  left: 14px;
+  right: 14px;
+  z-index: 999999;
+  background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+  border: 1.5px solid #ECC876;
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  animation: slideDownBanner 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .banner-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(236, 200, 118, 0.2);
+    border: 1px solid #ECC876;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #ECC876;
+    flex-shrink: 0;
+
+    i {
+      animation: bellSwing 1.8s ease-in-out infinite;
+    }
+  }
+
+  .banner-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 2px 0;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ECC876;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.3;
+    }
+  }
+
+  .banner-action-btn {
+    background: #ECC876;
+    color: #4A0E17;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .banner-close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 2px;
+  }
+}
+
+@keyframes slideDownBanner {
+  from {
+    transform: translateY(-50px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 
 
 

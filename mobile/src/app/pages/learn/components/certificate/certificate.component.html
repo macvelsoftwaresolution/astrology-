@@ -3,43 +3,99 @@
     <button class="cert-back-btn" (click)="close.emit()">
       <i class="bi bi-arrow-left me-1"></i>
     </button>
-    <h2>சாதனைச் சான்றிதழ்</h2>
+    <h2>சாதனைச் சான்றிதழ் (Certificate)</h2>
     <div style="width: 32px;"></div>
   </div>
 
   <div class="cert-body-scroll">
-    <div class="cert-message-banner">
-      <h3>உங்கள் சாதனை சான்றிதழ்</h3>
-      <p>வாழ்த்துக்கள்! நீங்கள் வெற்றிகரமாக படிப்பை முடித்துள்ளீர்கள்.</p>
-    </div>
 
-    <!-- Certificate Card -->
-    <div class="cert-gold-card">
-      <div class="cert-border-outer">
-        <div class="cert-border-inner">
-          <h1 class="cert-academy-title">ஆருத்ரா அகாடமி</h1>
-          <p class="cert-cert-title">சாதனைச் சான்றிதழ் (Certificate of Achievement)</p>
-          <p class="cert-given-to">வழங்கப்படும் நபர்:</p>
-          <h2 class="cert-student-name">{{ enrollForm?.fullName || 'குமார்' }}</h2>
-          <p class="cert-accomplishment">
-            <strong>வேத ஜோதிட அடிப்படைகள்</strong> என்ற பாடநெறியை வெற்றிகரமாக நிறைவு செய்ததற்காக இச்சான்றிதழ் வழங்கப்படுகிறது.
-          </p>
-          <div class="cert-details-footer">
-            <div>
-              <span>நாள்: அக்டோபர் 12, 2026</span>
-              <span>பாட நேரம்: 48 மணிநேரம்</span>
+    @if (isLoading) {
+      <div style="text-align: center; padding: 40px; color: #ECC876; font-weight: 700;">
+        <i class="bi bi-hourglass-split me-1"></i> சான்றிதழ்கள் ஏற்றப்படுகிறது...
+      </div>
+    } @else if (certificates.length > 0) {
+      <div class="cert-message-banner">
+        <h3><i class="bi bi-award-fill text-gold me-1"></i>உங்கள் சாதனை சான்றிதழ்</h3>
+        <p>வாழ்த்துகள்! நிர்வாகியால் வழங்கப்பட்ட உங்களின் சான்றிதழ் கீழே பதிவேற்றப்பட்டுள்ளது.</p>
+      </div>
+
+      <!-- Certificate Selector Tabs if multiple -->
+      @if (certificates.length > 1) {
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px;">
+          @for (c of certificates; track c.id) {
+            <button (click)="selectCertificate(c)" 
+              [style.background]="selectedCert?.id === c.id ? '#ECC876' : 'rgba(255,255,255,0.1)'"
+              [style.color]="selectedCert?.id === c.id ? '#4A0E17' : '#FFFFFF'"
+              style="border: 1px solid #ECC876; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+              📜 {{ c.course_title }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Certificate Gold Card -->
+      <div class="cert-gold-card">
+        <div class="cert-border-outer">
+          <div class="cert-border-inner">
+            <h1 class="cert-academy-title">ஆருத்ரா அகாடமி</h1>
+            <p class="cert-cert-title">சாதனைச் சான்றிதழ் (Certificate of Achievement)</p>
+            
+            <p class="cert-given-to">வழங்கப்படும் நபர்:</p>
+            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'மாணவர்' }}</h2>
+            
+            <p class="cert-accomplishment">
+              <strong>{{ selectedCert?.course_title || 'வேத ஜோதிட படிப்புகள்' }}</strong> என்ற பாடநெறியை வெற்றிகரமாக நிறைவு செய்ததற்காக இச்சான்றிதழ் வழங்கப்படுகிறது.
+            </p>
+
+            <div style="text-align: center; margin: 10px 0; font-family: monospace; color: #7A3508; font-weight: 800; font-size: 12px;">
+              சான்றிதழ் எண்: {{ selectedCert?.certificate_number }}
             </div>
-            <div class="cert-seal"><i class="bi bi-patch-check-fill text-gold me-1"></i> SEAL</div>
+
+            <div class="cert-details-footer">
+              <div>
+                <span>வழங்கப்பட்ட நாள்: {{ selectedCert?.issue_date }}</span>
+                <span>மதிப்பெண்: {{ selectedCert?.score || 100 }}%</span>
+              </div>
+              <div class="cert-seal"><i class="bi bi-patch-check-fill text-gold me-1"></i> VERIFIED</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <button class="cert-action-btn pdf">
-      <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> PDF தரவிறக்கம்
-    </button>
-    <button class="cert-action-btn share">
-      <i class="bi bi-share-fill me-2"></i> பகிர்
-    </button>
+      <button class="cert-action-btn pdf" (click)="downloadCertificate(selectedCert)">
+        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> சான்றிதழ் பதிவிறக்கம் (Download PDF/Image)
+      </button>
+      <button class="cert-action-btn share" (click)="shareCertificate(selectedCert)">
+        <i class="bi bi-share-fill me-2"></i> பகிர் (Share)
+      </button>
+
+    } @else {
+
+      <!-- Fallback when no certificate uploaded by Admin yet -->
+      <div style="text-align: center; padding: 30px 15px; background: rgba(255,255,255,0.08); border-radius: 16px; border: 1px dashed rgba(236,200,118,0.4); margin-bottom: 20px;">
+        <i class="bi bi-award-fill" style="font-size: 3.5rem; color: #ECC876; display: block; margin-bottom: 12px;"></i>
+        <h3 style="color: #ECC876; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">சான்றிதழ் தயாரிப்பில் உள்ளது</h3>
+        <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; line-height: 1.5; margin-bottom: 0;">
+          நிர்வாகியால் சான்றிதழ் பதிவேற்றப்பட்டவுடன் இங்கு தோன்றும் மற்றும் பதிவிறக்கம் செய்ய இயலும்.
+        </p>
+      </div>
+
+      <!-- Dynamic Preview -->
+      <div class="cert-gold-card" style="opacity: 0.75;">
+        <div class="cert-border-outer">
+          <div class="cert-border-inner">
+            <h1 class="cert-academy-title">ஆருத்ரா அகாடமி</h1>
+            <p class="cert-cert-title">சாதனைச் சான்றிதழ் (Certificate Preview)</p>
+            <p class="cert-given-to">வழங்கப்படும் நபர்:</p>
+            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'மாணவர்' }}</h2>
+            <p class="cert-accomplishment">
+              <strong>வேத ஜோதிட சான்றிதழ் பாடநெறி</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
+    }
+
   </div>
 </div>

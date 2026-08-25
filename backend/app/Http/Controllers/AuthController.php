@@ -152,6 +152,19 @@ class AuthController extends Controller
 
         $token = $user->createToken('mobile_app_token', ['user'])->plainTextToken;
 
+        // Create Welcome Notification for new user
+        try {
+            DB::table('notifications')->insert([
+                'user_id'    => $user->id,
+                'title'      => 'வணக்கம்! ஆருத்ராவுக்கு நல்வரவு',
+                'body'       => 'உங்கள் கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டுள்ளது. ஜோதிட ஆலோசனைகள் மற்றும் பாடநெறிகளைப் பெற வாழ்த்துகள்!',
+                'type'       => 'user',
+                'is_read'    => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {}
+
         return response()->json([
             'success' => true,
             'message' => 'பதிவு வெற்றிகரமாக முடிந்தது!',

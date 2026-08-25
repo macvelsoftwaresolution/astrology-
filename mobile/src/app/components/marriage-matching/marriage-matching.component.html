@@ -1,22 +1,43 @@
 <!-- Step 0: Options Screen -->
 @if (serviceStep === 0) {
   <div class="options-container">
-    <div class="form-banner">சிவசக்தி திருமண தகவல் மையம்</div>
-    <p class="subtitle">உங்கள் தேவையை தேர்ந்தெடுக்கவும்</p>
+    
+    <p class="section-sub-heading"><i class="bi bi-hand-index-thumb-fill me-1 text-gold"></i> உங்கள் தேவையைத் தேர்ந்தெடுக்கவும்</p>
+
     <div class="options-grid">
-      <div class="option-card" (click)="selectOption('register')">
-        <div class="option-icon"><i class="bi bi-file-earmark-person-fill text-gold"></i></div>
-        <h3>திருமண பதிவு</h3>
-        <p>புதிய வரன் விவரங்களை பதிவு செய்ய</p>
-        <button class="btn-app-gold">பதிவு செய்க ➔</button>
+      <!-- Card 1: Registration -->
+      <div class="option-card premium-card" (click)="selectOption('register')">
+        <div class="option-card-header">
+          <div class="option-icon-box box-gold-glow">
+            <i class="bi bi-file-earmark-person-fill"></i>
+          </div>
+          <span class="card-badge badge-gold"><i class="bi bi-award-fill me-1"></i> வரன் பதிவு</span>
+        </div>
+        <h3 class="card-title">திருமண பதிவு</h3>
+        <p class="card-desc">புதிய வரன் விவரங்களை பதிவு செய்து பொருத்தமான வாழ்க்கைத்துணையைக் கண்டறியலாம்.</p>
+        <button class="btn-app-gold-elevated">
+          <span><i class="bi bi-person-plus-fill me-1"></i> பதிவு செய்க</span>
+          <i class="bi bi-arrow-right fs-5"></i>
+        </button>
       </div>
-      <div class="option-card" (click)="selectOption('match')">
-        <div class="option-icon"><i class="bi bi-heart-fill text-danger"></i></div>
-        <h3>திருமண பொருத்தம்</h3>
-        <p>ஆண், பெண் ஜாதக பொருத்தம் அறிய</p>
-        <button class="btn-app-gold">பொருத்தம் பார்க்க ➔</button>
+
+      <!-- Card 2: Matching -->
+      <div class="option-card premium-card" (click)="selectOption('match')">
+        <div class="option-card-header">
+          <div class="option-icon-box box-rose-glow">
+            <i class="bi bi-heart-pulse-fill"></i>
+          </div>
+          <span class="card-badge badge-rose"><i class="bi bi-stars me-1"></i> 10 பொருத்தம்</span>
+        </div>
+        <h3 class="card-title">திருமண பொருத்தம்</h3>
+        <p class="card-desc">ஆண் மற்றும் பெண் ஜாதகங்களை ஒப்பிட்டு 10 பொருத்தங்களின் அளவீட்டை அறியலாம்.</p>
+        <button class="btn-app-gold-elevated">
+          <span><i class="bi bi-suit-heart-fill me-1"></i> பொருத்தம் பார்க்க</span>
+          <i class="bi bi-arrow-right fs-5"></i>
+        </button>
       </div>
     </div>
+
   </div>
 }
 
@@ -28,7 +49,7 @@
 @if (serviceStep === 1) {
   <div class="matching-form-card">
     <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()">◀</button>
+      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
       <h2>பதிவு விண்ணப்பம்</h2>
     </div>
     <div class="form-section-title">அடிப்படை விவரங்கள்</div>
@@ -267,7 +288,7 @@
 @if (serviceStep === 2) {
   <div class="match-result-container">
     <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()">◀</button>
+      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
       <h2>கட்டண விவரம்</h2>
     </div>
     <div class="payment-card" style="margin-top: 1rem;">
@@ -308,7 +329,7 @@
 @if (serviceStep === 4) {
   <div class="matching-form-card">
     <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()">◀</button>
+      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
       <h2>திருமணப் பொருத்தம்</h2>
     </div>
     <!-- Girl Inputs -->
@@ -434,7 +455,7 @@
 @if (serviceStep === 5) {
   <div class="traditional-sheet-container">
     <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()">◀</button>
+      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
       <h2>பொருத்தப் படிவம்</h2>
     </div>
     

@@ -75,6 +75,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   unreadNotificationsCount = 0;
   isLoadingNotifications = false;
   readNotificationIds: Set<string> = new Set();
+  latestAdminAlert: any = null;
+  showAdminAlertBanner = false;
   private notifInterval: any = null;
 
   constructor(
@@ -107,10 +109,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       this.loadNotifications();
 
-      // Poll notifications every 30 seconds for live real-time feel
+      // Poll notifications every 20 seconds only when tab is active
       this.notifInterval = setInterval(() => {
         this.loadNotifications();
-      }, 30000);
+      }, 20000);
     }
 
     this.route.queryParams.subscribe(params => {
@@ -139,22 +141,47 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeAdminAlertBanner(): void {
+    this.showAdminAlertBanner = false;
+    this.cdr.detectChanges();
+  }
+
+  private isFetchingAlerts = false;
+
   loadNotifications(): void {
     if (typeof window === 'undefined') return;
+    if (this.isFetchingAlerts) return;
+    if (typeof document !== 'undefined' && document.hidden) return;
+
+    this.isFetchingAlerts = true;
     this.isLoadingNotifications = true;
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/notifications/activity-alerts`, headers).subscribe({
       next: (res) => {
+        this.isFetchingAlerts = false;
         const alerts = res.alerts || [];
         this.notifications = alerts.map((a: any) => ({
           ...a,
           is_read: this.readNotificationIds.has(a.id)
         }));
-        this.unreadNotificationsCount = this.notifications.filter(n => !n.is_read).length;
+        
+        const unreadList = this.notifications.filter(n => !n.is_read);
+        const prevCount = this.unreadNotificationsCount;
+        this.unreadNotificationsCount = unreadList.length;
+
+        // If new unread activity alert arrived, show top slide-down animated toast banner!
+        if (unreadList.length > 0 && (unreadList.length > prevCount || !this.latestAdminAlert)) {
+          this.latestAdminAlert = unreadList[0];
+          if (!sessionStorage.getItem('admin_alert_banner_dismissed_' + this.latestAdminAlert.id)) {
+            this.showAdminAlertBanner = true;
+          }
+        }
+
         this.isLoadingNotifications = false;
         this.cdr.detectChanges();
       },
       error: () => {
+        this.isFetchingAlerts = false;
         this.isLoadingNotifications = false;
         this.cdr.detectChanges();
       }

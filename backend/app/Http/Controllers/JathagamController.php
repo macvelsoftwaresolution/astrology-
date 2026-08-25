@@ -210,6 +210,22 @@ class JathagamController extends Controller
             'updated_at'      => now()
         ]);
 
+        // Real notification for user
+        if ($userId) {
+            try {
+                DB::table('notifications')->insert([
+                    'user_id'    => $userId,
+                    'title'      => 'திருமணப் பொருத்தம் கணிக்கப்பட்டது!',
+                    'body'       => $request->boy_name . ' & ' . $request->girl_name . ' இடையே ' . $totalScore . '/' . $totalPoruthams . ' பொருத்தம் உள்ளது (' . $matchStatus . ').',
+                    'type'       => 'marriage_match',
+                    'is_read'    => false,
+                    'data'       => json_encode(['match_id' => $id]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
+        }
+
         return response()->json([
             'success'       => true,
             'match_id'      => $id,

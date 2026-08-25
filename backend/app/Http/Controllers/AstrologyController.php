@@ -184,6 +184,22 @@ class AstrologyController extends Controller
             ]);
         }
 
+        // Insert Real Notification for User
+        if ($userId) {
+            try {
+                DB::table('notifications')->insert([
+                    'user_id'    => $userId,
+                    'title'      => 'முன்பதிவு பெறப்பட்டது! (Booking Received)',
+                    'body'       => 'உங்கள் ' . ($request->service_type ?: 'ஜோதிட ஆலோசனை') . ' முன்பதிவு #' . $orderId . ' பெறப்பட்டது.',
+                    'type'       => 'booking',
+                    'is_read'    => false,
+                    'data'       => json_encode(['booking_id' => $orderId]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Booking initialized successfully',
