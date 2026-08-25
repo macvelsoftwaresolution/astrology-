@@ -167,21 +167,39 @@ class AstrologyController extends Controller
             'updated_at' => now()
         ]);
 
-        // If payment was completed, log transaction
+        // If payment was completed, log transaction (avoid duplicate)
         if ($request->razorpay_payment_id) {
-            DB::table('payment_transactions')->insert([
-                'user_id' => $userId ?? 1,
-                'booking_id' => $orderId,
-                'order_type' => 'booking',
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'amount' => $request->price ?? 0,
-                'currency' => 'INR',
-                'status' => 'Paid',
-                'description' => 'ஜோதிட ஆலோசனை முன்பதிவு - ' . ($details['astrologer_name'] ?? $request->service_type),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            DB::table('payment_transactions')->updateOrInsert(
+                ['razorpay_payment_id' => $request->razorpay_payment_id],
+                [
+                    'user_id' => $userId ?? 1,
+                    'booking_id' => $orderId,
+                    'order_type' => 'booking',
+                    'razorpay_order_id' => $request->razorpay_order_id,
+                    'amount' => $request->price ?? 0,
+                    'currency' => 'INR',
+                    'status' => 'Paid',
+                    'description' => 'ஜோதிட ஆலோசனை முன்பதிவு - ' . ($details['astrologer_name'] ?? $request->service_type),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            );
+        }
+
+        // Insert Real Notification for User
+        if ($userId) {
+            try {
+                DB::table('notifications')->insert([
+                    'user_id'    => $userId,
+                    'title'      => 'முன்பதிவு பெறப்பட்டது! (Booking Received)',
+                    'body'       => 'உங்கள் ' . ($request->service_type ?: 'ஜோதிட ஆலோசனை') . ' முன்பதிவு #' . $orderId . ' பெறப்பட்டது.',
+                    'type'       => 'booking',
+                    'is_read'    => false,
+                    'data'       => json_encode(['booking_id' => $orderId]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
         }
 
         return response()->json([
@@ -301,21 +319,23 @@ class AstrologyController extends Controller
             // Fetch booking
             $booking = DB::table('bookings')->where('id', $request->order_id)->first();
 
-            // Record transaction
+            // Record transaction if not already logged (avoid duplicate)
             if ($booking) {
-                DB::table('payment_transactions')->insert([
-                    'user_id' => $booking->user_id ?? 1,
-                    'booking_id' => $request->order_id,
-                    'order_type' => 'booking',
-                    'razorpay_order_id' => $request->razorpay_order_id,
-                    'razorpay_payment_id' => $request->razorpay_payment_id,
-                    'amount' => $booking->price ?? 0,
-                    'currency' => 'INR',
-                    'status' => 'Paid',
-                    'description' => 'ஜோதிட ஆலோசனை முன்பதிவு கட்டணம்',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                DB::table('payment_transactions')->updateOrInsert(
+                    ['razorpay_payment_id' => $request->razorpay_payment_id],
+                    [
+                        'user_id' => $booking->user_id ?? 1,
+                        'booking_id' => $request->order_id,
+                        'order_type' => 'booking',
+                        'razorpay_order_id' => $request->razorpay_order_id,
+                        'amount' => $booking->price ?? 0,
+                        'currency' => 'INR',
+                        'status' => 'Paid',
+                        'description' => 'ஜோதிட ஆலோசனை முன்பதிவு கட்டணம்',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]
+                );
 
                 // Update booking
                 DB::table('bookings')

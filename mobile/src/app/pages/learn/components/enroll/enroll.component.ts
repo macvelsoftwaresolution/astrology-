@@ -153,12 +153,30 @@ export class LearnEnrollComponent implements OnInit {
   }
 
   onSubmit() {
-    if (!this.localForm.fullName || !this.localForm.emailAddress || !this.localForm.mobileNumber) {
-      this.errorMessage = 'தயவுசெய்து பெயர் (ஆங்கிலத்தில்), மின்னஞ்சல் மற்றும் அலைபேசி எண்ணை உள்ளிடவும்.';
+    if (!this.localForm.studentNameTamil || !this.localForm.studentNameTamil.trim()) {
+      this.errorMessage = 'தயவுசெய்து மாணவர் பெயரைத் தமிழில் உள்ளிடவும் (1. மாணவர் பெயர் தமிழில் *).';
+      return;
+    }
+    // Check if contains Tamil characters
+    const tamilRegex = /[\u0B80-\u0BFF]/;
+    if (!tamilRegex.test(this.localForm.studentNameTamil)) {
+      this.errorMessage = 'மாணவர் பெயர் கட்டாயமாக தமிழ் எழுத்துக்களில் மட்டுமே இருக்க வேண்டும் (எ.கா: கார்த்திக்).';
+      return;
+    }
+    if (!this.localForm.fullName || !this.localForm.fullName.trim()) {
+      this.errorMessage = 'தயவுசெய்து மாணவர் பெயரை ஆங்கிலத்தில் உள்ளிடவும் (2. Name in English *).';
+      return;
+    }
+    if (!this.localForm.mobileNumber || !this.localForm.mobileNumber.trim()) {
+      this.errorMessage = 'தயவுசெய்து முதன்மை அலைபேசி எண்ணை உள்ளிடவும்.';
+      return;
+    }
+    if (!this.localForm.emailAddress || !this.localForm.emailAddress.trim()) {
+      this.errorMessage = 'தயவுசெய்து மின்னஞ்சல் முகவரியை உள்ளிடவும்.';
       return;
     }
     if (!this.localForm.dob) {
-      this.errorMessage = 'தயவுசெய்து பிறந்த தேதியை உள்ளிடவும்.';
+      this.errorMessage = 'தயவுசெய்து பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்.';
       return;
     }
     if (!this.localForm.agreedDeclaration) {

@@ -74,16 +74,37 @@ export class UsersTabComponent implements OnInit {
     });
   }
 
-  formatDynamicDate(rawDate: any): string {
+  getParsedDetails(u: any): any {
+    if (!u) return null;
+    if (u.jathagam_details && typeof u.jathagam_details === 'string') {
+      try {
+        u.jathagam_details = JSON.parse(u.jathagam_details);
+      } catch {
+        // ignore
+      }
+    }
+    return u.jathagam_details || u.jathagam_profile || null;
+  }
+
+  isStudent(u: any): boolean {
+    if (!u) return false;
+    const d = this.getParsedDetails(u);
+    return !!(u.student_id || d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.trainingMode || d?.qualification);
+  }
+
+  getStudentLevel(u: any): string {
+    const d = this.getParsedDetails(u);
+    const lvl = d?.courseLevel?.toLowerCase() || 'ilanilai';
+    return (lvl === 'mudhunilai' || lvl === 'muthunilai') ? 'முதுநிலை (Muthunilai)' : 'இளநிலை (Ilanilai)';
+  }
+
+  getDateParts(rawDate: any): { date: string; time: string } {
     if (!rawDate) {
-      const now = new Date();
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()} (${dayNames[now.getDay()]})`;
+      return { date: 'இன்று (Today)', time: 'நேரலை' };
     }
     try {
       const d = new Date(rawDate);
-      if (isNaN(d.getTime())) return String(rawDate);
+      if (isNaN(d.getTime())) return { date: String(rawDate), time: '' };
 
       const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -98,11 +119,18 @@ export class UsersTabComponent implements OnInit {
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
       hours = hours ? hours : 12;
-      const timeStr = `${hours}:${minutes} ${ampm}`;
 
-      return `${dateNum} ${monthStr} ${yearStr} (${dayStr}) • ${timeStr}`;
+      return {
+        date: `${dateNum} ${monthStr} ${yearStr}`,
+        time: `${hours}:${minutes} ${ampm} (${dayStr})`
+      };
     } catch {
-      return String(rawDate);
+      return { date: String(rawDate), time: '' };
     }
+  }
+
+  formatDynamicDate(rawDate: any): string {
+    const p = this.getDateParts(rawDate);
+    return `${p.date} • ${p.time}`;
   }
 }

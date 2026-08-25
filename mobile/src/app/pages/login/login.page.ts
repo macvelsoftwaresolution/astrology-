@@ -37,8 +37,7 @@ export class LoginPage implements OnInit {
     }
 
     this.authService.login(this.mobileNumber, this.password, this.serviceType).subscribe({
-      next: async (res) => {
-        await this.showToast('வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
+      next: (res) => {
         if (this.serviceType === 'education') {
           this.router.navigate(['/learn'], { replaceUrl: true });
         } else {

@@ -79,6 +79,10 @@ export class LearnPage implements OnInit {
   showLoginPassword = false;
   loginErrorMessage = '';
 
+  // Fee settings (Dynamic from Admin)
+  ilanilaiFee: number = 2500;
+  mudhunilaiFee: number = 3500;
+
   // Shared form state
   enrollForm = {
     fullName: '',
@@ -103,6 +107,8 @@ export class LearnPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loadCourseFees();
+
     const loggedIn = this.authService.isLoggedIn('education');
     if (loggedIn) {
       this.currentScreen = 'dashboard';
@@ -122,6 +128,31 @@ export class LearnPage implements OnInit {
         this.currentLessonView = 'list';
       }
     });
+  }
+
+  loadCourseFees() {
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_ilanilai_fee`).subscribe({
+      next: (res) => {
+        if (res && res.value) {
+          this.ilanilaiFee = Number(res.value) || 2500;
+        }
+      },
+      error: () => {}
+    });
+
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_mudhunilai_fee`).subscribe({
+      next: (res) => {
+        if (res && res.value) {
+          this.mudhunilaiFee = Number(res.value) || 3500;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  getCurrentCourseFee(): number {
+    const level = this.enrollForm?.courseLevel?.toLowerCase() || 'ilanilai';
+    return (level === 'mudhunilai' || level === 'muthunilai') ? this.mudhunilaiFee : this.ilanilaiFee;
   }
 
   ionViewDidEnter() {
@@ -291,7 +322,7 @@ export class LearnPage implements OnInit {
     if (this.isProcessingPayment) return;
     this.isProcessingPayment = true;
 
-    const amount = 2500;
+    const amount = this.getCurrentCourseFee();
 
     // 1. Create Razorpay order via backend API
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }).subscribe({

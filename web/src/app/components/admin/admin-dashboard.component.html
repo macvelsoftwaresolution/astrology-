@@ -13,6 +13,7 @@
           type="button" 
           class="topbar-icon-btn notif-bell-btn" 
           [class.active]="notificationsOpen"
+          [class.has-unread]="unreadNotificationsCount > 0"
           (click)="toggleNotifications($event)"
           title="அறிவிப்புகள் / Notifications"
         >
@@ -30,6 +31,25 @@
     </div>
   </div>
 
+  <!-- FLOATING SLIDE-DOWN ANIMATED TOAST BANNER FOR ADMIN LIVE ALERTS -->
+  @if (showAdminAlertBanner && latestAdminAlert) {
+    <div class="admin-floating-alert-banner">
+      <div class="banner-icon-box" [ngClass]="getNotificationColorClass(latestAdminAlert.type)">
+        <i class="bi" [ngClass]="getNotificationIcon(latestAdminAlert.type)"></i>
+      </div>
+      <div class="banner-content">
+        <h4>🔔 {{ translationService.currentLanguage() === 'ta' ? latestAdminAlert.title : (latestAdminAlert.title_en || latestAdminAlert.title) }}</h4>
+        <p>{{ latestAdminAlert.message }}</p>
+      </div>
+      <button class="banner-action-btn" (click)="openNotification(latestAdminAlert); closeAdminAlertBanner()">
+        பார்வை (View)
+      </button>
+      <button class="banner-close-btn" (click)="closeAdminAlertBanner()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  }
+
   <!-- SLEEK LEFT SIDEBAR (Desktop Fixed, Mobile Slide Drawer) -->
   <aside class="sidebar" [class.mobile-open]="mobileMenuOpen">
     <div class="brand">
@@ -45,6 +65,7 @@
           type="button" 
           class="sidebar-bell-btn" 
           [class.active]="notificationsOpen"
+          [class.has-unread]="unreadNotificationsCount > 0"
           (click)="toggleNotifications($event)"
           title="அறிவிப்புகள் / Notifications"
         >
@@ -157,7 +178,7 @@
             </button>
             <button [class.active]="currentTab === 'lms-settings'" (click)="selectTab('lms-settings')">
               <i class="bi bi-gear-fill nav-icon"></i>
-              <span>விளக்கவுரை & விதிமுறைகள்</span>
+              <span>{{ 'nav.lmsSettings' | translate }}</span>
             </button>
             <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
               <i class="bi bi-box-seam-fill nav-icon"></i>

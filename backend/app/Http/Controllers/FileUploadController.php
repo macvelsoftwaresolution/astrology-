@@ -27,31 +27,7 @@ class FileUploadController extends Controller
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeName = Str::slug($originalName) . '-' . time();
 
-        // 1. Try Official Cloudinary Laravel Facade
-        if (class_exists(\CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class)) {
-            try {
-                $uploaded = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
-                    'folder' => "astrology/{$folder}",
-                    'public_id' => $safeName,
-                    'resource_type' => 'auto'
-                ]);
-
-                if ($uploaded && method_exists($uploaded, 'getSecurePath') && $uploaded->getSecurePath()) {
-                    return response()->json([
-                        'success'   => true,
-                        'url'       => $uploaded->getSecurePath(),
-                        'path'      => $uploaded->getPublicId(),
-                        'file_name' => $file->getClientOriginalName(),
-                        'size'      => $file->getSize(),
-                        'mime_type' => $file->getMimeType()
-                    ]);
-                }
-            } catch (\Throwable $e) {
-                Log::warning('Cloudinary SDK upload attempt: ' . $e->getMessage());
-            }
-        }
-
-        // 2. Try Direct Cloudinary REST API
+        // 1. Try Direct Cloudinary REST API (Bypasses cURL local SSL bundle issues on Windows)
         $cloudinaryUrl = env('CLOUDINARY_URL') ?: config('cloudinary.cloud_url');
         if ($cloudinaryUrl && preg_match('/cloudinary:\/\/([^:]+):([^@]+)@(.+)/', trim($cloudinaryUrl, '"\''), $matches)) {
             $apiKey    = $matches[1];
@@ -64,7 +40,7 @@ class FileUploadController extends Controller
             $signature = sha1($paramsToSign . $apiSecret);
 
             try {
-                $response = Http::timeout(60)->attach(
+                $response = Http::withoutVerifying()->timeout(90)->attach(
                     'file', file_get_contents($file->getRealPath()), $file->getClientOriginalName()
                 )->post("https://api.cloudinary.com/v1_1/{$cloudName}/auto/upload", [
                     'api_key'   => $apiKey,
@@ -85,9 +61,35 @@ class FileUploadController extends Controller
                         'mime_type' => $file->getMimeType(),
                         'format'    => $data['format'] ?? $extension
                     ]);
+                } else {
+                    Log::warning('Cloudinary REST API response error: ' . $response->body());
                 }
             } catch (\Throwable $e) {
                 Log::warning('Cloudinary REST API attempt: ' . $e->getMessage());
+            }
+        }
+
+        // 2. Try Official Cloudinary Laravel Facade
+        if (class_exists(\CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class)) {
+            try {
+                $uploaded = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
+                    'folder' => "astrology/{$folder}",
+                    'public_id' => $safeName,
+                    'resource_type' => 'auto'
+                ]);
+
+                if ($uploaded && method_exists($uploaded, 'getSecurePath') && $uploaded->getSecurePath()) {
+                    return response()->json([
+                        'success'   => true,
+                        'url'       => $uploaded->getSecurePath(),
+                        'path'      => $uploaded->getPublicId(),
+                        'file_name' => $file->getClientOriginalName(),
+                        'size'      => $file->getSize(),
+                        'mime_type' => $file->getMimeType()
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Cloudinary SDK upload attempt: ' . $e->getMessage());
             }
         }
 

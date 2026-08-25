@@ -128,12 +128,12 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
           <div>
             <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
-              <i class="bi bi-broadcast" style="color:#d97706;"></i> கருத்தரங்குகள் (Upcoming Seminars)
+              <i class="bi bi-broadcast" style="color:#d97706;"></i> {{ 'lms.seminars' | translate }}
             </h3>
-            <span style="font-size:12px;color:#64748b;">மாணவர்களுக்கான சிறப்பு இணையவழி கருத்தரங்குகள்</span>
+            <span style="font-size:12px;color:#64748b;">{{ 'lms.seminarsSub' | translate }}</span>
           </div>
           <button class="btn-sm gold" (click)="openNewSeminar()">
-            <i class="bi bi-plus-lg"></i> புதிய கருத்தரங்கம் சேர்க்க
+            <i class="bi bi-plus-lg"></i> {{ 'lms.addSeminar' | translate }}
           </button>
         </div>
 
@@ -158,7 +158,7 @@
             </div>
           }
           @if (seminars.length === 0) {
-            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">கருத்தரங்குகள் ஏதுமில்லை.</div>
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">{{ 'lms.noSeminars' | translate }}</div>
           }
         </div>
       </div>
@@ -168,12 +168,12 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
           <div>
             <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
-              <i class="bi bi-camera-video-fill" style="color:#dc2626;"></i> நேரடி வகுப்புகள் (Live Classes)
+              <i class="bi bi-camera-video-fill" style="color:#dc2626;"></i> {{ 'lms.liveClasses' | translate }}
             </h3>
-            <span style="font-size:12px;color:#64748b;">Mobile App-ல் முகப்புப் பக்கத்தில் தோன்றும் நேரலை இணைப்புகள்</span>
+            <span style="font-size:12px;color:#64748b;">{{ 'lms.liveClassesSub' | translate }}</span>
           </div>
           <button class="btn-sm" style="background:#dc2626;color:#fff;border:none;" (click)="openNewLiveClass()">
-            <i class="bi bi-plus-lg"></i> புதிய வகுப்பு சேர்க்க
+            <i class="bi bi-plus-lg"></i> {{ 'lms.addLiveClass' | translate }}
           </button>
         </div>
 
@@ -202,7 +202,7 @@
             </div>
           }
           @if (liveClasses.length === 0) {
-            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">நேரடி வகுப்புகள் ஏதுமில்லை.</div>
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">{{ 'lms.noLiveClasses' | translate }}</div>
           }
         </div>
       </div>
@@ -212,12 +212,12 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
           <div>
             <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
-              <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;"></i> ஜோதிடக் குறிப்புகள் & பாடப் புத்தகங்கள் (PDF Notes)
+              <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;"></i> {{ 'lms.materials' | translate }}
             </h3>
-            <span style="font-size:12px;color:#64748b;">மாணவர்கள் பதிவிறக்கம் செய்யக்கூடிய குறிப்பேடுகள்</span>
+            <span style="font-size:12px;color:#64748b;">{{ 'lms.materialsSub' | translate }}</span>
           </div>
           <button class="btn-sm" (click)="openNewMaterial()">
-            <i class="bi bi-plus-lg"></i> புதிய குறிப்பு சேர்க்க
+            <i class="bi bi-plus-lg"></i> {{ 'lms.addMaterial' | translate }}
           </button>
         </div>
 
@@ -235,7 +235,7 @@
             </div>
           }
           @if (materials.length === 0) {
-            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">குறிப்புகள் ஏதுமில்லை.</div>
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">{{ 'lms.noMaterials' | translate }}</div>
           }
         </div>
       </div>
@@ -244,12 +244,12 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
           <div>
             <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
-              <i class="bi bi-ui-checks-grid" style="color:#8b5cf6;"></i> தேர்வுகள் (Exams & Quizzes)
+              <i class="bi bi-ui-checks-grid" style="color:#8b5cf6;"></i> {{ 'lms.exams' | translate }}
             </h3>
-            <span style="font-size:12px;color:#64748b;">மாணவர்களுக்கான தேர்வுகள்</span>
+            <span style="font-size:12px;color:#64748b;">{{ 'lms.examsSub' | translate }}</span>
           </div>
           <button class="btn-sm" style="background:#8b5cf6;color:#fff;border:none;" (click)="openNewExamWizard()">
-            <i class="bi bi-plus-lg"></i> புதிய தேர்வு சேர்க்க
+            <i class="bi bi-plus-lg"></i> {{ 'lms.addExam' | translate }}
           </button>
         </div>
 
@@ -276,7 +276,7 @@
             </div>
           }
           @if (exams.length === 0) {
-            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">தேர்வுகள் ஏதுமில்லை.</div>
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#64748b;">{{ 'lms.noExams' | translate }}</div>
           }
         </div>
       </div>

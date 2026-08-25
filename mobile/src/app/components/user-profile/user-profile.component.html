@@ -151,11 +151,12 @@
 
   <!-- A. DYNAMIC EDIT PROFILE MODAL -->
   @if (showEditModal) {
-  <div class="modal-overlay">
-    <div class="modal-card">
+  <div class="modal-overlay" (click)="closeOptionDetail()">
+    <div class="modal-card bottom-sheet-card" (click)="$event.stopPropagation()">
+      <div class="sheet-drag-handle"></div>
       <div class="modal-header">
-        <h3>சுயவிவரத்தைத் திருத்து</h3>
-        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+        <h3><i class="bi bi-pencil-square me-2 text-gold"></i>சுயவிவரத்தைத் திருத்து</h3>
+        <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="modal-body">
         <!-- Profile Image Upload in Edit Modal -->
@@ -222,8 +223,9 @@
   <!-- B. PAYMENTS & ACTIVITIES DETAIL MODAL -->
   @if (selectedOption === 'payments' || selectedOption === 'services' || selectedOption === 'horoscope' ||
   selectedOption === 'marriage') {
-  <div class="modal-overlay">
-    <div class="modal-card">
+  <div class="modal-overlay" (click)="closeOptionDetail()">
+    <div class="modal-card bottom-sheet-card" (click)="$event.stopPropagation()">
+      <div class="sheet-drag-handle"></div>
       <div class="modal-header">
         @if (selectedOption === 'payments') {
         <h3><i class="bi bi-receipt me-2 text-gold"></i>பணம் செலுத்திய வரலாறு</h3>
@@ -237,7 +239,7 @@
         @if (selectedOption === 'marriage') {
         <h3><i class="bi bi-heart-fill me-2 text-gold"></i>திருமண கோரிக்கைகள்</h3>
         }
-        <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
+        <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
 
       <div class="modal-body">
@@ -452,49 +454,56 @@
             }
             }
 
-          </div>
-          <button class="btn-app-gold-full" (click)="closeOptionDetail()" style="margin-top: 10px;">மூடுக
-            (Close)</button>
-        </div>
       </div>
-      }
 
-      <!-- C. SETTINGS / POLICY MODAL -->
-      @if (selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms') {
-      <div class="modal-overlay">
-        <div class="modal-card">
-          <div class="modal-header">
-            @if (selectedOption === 'settings') {
-            <h3>அமைப்புகள்</h3>
-            }
-            @if (selectedOption === 'privacy') {
-            <h3>தனியுரிமைக் கொள்கை</h3>
-            }
-            @if (selectedOption === 'terms') {
-            <h3>விதிமுறைகள் மற்றும் நிபந்தனைகள்</h3>
-            }
-            <button class="btn-modal-close" (click)="closeOptionDetail()">&times;</button>
-          </div>
-          <div class="modal-body">
-            <p class="text-muted fs-sm">
-              ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
-            </p>
-            <div class="person-detail-row mt-2">
-              <span class="p-label">கணக்கு உரியவர்:</span>
-              <strong class="p-val">{{ personDetails.name }}</strong>
-            </div>
-            <div class="person-detail-row">
-              <span class="p-label">மின்னஞ்சல்:</span>
-              <strong class="p-val">{{ personDetails.email }}</strong>
-            </div>
-            <div class="person-detail-row">
-              <span class="p-label">தொலைபேசி:</span>
-              <strong class="p-val">{{ personDetails.phone }}</strong>
-            </div>
-          </div>
-          <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+      <div class="modal-footer-box">
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- C. SETTINGS / POLICY MODAL -->
+  @if (selectedOption === 'settings' || selectedOption === 'privacy' || selectedOption === 'terms') {
+  <div class="modal-overlay" (click)="closeOptionDetail()">
+    <div class="modal-card bottom-sheet-card" (click)="$event.stopPropagation()">
+      <div class="sheet-drag-handle"></div>
+      <div class="modal-header">
+        @if (selectedOption === 'settings') {
+        <h3><i class="bi bi-gear-fill me-2 text-gold"></i>அமைப்புகள்</h3>
+        }
+        @if (selectedOption === 'privacy') {
+        <h3><i class="bi bi-shield-check me-2 text-gold"></i>தனியுரிமைக் கொள்கை</h3>
+        }
+        @if (selectedOption === 'terms') {
+        <h3><i class="bi bi-file-text-fill me-2 text-gold"></i>விதிமுறைகள் மற்றும் நிபந்தனைகள்</h3>
+        }
+        <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="text-muted fs-sm">
+          ஆருத்ரா ஜோதிடம் செயலியின் கணக்கு அமைப்புகள் மற்றும் பாதுகாப்பு விதிகள் அனைத்தும் 100% பாதுகாக்கப்பட்டவை.
+        </p>
+        <div class="person-detail-row mt-2">
+          <span class="p-label">கணக்கு உரியவர்:</span>
+          <strong class="p-val">{{ personDetails.name }}</strong>
+        </div>
+        <div class="person-detail-row">
+          <span class="p-label">மின்னஞ்சல்:</span>
+          <strong class="p-val">{{ personDetails.email }}</strong>
+        </div>
+        <div class="person-detail-row">
+          <span class="p-label">தொலைபேசி:</span>
+          <strong class="p-val">{{ personDetails.phone }}</strong>
         </div>
       </div>
-      }
+
+      <div class="modal-footer-box">
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+      </div>
+    </div>
+  </div>
+  }
 
     </div>

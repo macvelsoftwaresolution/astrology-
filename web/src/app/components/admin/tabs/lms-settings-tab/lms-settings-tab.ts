@@ -18,6 +18,8 @@ interface ListItem {
   styleUrls: ['../../admin-dashboard.component.css', './lms-settings-tab.css']
 })
 export class LmsSettingsTabComponent implements OnInit {
+  ilanilaiFee: number = 2500;
+  mudhunilaiFee: number = 3500;
   vilakaurai: string = '';
   
   topics: ListItem[] = [];
@@ -39,6 +41,25 @@ export class LmsSettingsTabComponent implements OnInit {
   loadSettings(): void {
     const headers = this.authService.getAuthHeaders();
     
+    // Load Fees
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_ilanilai_fee`, headers).subscribe({
+      next: (res) => {
+        if (res && res.value) {
+          this.ilanilaiFee = Number(res.value) || 2500;
+        }
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_mudhunilai_fee`, headers).subscribe({
+      next: (res) => {
+        if (res && res.value) {
+          this.mudhunilaiFee = Number(res.value) || 3500;
+        }
+        this.cdr.detectChanges();
+      }
+    });
+
     // Load Vilakaurai
     this.http.get<any>(`${environment.apiUrl}/settings/lms_vilakaurai`, headers).subscribe({
       next: (res) => {
@@ -94,11 +115,13 @@ export class LmsSettingsTabComponent implements OnInit {
     this.isSaving = true;
     const headers = this.authService.getAuthHeaders();
 
+    const pFee1 = this.http.post<any>(`${environment.apiUrl}/settings/lms_ilanilai_fee`, { value: String(this.ilanilaiFee || 2500) }, headers).toPromise();
+    const pFee2 = this.http.post<any>(`${environment.apiUrl}/settings/lms_mudhunilai_fee`, { value: String(this.mudhunilaiFee || 3500) }, headers).toPromise();
     const p1 = this.http.post<any>(`${environment.apiUrl}/settings/lms_vilakaurai`, { value: this.vilakaurai }, headers).toPromise();
     const p2 = this.http.post<any>(`${environment.apiUrl}/settings/lms_topics`, { value: JSON.stringify(this.topics) }, headers).toPromise();
     const p3 = this.http.post<any>(`${environment.apiUrl}/settings/lms_rules_list`, { value: JSON.stringify(this.rules) }, headers).toPromise();
 
-    Promise.all([p1, p2, p3]).then(() => {
+    Promise.all([pFee1, pFee2, p1, p2, p3]).then(() => {
       this.isSaving = false;
       this.saveMsg = 'அமைப்புகள் வெற்றிகரமாக சேமிக்கப்பட்டன! (Settings saved successfully)';
       this.cdr.detectChanges();

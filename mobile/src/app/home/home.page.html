@@ -33,7 +33,7 @@
 
     <!-- Right Section: Notification & User Profile Badge -->
     <div class="top-nav-right">
-      <div class="top-nav-action-btn bell-btn" (click)="openNotifications()" title="Notifications">
+      <div class="top-nav-action-btn bell-btn" [class.has-unread]="unreadNotificationsCount > 0" (click)="openNotifications()" title="Notifications">
         <i class="bi bi-bell-fill"></i>
         @if (unreadNotificationsCount > 0) {
           <span class="notif-badge-count">{{ unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount }}</span>
@@ -43,6 +43,25 @@
 
   </div>
 </ion-header>
+
+<!-- Floating In-App Animated Notification Banner on App Open -->
+@if (showNotifPopupBanner && latestUnreadNotif) {
+  <div class="floating-notif-banner">
+    <div class="banner-icon-box">
+      <i class="bi bi-bell-fill"></i>
+    </div>
+    <div class="banner-content">
+      <h4>{{ latestUnreadNotif.title || 'புதிய அறிவிப்பு' }}</h4>
+      <p>{{ latestUnreadNotif.message }}</p>
+    </div>
+    <button class="banner-action-btn" (click)="openNotifications(); closeNotifBanner()">
+      பார்வை
+    </button>
+    <button class="banner-close-btn" (click)="closeNotifBanner()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+}
 
 <ion-content [fullscreen]="true" class="astrology-app-content">
 

@@ -18,7 +18,7 @@
         [(ngModel)]="userSearchQuery" 
         [placeholder]="'users.searchUser' | translate" 
         class="ctrl"
-        style="padding-left:38px;"
+        style="padding-left:38px; width: 100%; border-radius: 8px;"
       />
     </div>
   </div>
@@ -28,122 +28,230 @@
       <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
     </div>
   } @else {
-    <div class="card-box">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>{{ 'users.name' | translate }}</th>
-            <th>{{ 'user.email' | translate }}</th>
-            <th>{{ 'user.phone' | translate }}</th>
-            <th>Jathagam Profile</th>
-            <th>{{ 'users.registeredOn' | translate }}</th>
-            <th>{{ 'common.actions' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (u of getFilteredUsers(); track u.id) {
+    <div class="card-box" style="padding: 0; overflow: hidden;">
+      <div class="table-responsive">
+        <table class="users-table">
+          <thead>
             <tr>
-              <td><strong>#{{ u.id }}</strong></td>
-              <td><strong>{{ u.name }}</strong></td>
-              <td>{{ u.email }}</td>
-              <td>
-                @if (u.phone) {
-                  <div class="phone-contact-row" style="display:flex;gap:4px;">
-                    <a [href]="'tel:' + u.phone" class="btn-tel-call">
-                      <i class="bi bi-telephone-fill"></i> {{ u.phone }}
-                    </a>
-                    <a [href]="'https://wa.me/91' + u.phone" target="_blank" class="btn-wa-link">
-                      <i class="bi bi-whatsapp"></i> WA
-                    </a>
+              <th style="width: 70px;">ID</th>
+              <th>{{ 'users.name' | translate }}</th>
+              <th>{{ 'user.email' | translate }}</th>
+              <th>{{ 'user.phone' | translate }}</th>
+              <th>சுயவிவரம் / ஜாதகம்</th>
+              <th style="min-width: 170px;">{{ 'users.registeredOn' | translate }}</th>
+              <th style="min-width: 160px;">{{ 'common.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of getFilteredUsers(); track u.id) {
+              <tr>
+                <td>
+                  <span class="id-badge">#{{ u.id }}</span>
+                </td>
+                <td>
+                  <div class="user-name-cell">
+                    <span class="user-full-name">{{ u.name }}</span>
+                    @if (u.student_id) {
+                      <span class="student-tag">
+                        <i class="bi bi-mortarboard-fill"></i> {{ u.student_id }}
+                      </span>
+                    }
+                    @if (getParsedDetails(u)?.studentNameTamil) {
+                      <span class="tamil-sub-name">{{ getParsedDetails(u).studentNameTamil }}</span>
+                    }
                   </div>
-                } @else {
-                  <span class="muted">-</span>
-                }
-              </td>
-              <td>
-                @if (u.jathagam_details || u.jathagam_profile) {
-                  <span class="badge-role" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534;">
-                    <i class="bi bi-person-badge"></i> {{ (u.jathagam_details?.rasi || u.jathagam_profile?.rasi || 'Horoscope Created') }} &bull; {{ (u.jathagam_details?.star || u.jathagam_details?.nakshatra || u.jathagam_profile?.nakshatra || '') }}
-                  </span>
-                } @else {
-                  <span class="muted" style="font-size:11px;">-</span>
-                }
-              </td>
-              <td style="font-size:12px;color:#475569;font-weight:600;">
-                <span style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 8px;border-radius:6px;">
-                  <i class="bi bi-calendar-event me-1" style="color:#b45309;"></i> {{ formatDynamicDate(u.created_at) }}
-                </span>
-              </td>
-              <td>
-                <div style="display:flex;gap:6px;">
-                  @if (u.jathagam_details || u.jathagam_profile) {
-                    <button class="btn-sm" (click)="selectedUserForProfile = u">
-                      <i class="bi bi-eye-fill"></i> {{ 'common.details' | translate }}
-                    </button>
+                </td>
+                <td style="color: #475569; font-weight: 500;">{{ u.email }}</td>
+                <td>
+                  @if (u.phone) {
+                    <div class="phone-action-pill">
+                      <a [href]="'tel:' + u.phone" class="btn-phone-call" title="Call">
+                        <i class="bi bi-telephone-fill"></i> {{ u.phone }}
+                      </a>
+                      <a [href]="'https://wa.me/91' + u.phone" target="_blank" class="btn-wa-pill" title="WhatsApp">
+                        <i class="bi bi-whatsapp"></i> WA
+                      </a>
+                    </div>
+                  } @else {
+                    <span class="text-muted">-</span>
                   }
-                  <button class="btn-sm danger" (click)="deleteUser(u.id)">
-                    <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-          @if (getFilteredUsers().length === 0) {
-            <tr>
-              <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
-                {{ 'common.noRecords' | translate }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+                </td>
+                <td>
+                  @if (isStudent(u)) {
+                    <span class="profile-tag-lms">
+                      <i class="bi bi-mortarboard"></i> {{ getStudentLevel(u) }}
+                    </span>
+                  } @else if (getParsedDetails(u)?.rasi || u.jathagam_profile?.rasi) {
+                    <span class="profile-tag-horoscope">
+                      <i class="bi bi-stars"></i> {{ getParsedDetails(u)?.rasi || u.jathagam_profile?.rasi }}
+                    </span>
+                  } @else {
+                    <span class="profile-tag-member">
+                      <i class="bi bi-person"></i> உறுப்பினர்
+                    </span>
+                  }
+                </td>
+                <td>
+                  <div class="date-time-box">
+                    <div class="date-row">
+                      <i class="bi bi-calendar-event" style="color: #d97706; font-size: 11px;"></i>
+                      <span>{{ getDateParts(u.created_at).date }}</span>
+                    </div>
+                    <div class="time-row">
+                      <i class="bi bi-clock" style="font-size: 10px;"></i>
+                      <span>{{ getDateParts(u.created_at).time }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="action-btns-wrap">
+                    @if (getParsedDetails(u)) {
+                      <button class="btn-details-action" (click)="selectedUserForProfile = u">
+                        <i class="bi bi-eye-fill"></i> {{ 'common.details' | translate }}
+                      </button>
+                    }
+                    <button class="btn-delete-action" (click)="deleteUser(u.id)">
+                      <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (getFilteredUsers().length === 0) {
+              <tr>
+                <td colspan="7" style="text-align:center;padding:32px;color:#64748b;font-weight:500;">
+                  <i class="bi bi-info-circle me-1"></i> {{ 'common.noRecords' | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 
-  <!-- MODAL: VIEW JATHAGAM PROFILE -->
+  <!-- MODAL: VIEW STUDENT ADMISSION / JATHAGAM PROFILE -->
   @if (selectedUserForProfile) {
     <div class="modal-overlay" (click)="selectedUserForProfile = null">
-      <div class="modal-box" style="max-width:520px;max-height:85vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+      <div class="modal-box" style="max-width:580px;max-height:88vh;overflow-y:auto;" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <h3 style="margin:0;"><i class="bi bi-person-badge-fill" style="color:#d97706;margin-right:6px;"></i>{{ selectedUserForProfile.name }}</h3>
-            <span style="font-size:12px;color:#64748b;">Jathagam & Birth Details</span>
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+              <i class="bi bi-person-badge-fill" style="color:#d97706;"></i>
+              {{ selectedUserForProfile.name }}
+            </h3>
+            <span style="font-size:12px;color:#64748b;">
+              @if (isStudent(selectedUserForProfile)) {
+                மாணவர் சேர்க்கை விவரங்கள் (Student Admission Profile)
+              } @else {
+                ஜாதகம் மற்றும் பிறப்பு விவரங்கள் (Birth Chart Profile)
+              }
+            </span>
           </div>
           <button class="close-btn" (click)="selectedUserForProfile = null"><i class="bi bi-x-lg"></i></button>
         </div>
 
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:14px;border-radius:10px;margin-bottom:16px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
-            <div>
-              <span class="muted" style="font-size:11px;display:block;">Rasi:</span>
-              <strong>{{ (selectedUserForProfile.jathagam_details?.rasi || selectedUserForProfile.jathagam_profile?.rasi || '-') }}</strong>
-            </div>
-            <div>
-              <span class="muted" style="font-size:11px;display:block;">Nakshatra:</span>
-              <strong>{{ (selectedUserForProfile.jathagam_details?.star || selectedUserForProfile.jathagam_details?.nakshatra || selectedUserForProfile.jathagam_profile?.nakshatra || '-') }}</strong>
-            </div>
-            <div>
-              <span class="muted" style="font-size:11px;display:block;">DOB:</span>
-              <strong>{{ (selectedUserForProfile.jathagam_details?.dob || selectedUserForProfile.jathagam_profile?.dob || '-') }}</strong>
-            </div>
-            <div>
-              <span class="muted" style="font-size:11px;display:block;">TOB:</span>
-              <strong>{{ (selectedUserForProfile.jathagam_details?.tob || selectedUserForProfile.jathagam_profile?.tob || '-') }}</strong>
-            </div>
-            <div>
-              <span class="muted" style="font-size:11px;display:block;">POB:</span>
-              <strong>{{ (selectedUserForProfile.jathagam_details?.pob || selectedUserForProfile.jathagam_profile?.pob || '-') }}</strong>
-            </div>
-            <div>
-              <span class="muted" style="font-size:11px;display:block;">Gender:</span>
-              <strong>{{ (selectedUserForProfile.jathagam_details?.gender || selectedUserForProfile.jathagam_profile?.gender || '-') }}</strong>
+        <!-- IF STUDENT ADMISSION RECORD -->
+        @if (isStudent(selectedUserForProfile)) {
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+              @if (selectedUserForProfile.student_id) {
+                <div>
+                  <span class="muted" style="font-size:11px;display:block;color:#64748b;">Student Login ID:</span>
+                  <strong style="color:#2563eb;font-size:14px;">{{ selectedUserForProfile.student_id }}</strong>
+                </div>
+              }
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பாடப் பிரிவு (Course Level):</span>
+                <strong style="color:#d97706;">{{ getStudentLevel(selectedUserForProfile) }}</strong>
+              </div>
+              @if (getParsedDetails(selectedUserForProfile)?.studentNameTamil) {
+                <div>
+                  <span class="muted" style="font-size:11px;display:block;color:#64748b;">மாணவர் பெயர் (தமிழில்):</span>
+                  <strong>{{ getParsedDetails(selectedUserForProfile).studentNameTamil }}</strong>
+                </div>
+              }
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பெயர் (ஆங்கிலத்தில்):</span>
+                <strong>{{ selectedUserForProfile.name }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">தந்தை / கணவர் பெயர்:</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.fatherName || '-' }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பிறந்த தேதி & வயது:</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.dob || '-' }} ({{ getParsedDetails(selectedUserForProfile)?.age || '-' }} வயது)</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பாலினம் (Gender):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.gender || '-' }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">தொழில் (Occupation):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.occupation || '-' }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">தாய்மொழி (Mother Tongue):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.motherTongue || 'தமிழ்' }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">கல்வித் தகுதி (Qualification):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.qualification || '-' }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பயிற்சி முறை (Training Mode):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.trainingMode || '1 நாள் பயிலரங்கம்' }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பயிற்சி நேரம் (Batch Timing):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.batchTiming || 'பிரிவு A' }}</strong>
+              </div>
+              <div style="grid-column: 1 / -1;">
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">அஞ்சல் முகவரி (Postal Address):</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.postalAddress || selectedUserForProfile.address || '-' }}</strong>
+                @if (getParsedDetails(selectedUserForProfile)?.pincode) {
+                  <span> - {{ getParsedDetails(selectedUserForProfile).pincode }}</span>
+                }
+              </div>
             </div>
           </div>
-        </div>
+        } @else {
+          <!-- IF HOROSCOPE RECORD -->
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">Rasi:</span>
+                <strong style="color:#7e22ce;">{{ (getParsedDetails(selectedUserForProfile)?.rasi || selectedUserForProfile.jathagam_profile?.rasi || '-') }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">Nakshatra:</span>
+                <strong>{{ (getParsedDetails(selectedUserForProfile)?.star || getParsedDetails(selectedUserForProfile)?.nakshatra || selectedUserForProfile.jathagam_profile?.nakshatra || '-') }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">DOB:</span>
+                <strong>{{ (getParsedDetails(selectedUserForProfile)?.dob || selectedUserForProfile.jathagam_profile?.dob || '-') }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">TOB:</span>
+                <strong>{{ (getParsedDetails(selectedUserForProfile)?.tob || selectedUserForProfile.jathagam_profile?.tob || '-') }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">POB:</span>
+                <strong>{{ (getParsedDetails(selectedUserForProfile)?.pob || selectedUserForProfile.jathagam_profile?.pob || '-') }}</strong>
+              </div>
+              <div>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">Gender:</span>
+                <strong>{{ (getParsedDetails(selectedUserForProfile)?.gender || selectedUserForProfile.jathagam_profile?.gender || '-') }}</strong>
+              </div>
+            </div>
+          </div>
+        }
 
-        <div class="modal-btns">
-          <button type="button" class="btn-cancel" (click)="selectedUserForProfile = null">{{ 'common.close' | translate }}</button>
+        <div class="modal-btns" style="display:flex;justify-content:flex-end;gap:8px;">
+          <button type="button" class="btn-cancel" style="padding:8px 16px;border-radius:6px;" (click)="selectedUserForProfile = null">
+            {{ 'common.close' | translate }}
+          </button>
         </div>
       </div>
     </div>

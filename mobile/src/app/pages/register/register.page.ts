@@ -72,8 +72,7 @@ export class RegisterPage implements OnInit {
     };
 
     this.authService.register(user, this.serviceType).subscribe({
-      next: async (res) => {
-        await this.showToast('பதிவு வெற்றிகரமாக முடிந்தது!', 'success');
+      next: (res) => {
         if (this.serviceType === 'education') {
           this.navCtrl.navigateRoot('/learn');
         } else {

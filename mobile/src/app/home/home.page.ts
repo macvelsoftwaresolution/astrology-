@@ -295,18 +295,34 @@ export class HomePage implements OnInit {
   }
 
   unreadNotificationsCount: number = 0;
+  latestUnreadNotif: any = null;
+  showNotifPopupBanner: boolean = false;
 
   openNotifications() {
+    this.showNotifPopupBanner = false;
     this.router.navigate(['/notifications']);
   }
 
+  closeNotifBanner() {
+    this.showNotifPopupBanner = false;
+  }
+
   loadNotificationsCount() {
-    const token = sessionStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('edu_auth_token');
     if (!token) return;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     this.http.get<any>(`${environment.apiUrl}/user/notifications`, headers).subscribe({
       next: (res) => {
         this.unreadNotificationsCount = res.unread_count || 0;
+        if (res.notifications && Array.isArray(res.notifications)) {
+          const unreadList = res.notifications.filter((n: any) => !n.is_read);
+          if (unreadList.length > 0) {
+            this.latestUnreadNotif = unreadList[0];
+            if (!sessionStorage.getItem('notif_banner_dismissed')) {
+              this.showNotifPopupBanner = true;
+            }
+          }
+        }
       },
       error: () => {}
     });

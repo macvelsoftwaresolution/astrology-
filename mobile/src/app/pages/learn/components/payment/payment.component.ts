@@ -8,9 +8,18 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class LearnPaymentComponent {
   @Input() isProcessing: boolean = false;
+  @Input() amount: number = 2500;
+  @Input() courseLevel: string = 'ilanilai';
   @Output() next = new EventEmitter<void>();
 
   isRazorpaySelected: boolean = true;
+
+  getCourseTitle(): string {
+    const lvl = this.courseLevel?.toLowerCase() || 'ilanilai';
+    return (lvl === 'mudhunilai' || lvl === 'muthunilai')
+      ? 'முதுநிலை ஜோதிடப் பயிலரங்கம் (Mudhunilai Master)'
+      : 'இளநிலை ஜோதிடப் பயிலரங்கம் (Ilanilai Fast Track)';
+  }
 
   onProceed() {
     if (!this.isRazorpaySelected) {

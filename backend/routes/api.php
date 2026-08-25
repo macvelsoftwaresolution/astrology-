@@ -130,9 +130,12 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::delete('/questions/{id}',                [App\Http\Controllers\ExamController::class, 'destroyQuestion']);
     Route::post('/exams/{examId}/import-pdf',       [App\Http\Controllers\ExamController::class, 'importPdf']);
 
-    // Student Exam Submissions & Grading
+    // Student Exam Submissions & Certificates
     Route::get('/submissions',                      [GradingController::class, 'getSubmissions']);
     Route::post('/submissions/{id}/evaluate',       [GradingController::class, 'evaluateSubmission']);
+    Route::get('/certificates',                     [GradingController::class, 'adminGetCertificates']);
+    Route::post('/certificates',                    [GradingController::class, 'adminUploadCertificate']);
+    Route::delete('/certificates/{id}',             [GradingController::class, 'adminDeleteCertificate']);
 
     // Book Orders & Courier
     Route::get('/book-orders',                      [CourierManagementController::class, 'getOrders']);
