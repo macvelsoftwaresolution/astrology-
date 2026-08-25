@@ -68,6 +68,9 @@
                   <button class="btn-sm" (click)="viewProfile(profile)">
                     <i class="bi bi-eye-fill"></i> {{ 'matrimony.viewDetails' | translate }}
                   </button>
+                  <button class="btn-sm" (click)="triggerUpload(profile.id)" style="color: #2563eb; border-color: #2563eb; background: #eff6ff;">
+                    <i class="bi bi-upload"></i> பதிவேற்று
+                  </button>
                 </div>
               </td>
             </tr>
@@ -146,3 +149,6 @@
     </div>
   </div>
 }
+
+<!-- Hidden File Input for Document Upload -->
+<input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*,application/pdf">

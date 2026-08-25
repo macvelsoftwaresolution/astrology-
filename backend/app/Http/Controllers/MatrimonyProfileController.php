@@ -8,6 +8,24 @@ use Illuminate\Support\Facades\DB;
 
 class MatrimonyProfileController extends Controller
 {
+    public function userIndex(Request $request)
+    {
+        $userId = $request->user()->id;
+        $profiles = MatrimonyProfile::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $profiles->transform(function ($profile) {
+            $extra = json_decode($profile->extra_details, true);
+            $profile->dob = $extra['dob'] ?? null;
+            $profile->job = $extra['job'] ?? null;
+            $profile->education = $extra['education'] ?? null;
+            return $profile;
+        });
+
+        return response()->json(['profiles' => $profiles]);
+    }
+
     /**
      * Mobile: User submits a matrimony registration
      */
@@ -22,9 +40,7 @@ class MatrimonyProfileController extends Controller
         $userId = null;
         try {
             if ($request->bearerToken()) {
-                $token = DB::table('personal_access_tokens')
-                    ->where('token', hash('sha256', $request->bearerToken()))
-                    ->first();
+                $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
                 $userId = $token?->tokenable_id;
             }
         } catch (\Exception $e) {}
@@ -48,6 +64,27 @@ class MatrimonyProfileController extends Controller
         // Store everything else in extra_details
         $profile->extra_details = json_encode($request->except(['name', 'gender', 'phone1', 'rasi', 'star', 'address', 'nativePlace', 'currentPlace']));
         $profile->save();
+
+        // --- Notify Admins ---
+        try {
+            $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+            $adminNotifs = [];
+            foreach ($admins as $adminId) {
+                $adminNotifs[] = [
+                    'user_id'    => $adminId,
+                    'title'      => 'புதிய திருமண பதிவு!',
+                    'body'       => $request->input('name') . ' புதிய வரன் பதிவு செய்துள்ளார்.',
+                    'type'       => 'matrimony_registration',
+                    'target_tab' => 'matrimony',
+                    'is_read'    => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            if (!empty($adminNotifs)) {
+                DB::table('notifications')->insert($adminNotifs);
+            }
+        } catch (\Throwable $e) {}
 
         return response()->json([
             'success' => true,
@@ -83,11 +120,20 @@ class MatrimonyProfileController extends Controller
     public function adminUpdateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string'
+            'status' => 'sometimes|string',
+            'result_document' => 'sometimes|string|nullable'
         ]);
 
         $profile = MatrimonyProfile::findOrFail($id);
-        $profile->status = $request->input('status');
+        
+        if ($request->has('status')) {
+            $profile->status = $request->input('status');
+        }
+        
+        if ($request->has('result_document')) {
+            $profile->result_document = $request->input('result_document');
+        }
+        
         $profile->save();
 
         return response()->json([

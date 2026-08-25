@@ -1,0 +1,1 @@
+<?php DB::table('marriage_matches')->insert(['user_id' => 4, 'request_type' => 'pair_match', 'boy_name' => '???????????', 'boy_dob' => '1995-05-15', 'girl_name' => '???????', 'girl_dob' => '1998-08-20', 'created_at' => now(), 'updated_at' => now()]); echo 'done';

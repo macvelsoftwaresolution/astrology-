@@ -25,20 +25,36 @@ export interface NakshatraData {
 export class MarriageMatchingComponent implements OnInit {
   @Input() rasis: any[] = [];
   myMatches: any[] = [];
-  isLoadingMatches: boolean = false;
+  myProfiles: any[] = [];
+  loadingHistory: boolean = false;
+  loadingProfiles: boolean = false;
+  showHistory: boolean = false;
 
   loadMyMatches() {
     if (!this.authService.isLoggedIn()) return;
-    this.isLoadingMatches = true;
+    this.loadingHistory = true;
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, headers).subscribe({
       next: (res) => {
         this.myMatches = res.matches || [];
-        this.isLoadingMatches = false;
+        this.loadingHistory = false;
       },
-      error: (err) => {
-        console.error('Error fetching matches', err);
-        this.isLoadingMatches = false;
+      error: () => {
+        this.loadingHistory = false;
+      }
+    });
+  }
+
+  loadMyProfiles() {
+    this.loadingProfiles = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/user/matrimony-profiles`, headers).subscribe({
+      next: (res) => {
+        this.myProfiles = res.profiles || [];
+        this.loadingProfiles = false;
+      },
+      error: () => {
+        this.loadingProfiles = false;
       }
     });
   }
@@ -184,6 +200,7 @@ export class MarriageMatchingComponent implements OnInit {
 
   ngOnInit() {
     this.loadMyMatches();
+    this.loadMyProfiles();
     const user = this.authService.getCurrentUser();
     if (user && user.phone) {
       this.matchingForm.requesterPhone = user.phone;
@@ -607,5 +624,7 @@ export class MarriageMatchingComponent implements OnInit {
     this.adminSubmittedSuccess = false;
     this.matchingForm.boyName = '';
     this.matchingForm.girlName = '';
+    this.loadMyMatches();
+    this.loadMyProfiles();
   }
 }

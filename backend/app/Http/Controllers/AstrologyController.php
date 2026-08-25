@@ -109,22 +109,9 @@ class AstrologyController extends Controller
         // Check for authenticated user token or lookup by phone
         $userId = null;
         try {
-            $bearerToken = $request->bearerToken();
-            if ($bearerToken) {
-                if (str_contains($bearerToken, '|')) {
-                    [$id, $plainToken] = explode('|', $bearerToken, 2);
-                    $pat = DB::table('personal_access_tokens')
-                        ->where('id', $id)
-                        ->first();
-                    if ($pat && hash_equals($pat->token, hash('sha256', $plainToken))) {
-                        $userId = $pat->tokenable_id;
-                    }
-                } else {
-                    $pat = DB::table('personal_access_tokens')
-                        ->where('token', hash('sha256', $bearerToken))
-                        ->first();
-                    $userId = $pat?->tokenable_id;
-                }
+            if ($request->bearerToken()) {
+                $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+                $userId = $token?->tokenable_id;
             }
         } catch (\Exception $e) {}
 
@@ -318,12 +305,12 @@ class AstrologyController extends Controller
 
             // Extract user_id from Sanctum Bearer token if present
             $userId = null;
-            if ($request->bearerToken()) {
-                $token = DB::table('personal_access_tokens')
-                    ->where('token', hash('sha256', $request->bearerToken()))
-                    ->first();
-                $userId = $token?->tokenable_id;
-            }
+            try {
+                if ($request->bearerToken()) {
+                    $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+                    $userId = $token?->tokenable_id;
+                }
+            } catch (\Exception $e) {}
 
             // Fetch booking if exists
             $booking = DB::table('bookings')->where('id', $request->order_id)->first();
@@ -361,6 +348,42 @@ class AstrologyController extends Controller
                         'updated_at' => now()
                     ]);
             }
+
+            // --- Notifications ---
+            try {
+                // Admin Notification
+                $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+                $adminNotifs = [];
+                foreach ($admins as $adminId) {
+                    $adminNotifs[] = [
+                        'user_id'    => $adminId,
+                        'title'      => 'புதிய கட்டணம் பெறப்பட்டது!',
+                        'body'       => $descToLog . ' க்காக ரூ. ' . $amountToLog . ' பெறப்பட்டது.',
+                        'type'       => 'payment',
+                        'target_tab' => 'payments',
+                        'is_read'    => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                if (!empty($adminNotifs)) {
+                    DB::table('notifications')->insert($adminNotifs);
+                }
+
+                // User Notification
+                if ($userId) {
+                    DB::table('notifications')->insert([
+                        'user_id'    => $userId,
+                        'title'      => 'கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!',
+                        'body'       => $descToLog . ' க்காக ரூ. ' . $amountToLog . ' செலுத்தப்பட்டது. (ID: ' . $payId . ')',
+                        'type'       => 'payment',
+                        'target_tab' => 'profile',
+                        'is_read'    => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
 
             return response()->json([
                 'success' => true,
