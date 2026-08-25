@@ -24,6 +24,24 @@ export interface NakshatraData {
 })
 export class MarriageMatchingComponent implements OnInit {
   @Input() rasis: any[] = [];
+  myMatches: any[] = [];
+  isLoadingMatches: boolean = false;
+
+  loadMyMatches() {
+    if (!this.authService.isLoggedIn()) return;
+    this.isLoadingMatches = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, headers).subscribe({
+      next: (res) => {
+        this.myMatches = res.matches || [];
+        this.isLoadingMatches = false;
+      },
+      error: (err) => {
+        console.error('Error fetching matches', err);
+        this.isLoadingMatches = false;
+      }
+    });
+  }
 
   // Flow State
   // 0: Options Screen
@@ -165,6 +183,7 @@ export class MarriageMatchingComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loadMyMatches();
     const user = this.authService.getCurrentUser();
     if (user && user.phone) {
       this.matchingForm.requesterPhone = user.phone;

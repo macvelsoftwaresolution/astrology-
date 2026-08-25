@@ -309,7 +309,9 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   getHoroscopes(): any[] {
     return this.bookingsList.filter(b => 
       b.service?.toLowerCase().includes('jathagam') || 
-      b.service?.includes('ஜாதகம்')
+      b.service?.includes('ஜாதகம்') ||
+      b.parigaram ||
+      b.parigaram_document
     );
   }
 
