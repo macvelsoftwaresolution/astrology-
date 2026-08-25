@@ -97,19 +97,29 @@ class JathagamController extends Controller
     public function calculateMatch(Request $request)
     {
         $request->validate([
-            'boy_name'      => 'required|string',
-            'boy_dob'       => 'nullable|date',
-            'boy_rasi'      => 'required|string',
-            'boy_nakshatra' => 'required|string',
-            'girl_name'     => 'required|string',
-            'girl_dob'      => 'nullable|date',
-            'girl_rasi'     => 'required|string',
-            'girl_nakshatra'=> 'required|string',
+            'boy_name'       => 'nullable|string',
+            'boy_dob'        => 'nullable',
+            'boy_rasi'       => 'nullable|string',
+            'boy_nakshatra'  => 'nullable|string',
+            'girl_name'      => 'nullable|string',
+            'girl_dob'       => 'nullable',
+            'girl_rasi'      => 'nullable|string',
+            'girl_nakshatra' => 'nullable|string',
         ]);
 
+        $boyName  = $request->input('boy_name') ?: 'ஆண்';
+        $boyDob   = (is_string($request->input('boy_dob')) && strtotime($request->input('boy_dob'))) ? $request->input('boy_dob') : date('Y-m-d');
+        $boyRasi  = $request->input('boy_rasi') ?: 'மேஷம்';
+        $boyStar  = $request->input('boy_nakshatra') ?: ($request->input('boy_star') ?: 'அஸ்வினி');
+
+        $girlName = $request->input('girl_name') ?: 'பெண்';
+        $girlDob  = (is_string($request->input('girl_dob')) && strtotime($request->input('girl_dob'))) ? $request->input('girl_dob') : date('Y-m-d');
+        $girlRasi = $request->input('girl_rasi') ?: 'மேஷம்';
+        $girlStar = $request->input('girl_nakshatra') ?: ($request->input('girl_star') ?: 'அஸ்வினி');
+
         // Porutham calculation using Rasi index positions
-        $boyRasiIndex  = array_search($request->boy_rasi, $this->rasiList) ?? 0;
-        $girlRasiIndex = array_search($request->girl_rasi, $this->rasiList) ?? 0;
+        $boyRasiIndex  = array_search($boyRasi, $this->rasiList) ?? 0;
+        $girlRasiIndex = array_search($girlRasi, $this->rasiList) ?? 0;
         $diff = abs($boyRasiIndex - $girlRasiIndex);
 
         // Simplified porutham scoring based on Rasi distance (classical Tamil astrology rules)
@@ -186,20 +196,20 @@ class JathagamController extends Controller
             'user_id'         => $userId,
             'request_type'    => $request->input('request_type', 'pair_match'),
             'requester_phone' => $request->input('requester_phone'),
-            'boy_name'        => $request->boy_name,
-            'boy_dob'         => $request->boy_dob,
+            'boy_name'        => $boyName,
+            'boy_dob'         => $boyDob,
             'boy_tob'         => $request->input('boy_tob'),
             'boy_pob'         => $request->input('boy_pob'),
-            'boy_rasi'        => $request->boy_rasi,
-            'boy_nakshatra'   => $request->boy_nakshatra,
+            'boy_rasi'        => $boyRasi,
+            'boy_nakshatra'   => $boyStar,
             'boy_photo'       => $request->input('boy_photo'),
             'boy_jadhagam'    => $request->input('boy_jadhagam'),
-            'girl_name'       => $request->girl_name,
-            'girl_dob'        => $request->girl_dob,
+            'girl_name'       => $girlName,
+            'girl_dob'        => $girlDob,
             'girl_tob'        => $request->input('girl_tob'),
             'girl_pob'        => $request->input('girl_pob'),
-            'girl_rasi'       => $request->girl_rasi,
-            'girl_nakshatra'  => $request->girl_nakshatra,
+            'girl_rasi'       => $girlRasi,
+            'girl_nakshatra'  => $girlStar,
             'girl_photo'      => $request->input('girl_photo'),
             'girl_jadhagam'   => $request->input('girl_jadhagam'),
             'match_score'     => $totalScore,

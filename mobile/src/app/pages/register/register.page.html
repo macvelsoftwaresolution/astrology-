@@ -3,7 +3,7 @@
     <!-- Back arrow & Header -->
     <div class="nav-header">
       <button class="back-btn" (click)="goBack()">
-        <span class="back-arrow">←</span>
+        <i class="bi bi-arrow-left"></i>
       </button>
       <h1 class="brand-title">ஆருத்ரா</h1>
       <div style="width: 40px;"></div> <!-- placeholder to balance back button -->
@@ -33,7 +33,7 @@
             </div>
           } @else {
             <div class="avatar-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px dashed #A27B38;">
-              <span class="camera-icon" style="font-size: 24px;">📷</span>
+              <i class="bi bi-camera-fill" style="font-size: 24px; color: #A27B38;"></i>
             </div>
           }
           <span class="upload-text" style="color: #A27B38; font-size: 14px;">படம் பதிவேற்றவும்</span>
@@ -45,7 +45,7 @@
         <label>Full Name</label>
         <div class="input-wrapper">
           <input type="text" [(ngModel)]="fullName" placeholder="உள்நுழைய பெயர்">
-          <span class="input-icon">👤</span>
+          <span class="input-icon"><i class="bi bi-person"></i></span>
         </div>
       </div>
 
@@ -53,7 +53,7 @@
         <label>Mobile Number</label>
         <div class="input-wrapper">
           <input type="tel" [(ngModel)]="mobileNumber" placeholder="அலைபேசி எண்">
-          <span class="input-icon">📱</span>
+          <span class="input-icon"><i class="bi bi-phone"></i></span>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
         <label>Email Address</label>
         <div class="input-wrapper">
           <input type="email" [(ngModel)]="emailAddress" placeholder="மின்னஞ்சல் முகவரி">
-          <span class="input-icon">✉️</span>
+          <span class="input-icon"><i class="bi bi-envelope"></i></span>
         </div>
       </div>
 
@@ -70,7 +70,7 @@
         <div class="input-wrapper">
           <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="குறைந்தது 6 எழுத்துக்கள்">
           <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
-            {{ showPassword ? '👁️' : '🔑' }}
+            <i class="bi" [class.bi-eye]="showPassword" [class.bi-key]="!showPassword"></i>
           </span>
         </div>
       </div>
@@ -80,10 +80,17 @@
         <div class="input-wrapper">
           <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="மீண்டும் கடவுச்சொல் உள்ளிடவும்">
           <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
-            {{ showConfirmPassword ? '👁️' : '🔒' }}
+            <i class="bi" [class.bi-eye]="showConfirmPassword" [class.bi-lock]="!showConfirmPassword"></i>
           </span>
         </div>
       </div>
+
+      @if (errorMessage) {
+        <div class="register-error-alert" style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; line-height: 1.35;">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
 
       <button class="submit-btn" (click)="onRegister()">
         <span class="btn-primary-text">Register and Continue</span>
@@ -99,7 +106,7 @@
 
     <!-- Privacy Note -->
     <div class="privacy-note">
-      <span>🔒 Your information is secure and private.</span>
+      <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
     </div>
   </div>
 </ion-content>

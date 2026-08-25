@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
+import { AuthService } from '../../services/auth.service';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
@@ -16,9 +17,9 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       <ion-toolbar color="dark">
         <div style="display: flex; align-items: center; padding: 0 8px;">
           <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 22px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
-            ←
+            <i class="bi bi-arrow-left"></i>
           </button>
-          <span class="brand" style="font-size: 18px; margin-left: 4px;">👤 சுயவிவரம்</span>
+          <span class="brand" style="font-size: 18px; margin-left: 4px;"><i class="bi bi-person-fill me-1"></i> சுயவிவரம்</span>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -41,7 +42,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       <div class="tab-bar">
         @for (t of tabs; track t.key) {
           <button [class.active]="activeTab === t.key" (click)="activeTab = t.key">
-            <span>{{ t.icon }}</span>
+            <i [class]="t.icon" style="font-size: 16px;"></i>
             <span>{{ t.label }}</span>
           </button>
         }
@@ -62,7 +63,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
               @if (savingProfile) {
                 <ion-spinner name="crescent" style="width:16px;height:16px"></ion-spinner>
               } @else {
-                <span>💾 புதுப்பி</span>
+                <span><i class="bi bi-floppy-fill me-1"></i> புதுப்பி</span>
               }
             </button>
             @if (profileMsg) {
@@ -73,7 +74,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
           <!-- Astrology Profile Card -->
           @if (jathagam) {
             <div class="astro-card">
-              <h4>⭐ ஜோதிட சுயவிவரம்</h4>
+              <h4><i class="bi bi-star-fill text-warning me-1"></i> ஜோதிட சுயவிவரம்</h4>
               <div class="astro-grid">
                 <div class="astro-item"><span class="al">ராசி</span><span class="av gold">{{ jathagam.rasi }}</span></div>
                 <div class="astro-item"><span class="al">நட்சத்திரம்</span><span class="av">{{ jathagam.nakshatra || 'N/A' }}</span></div>
@@ -90,14 +91,14 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       <!-- TAB: BOOKING HISTORY -->
       @if (activeTab === 'history') {
         <div class="tab-content">
-          <div class="section-title"><h3>📅 Appointment வரலாறு</h3><p>உங்கள் அனைத்து bookings பட்டியல்</p></div>
+          <div class="section-title"><h3><i class="bi bi-calendar-event me-1"></i> Appointment வரலாறு</h3><p>உங்கள் அனைத்து bookings பட்டியல்</p></div>
           @if (loadingHistory) {
             <ion-spinner name="crescent" color="warning"></ion-spinner>
           } @else {
             <div>
               @if (bookings.length === 0) {
                 <div class="empty-state">
-                  <span>📋</span><p>இதுவரை எந்த booking-ம் இல்லை.</p>
+                  <i class="bi bi-journal-text" style="font-size: 32px; color: #8a8ab0;"></i><p>இதுவரை எந்த booking-ம் இல்லை.</p>
                 </div>
               }
               @for (b of bookings; track b.id) {
@@ -117,7 +118,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
                     </div>
                   }
                   @if (b.chart_url && b.status === 'Completed') {
-                    <a [href]="b.chart_url" target="_blank" class="chart-link">📄 Chart PDF பதிவிறக்கம்</a>
+                    <a [href]="b.chart_url" target="_blank" class="chart-link"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Chart PDF பதிவிறக்கம்</a>
                   }
                 </div>
               }
@@ -129,14 +130,14 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       <!-- TAB: PAYMENT HISTORY -->
       @if (activeTab === 'payments') {
         <div class="tab-content">
-          <div class="section-title"><h3>💳 Payment வரலாறு</h3><p>அனைத்து பரிவர்த்தனைகள்</p></div>
+          <div class="section-title"><h3><i class="bi bi-credit-card me-1"></i> Payment வரலாறு</h3><p>அனைத்து பரிவர்த்தனைகள்</p></div>
           @if (loadingPayments) {
             <ion-spinner name="crescent" color="warning"></ion-spinner>
           } @else {
             <div>
               @if (payments.length === 0) {
                 <div class="empty-state">
-                  <span>💳</span><p>இதுவரை எந்த payment-ம் இல்லை.</p>
+                  <i class="bi bi-credit-card" style="font-size: 32px; color: #8a8ab0;"></i><p>இதுவரை எந்த payment-ம் இல்லை.</p>
                 </div>
               }
               @for (p of payments; track p.id) {
@@ -168,7 +169,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       @if (activeTab === 'notifications') {
         <div class="tab-content">
           <div class="section-title-row">
-            <h3>🔔 Notifications</h3>
+            <h3><i class="bi bi-bell-fill me-1"></i> Notifications</h3>
             @if (unreadCount > 0) {
               <button class="mark-all-btn" (click)="markAllRead()">அனைத்தும் படித்தவை</button>
             }
@@ -179,12 +180,12 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
             <div>
               @if (notifications.length === 0) {
                 <div class="empty-state">
-                  <span>🔔</span><p>புதிய notifications இல்லை.</p>
+                  <i class="bi bi-bell" style="font-size: 32px; color: #8a8ab0;"></i><p>புதிய notifications இல்லை.</p>
                 </div>
               }
               @for (n of notifications; track n.id) {
                 <div class="notif-card" [class.unread]="!n.is_read" (click)="markRead(n)">
-                  <div class="notif-icon">{{ getNotifIcon(n.type) }}</div>
+                  <div class="notif-icon"><i [class]="getNotifIconClass(n.type)"></i></div>
                   <div class="notif-body">
                     <strong>{{ n.title }}</strong>
                     <p>{{ n.body }}</p>
@@ -204,13 +205,13 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
       @if (activeTab === 'preferences') {
         <div class="tab-content">
           <div class="section-title">
-            <h3>⚙️ அறிவிப்பு விருப்பத்தேர்வுகள்</h3>
+            <h3><i class="bi bi-gear-fill me-1"></i> அறிவிப்பு விருப்பத்தேர்வுகள்</h3>
             <p>உங்கள் அறிவிப்பு அமைப்புகளை நிர்வகிக்கவும்</p>
           </div>
           <div class="pref-card">
             <div class="pref-row">
               <div class="pref-info">
-                <span class="pref-icon">🌟</span>
+                <span class="pref-icon"><i class="bi bi-star-fill text-warning" style="font-size: 20px;"></i></span>
                 <div>
                   <strong>தினசரி ராசி பலன்</strong>
                   <p class="muted">ஒவ்வொரு காலையிலும் 6 மணிக்கு உங்கள் ராசி பலன் அறிவிப்பு</p>
@@ -361,11 +362,11 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
 })
 export class ProfilePage implements OnInit {
   tabs = [
-    { key: 'profile', icon: '👤', label: 'சுயவிவரம்' },
-    { key: 'history', icon: '📅', label: 'History' },
-    { key: 'payments', icon: '💳', label: 'Payments' },
-    { key: 'notifications', icon: '🔔', label: 'Notifs' },
-    { key: 'preferences', icon: '⚙️', label: 'Settings' },
+    { key: 'profile', icon: 'bi bi-person-fill', label: 'சுயவிவரம்' },
+    { key: 'history', icon: 'bi bi-clock-history', label: 'History' },
+    { key: 'payments', icon: 'bi bi-credit-card-fill', label: 'Payments' },
+    { key: 'notifications', icon: 'bi bi-bell-fill', label: 'Notifs' },
+    { key: 'preferences', icon: 'bi bi-gear-fill', label: 'Settings' },
   ];
   activeTab = 'profile';
 
@@ -395,7 +396,8 @@ export class ProfilePage implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private backButtonService: BackButtonService
+    private backButtonService: BackButtonService,
+    private authService: AuthService
   ) {}
 
   ionViewDidEnter() {
@@ -434,7 +436,7 @@ export class ProfilePage implements OnInit {
     this.loadPreferences();
   }
 
-  get token() { return sessionStorage.getItem('auth_token') || ''; }
+  get token() { return this.authService.getToken() || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || ''; }
   get headers() { return { headers: { Authorization: `Bearer ${this.token}` } }; }
 
   loadProfile() {
@@ -501,12 +503,16 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  getNotifIcon(type: string): string {
+  getNotifIconClass(type: string): string {
     const icons: Record<string, string> = {
-      booking_confirmed: '✅', booking_fulfilled: '🎉', rasi_palan: '🌟',
-      certificate: '🏆', course: '📚', general: '🔔'
+      booking_confirmed: 'bi bi-check-circle-fill text-success',
+      booking_fulfilled: 'bi bi-check-all text-success',
+      rasi_palan: 'bi bi-star-fill text-warning',
+      certificate: 'bi bi-trophy-fill text-warning',
+      course: 'bi bi-journal-bookmark-fill text-primary',
+      general: 'bi bi-bell-fill text-info'
     };
-    return icons[type] || '🔔';
+    return icons[type] || 'bi bi-bell-fill text-info';
   }
 
   loadPreferences() {

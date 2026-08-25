@@ -29,7 +29,7 @@ export const TA_TRANSLATIONS: Record<string, any> = {
     matches: "திருமணப் பொருத்தப் பதிவு",
     matrimony: "திருமண பதிவு",
     payments: "பணப்பரிவர்த்தனைப் பட்டியல்",
-    broadcast: "அறிவிப்புகள் அனுப்பு",
+    broadcast: "அறிவிப்புகள்",
     users: "பதிவுசெய்த பயனர்கள்",
     menu: "பட்டியல்",
     close: "மூடு"
@@ -693,7 +693,7 @@ export class TranslationService {
     this.version();
     const lang = this.currentLanguageSignal();
     const data = this.translations[lang] || {};
-    
+
     // Support dot-notation keys: e.g. "nav.overview", "services.title"
     const keys = key.split('.');
     let result: any = data;

@@ -323,24 +323,24 @@ export class MarriageMatchingComponent implements OnInit {
     this.submittingToAdmin = true;
     const payload = {
       request_type: 'pair_match',
-      girl_name: this.matchingForm.girlName,
-      girl_dob: this.matchingForm.girlDob || null,
+      girl_name: this.matchingForm.girlName || 'பெண்',
+      girl_dob: this.matchingForm.girlDob || new Date().toISOString().split('T')[0],
       girl_tob: this.matchingForm.girlTob || null,
       girl_pob: this.matchingForm.girlPob || null,
-      girl_rasi: this.matchingForm.girlRasi,
-      girl_nakshatra: this.matchingForm.girlStar,
-      boy_name: this.matchingForm.boyName,
-      boy_dob: this.matchingForm.boyDob || null,
+      girl_rasi: this.matchingForm.girlRasi || 'மேஷம்',
+      girl_nakshatra: this.matchingForm.girlStar || 'அஸ்வினி',
+      boy_name: this.matchingForm.boyName || 'ஆண்',
+      boy_dob: this.matchingForm.boyDob || new Date().toISOString().split('T')[0],
       boy_tob: this.matchingForm.boyTob || null,
       boy_pob: this.matchingForm.boyPob || null,
-      boy_rasi: this.matchingForm.boyRasi,
-      boy_nakshatra: this.matchingForm.boyStar,
+      boy_rasi: this.matchingForm.boyRasi || 'மேஷம்',
+      boy_nakshatra: this.matchingForm.boyStar || 'அஸ்வினி',
       boy_photo: this.matchingForm.boyPhoto || null,
       boy_jadhagam: this.matchingForm.boyJadhagam || null,
       girl_photo: this.matchingForm.girlPhoto || null,
       girl_jadhagam: this.matchingForm.girlJadhagam || null,
       requester_phone: this.matchingForm.requesterPhone || null,
-      match_score: this.matchResult.totalMatches || null,
+      match_score: this.matchResult.totalMatches || 0,
       match_status: this.matchResult.totalMatches >= 6 ? 'Match' : 'Low Match',
       match_details: this.matchResult.poruthams || [],
       verdict: this.matchResult.verdictTitle || ''
@@ -381,6 +381,20 @@ export class MarriageMatchingComponent implements OnInit {
             order_id: orderRes.order_id,
             theme: { color: '#4A0E17' },
             handler: (response: any) => {
+              // Verify payment on backend to record in payment_transactions ledger
+              this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
+                order_id: orderRes.order_id || ('MATCH-' + Date.now()),
+                razorpay_order_id: response.razorpay_order_id || orderRes.order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: 100,
+                description: 'திருமணப் பொருத்தம் கணிப்பு கட்டணம்',
+                order_type: 'marriage_matching'
+              }, headers).subscribe({
+                next: () => {},
+                error: () => {}
+              });
+
               this.isProcessingPayment = false;
               this.sendMatchingToAdmin();
               this.serviceStep = 5;
@@ -463,6 +477,20 @@ export class MarriageMatchingComponent implements OnInit {
             order_id: orderRes.order_id,
             theme: { color: '#4A0E17' },
             handler: (response: any) => {
+              // Verify payment on backend to record in payment_transactions ledger
+              this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
+                order_id: orderRes.order_id || ('MATRIMONY-' + Date.now()),
+                razorpay_order_id: response.razorpay_order_id || orderRes.order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: 500,
+                description: 'திருமண வரன் பதிவு கட்டணம்',
+                order_type: 'matrimony_registration'
+              }, headers).subscribe({
+                next: () => {},
+                error: () => {}
+              });
+
               this.isProcessingPayment = false;
               this.submitRegistrationData();
             },

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { App } from '@capacitor/app';
-import { ToastController, IonContent } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
 import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching.component';
 import { environment } from '../../environments/environment';
@@ -65,7 +65,7 @@ export class HomePage implements OnInit {
     if (user && user.name) {
       return user.name.charAt(0).toUpperCase();
     }
-    return '🕉️';
+    return 'A';
   }
 
   get userProfileImage(): string | null {
@@ -110,7 +110,6 @@ export class HomePage implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private backButtonService: BackButtonService,
-    private toastController: ToastController,
     private exitModalService: ExitModalService
   ) { }
 
@@ -618,6 +617,50 @@ export class HomePage implements OnInit {
     this.serviceStep = 1;
   }
 
+  get todayDateStr(): string {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  get availableUpcomingDates(): { dateStr: string; label: string; dayName: string; isBlocked: boolean }[] {
+    const dates: { dateStr: string; label: string; dayName: string; isBlocked: boolean }[] = [];
+    const tamilDays = ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
+    const tamilMonths = ['ஜன', 'பிப்', 'மார்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச'];
+
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+
+      const isBlocked = !!(this.selectedAstrologer?.blocked_dates?.includes(dateStr));
+
+      let label = `${tamilMonths[d.getMonth()]} ${d.getDate()}`;
+      if (i === 0) label = 'இன்று';
+      else if (i === 1) label = 'நாளை';
+
+      dates.push({
+        dateStr,
+        label,
+        dayName: tamilDays[d.getDay()],
+        isBlocked
+      });
+    }
+    return dates;
+  }
+
+  get isCurrentDateBlocked(): boolean {
+    if (!this.selectedAstrologer || !this.selectedAstrologer.blocked_dates) return false;
+    return this.selectedAstrologer.blocked_dates.includes(this.astrologerBookingForm.date);
+  }
+
   isDateEnabled = (dateIsoString: string) => {
     if (!this.selectedAstrologer || !this.selectedAstrologer.blocked_dates) return true;
     const date = dateIsoString.split('T')[0];
@@ -625,7 +668,7 @@ export class HomePage implements OnInit {
   };
 
   onDateChange(event: any) {
-    if (event.detail.value) {
+    if (event?.detail?.value) {
       this.astrologerBookingForm.date = event.detail.value.split('T')[0];
     }
   }
@@ -635,6 +678,10 @@ export class HomePage implements OnInit {
 
   payAndFulfillAstrologer() {
     if (!this.selectedAstrologer || this.isProcessingPayment) return;
+    if (this.isCurrentDateBlocked) {
+      alert('தேர்ந்தெடுத்த நாளில் ஜோதிடர் கிடைக்கவில்லை. தயவுசெய்து வேறு தேதியைத் தேர்ந்தெடுக்கவும்!');
+      return;
+    }
     this.isProcessingPayment = true;
 
     const currentUser = this.authService.getCurrentUser();
@@ -703,7 +750,7 @@ export class HomePage implements OnInit {
   completeBooking(razorpayOrderId?: string, razorpayPaymentId?: string, razorpaySignature?: string) {
     const currentUser = this.authService.getCurrentUser();
     const astro = this.selectedAstrologer;
-    const token = sessionStorage.getItem('auth_token');
+    const token = this.authService.getToken() || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
     const headers: any = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
