@@ -322,10 +322,15 @@
         <!-- Consultation Date -->
         <div class="form-input-card">
           <label>ஆலோசனை தேதி <span class="required-star">*</span></label>
-          <div class="input-inner-wrap">
+          <div class="input-inner-wrap" id="consultation-date-trigger" style="cursor: pointer;">
             <span class="input-icon"><i class="bi bi-calendar-check-fill"></i></span>
-            <input type="date" [(ngModel)]="astrologerBookingForm.date" class="custom-native-date">
+            <input type="text" [value]="astrologerBookingForm.date" readonly class="custom-native-date" style="pointer-events: none; background: transparent; border: none; width: 100%; outline: none;">
           </div>
+          <ion-popover trigger="consultation-date-trigger" [keepContentsMounted]="true" alignment="center">
+            <ng-template>
+              <ion-datetime presentation="date" [value]="astrologerBookingForm.date" (ionChange)="onDateChange($event)" [isDateEnabled]="isDateEnabled" showDefaultButtons="true" doneText="தேர்ந்தெடு" cancelText="ரத்து"></ion-datetime>
+            </ng-template>
+          </ion-popover>
         </div>
 
         <!-- Time Slot Selection -->

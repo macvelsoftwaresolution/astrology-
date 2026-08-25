@@ -112,30 +112,19 @@ $color-text-muted: #7E716A;
   border: 1.5px solid rgba($color-gold-light, 0.4);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
 
   &:active {
     transform: scale(0.98);
   }
 
-  .card-bg-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.5s ease;
+  &.astrology-card {
+    background: linear-gradient(135deg, #4A0E17 0%, #2a050b 100%);
   }
 
-  .card-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.75) 100%);
-    z-index: 1;
+  &.education-card {
+    background: linear-gradient(135deg, #7b5b24 0%, #4a3411 100%);
   }
 
   .card-content {
@@ -151,15 +140,15 @@ $color-text-muted: #7E716A;
     .card-title {
       font-family: 'Noto Serif Tamil', serif;
       color: #FFFFFF;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 700;
       margin: 0 0 0.35rem 0;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+      text-shadow: none;
     }
 
     .card-desc {
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.85rem;
       margin: 0 0 0.75rem 0;
       line-height: 1.4;
       display: -webkit-box;
@@ -174,7 +163,7 @@ $color-text-muted: #7E716A;
       align-items: center;
       gap: 0.4rem;
       color: $color-gold-light;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
 
       .arrow {
@@ -184,11 +173,9 @@ $color-text-muted: #7E716A;
   }
 
   &:hover {
-    .card-bg-img {
-      transform: scale(1.05);
-    }
+    box-shadow: 0 15px 30px rgba($color-maroon, 0.25);
     .action-btn .arrow {
-      transform: translateX(4px);
+      transform: translateX(6px);
     }
   }
 }
