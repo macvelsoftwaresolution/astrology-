@@ -13,7 +13,7 @@
   <div class="card-box" style="margin-bottom: 24px;">
     <div style="display:flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e2e8f0;">
       <h2 style="margin: 0; font-size: 16px; color: #0f172a;">Books Inventory</h2>
-      <button class="btn-primary" (click)="showAddBookModal = true">
+      <button class="btn-primary" (click)="openAddBookModal()">
         <i class="bi bi-plus-lg"></i> Add Book
       </button>
     </div>
@@ -41,9 +41,17 @@
               <td>₹{{ book.price }}</td>
               <td>{{ book.created_at | date:'mediumDate' }}</td>
               <td>
-                <button class="btn-sm" (click)="viewBuyers(book)">
-                  <i class="bi bi-people-fill"></i> View Buyers
-                </button>
+                <div style="display:flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                  <button class="btn-sm" (click)="viewBuyers(book)" title="View Buyers">
+                    <i class="bi bi-people-fill"></i> Buyers
+                  </button>
+                  <button class="btn-sm" style="background:#0284c7; color:#fff;" (click)="openEditBookModal(book)" title="Edit Book">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button class="btn-sm" style="background:#dc2626; color:#fff;" (click)="deleteBook(book)" title="Delete Book">
+                    <i class="bi bi-trash-fill"></i> Delete
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -126,7 +134,7 @@
     <div class="modal-overlay" (click)="showAddBookModal = false">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-book" style="color:#d97706;margin-right:6px;"></i> Add New Book</h3>
+          <h3><i class="bi bi-book" style="color:#d97706;margin-right:6px;"></i> {{ bookModalTitle }}</h3>
           <button class="close-btn" (click)="showAddBookModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
         <form (ngSubmit)="saveBook()">

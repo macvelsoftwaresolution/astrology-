@@ -62,7 +62,7 @@
 
       <div class="card-box">
         <h3 style="margin-bottom:18px; display:flex; align-items:center; gap:8px;">
-          <i class="bi bi-people-fill" style="color:#d97706;"></i> பாட விண்ணப்பங்கள் (Course Applications)
+          <i class="bi bi-people-fill" style="color:#d97706;"></i> {{ 'overview.courseApplications' | translate }}
         </h3>
         
         <div style="display:flex; flex-direction: column; gap: 14px;">
@@ -73,8 +73,8 @@
                 <i class="bi bi-book-half"></i>
               </div>
               <div>
-                <strong style="display:block; font-size:15px; color:#1e293b;">இளநிலை (Ilanilai)</strong>
-                <small style="color:#64748b; font-size:12px;">மொத்த விண்ணப்பங்கள்</small>
+                <strong style="display:block; font-size:15px; color:#1e293b;">{{ 'overview.ilanilai' | translate }}</strong>
+                <small style="color:#64748b; font-size:12px;">{{ 'overview.totalApplications' | translate }}</small>
               </div>
             </div>
             <div style="font-size:24px; font-weight:800; color:#0f172a;">{{ metrics?.ilanilai_applicants || 0 }}</div>
@@ -87,8 +87,8 @@
                 <i class="bi bi-award-fill"></i>
               </div>
               <div>
-                <strong style="display:block; font-size:15px; color:#1e293b;">முதுநிலை (Muthunilai)</strong>
-                <small style="color:#64748b; font-size:12px;">மொத்த விண்ணப்பங்கள்</small>
+                <strong style="display:block; font-size:15px; color:#1e293b;">{{ 'overview.muthunilai' | translate }}</strong>
+                <small style="color:#64748b; font-size:12px;">{{ 'overview.totalApplications' | translate }}</small>
               </div>
             </div>
             <div style="font-size:24px; font-weight:800; color:#0f172a;">{{ metrics?.muthunilai_applicants || 0 }}</div>
@@ -102,12 +102,12 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
         <div>
           <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
-            <i class="bi bi-images" style="color:#d97706;"></i> மொபைல் முகப்பு பேனர்கள் (Mobile Hero Banners)
+            <i class="bi bi-images" style="color:#d97706;"></i> {{ 'overview.heroBanners' | translate }}
           </h3>
-          <span style="font-size:12px;color:#64748b;">மொபைல் ஆப் முகப்புப் பக்கத்தில் தோன்றும் விளம்பர பேனர்கள்</span>
+          <span style="font-size:12px;color:#64748b;">{{ 'overview.heroBannersDesc' | translate }}</span>
         </div>
         <button class="btn-sm gold" (click)="openNewBanner()">
-          <i class="bi bi-plus-lg"></i> புதிய பேனர் சேர்க்க
+          <i class="bi bi-plus-lg"></i> {{ 'overview.addBanner' | translate }}
         </button>
       </div>
 
@@ -117,10 +117,10 @@
             <div style="height:120px;background:#1e1b4b;position:relative;overflow:hidden;">
               <img [src]="b.image_url" alt="Banner" style="width:100%;height:100%;object-fit:cover;opacity:0.85;">
               <span style="position:absolute;top:8px;left:8px;background:rgba(217,119,6,0.9);color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">
-                {{ b.badge || 'சிறப்பு' }}
+                {{ b.badge || 'Banner' }}
               </span>
               <span [style.background]="b.is_active ? '#16a34a' : '#dc2626'" style="position:absolute;top:8px;right:8px;color:#fff;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">
-                {{ b.is_active ? 'Active' : 'Inactive' }}
+                {{ b.is_active ? ('common.active' | translate) : ('common.inactive' | translate) }}
               </span>
             </div>
             <div style="padding:12px;flex-grow:1;display:flex;flex-direction:column;justify-content:space-between;">
@@ -132,15 +132,15 @@
                 </div>
               </div>
               <div style="display:flex;gap:8px;justify-content:flex-end;border-top:1px solid #f1f5f9;padding-top:10px;">
-                <button class="btn-sm" (click)="editBanner(b)"><i class="bi bi-pencil-square"></i> Edit</button>
-                <button class="btn-sm danger" (click)="deleteBanner(b.id)"><i class="bi bi-trash3"></i> Delete</button>
+                <button class="btn-sm" (click)="editBanner(b)"><i class="bi bi-pencil-square"></i> {{ 'common.edit' | translate }}</button>
+                <button class="btn-sm danger" (click)="deleteBanner(b.id)"><i class="bi bi-trash3"></i> {{ 'common.delete' | translate }}</button>
               </div>
             </div>
           </div>
         }
         @if (banners.length === 0) {
           <div style="grid-column:1/-1;text-align:center;padding:30px;color:#64748b;">
-            பேனர்கள் ஏதுமில்லை.
+            {{ 'overview.noBanners' | translate }}
           </div>
         }
       </div>
@@ -152,39 +152,39 @@
     <div class="modal-overlay" (click)="showBannerModal = false">
       <div class="modal-box" style="max-width:480px;" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 style="margin:0;"><i class="bi bi-image-fill" style="color:#d97706;margin-right:6px;"></i>{{ editingBanner.id ? 'பேனர் திருத்து' : 'புதிய பேனர் உருவாக்கு' }}</h3>
+          <h3 style="margin:0;"><i class="bi bi-image-fill" style="color:#d97706;margin-right:6px;"></i>{{ editingBanner.id ? ('overview.editBanner' | translate) : ('overview.createBanner' | translate) }}</h3>
           <button class="close-btn" (click)="showBannerModal = false"><i class="bi bi-x-lg"></i></button>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
           <div>
-            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">பேனர் தலைப்பு (Title) *</label>
-            <input type="text" [(ngModel)]="editingBanner.title" class="ctrl" placeholder="எ.கா. இன்றைய ராசி பலன்"/>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ 'overview.bannerTitle' | translate }}</label>
+            <input type="text" [(ngModel)]="editingBanner.title" class="ctrl" placeholder="Title"/>
           </div>
           <div>
-            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">துணைத் தலைப்பு (Subtitle)</label>
-            <input type="text" [(ngModel)]="editingBanner.subtitle" class="ctrl" placeholder="எ.கா. உங்கள் விதியை இன்று அறியுங்கள்"/>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ 'overview.bannerSubtitle' | translate }}</label>
+            <input type="text" [(ngModel)]="editingBanner.subtitle" class="ctrl" placeholder="Subtitle"/>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             <div>
               <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Badge Text</label>
-              <input type="text" [(ngModel)]="editingBanner.badge" class="ctrl" placeholder="இன்றைய சிறப்பு"/>
+              <input type="text" [(ngModel)]="editingBanner.badge" class="ctrl" placeholder="Badge"/>
             </div>
             <div>
               <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Link Flow</label>
               <select [(ngModel)]="editingBanner.link_flow" class="ctrl">
-                <option value="rasi-palan">ராசி பலன் (rasi-palan)</option>
-                <option value="matching">திருமண பொருத்தம் (matching)</option>
-                <option value="horoscope">ஜாதகம் எழுதுதல் (horoscope)</option>
-                <option value="vastu">வாஸ்து ஆலோசனை (vastu)</option>
-                <option value="ramajayam">குரு ராமஜெயம் (ramajayam)</option>
-                <option value="srinivasan">குரு சீனிவாசன் (srinivasan)</option>
-                <option value="services">சேவைகள் (services)</option>
+                <option value="rasi-palan">rasi-palan</option>
+                <option value="matching">matching</option>
+                <option value="horoscope">horoscope</option>
+                <option value="vastu">vastu</option>
+                <option value="ramajayam">ramajayam</option>
+                <option value="srinivasan">srinivasan</option>
+                <option value="services">services</option>
               </select>
             </div>
           </div>
           <div>
-            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">பேனர் படம் பதிவேற்றம் (Upload Banner Image) *</label>
+            <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Banner Image *</label>
             <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
               @if (editingBanner.image_url) {
                 <img [src]="editingBanner.image_url" alt="Banner Preview" style="width:100px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.1);"/>
@@ -193,7 +193,7 @@
                 <input type="file" accept="image/*" (change)="uploadBannerImage($event)" class="ctrl" style="padding:6px;"/>
                 @if (isUploadingBannerImage) {
                   <span style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;display:block;">
-                    <i class="bi bi-hourglass-split"></i> படம் பதிவேற்றப்படுகிறது...
+                    <i class="bi bi-hourglass-split"></i> Uploading image...
                   </span>
                 }
               </div>
@@ -201,13 +201,13 @@
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
             <input type="checkbox" [(ngModel)]="editingBanner.is_active" id="bActive"/>
-            <label for="bActive" style="font-size:13px;font-weight:600;color:#334155;cursor:pointer;">Active (மொபைலில் காட்டுக)</label>
+            <label for="bActive" style="font-size:13px;font-weight:600;color:#334155;cursor:pointer;">Active</label>
           </div>
         </div>
 
         <div class="modal-btns">
-          <button type="button" class="btn-cancel" (click)="showBannerModal = false">ரத்து</button>
-          <button type="button" class="btn-primary" (click)="saveBanner()"><i class="bi bi-check2-circle"></i> சேமி</button>
+          <button type="button" class="btn-cancel" (click)="showBannerModal = false">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn-primary" (click)="saveBanner()"><i class="bi bi-check2-circle"></i> {{ 'common.save' | translate }}</button>
         </div>
       </div>
     </div>

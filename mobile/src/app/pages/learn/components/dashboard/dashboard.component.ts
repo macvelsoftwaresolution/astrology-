@@ -77,6 +77,7 @@ export class LearnDashboardComponent implements OnInit {
         this.selectedLesson = JSON.parse(savedLesson);
       } catch {}
     }
+    this.loadUserProfile();
     this.loadCoursesAndSyllabus();
     this.loadMyBookOrders(); // Load orders first or concurrently
     this.loadSeminars();
@@ -84,6 +85,23 @@ export class LearnDashboardComponent implements OnInit {
     this.loadMaterials();
     this.loadExams();
     this.loadNotifications();
+  }
+
+  loadUserProfile() {
+    if (this.authService.isLoggedIn('education') || this.authService.isLoggedIn()) {
+      this.authService.getUserProfileFromDb().subscribe({
+        next: (res: any) => {
+          if (res && (res.user || res.data)) {
+            const u = res.user || res.data;
+            if (!this.enrollForm) this.enrollForm = {};
+            this.enrollForm.fullName = this.enrollForm.fullName || u.fullName || u.name || u.student_name_tamil || u.student_name || '';
+            this.enrollForm.mobileNumber = this.enrollForm.mobileNumber || u.mobileNumber || u.phone || u.mobile || u.mobile_number || '';
+            this.enrollForm.postalAddress = this.enrollForm.postalAddress || u.postalAddress || u.address || u.postal_address || '';
+          }
+        },
+        error: () => {}
+      });
+    }
   }
 
   liveClasses: any[] = [];
@@ -219,7 +237,7 @@ export class LearnDashboardComponent implements OnInit {
   }
 
   syncBooksWithOrders() {
-    if (this.books.length > 0 && this.myBookOrders.length > 0) {
+    if (this.books.length > 0) {
       this.books.forEach(b => {
         const order = this.myBookOrders.find(o => 
           o.book_title && b.title && o.book_title.trim().toLowerCase() === b.title.trim().toLowerCase()
@@ -227,6 +245,9 @@ export class LearnDashboardComponent implements OnInit {
         if (order) {
           b.bought = true;
           b.order = order;
+        } else {
+          b.bought = false;
+          b.order = null;
         }
       });
     }
@@ -363,11 +384,31 @@ export class LearnDashboardComponent implements OnInit {
   initiateBuyBook(book: Book) {
     this.selectedCheckoutBook = book;
     this.activeBookCheckout = true;
-    const user = this.authService.getCurrentUser('education') || this.authService.getCurrentUser('astrology') || this.authService.getCurrentUser();
+    const user: any = this.authService.getCurrentUser('education') || this.authService.getCurrentUser('astrology') || this.authService.getCurrentUser();
+
+    const name = this.enrollForm?.fullName || 
+                 this.enrollForm?.studentNameTamil || 
+                 user?.fullName || 
+                 user?.name || 
+                 user?.student_name || '';
+
+    const phone = this.enrollForm?.mobileNumber || 
+                  this.enrollForm?.altMobileNumber || 
+                  this.enrollForm?.phone || 
+                  user?.mobileNumber || 
+                  user?.phone || 
+                  user?.mobile || '';
+
+    const address = this.enrollForm?.postalAddress || 
+                    this.enrollForm?.address || 
+                    user?.postalAddress || 
+                    user?.address || 
+                    user?.postal_address || '';
+
     this.checkoutForm = {
-      name: this.enrollForm?.fullName || user?.name || user?.fullName || '',
-      phone: this.enrollForm?.phone || user?.phone || user?.mobileNumber || '',
-      address: this.enrollForm?.address || ''
+      name: name,
+      phone: phone,
+      address: address
     };
   }
 

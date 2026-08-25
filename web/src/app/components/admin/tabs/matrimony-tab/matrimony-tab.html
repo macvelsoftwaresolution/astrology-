@@ -3,13 +3,13 @@
   <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
     <div>
       <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-person-lines-fill" style="color:#e11d48;"></i>{{ 'nav.matrimony' | translate }}
+        <i class="bi bi-person-lines-fill" style="color:#e11d48;"></i>{{ 'matrimony.title' | translate }}
       </h1>
-      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">சிவசக்தி திருமண தகவல் மையம் பதிவுகள் / Matrimony Registrations</p>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'matrimony.subtitle' | translate }}</p>
     </div>
     <div>
       <button class="btn-primary" (click)="loadProfiles()" [disabled]="loading">
-        <i class="bi bi-arrow-clockwise" [class.spin]="loading"></i> Refresh
+        <i class="bi bi-arrow-clockwise" [class.spin]="loading"></i> {{ 'common.refresh' | translate }}
       </button>
     </div>
   </div>
@@ -24,12 +24,12 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>பெயர் & பாலினம் (Name & Gender)</th>
-            <th>ராசி & நட்சத்திரம் (Rasi & Star)</th>
-            <th>தொலைபேசி (Phone)</th>
-            <th>நிலை (Status)</th>
-            <th>பதிவு தேதி (Date)</th>
-            <th>செயல்கள் (Actions)</th>
+            <th>{{ 'matrimony.nameAndGender' | translate }}</th>
+            <th>{{ 'matrimony.rasiAndStar' | translate }}</th>
+            <th>{{ 'matrimony.phone' | translate }}</th>
+            <th>{{ 'matrimony.status' | translate }}</th>
+            <th>{{ 'matrimony.date' | translate }}</th>
+            <th>{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
               <td>
                 <div style="font-weight:600; color:#0f172a;">{{ profile.name }}</div>
                 <div style="font-size:12px; color:#64748b;">
-                  {{ profile.gender === 'boy' || profile.gender === 'ஆண்' ? 'மணமகன் (Groom)' : 'மணமகள் (Bride)' }}
+                  {{ profile.gender === 'boy' || profile.gender === 'ஆண்' ? ('matrimony.groom' | translate) : ('matrimony.bride' | translate) }}
                 </div>
               </td>
               <td>
@@ -66,7 +66,7 @@
               <td>
                 <div style="display:flex;gap:6px;">
                   <button class="btn-sm" (click)="viewProfile(profile)">
-                    <i class="bi bi-eye-fill"></i> விவரம் (View)
+                    <i class="bi bi-eye-fill"></i> {{ 'matrimony.viewDetails' | translate }}
                   </button>
                 </div>
               </td>
@@ -75,7 +75,7 @@
           @if (profiles.length === 0) {
             <tr>
               <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
-                பதிவுகள் ஏதுமில்லை (No Registrations)
+                {{ 'matrimony.noProfiles' | translate }}
               </td>
             </tr>
           }
@@ -91,8 +91,7 @@
     <div class="modal-box large-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <div>
-          <h3 style="margin:0;"><i class="bi bi-person-badge-fill" style="color:#d97706;margin-right:6px;"></i>திருமண பதிவு விவரங்கள் (#{{ viewingProfile.id }})</h3>
-          <span style="font-size:12px;color:#64748b;">Matrimony Registration Details</span>
+          <h3 style="margin:0;"><i class="bi bi-person-badge-fill" style="color:#d97706;margin-right:6px;"></i>{{ 'matrimony.modalTitle' | translate }} (#{{ viewingProfile.id }})</h3>
         </div>
         <button class="close-btn" (click)="closeViewModal()"><i class="bi bi-x-lg"></i></button>
       </div>
@@ -100,33 +99,33 @@
       <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
         <div class="profile-grid">
           <div class="detail-group">
-            <label>பெயர் (Name)</label>
+            <label>{{ 'user.fullName' | translate }}</label>
             <p>{{ viewingProfile.name }}</p>
           </div>
           <div class="detail-group">
-            <label>பாலினம் (Gender)</label>
-            <p>{{ viewingProfile.gender === 'boy' || viewingProfile.gender === 'ஆண்' ? 'மணமகன் (Groom)' : 'மணமகள் (Bride)' }}</p>
+            <label>{{ 'matrimony.nameAndGender' | translate }}</label>
+            <p>{{ viewingProfile.gender === 'boy' || viewingProfile.gender === 'ஆண்' ? ('matrimony.groom' | translate) : ('matrimony.bride' | translate) }}</p>
           </div>
           <div class="detail-group">
-            <label>தொலைபேசி (Phone)</label>
+            <label>{{ 'matrimony.phone' | translate }}</label>
             <p>{{ viewingProfile.phone_number }}</p>
           </div>
           <div class="detail-group">
-            <label>ராசி (Rasi)</label>
+            <label>{{ 'matrimony.rasiAndStar' | translate }} (Rasi)</label>
             <p>{{ viewingProfile.rasi }}</p>
           </div>
           <div class="detail-group">
-            <label>நட்சத்திரம் (Star)</label>
+            <label>{{ 'matrimony.rasiAndStar' | translate }} (Star)</label>
             <p>{{ viewingProfile.nakshatra }}</p>
           </div>
           <div class="detail-group full-width">
-            <label>முகவரி (Full Address)</label>
+            <label>{{ 'matrimony.address' | translate }}</label>
             <p>{{ viewingProfile.full_address || 'N/A' }}</p>
           </div>
         </div>
 
         <div class="divider"></div>
-        <h4 class="section-title">கூடுதல் விவரங்கள் (Extra Details)</h4>
+        <h4 class="section-title">{{ 'matrimony.extraDetails' | translate }}</h4>
         
         <div class="extra-details-grid">
           @for (item of viewingProfile.extra_details | keyvalue; track item.key) {

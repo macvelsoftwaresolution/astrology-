@@ -629,6 +629,526 @@ $color-text-dark: #2A2421;
   }
 }
 
+/* ================= STEPPER PROGRESS BAR (4 STEPS) ================= */
+.wizard-stepper-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1.5px solid rgba($color-gold, 0.35);
+  border-radius: 16px;
+  padding: 0.75rem 0.6rem;
+  box-shadow: 0 4px 14px rgba($color-maroon, 0.05);
+
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    flex: 1;
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #FAF6E8;
+      border: 2px solid rgba($color-gold, 0.4);
+      color: $color-text-muted;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .step-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: $color-text-muted;
+      white-space: nowrap;
+    }
+
+    &.active {
+      .step-circle {
+        background: $color-maroon;
+        border-color: $color-maroon;
+        color: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba($color-maroon, 0.18);
+      }
+      .step-label {
+        color: $color-maroon;
+        font-weight: 800;
+      }
+    }
+
+    &.completed {
+      .step-circle {
+        background: #16A34A;
+        border-color: #16A34A;
+        color: #FFFFFF;
+      }
+      .step-label {
+        color: #16A34A;
+      }
+    }
+  }
+
+  .step-line {
+    height: 2px;
+    background: rgba($color-gold, 0.3);
+    flex: 0.6;
+    margin-top: -14px;
+    transition: background 0.25s ease;
+
+    &.completed {
+      background: #16A34A;
+    }
+  }
+}
+
+/* ================= WIZARD STEP CARDS ================= */
+.wizard-step-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.1rem;
+  border: 1.5px solid rgba($color-gold, 0.35);
+  box-shadow: 0 6px 20px rgba($color-maroon, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .step-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-bottom: 1.5px dashed rgba($color-gold, 0.3);
+    padding-bottom: 0.6rem;
+
+    .step-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #854d0e;
+      background: rgba($color-gold, 0.2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      align-self: flex-start;
+    }
+
+    h3 {
+      font-family: 'Noto Serif Tamil', serif;
+      color: $color-maroon;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0;
+    }
+  }
+}
+
+.wizard-error-alert {
+  background: #FEE2E2;
+  border: 1.5px solid #FCA5A5;
+  color: #991B1B;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.35;
+}
+
+.form-grid-single {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+
+  .req {
+    color: #DC2626;
+    font-weight: 800;
+  }
+}
+
+/* ================= SUMMARY REVIEW CARD ================= */
+.enrollment-summary-box {
+  background: #FAF6E8;
+  border: 1.5px solid rgba($color-gold, 0.4);
+  border-radius: 14px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.83rem;
+    border-bottom: 1px dashed rgba($color-gold, 0.25);
+    padding-bottom: 0.4rem;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    span {
+      color: $color-text-muted;
+    }
+
+    strong {
+      color: $color-maroon;
+      font-weight: 700;
+      text-align: right;
+    }
+  }
+}
+
+/* ================= STEP NAVIGATION FOOTER ================= */
+.wizard-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+  padding-top: 0.8rem;
+  border-top: 1.5px dashed rgba($color-gold, 0.25);
+
+  .btn-wizard-prev {
+    background: #F3F4F6;
+    color: #374151;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 12px;
+    padding: 0.75rem 1.1rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .btn-wizard-next {
+    background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 1.3rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba($color-maroon, 0.2);
+    transition: all 0.2s ease;
+    margin-left: auto;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .action-submit-btn {
+    flex: 1;
+  }
+}
+
+/* ================= SIMPLE & CLEAN FORM CARDS & ELEMENTS ================= */
+.simple-form-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.1rem;
+  border: 1.5px solid rgba($color-gold, 0.4);
+  box-shadow: 0 4px 16px rgba($color-maroon, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .simple-card-header {
+    border-bottom: 1.5px solid rgba($color-gold, 0.3);
+    padding-bottom: 0.5rem;
+
+    h3 {
+      font-family: 'Noto Serif Tamil', serif;
+      color: $color-maroon;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0;
+    }
+  }
+}
+
+.simple-fields-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.simple-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  .simple-label {
+    font-size: 0.85rem;
+    color: $color-maroon;
+    font-weight: 700;
+    line-height: 1.2;
+
+    .req {
+      color: #dc2626;
+      font-weight: 800;
+    }
+
+    .opt {
+      font-size: 0.72rem;
+      color: $color-text-muted;
+      font-weight: 500;
+    }
+  }
+
+  .simple-hint {
+    font-size: 0.72rem;
+    color: #15803d;
+    font-weight: 600;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.75rem 0.85rem;
+    border: 1.5px solid rgba($color-gold, 0.4);
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: $color-maroon-dark;
+    outline: none;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: #78665c;
+      font-weight: 400;
+    }
+
+    &:focus {
+      border-color: $color-maroon;
+      box-shadow: 0 0 0 3px rgba($color-maroon, 0.12);
+    }
+  }
+}
+
+.form-row-dob-age {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 0.65rem;
+}
+
+.simple-read-box {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: 1.5px solid rgba($color-gold, 0.4);
+  border-radius: 10px;
+  background: #FFFBEB;
+  color: #92400E;
+  font-weight: 700;
+  font-size: 0.92rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.simple-level-selector {
+  display: flex;
+  gap: 0.5rem;
+
+  .level-radio-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 0.4rem;
+    border: 1.5px solid rgba($color-gold, 0.4);
+    border-radius: 10px;
+    background: #FAF6E8;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: $color-maroon;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    &.active {
+      background: $color-maroon;
+      color: #FFFFFF;
+      border-color: $color-maroon;
+      box-shadow: 0 3px 10px rgba($color-maroon, 0.2);
+    }
+  }
+}
+
+.simple-gender-row {
+  display: flex;
+  gap: 0.5rem;
+
+  .gender-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.65rem 0.4rem;
+    border: 1.5px solid rgba($color-gold, 0.4);
+    border-radius: 10px;
+    background: #FAF6E8;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $color-maroon;
+    cursor: pointer;
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    &.active {
+      background: $color-maroon;
+      color: #FFFFFF;
+      border-color: $color-maroon;
+    }
+  }
+}
+
+.simple-fetch-box {
+  background: #FFFBEB;
+  border: 1.5px solid #F59E0B;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .fetch-input-row {
+    display: flex;
+    gap: 0.5rem;
+
+    input {
+      flex: 1;
+      padding: 0.65rem;
+      border: 1.2px solid #F59E0B;
+      border-radius: 8px;
+      background: #FFFFFF;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .btn-simple-fetch {
+      background: $color-maroon;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 0 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  }
+
+  .simple-msg {
+    font-size: 0.76rem;
+    font-weight: 700;
+
+    &.success { color: #166534; }
+    &.error { color: #991B1B; }
+  }
+}
+
+.simple-file-btn {
+  width: 100%;
+
+  input[type="file"] {
+    display: none;
+  }
+
+  label {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1.5px dashed $color-maroon;
+    border-radius: 10px;
+    background: #FAF6E8;
+    color: $color-maroon;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+}
+
+.simple-summary-card {
+  background: #FAF6E8;
+  border: 1.5px solid rgba($color-gold, 0.4);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.84rem;
+
+    .lbl { color: $color-text-muted; }
+    .val { color: $color-maroon; font-weight: 700; }
+  }
+}
+
+.simple-declaration-box {
+  background: rgba($color-gold, 0.12);
+  border: 1.2px solid rgba($color-gold, 0.4);
+  border-radius: 12px;
+  padding: 0.8rem;
+
+  .simple-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: $color-maroon;
+    font-weight: 600;
+    line-height: 1.35;
+
+    input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: $color-maroon;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
 /* ================= MOBILE BREAKPOINTS ================= */
 @media (max-width: 380px) {
   .wizard-container {

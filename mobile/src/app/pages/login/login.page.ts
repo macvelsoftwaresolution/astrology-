@@ -65,8 +65,4 @@ export class LoginPage implements OnInit {
   goToRegister() {
     this.router.navigate(['/register'], { queryParams: { service: this.serviceType } });
   }
-
-  goToForgotPassword() {
-    this.router.navigate(['/forgot-password'], { queryParams: { service: this.serviceType } });
-  }
 }

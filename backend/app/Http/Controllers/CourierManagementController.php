@@ -39,18 +39,15 @@ class CourierManagementController extends Controller
             if ($existing) {
                 $studentId = $existing->id;
             } else {
-                $studentId = DB::table('users')->where('role', 'user')->value('id');
-                if (!$studentId) {
-                    $studentId = DB::table('users')->insertGetId([
-                        'name' => $request->name ?? 'Student Buyer',
-                        'email' => 'buyer_' . time() . '_' . rand(100, 999) . '@astrology.com',
-                        'phone' => $request->phone,
-                        'password' => bcrypt('123456'),
-                        'role' => 'user',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
+                $studentId = DB::table('users')->insertGetId([
+                    'name' => $request->name ?? 'Student Buyer',
+                    'email' => 'buyer_' . time() . '_' . rand(100, 999) . '@astrology.com',
+                    'phone' => $request->phone,
+                    'password' => bcrypt('123456'),
+                    'role' => 'user',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
         }
         $orderNumber = 'BOOK-ORD-' . date('Y') . '-' . strtoupper(\Illuminate\Support\Str::random(6));
@@ -224,15 +221,28 @@ class CourierManagementController extends Controller
                 'author' => $request->author ?? '',
                 'price' => (float)$request->price,
                 'description' => $request->description ?? '',
-                'cover_image' => $coverImagePath,
-                'created_at' => now(),
                 'updated_at' => now(),
             ];
 
-            if (\Illuminate\Support\Facades\Schema::hasColumn('books', 'book_images')) {
+            if ($coverImagePath) {
+                $data['cover_image'] = $coverImagePath;
+            }
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('books', 'book_images') && !empty($bookImagesPaths)) {
                 $data['book_images'] = json_encode($bookImagesPaths);
             }
 
+            if ($request->filled('id') || $request->id) {
+                $bookId = $request->id;
+                DB::table('books')->where('id', $bookId)->update($data);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Book updated successfully',
+                    'book' => DB::table('books')->find($bookId)
+                ]);
+            }
+
+            $data['created_at'] = now();
             $id = DB::table('books')->insertGetId($data);
 
             return response()->json([
@@ -283,12 +293,7 @@ class CourierManagementController extends Controller
         if (!$user) return response()->json(['success' => false, 'orders' => []], 401);
 
         $orders = DB::table('book_orders')
-            ->where(function($query) use ($user) {
-                $query->where('student_id', $user->id);
-                if (!empty($user->phone)) {
-                    $query->orWhere('phone', $user->phone);
-                }
-            })
+            ->where('student_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 

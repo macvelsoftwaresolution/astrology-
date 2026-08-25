@@ -24,7 +24,14 @@ export class CourierTabComponent implements OnInit {
   courierForm = { status: 'Shipped', courier_partner: 'Blue Dart', awb_number: '' };
 
   showAddBookModal = false;
-  newBookForm = { title: '', author: '', price: '', description: '' };
+  bookModalTitle = 'Add New Book';
+  newBookForm: { id: number | null, title: string, author: string, price: string, description: string } = {
+    id: null,
+    title: '',
+    author: '',
+    price: '',
+    description: ''
+  };
   selectedCoverImage: File | null = null;
   selectedBookImages: File[] = [];
 
@@ -51,11 +58,13 @@ export class CourierTabComponent implements OnInit {
       next: (res) => {
         this.bookOrders = res.orders || [];
         this.isLoading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {
         this.isLoading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       }
     });
   }
@@ -67,12 +76,53 @@ export class CourierTabComponent implements OnInit {
       next: (res) => {
         this.books = res.books || [];
         this.isBooksLoading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {
         this.isBooksLoading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       }
+    });
+  }
+
+  openAddBookModal(): void {
+    this.bookModalTitle = 'Add New Book';
+    this.newBookForm = { id: null, title: '', author: '', price: '', description: '' };
+    this.selectedCoverImage = null;
+    this.selectedBookImages = [];
+    this.showAddBookModal = true;
+    try { this.cdr.markForCheck(); } catch {}
+    try { this.cdr.detectChanges(); } catch {}
+  }
+
+  openEditBookModal(book: any): void {
+    this.bookModalTitle = 'Edit Book';
+    this.newBookForm = {
+      id: book.id,
+      title: book.title || '',
+      author: book.author || '',
+      price: book.price ? String(book.price) : '',
+      description: book.description || ''
+    };
+    this.selectedCoverImage = null;
+    this.selectedBookImages = [];
+    this.showAddBookModal = true;
+    try { this.cdr.markForCheck(); } catch {}
+    try { this.cdr.detectChanges(); } catch {}
+  }
+
+  deleteBook(book: any): void {
+    if (!confirm(`Are you sure you want to delete the book "${book.title}"?`)) return;
+
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`${environment.apiUrl}/admin/books/${book.id}`, headers).subscribe({
+      next: (res) => {
+        alert(res.message || 'Book deleted successfully!');
+        this.loadBooks();
+      },
+      error: () => alert('Failed to delete book.')
     });
   }
 
@@ -95,6 +145,9 @@ export class CourierTabComponent implements OnInit {
     }
 
     const formData = new FormData();
+    if (this.newBookForm.id) {
+      formData.append('id', String(this.newBookForm.id));
+    }
     formData.append('title', this.newBookForm.title);
     formData.append('author', this.newBookForm.author || '');
     formData.append('price', this.newBookForm.price);
@@ -109,23 +162,19 @@ export class CourierTabComponent implements OnInit {
       });
     }
 
-    // When sending FormData, angular sets multipart/form-data automatically, but we need the auth header.
-    // getAuthHeaders() typically returns HttpHeaders object. If it sets Content-Type to application/json, we need to override it or remove it.
-    // Let's assume authService.getAuthHeaders() adds Authorization. If it adds Content-Type, we might have an issue.
-    // Let's use authService.getToken() which has the correct logic
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
 
     this.http.post<any>(`${environment.apiUrl}/admin/books`, formData, { headers }).subscribe({
       next: (res) => {
-        alert(res.message || 'Book added successfully!');
+        alert(res.message || 'Book saved successfully!');
         this.showAddBookModal = false;
-        this.newBookForm = { title: '', author: '', price: '', description: '' };
+        this.newBookForm = { id: null, title: '', author: '', price: '', description: '' };
         this.selectedCoverImage = null;
         this.selectedBookImages = [];
         this.loadBooks();
       },
-      error: () => alert('Failed to add book.')
+      error: () => alert('Failed to save book.')
     });
   }
 
@@ -133,16 +182,21 @@ export class CourierTabComponent implements OnInit {
     this.selectedBookForBuyers = book;
     this.isLoadingBuyers = true;
     this.buyersList = [];
+    try { this.cdr.markForCheck(); } catch {}
+    try { this.cdr.detectChanges(); } catch {}
+
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/books/${book.id}/buyers`, headers).subscribe({
       next: (res) => {
         this.buyersList = res.buyers || [];
         this.isLoadingBuyers = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {
         this.isLoadingBuyers = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       }
     });
   }

@@ -3,15 +3,15 @@
   <div class="card-box header-banner-card" style="margin-bottom: 20px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
     <div>
       <h1 style="font-size: 18px; font-weight: 800; color: #4A0E17; margin: 0 0 2px 0; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-award-fill" style="color:#d97706;"></i>சான்றிதழ் மேலாண்மை (Certificate Management)
+        <i class="bi bi-award-fill" style="color:#d97706;"></i>{{ 'grading.title' | translate }}
       </h1>
-      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">மாணவர்களுக்குச் சான்றிதழ் பதிவேற்றம் செய்தல் மற்றும் தேர்வு மதிப்பீடு.</p>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'grading.subtitle' | translate }}</p>
     </div>
 
     <div>
       <button (click)="toggleUploadForm()" style="background: linear-gradient(135deg, #4A0E17, #2A080C); color: #ECC876; border: 1px solid #A27B38; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(74, 14, 23, 0.2);">
         <i class="bi" [ngClass]="showUploadForm ? 'bi-x-lg' : 'bi-file-earmark-plus-fill'"></i>
-        {{ showUploadForm ? 'படிவத்தை மூடுக (Close Form)' : '+ புதிய சான்றிதழ் பதிவேற்றுக (Upload Certificate)' }}
+        {{ showUploadForm ? ('grading.closeFormBtn' | translate) : ('grading.uploadCertBtn' | translate) }}
       </button>
     </div>
   </div>
@@ -21,7 +21,7 @@
     <div class="card-box" style="margin-bottom: 24px; border: 2px solid #A27B38; background: #FFFDF7; padding: 20px; border-radius: 14px; box-shadow: 0 6px 20px rgba(74, 14, 23, 0.08);">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1.5px dashed rgba(162, 123, 56, 0.3); padding-bottom: 10px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #4A0E17; margin: 0; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-file-earmark-arrow-up-fill" style="color: #b45309;"></i> சான்றிதழ் பதிவேற்றும் படிவம் (Certificate Upload Form)
+          <i class="bi bi-file-earmark-arrow-up-fill" style="color: #b45309;"></i> {{ 'grading.uploadFormTitle' | translate }}
         </h3>
         <button (click)="showUploadForm = false" style="background: none; border: none; font-size: 18px; color: #4A0E17; cursor: pointer;">
           <i class="bi bi-x-circle-fill"></i>
@@ -34,7 +34,7 @@
           <!-- 1. Select Student -->
           <div class="form-group" style="margin: 0;">
             <label style="font-weight: 700; color: #4A0E17; font-size: 13px; margin-bottom: 6px; display: block;">
-              1. மாணவரைத் தேர்ந்தெடுக்கவும் (Student) *
+              {{ 'grading.selectStudent' | translate }}
             </label>
             <select [(ngModel)]="directCertForm.student_id" name="dcStudent" required class="ctrl" style="width: 100%;">
               @for (st of studentsList; track st.id) {
@@ -46,7 +46,7 @@
           <!-- 2. Select Course -->
           <div class="form-group" style="margin: 0;">
             <label style="font-weight: 700; color: #4A0E17; font-size: 13px; margin-bottom: 6px; display: block;">
-              2. பாடநெறி (Course) *
+              {{ 'grading.selectCourse' | translate }}
             </label>
             <select [(ngModel)]="directCertForm.course_id" name="dcCourse" required class="ctrl" style="width: 100%;">
               @for (c of coursesList; track c.id) {
@@ -58,7 +58,7 @@
           <!-- 3. Certificate Number -->
           <div class="form-group" style="margin: 0;">
             <label style="font-weight: 700; color: #4A0E17; font-size: 13px; margin-bottom: 6px; display: block;">
-              3. சான்றிதழ் எண் (Cert No)
+              {{ 'grading.certNumber' | translate }}
             </label>
             <input type="text" [(ngModel)]="directCertForm.certificate_number" name="dcNum" class="ctrl" placeholder="ASTRO-CERT-2026-XXXX" style="width: 100%;" />
           </div>
@@ -66,7 +66,7 @@
           <!-- 4. Issue Date -->
           <div class="form-group" style="margin: 0;">
             <label style="font-weight: 700; color: #4A0E17; font-size: 13px; margin-bottom: 6px; display: block;">
-              4. வழங்கப்பட்ட தேதி (Issue Date)
+              {{ 'grading.issueDate' | translate }}
             </label>
             <input type="date" [(ngModel)]="directCertForm.issue_date" name="dcDate" class="ctrl" style="width: 100%;" />
           </div>
@@ -76,28 +76,28 @@
         <!-- 5. File Upload Row -->
         <div class="form-group" style="margin-bottom: 16px;">
           <label style="font-weight: 700; color: #4A0E17; font-size: 13px; margin-bottom: 6px; display: block;">
-            5. சான்றிதழ் கோப்பு (PDF / Image Upload) *
+            {{ 'grading.certFile' | translate }}
           </label>
           <input type="file" (change)="onCertificateFileSelected($event)" accept="image/*,application/pdf" class="ctrl" style="width: 100%;" />
           
           @if (isUploadingFile) {
             <small style="color: #b45309; font-weight: 700; display: block; margin-top: 6px;">
-              <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது... (Uploading...)
+              <i class="bi bi-hourglass-split"></i> {{ 'grading.fileUploading' | translate }}
             </small>
           }
 
           @if (directCertForm.pdf_download_url) {
             <small style="color: #16a34a; font-weight: 700; display: block; margin-top: 6px;">
-              <i class="bi bi-check-circle-fill"></i> கோப்பு வெற்றிகரமாக பதிவேற்றப்பட்டது! <a [href]="directCertForm.pdf_download_url" target="_blank">பார்வை (View)</a>
+              <i class="bi bi-check-circle-fill"></i> {{ 'grading.fileUploaded' | translate }} <a [href]="directCertForm.pdf_download_url" target="_blank">{{ 'grading.viewFile' | translate }}</a>
             </small>
           }
         </div>
 
         <!-- Action Buttons -->
         <div style="display: flex; justify-content: flex-end; gap: 10px;">
-          <button type="button" (click)="showUploadForm = false" class="btn-cancel" style="padding: 8px 16px;">ரத்து செய்க</button>
+          <button type="button" (click)="showUploadForm = false" class="btn-cancel" style="padding: 8px 16px;">{{ 'common.cancel' | translate }}</button>
           <button type="submit" [disabled]="isUploadingFile" class="btn-primary" style="background: linear-gradient(135deg, #4A0E17, #2A080C); color: #ECC876; padding: 8px 20px; font-weight: 700;">
-            <i class="bi bi-check-lg me-1"></i> சான்றிதழ் பதிவேற்றுக (Submit Certificate)
+            <i class="bi bi-check-lg me-1"></i> {{ 'grading.submitCertBtn' | translate }}
           </button>
         </div>
 
@@ -108,16 +108,16 @@
   <!-- Tab Buttons -->
   <div style="display: flex; gap: 12px; margin-bottom: 18px;">
     <button (click)="activeTab = 'submissions'" [style.background]="activeTab === 'submissions' ? '#4A0E17' : '#ffffff'" [style.color]="activeTab === 'submissions' ? '#ffffff' : '#4A0E17'" style="border: 1px solid #4A0E17; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;">
-      <i class="bi bi-journal-check me-1"></i> தேர்வு விடைத்தாள்கள் (Exam Submissions - {{ submissions.length }})
+      <i class="bi bi-journal-check me-1"></i> {{ 'grading.examSubmissionsTab' | translate }} ({{ submissions.length }})
     </button>
     <button (click)="activeTab = 'issued'" [style.background]="activeTab === 'issued' ? '#4A0E17' : '#ffffff'" [style.color]="activeTab === 'issued' ? '#ffffff' : '#4A0E17'" style="border: 1px solid #4A0E17; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;">
-      <i class="bi bi-patch-check-fill me-1" style="color: #ECC876;"></i> வழங்கப்பட்ட சான்றிதழ்கள் (Issued Certificates - {{ issuedCertificates.length }})
+      <i class="bi bi-patch-check-fill me-1" style="color: #ECC876;"></i> {{ 'grading.issuedCertsTab' | translate }} ({{ issuedCertificates.length }})
     </button>
   </div>
 
   @if (isLoading) {
     <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      <i class="bi bi-hourglass-split"></i> ஏற்றப்படுகிறது...
+      <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
     </div>
   } @else {
 
@@ -127,13 +127,13 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>மாணவர் பெயர் (Student)</th>
-              <th>பாடம் / தேர்வு (Course)</th>
-              <th>சமர்ப்பிக்கப்பட்ட விடைத்தாள் (Submission)</th>
-              <th>மதிப்பெண் (Score)</th>
-              <th>குறிப்பு (Notes)</th>
-              <th>நிலை (Status)</th>
-              <th>நடவடிக்கை (Actions)</th>
+              <th>{{ 'grading.student' | translate }}</th>
+              <th>{{ 'grading.course' | translate }}</th>
+              <th>{{ 'grading.submission' | translate }}</th>
+              <th>{{ 'grading.score' | translate }}</th>
+              <th>{{ 'grading.notes' | translate }}</th>
+              <th>{{ 'grading.status' | translate }}</th>
+              <th>{{ 'grading.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -144,7 +144,7 @@
                 <td>
                   @if (sub.pdf_url) {
                     <a [href]="sub.pdf_url" target="_blank" class="pdf-link">
-                      <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:4px;"></i> விடைத்தாள் (PDF)
+                      <i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:4px;"></i> {{ 'grading.submission' | translate }} (PDF)
                     </a>
                   } @else if (sub.courier_tracking_no) {
                     <span style="font-size:12px;color:#0369a1;"><i class="bi bi-truck me-1"></i> Courier: {{ sub.courier_name }} (#{{ sub.courier_tracking_no }})</span>
@@ -169,7 +169,7 @@
                 </td>
                 <td>
                   <button class="btn-sm" (click)="openGradingModal(sub)">
-                    <i class="bi bi-pencil-square"></i> மதிப்பீடு
+                    <i class="bi bi-pencil-square"></i> {{ 'grading.gradeBtn' | translate }}
                   </button>
                 </td>
               </tr>
@@ -177,7 +177,7 @@
             @if (submissions.length === 0) {
               <tr>
                 <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
-                  சமர்ப்பிக்கப்பட்ட தேர்வுகள் ஏதுமில்லை.
+                  {{ 'grading.noSubmissions' | translate }}
                 </td>
               </tr>
             }
@@ -192,13 +192,13 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>சான்றிதழ் எண் (Cert No)</th>
-              <th>மாணவர் பெயர் (Student)</th>
-              <th>தொலைபேசி / மின்னஞ்சல்</th>
-              <th>பாடநெறி (Course)</th>
-              <th>வழங்கப்பட்ட தேதி</th>
-              <th>சான்றிதழ் கோப்பு (PDF/Image)</th>
-              <th>நீக்கு (Delete)</th>
+              <th>{{ 'grading.certNumber' | translate }}</th>
+              <th>{{ 'grading.student' | translate }}</th>
+              <th>{{ 'user.phone' | translate }} / {{ 'user.email' | translate }}</th>
+              <th>{{ 'grading.course' | translate }}</th>
+              <th>{{ 'grading.issueDate' | translate }}</th>
+              <th>{{ 'grading.certFile' | translate }}</th>
+              <th>{{ 'grading.deleteCert' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -212,15 +212,15 @@
                 <td>
                   @if (cert.pdf_download_url) {
                     <a [href]="cert.pdf_download_url" target="_blank" style="color:#0284c7; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                      <i class="bi bi-file-earmark-arrow-down-fill" style="color:#22c55e;"></i> பார்வை (View/Download)
+                      <i class="bi bi-file-earmark-arrow-down-fill" style="color:#22c55e;"></i> {{ 'grading.viewFile' | translate }}
                     </a>
                   } @else {
-                    <span style="color:#94a3b8;">கோப்பு இல்லை</span>
+                    <span style="color:#94a3b8;">-</span>
                   }
                 </td>
                 <td>
                   <button (click)="deleteCertificate(cert.id)" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; border-radius:6px; padding:4px 8px; font-size:12px; font-weight:700; cursor:pointer;">
-                    <i class="bi bi-trash-fill"></i> நீக்கு
+                    <i class="bi bi-trash-fill"></i> {{ 'grading.deleteCert' | translate }}
                   </button>
                 </td>
               </tr>
@@ -228,7 +228,7 @@
             @if (issuedCertificates.length === 0) {
               <tr>
                 <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
-                  வழங்கப்பட்ட சான்றிதழ்கள் ஏதுமில்லை. மேல் உள்ள "+ புதிய சான்றிதழ் பதிவேற்றுக" பட்டனைக் கிளிக் செய்து பதிவேற்றலாம்.
+                  {{ 'grading.noIssuedCerts' | translate }}
                 </td>
               </tr>
             }
@@ -244,29 +244,29 @@
     <div class="modal-overlay" (click)="selectedSubmissionForGrading = null">
       <div class="modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3><i class="bi bi-award" style="color:#d97706;margin-right:6px;"></i>தேர்வு மதிப்பீடு & சான்றிதழ் வழங்குதல்</h3>
+          <h3><i class="bi bi-award" style="color:#d97706;margin-right:6px;"></i>{{ 'grading.gradeBtn' | translate }}</h3>
           <button class="close-btn" (click)="selectedSubmissionForGrading = null"><i class="bi bi-x-lg"></i></button>
         </div>
-        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">மாணவர் பெயர்: <strong style="color:#0f172a;">{{ selectedSubmissionForGrading.student_name }}</strong></p>
+        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">{{ 'grading.student' | translate }}: <strong style="color:#0f172a;">{{ selectedSubmissionForGrading.student_name }}</strong></p>
         <form (ngSubmit)="saveGrading()">
           <div class="form-group">
-            <label>வழங்கப்படும் மதிப்பெண் (Out of 100)</label>
+            <label>{{ 'grading.score' | translate }} (Out of 100)</label>
             <input type="number" [(ngModel)]="gradingForm.score" name="gscore" required class="ctrl"/>
           </div>
           <div class="form-group">
-            <label>சான்றிதழ் நிலை (Status)</label>
+            <label>{{ 'grading.status' | translate }}</label>
             <select [(ngModel)]="gradingForm.status" name="gstatus" class="ctrl">
-              <option value="Approved">Approved - ஒப்புதல் அளிக்கப்பட்டது (Score ≥ 60)</option>
-              <option value="Rejected">Rejected - நிராகரிக்கப்பட்டது</option>
+              <option value="Approved">Approved (Score ≥ 60)</option>
+              <option value="Rejected">Rejected</option>
             </select>
           </div>
           <div class="form-group">
-            <label>ஆசிரியர் குறிப்பு (Feedback)</label>
-            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gnotes" rows="2" class="ctrl" placeholder="குறிப்புகள்..."></textarea>
+            <label>{{ 'grading.notes' | translate }}</label>
+            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gnotes" rows="2" class="ctrl" placeholder="Notes..."></textarea>
           </div>
           <div class="modal-btns">
-            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel">ரத்து செய்க</button>
-            <button type="submit" class="btn-primary">சான்றிதழ் வழங்கி சேமி</button>
+            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel">{{ 'common.cancel' | translate }}</button>
+            <button type="submit" class="btn-primary">{{ 'common.save' | translate }}</button>
           </div>
         </form>
       </div>

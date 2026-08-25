@@ -152,31 +152,101 @@ export class LearnEnrollComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    if (!this.localForm.studentNameTamil || !this.localForm.studentNameTamil.trim()) {
-      this.errorMessage = 'தயவுசெய்து மாணவர் பெயரைத் தமிழில் உள்ளிடவும் (1. மாணவர் பெயர் தமிழில் *).';
+  currentStep: number = 1;
+
+  setStep(step: number) {
+    if (step < this.currentStep) {
+      this.currentStep = step;
+      this.errorMessage = '';
       return;
     }
-    // Check if contains Tamil characters
-    const tamilRegex = /[\u0B80-\u0BFF]/;
-    if (!tamilRegex.test(this.localForm.studentNameTamil)) {
-      this.errorMessage = 'மாணவர் பெயர் கட்டாயமாக தமிழ் எழுத்துக்களில் மட்டுமே இருக்க வேண்டும் (எ.கா: கார்த்திக்).';
-      return;
+    if (step > 1 && !this.validateStep1()) return;
+    if (step > 2 && !this.validateStep2()) return;
+    if (step > 3 && !this.validateStep3()) return;
+    this.currentStep = step;
+    this.errorMessage = '';
+  }
+
+  nextStep() {
+    if (this.currentStep === 1) {
+      if (this.validateStep1()) {
+        this.currentStep = 2;
+        this.errorMessage = '';
+      }
+    } else if (this.currentStep === 2) {
+      if (this.validateStep2()) {
+        this.currentStep = 3;
+        this.errorMessage = '';
+      }
+    } else if (this.currentStep === 3) {
+      if (this.validateStep3()) {
+        this.currentStep = 4;
+        this.errorMessage = '';
+      }
     }
+  }
+
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      this.errorMessage = '';
+    }
+  }
+
+  validateStep1(): boolean {
     if (!this.localForm.fullName || !this.localForm.fullName.trim()) {
-      this.errorMessage = 'தயவுசெய்து மாணவர் பெயரை ஆங்கிலத்தில் உள்ளிடவும் (2. Name in English *).';
-      return;
-    }
-    if (!this.localForm.mobileNumber || !this.localForm.mobileNumber.trim()) {
-      this.errorMessage = 'தயவுசெய்து முதன்மை அலைபேசி எண்ணை உள்ளிடவும்.';
-      return;
-    }
-    if (!this.localForm.emailAddress || !this.localForm.emailAddress.trim()) {
-      this.errorMessage = 'தயவுசெய்து மின்னஞ்சல் முகவரியை உள்ளிடவும்.';
-      return;
+      this.errorMessage = 'தயவுசெய்து மாணவர் பெயரை உள்ளிடவும்.';
+      return false;
     }
     if (!this.localForm.dob) {
       this.errorMessage = 'தயவுசெய்து பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்.';
+      return false;
+    }
+    return true;
+  }
+
+  validateStep2(): boolean {
+    if (!this.localForm.postalAddress || !this.localForm.postalAddress.trim()) {
+      this.errorMessage = 'தயவுசெய்து உங்கள் அஞ்சல் முகவரியை உள்ளிடவும்.';
+      return false;
+    }
+    if (!this.localForm.pincode) {
+      this.errorMessage = 'தயவுசெய்து பின்கோடு எண்ணை உள்ளிடவும்.';
+      return false;
+    }
+    const cleanPhone = (this.localForm.mobileNumber || '').replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      this.errorMessage = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      return false;
+    }
+    if (!this.localForm.emailAddress || !this.localForm.emailAddress.trim() || !this.localForm.emailAddress.includes('@')) {
+      this.errorMessage = 'தயவுசெய்து சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்! (எ.கா: student@gmail.com)';
+      return false;
+    }
+    return true;
+  }
+
+  validateStep3(): boolean {
+    if (this.localForm.courseLevel === 'mudhunilai') {
+      if (!this.localForm.prevCertificate && !this.localForm.prevUserId) {
+        this.errorMessage = 'முதுநிலை வகுப்பிற்கு இளநிலை சான்றிதழ் அல்லது பயனர் ஐடி கட்டாயம்.';
+        return false;
+      }
+    }
+    return true;
+  }
+
+  onSubmit() {
+    if (!this.validateStep1()) {
+      this.currentStep = 1;
+      return;
+    }
+    if (!this.validateStep2()) {
+      this.currentStep = 2;
+      return;
+    }
+    if (!this.validateStep3()) {
+      this.currentStep = 3;
       return;
     }
     if (!this.localForm.agreedDeclaration) {
