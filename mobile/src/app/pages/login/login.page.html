@@ -24,11 +24,11 @@
 
 
     <!-- Form -->
-    <div class="login-form">
+    <form #loginFormRef="ngForm" (ngSubmit)="onLogin()" class="login-form" novalidate>
       <div class="input-group">
         <label>Mobile Number / Username</label>
         <div class="input-wrapper">
-          <input type="text" [(ngModel)]="mobileNumber" placeholder="அலைபேசி எண் / பெயர்">
+          <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required placeholder="அலைபேசி எண் / பெயர்">
           <span class="input-icon"><i class="bi bi-person"></i></span>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <div class="input-group">
         <label>Password</label>
         <div class="input-wrapper">
-          <input type="password" [(ngModel)]="password" placeholder="கடவுச்சொல்">
+          <input type="password" name="password" [(ngModel)]="password" required minlength="6" placeholder="கடவுச்சொல்">
           <span class="input-icon"><i class="bi bi-key"></i></span>
         </div>
       </div>
@@ -52,11 +52,11 @@
         </div>
       }
 
-      <button class="submit-btn" (click)="onLogin()">
+      <button type="submit" class="submit-btn">
         <span class="btn-primary-text">Login and Continue</span>
         <span class="btn-secondary-text">உள்நுழைந்து தொடரவும்</span>
       </button>
-    </div>
+    </form>
 
     <!-- Switch to register -->
     <div class="switch-auth-mode">

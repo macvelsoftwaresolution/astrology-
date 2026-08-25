@@ -260,13 +260,13 @@
     <!-- Step 1: Consultation Details Form -->
     @if (serviceStep === 1) {
       <!-- Main Spacious Form Container -->
-      <div class="booking-form-box">
+      <form ngNoForm (submit)="$event.preventDefault(); nextStep()" class="booking-form-box">
         <!-- Name -->
         <div class="form-input-card">
           <label>உங்கள் பெயர் <span class="required-star">*</span></label>
           <div class="input-inner-wrap">
             <span class="input-icon"><i class="bi bi-person-fill"></i></span>
-            <input type="text" [(ngModel)]="astrologerBookingForm.name" placeholder="முழுப் பெயரை உள்ளிடவும்">
+            <input type="text" name="bookingName" [(ngModel)]="astrologerBookingForm.name" placeholder="முழுப் பெயரை உள்ளிடவும்">
           </div>
         </div>
 
@@ -275,7 +275,7 @@
           <label>தொலைபேசி எண் <span class="required-star">*</span></label>
           <div class="input-inner-wrap">
             <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
-            <input type="tel" [(ngModel)]="astrologerBookingForm.phone" placeholder="+91 98765 43210">
+            <input type="tel" name="bookingPhone" [(ngModel)]="astrologerBookingForm.phone" placeholder="+91 98765 43210">
           </div>
         </div>
 
@@ -285,7 +285,7 @@
           <label>மனை / கட்டிடத்தின் முகவரி</label>
           <div class="input-inner-wrap textarea-wrap">
             <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <textarea [(ngModel)]="astrologerBookingForm.pob"
+            <textarea name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
               placeholder="வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்..." rows="2"></textarea>
           </div>
         </div>
@@ -296,14 +296,14 @@
             <label>பிறந்த தேதி</label>
             <div class="input-inner-wrap">
               <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
-              <input type="date" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
+              <input type="date" name="bookingDob" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
             </div>
           </div>
           <div class="form-input-card">
             <label>பிறந்த நேரம்</label>
             <div class="input-inner-wrap">
               <span class="input-icon"><i class="bi bi-clock"></i></span>
-              <input type="time" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
+              <input type="time" name="bookingTob" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
             </div>
           </div>
         </div>
@@ -313,7 +313,7 @@
           <label>பிறந்த ஊர்</label>
           <div class="input-inner-wrap">
             <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <input type="text" [(ngModel)]="astrologerBookingForm.pob" placeholder="எ.கா: சென்னை, மதுரை, கோவை">
+            <input type="text" name="bookingPob" [(ngModel)]="astrologerBookingForm.pob" placeholder="எ.கா: சென்னை, மதுரை, கோவை">
           </div>
         </div>
         }
@@ -344,7 +344,7 @@
             <span class="custom-date-label">வேறு தேதிக்கு:</span>
             <div class="input-inner-wrap compact-date-input" [class.input-error-border]="isCurrentDateBlocked">
               <span class="input-icon"><i class="bi" [ngClass]="isCurrentDateBlocked ? 'bi-exclamation-circle-fill text-danger' : 'bi-calendar-range-fill'"></i></span>
-              <input type="date" [(ngModel)]="astrologerBookingForm.date" [min]="todayDateStr" class="custom-native-date">
+              <input type="date" name="bookingCustomDate" [(ngModel)]="astrologerBookingForm.date" [min]="todayDateStr" class="custom-native-date">
             </div>
           </div>
 
@@ -410,12 +410,20 @@
           </div>
         </div>
 
+        <!-- Booking Validation Error Alert -->
+        @if (bookingValidationError) {
+          <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ bookingValidationError }}</span>
+          </div>
+        }
+
         <!-- Continue Button -->
-        <button class="btn-form-continue" (click)="nextStep()">
+        <button type="submit" class="btn-form-continue">
           <span>தொடர்க</span>
           <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
         </button>
-      </div>
+      </form>
     }
 
     <!-- Step 2: Payment Confirmation & Order Breakdown -->
@@ -469,6 +477,14 @@
             <strong class="total-fee">₹{{ totalAstrologerFee }}</strong>
           </div>
         </div>
+
+        <!-- Booking Validation Error Alert -->
+        @if (bookingValidationError) {
+          <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ bookingValidationError }}</span>
+          </div>
+        }
 
         <button class="btn-app-gold btn-pay-now" [disabled]="isProcessingPayment" (click)="payAndFulfillAstrologer()">
           @if (isProcessingPayment) {

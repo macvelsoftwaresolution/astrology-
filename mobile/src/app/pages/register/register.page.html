@@ -23,7 +23,7 @@
     </div>
 
     <!-- Form -->
-    <div class="register-form">
+    <form #registerFormRef="ngForm" (ngSubmit)="onRegister()" class="register-form" novalidate>
       <!-- Profile Image Upload -->
       <div class="profile-pic-upload" style="text-align: center; margin-bottom: 20px;">
         <label for="profilePicInput" class="upload-label" style="display: inline-block; cursor: pointer;">
@@ -44,7 +44,7 @@
       <div class="input-group">
         <label>Full Name</label>
         <div class="input-wrapper">
-          <input type="text" [(ngModel)]="fullName" placeholder="உள்நுழைய பெயர்">
+          <input type="text" name="fullName" [(ngModel)]="fullName" required minlength="2" placeholder="உள்நுழைய பெயர்">
           <span class="input-icon"><i class="bi bi-person"></i></span>
         </div>
       </div>
@@ -52,7 +52,7 @@
       <div class="input-group">
         <label>Mobile Number</label>
         <div class="input-wrapper">
-          <input type="tel" [(ngModel)]="mobileNumber" placeholder="அலைபேசி எண்">
+          <input type="tel" name="mobileNumber" [(ngModel)]="mobileNumber" required pattern="^[6-9]\d{9}$" placeholder="அலைபேசி எண்">
           <span class="input-icon"><i class="bi bi-phone"></i></span>
         </div>
       </div>
@@ -60,7 +60,7 @@
       <div class="input-group">
         <label>Email Address</label>
         <div class="input-wrapper">
-          <input type="email" [(ngModel)]="emailAddress" placeholder="மின்னஞ்சல் முகவரி">
+          <input type="email" name="emailAddress" [(ngModel)]="emailAddress" required placeholder="மின்னஞ்சல் முகவரி">
           <span class="input-icon"><i class="bi bi-envelope"></i></span>
         </div>
       </div>
@@ -68,7 +68,7 @@
       <div class="input-group">
         <label>Password (கடவுச்சொல்)</label>
         <div class="input-wrapper">
-          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="குறைந்தது 6 எழுத்துக்கள்">
+          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" placeholder="குறைந்தது 6 எழுத்துக்கள்">
           <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
             <i class="bi" [class.bi-eye]="showPassword" [class.bi-key]="!showPassword"></i>
           </span>
@@ -78,7 +78,7 @@
       <div class="input-group">
         <label>Confirm Password (உறுதிப்படுத்தல்)</label>
         <div class="input-wrapper">
-          <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="மீண்டும் கடவுச்சொல் உள்ளிடவும்">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6" placeholder="மீண்டும் கடவுச்சொல் உள்ளிடவும்">
           <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
             <i class="bi" [class.bi-eye]="showConfirmPassword" [class.bi-lock]="!showConfirmPassword"></i>
           </span>
@@ -92,11 +92,11 @@
         </div>
       }
 
-      <button class="submit-btn" (click)="onRegister()">
+      <button type="submit" class="submit-btn">
         <span class="btn-primary-text">Register and Continue</span>
         <span class="btn-secondary-text">பதிவு செய்து தொடரவும்</span>
       </button>
-    </div>
+    </form>
 
     <!-- Switch to login -->
     <div class="switch-auth-mode">

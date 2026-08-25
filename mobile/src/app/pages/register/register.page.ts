@@ -53,6 +53,18 @@ export class RegisterPage implements OnInit {
       return;
     }
 
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(this.emailAddress.trim())) {
+      this.errorMessage = 'தயவுசெய்து சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்! (எ.கா: user@gmail.com)';
+      return;
+    }
+
+    const cleanPhone = this.mobileNumber.replace(/\D/g, '');
+    if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      this.errorMessage = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      return;
+    }
+
     if (this.password.length < 6) {
       this.errorMessage = 'கடவுச்சொல் குறைந்தது 6 எழுத்துக்கள் இருக்க வேண்டும்';
       return;

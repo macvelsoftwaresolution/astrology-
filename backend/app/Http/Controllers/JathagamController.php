@@ -128,7 +128,7 @@ class JathagamController extends Controller
 
         $poruthamsDef = [
             'Dinam'          => ['tamil' => 'தினப் பொருத்தம்', 'desc' => 'ஆயுள், உடல் ஆரோக்கியம்', 'score' => in_array($diff % 9, [1, 3, 5, 7]) ? 1 : 0],
-            'Ganam'          => ['tamil' => 'கணப் பொருத்தம்', 'desc' => 'குண ஒற்றுமை, சுபாவம்', 'score' => $this->calcGanam($request->boy_nakshatra, $request->girl_nakshatra)],
+            'Ganam'          => ['tamil' => 'கணப் பொருத்தம்', 'desc' => 'குண ஒற்றுமை, சுபாவம்', 'score' => $this->calcGanam($boyStar, $girlStar)],
             'Mahendram'      => ['tamil' => 'மகேந்திரப் பொருத்தம்', 'desc' => 'புத்திர பாக்கியம், வம்ச விருத்தி', 'score' => ($diff % 4 === 0) ? 1 : 0],
             'Stree Deergham' => ['tamil' => 'ஸ்திரீ தீர்க்கம்', 'desc' => 'சகல ஐஸ்வர்யம், லட்சுமி கடாட்சம்', 'score' => ($diff >= 7) ? 1 : 0],
             'Yoni'           => ['tamil' => 'யோனிப் பொருத்தம்', 'desc' => 'தாம்பத்ய சுகம், மன ஈர்ப்பு', 'score' => 1],
@@ -506,10 +506,12 @@ class JathagamController extends Controller
 
     // ---- Helpers ----
 
-    private function calcGanam(string $boyNak, string $girlNak): int
+    private function calcGanam(?string $boyNak, ?string $girlNak): int
     {
+        $boyNak  = $boyNak ?? 'அஸ்வினி';
+        $girlNak = $girlNak ?? 'அஸ்வினி';
         // Simplified — Deva Ganam pairs are compatible; in real, need a full nakshatra->gana table
-        $devaGana = ['Ashwini', 'Mrigashira', 'Punarvasu', 'Pushya', 'Hasta', 'Swati', 'Anuradha', 'Shravana', 'Revati'];
+        $devaGana = ['Ashwini', 'Mrigashira', 'Punarvasu', 'Pushya', 'Hasta', 'Swati', 'Anuradha', 'Shravana', 'Revati', 'அஸ்வினி', 'மிருகசீரிஷம்', 'புனர்பூசம்', 'பூசம்', 'அஸ்தம்', 'சுவாதி', 'அனுஷம்', 'திருவோணம்', 'ரேவதி'];
         $boyDeva  = in_array($boyNak, $devaGana);
         $girlDeva = in_array($girlNak, $devaGana);
         return ($boyDeva && $girlDeva) || (!$boyDeva && !$girlDeva) ? 1 : 0;

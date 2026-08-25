@@ -47,7 +47,7 @@
 
 <!-- Step 1: Registration Form -->
 @if (serviceStep === 1) {
-  <div class="matching-form-card">
+  <form ngNoForm (submit)="$event.preventDefault(); goToRegPayment()" class="matching-form-card">
     <div class="overlay-header-inline">
       <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
       <h2>பதிவு விண்ணப்பம்</h2>
@@ -280,8 +280,16 @@
         }
       </div>
     </div>
-    <button (click)="goToRegPayment()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">கட்டணம் செலுத்த (பதிவு கட்டணம்)</button>
-  </div>
+
+    @if (regValidationError) {
+      <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ regValidationError }}</span>
+      </div>
+    }
+
+    <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">கட்டணம் செலுத்த (பதிவு கட்டணம்)</button>
+  </form>
 }
 
 <!-- Step 2: Registration Payment -->
@@ -329,7 +337,7 @@
 
 <!-- Step 4: Matching Input Form -->
 @if (serviceStep === 4) {
-  <div class="matching-form-card">
+  <form ngNoForm (submit)="$event.preventDefault(); calculatePorutham()" class="matching-form-card">
     <div class="overlay-header-inline">
       <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
       <h2>திருமணப் பொருத்தம்</h2>
@@ -447,10 +455,22 @@
         }
       </div>
     </div>
-    <button (click)="calculatePorutham()" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
+    <div class="input-row" style="margin-top: 1rem;">
+      <label>தொடர்பு கொள்ள வேண்டிய அலைபேசி எண் <span class="required-star">*</span></label>
+      <input type="tel" [(ngModel)]="matchingForm.requesterPhone" placeholder="+91 98765 43210">
+    </div>
+
+    @if (validationError) {
+      <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ validationError }}</span>
+      </div>
+    }
+
+    <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
       <span>10 பொருத்தங்கள் கணக்கிடுக ➔</span>
     </button>
-  </div>
+  </form>
 }
 
 <!-- Step 5: Traditional Matching Sheet Result (ஓம் பிரகஸ்பதி ஜோதிடாலயம் படிவம்) -->
