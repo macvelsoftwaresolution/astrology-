@@ -285,6 +285,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'matches': 'nav.matches',
       'matrimony': 'nav.matrimony',
       'lms': 'nav.lms',
+      'lms-settings': 'nav.lmsSettings',
       'courier': 'nav.courier',
       'grading': 'nav.grading',
       'payments': 'nav.payments',
@@ -313,7 +314,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isLearnActive(): boolean {
-    return ['lms', 'courier', 'grading'].includes(this.currentTab);
+    return ['lms', 'lms-settings', 'courier', 'grading'].includes(this.currentTab);
   }
 
   selectTab(tabName: string): void {
