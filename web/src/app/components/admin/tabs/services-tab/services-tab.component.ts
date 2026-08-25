@@ -154,6 +154,49 @@ export class ServicesTabComponent implements OnInit {
     });
   }
 
+  uploadQuickParigaram(event: any, booking: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    booking.isUploadingParigaram = true;
+    this.cdr.detectChanges();
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'parigarams');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          const payload = {
+            status: booking.status,
+            chart_url: booking.chart_url,
+            parigaram: booking.parigaram,
+            parigaram_document: res.url
+          };
+          const headers = this.authService.getAuthHeaders();
+          this.http.put<any>(`${environment.apiUrl}/admin/bookings/${booking.id}/fulfill`, payload, headers).subscribe({
+            next: () => {
+              booking.parigaram_document = res.url;
+              booking.isUploadingParigaram = false;
+              this.cdr.detectChanges();
+            },
+            error: () => {
+              booking.isUploadingParigaram = false;
+              alert('Failed to save Parigaram document to booking.');
+              this.cdr.detectChanges();
+            }
+          });
+        }
+      },
+      error: () => {
+        booking.isUploadingParigaram = false;
+        alert('Parigaram document upload failed.');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   submitFulfill(): void {
     if (!this.selectedBookingForFulfill) return;
     const headers = this.authService.getAuthHeaders();

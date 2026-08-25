@@ -602,6 +602,18 @@ export class HomePage implements OnInit {
     this.serviceStep = 1;
   }
 
+  isDateEnabled = (dateIsoString: string) => {
+    if (!this.selectedAstrologer || !this.selectedAstrologer.blocked_dates) return true;
+    const date = dateIsoString.split('T')[0];
+    return !this.selectedAstrologer.blocked_dates.includes(date);
+  };
+
+  onDateChange(event: any) {
+    if (event.detail.value) {
+      this.astrologerBookingForm.date = event.detail.value.split('T')[0];
+    }
+  }
+
   bookingRefCode: string = '';
   isProcessingPayment: boolean = false;
 
