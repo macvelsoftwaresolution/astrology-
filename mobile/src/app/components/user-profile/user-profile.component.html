@@ -386,20 +386,22 @@
                     <strong class="bpc-id">#{{ h.id }}</strong>
                     <h4 class="bpc-service-name">{{ h.service }}</h4>
                   </div>
-                  <span class="status-pill-mini" [ngClass]="(h.status || 'pending').toLowerCase()">{{ h.status }}</span>
+                  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                    <span class="status-pill-mini" [ngClass]="(h.status || 'pending').toLowerCase()">{{ h.status }}</span>
+                    @if (h.parigaram_document) {
+                    <a [href]="h.parigaram_document" target="_blank" title="பரிகார ஆவணம் பதிவிறக்கம்" style="background:#f59e0b; color:#ffffff; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; text-decoration:none; box-shadow:0 2px 5px rgba(245,158,11,0.3);">
+                      <i class="bi bi-download" style="font-size:16px;"></i>
+                    </a>
+                    }
+                  </div>
                 </div>
                 <div class="bpc-astro-info">
                   <i class="bi bi-calendar-check me-1 text-gold"></i>
                   <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
                 </div>
                 @if (h.chart_url) {
-                <a [href]="h.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
+                <a [href]="h.chart_url" target="_blank" class="btn-download-chart" style="margin-top: 8px;">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
-                </a>
-                }
-                @if (h.parigaram_document) {
-                <a [href]="h.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
-                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
                 </a>
                 }
               </div>

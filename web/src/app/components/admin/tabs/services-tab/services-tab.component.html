@@ -142,15 +142,21 @@
             </td>
             <td>
               <strong style="color:#b45309;font-size:14px;">₹{{ b.price }}</strong>
-              @if (b.details?.razorpay_payment_id || b.razorpay_payment_id) {
-              <div style="margin-top:3px;">
+              <div style="margin-top:4px; display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+                @if (b.details?.razorpay_payment_id || b.razorpay_payment_id) {
                 <span
                   style="font-size:10px;font-weight:700;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:1px 5px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;"
                   [title]="b.details?.razorpay_payment_id || b.razorpay_payment_id">
                   <i class="bi bi-shield-fill-check"></i> Paid
                 </span>
+                }
+                @if (b.details?.call_type) {
+                <span
+                  style="font-size:10px;font-weight:700;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;padding:1px 5px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;">
+                  <i class="bi" [ngClass]="{'bi-telephone-fill': b.details.call_type === 'Phone', 'bi-camera-video-fill': b.details.call_type === 'Video', 'bi-mic-fill': b.details.call_type === 'Audio'}"></i> {{ b.details.call_type }} Call
+                </span>
+                }
               </div>
-              }
             </td>
             <td>
               @if (b.preferred_date || b.details?.date || b.details?.preferred_date) {
@@ -225,10 +231,7 @@
             selectedBookingForView.user_phone }})</span>
         </div>
         <div style="display:flex;gap:6px;">
-          <a [href]="'tel:' + selectedBookingForView.user_phone" class="btn-primary"
-            style="padding:6px 12px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-            <i class="bi bi-telephone-fill"></i> {{ 'services.call' | translate }}
-          </a>
+
           <a [href]="'https://wa.me/91' + selectedBookingForView.user_phone" target="_blank"
             style="padding:6px 12px;font-size:12px;text-decoration:none;background:#25d366;color:#fff;font-weight:700;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">
             <i class="bi bi-whatsapp"></i> {{ 'services.whatsapp' | translate }}
@@ -369,44 +372,7 @@
           </select>
         </div>
 
-        <div class="form-group">
-          <label>ஜாதக கணிப்பு கோப்பு பதிவேற்றம் (Upload Completed Horoscope PDF / Image):</label>
-          <input type="file" accept=".pdf,image/*,application/pdf" (change)="uploadFulfillChart($event)" class="ctrl"
-            style="padding:6px;" />
-          @if (isUploadingFulfillChart) {
-          <span style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;display:block;">
-            <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
-          </span>
-          }
-          @if (fulfillForm.chart_url) {
-          <div
-            style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
-            <i class="bi bi-check-circle-fill"></i> கோப்பு வெற்றிகரமாக பதிவேற்றப்பட்டது
-          </div>
-          }
-        </div>
 
-        <div class="form-group">
-          <label>பரிகாரம் (Remedies) (Optional):</label>
-          <textarea [(ngModel)]="fulfillForm.parigaram" name="f_parigaram" class="ctrl" rows="3" placeholder="பரிகாரங்களை இங்கே தட்டச்சு செய்யவும்..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>பரிகார ஆவணம் பதிவேற்றம் (Upload Parigaram PDF / Image) (Optional):</label>
-          <input type="file" accept=".pdf,image/*,application/pdf" (change)="uploadFulfillParigaram($event)" class="ctrl"
-            style="padding:6px;" />
-          @if (isUploadingFulfillParigaram) {
-          <span style="font-size:11px;color:#d97706;font-weight:600;margin-top:4px;display:block;">
-            <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
-          </span>
-          }
-          @if (fulfillForm.parigaram_document) {
-          <div
-            style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
-            <i class="bi bi-check-circle-fill"></i> கோப்பு வெற்றிகரமாக பதிவேற்றப்பட்டது
-          </div>
-          }
-        </div>
 
         <div class="modal-btns">
           <button type="button" class="btn-cancel" (click)="selectedBookingForFulfill = null">{{ 'common.cancel' |
