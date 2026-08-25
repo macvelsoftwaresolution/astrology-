@@ -190,35 +190,34 @@
         </div>
       </div>
 
-      <!-- Stats Bar -->
-      <div class="afp-stats-grid">
-        <div class="afp-stat-item">
-          <span class="stat-icon">⭐</span>
-          <div class="stat-txt">
-            <strong>{{ astro.rating || 4.9 }}</strong>
-            <small>ரேட்டிங்</small>
+      <!-- Simple Vertical Stats List (Icon + Value Only) -->
+      <div class="afp-stats-list">
+        <div class="afp-stat-row">
+          <div class="stat-icon-badge star-bg"><i class="bi bi-star-fill text-warning"></i></div>
+          <div class="stat-row-content">
+            <strong class="stat-value">{{ astro.rating || 4.9 }} / 5</strong>
           </div>
         </div>
-        <div class="afp-stat-item">
-          <span class="stat-icon">🏆</span>
-          <div class="stat-txt">
-            <strong>{{ astro.experience || '15+ ஆண்டுகள்' }}</strong>
-            <small>அனுபவம்</small>
+
+        <div class="afp-stat-row">
+          <div class="stat-icon-badge exp-bg"><i class="bi bi-trophy-fill" style="color: #b45309;"></i></div>
+          <div class="stat-row-content">
+            <strong class="stat-value">{{ astro.experience || '15+ ஆண்டுகள்' }}</strong>
           </div>
         </div>
-        <div class="afp-stat-item">
-          <span class="stat-icon">👥</span>
-          <div class="stat-txt">
-            <strong>{{ astro.consultation_count || 1000 }}+</strong>
-            <small>ஆலோசனைகள்</small>
+
+        <div class="afp-stat-row">
+          <div class="stat-icon-badge consult-bg"><i class="bi bi-people-fill text-primary"></i></div>
+          <div class="stat-row-content">
+            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ நபர்கள்</strong>
           </div>
         </div>
       </div>
 
-      <!-- Simple Bio & Specialty (from DB) -->
+      <!-- Simple Concise Bio Note -->
       @if (astro.bio || astro.specialty) {
       <div class="afp-section-box">
-        <p class="afp-bio-text">{{ astro.bio || astro.specialty }}</p>
+        <p class="afp-bio-text">{{ astro.specialty || astro.bio }}</p>
       </div>
       }
 
@@ -322,15 +321,40 @@
         <!-- Consultation Date -->
         <div class="form-input-card">
           <label>ஆலோசனை தேதி <span class="required-star">*</span></label>
-          <div class="input-inner-wrap" id="consultation-date-trigger" style="cursor: pointer;">
-            <span class="input-icon"><i class="bi bi-calendar-check-fill"></i></span>
-            <input type="text" [value]="astrologerBookingForm.date" readonly class="custom-native-date" style="pointer-events: none; background: transparent; border: none; width: 100%; outline: none;">
+
+          <!-- Quick Date Pills Grid -->
+          <div class="slots-pill-grid date-pills-grid">
+            @for (dateItem of availableUpcomingDates; track dateItem.dateStr) {
+            <button type="button" class="slot-pill date-pill-item"
+              [class.active]="astrologerBookingForm.date === dateItem.dateStr && !dateItem.isBlocked"
+              [class.blocked-pill]="dateItem.isBlocked"
+              [disabled]="dateItem.isBlocked"
+              (click)="!dateItem.isBlocked && (astrologerBookingForm.date = dateItem.dateStr)">
+              <i class="bi" [ngClass]="dateItem.isBlocked ? 'bi-x-circle-fill text-danger' : (astrologerBookingForm.date === dateItem.dateStr ? 'bi-check-circle-fill' : 'bi-calendar-event')"></i>
+              <div class="date-pill-text">
+                <span class="date-main" [class.text-strike]="dateItem.isBlocked">{{ dateItem.label }}</span>
+                <small class="date-sub" [class.text-danger]="dateItem.isBlocked">{{ dateItem.isBlocked ? 'தடைப்பட்டது' : dateItem.dayName }}</small>
+              </div>
+            </button>
+            }
           </div>
-          <ion-popover trigger="consultation-date-trigger" [keepContentsMounted]="true" alignment="center">
-            <ng-template>
-              <ion-datetime presentation="date" [value]="astrologerBookingForm.date" (ionChange)="onDateChange($event)" [isDateEnabled]="isDateEnabled" showDefaultButtons="true" doneText="தேர்ந்தெடு" cancelText="ரத்து"></ion-datetime>
-            </ng-template>
-          </ion-popover>
+
+          <!-- Custom Native Date Picker -->
+          <div class="custom-date-select-bar">
+            <span class="custom-date-label">வேறு தேதிக்கு:</span>
+            <div class="input-inner-wrap compact-date-input" [class.input-error-border]="isCurrentDateBlocked">
+              <span class="input-icon"><i class="bi" [ngClass]="isCurrentDateBlocked ? 'bi-exclamation-circle-fill text-danger' : 'bi-calendar-range-fill'"></i></span>
+              <input type="date" [(ngModel)]="astrologerBookingForm.date" [min]="todayDateStr" class="custom-native-date">
+            </div>
+          </div>
+
+          <!-- Blocked Date Warning Alert Box -->
+          @if (isCurrentDateBlocked) {
+            <div class="blocked-date-alert-banner">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>தேர்ந்தெடுத்த நாளில் ({{ astrologerBookingForm.date }}) ஜோதிடர் கிடைக்கவில்லை! வேறு தேதியைத் தேர்ந்தெடுக்கவும்.</span>
+            </div>
+          }
         </div>
 
         <!-- Time Slot Selection -->

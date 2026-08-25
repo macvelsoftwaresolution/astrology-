@@ -13,12 +13,12 @@ export class LoginPage implements OnInit {
   mobileNumber: string = '';
   password: string = '';
   serviceType: 'astrology' | 'education' = 'astrology';
+  errorMessage: string = '';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private toastController: ToastController,
     private navCtrl: NavController
   ) { }
 
@@ -30,11 +30,13 @@ export class LoginPage implements OnInit {
     });
   }
 
-  async onLogin() {
+  onLogin() {
     if (!this.mobileNumber || !this.password) {
-      await this.showToast('தயவுசெய்து அலைபேசி எண் மற்றும் கடவுச்சொல்லை உள்ளிடவும்', 'warning');
+      this.errorMessage = 'தயவுசெய்து அலைபேசி எண் மற்றும் கடவுச்சொல்லை உள்ளிடவும்';
       return;
     }
+
+    this.errorMessage = '';
 
     this.authService.login(this.mobileNumber, this.password, this.serviceType).subscribe({
       next: (res) => {
@@ -44,14 +46,14 @@ export class LoginPage implements OnInit {
           this.router.navigate(['/home'], { replaceUrl: true });
         }
       },
-      error: async (err) => {
+      error: (err) => {
         let msg = 'தவறான அலைபேசி எண் அல்லது கடவுச்சொல்';
         if (err.status === 0) {
           msg = 'சர்வர் தொடர்புகொள்ள முடியவில்லை (Network Error). உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.';
         } else if (err.error?.message) {
           msg = err.error.message;
         }
-        await this.showToast(msg, 'danger');
+        this.errorMessage = msg;
       }
     });
   }
@@ -66,15 +68,5 @@ export class LoginPage implements OnInit {
 
   goToForgotPassword() {
     this.router.navigate(['/forgot-password'], { queryParams: { service: this.serviceType } });
-  }
-
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
   }
 }

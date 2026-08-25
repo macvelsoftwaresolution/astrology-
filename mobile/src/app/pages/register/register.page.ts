@@ -19,12 +19,12 @@ export class RegisterPage implements OnInit {
   showConfirmPassword: boolean = false;
   serviceType: 'astrology' | 'education' = 'astrology';
   profilePicBase64: string = '';
+  errorMessage: string = '';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private toastController: ToastController,
     private navCtrl: NavController
   ) { }
 
@@ -47,21 +47,23 @@ export class RegisterPage implements OnInit {
     }
   }
 
-  async onRegister() {
+  onRegister() {
     if (!this.fullName || !this.mobileNumber || !this.emailAddress || !this.password) {
-      await this.showToast('தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்', 'warning');
+      this.errorMessage = 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்';
       return;
     }
 
     if (this.password.length < 6) {
-      await this.showToast('கடவுச்சொல் குறைந்தது 6 எழுத்துக்கள் இருக்க வேண்டும்', 'warning');
+      this.errorMessage = 'கடவுச்சொல் குறைந்தது 6 எழுத்துக்கள் இருக்க வேண்டும்';
       return;
     }
 
     if (this.password !== this.confirmPassword) {
-      await this.showToast('கடவுச்சொற்கள் பொருந்தவில்லை (Passwords do not match)', 'warning');
+      this.errorMessage = 'கடவுச்சொற்கள் பொருந்தவில்லை (Passwords do not match)';
       return;
     }
+
+    this.errorMessage = '';
 
     const user: User = {
       fullName: this.fullName,
@@ -79,7 +81,7 @@ export class RegisterPage implements OnInit {
           this.navCtrl.navigateRoot('/home');
         }
       },
-      error: async (err) => {
+      error: (err) => {
         console.error('Registration error details:', err.error);
         let msg = 'இந்த அலைபேசி எண் / மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது.';
         if (err.status === 0) {
@@ -95,7 +97,7 @@ export class RegisterPage implements OnInit {
         } else if (err.error?.message) {
           msg = err.error.message;
         }
-        await this.showToast(msg, 'danger');
+        this.errorMessage = msg;
       }
     });
   }
@@ -106,15 +108,5 @@ export class RegisterPage implements OnInit {
 
   goToLogin() {
     this.router.navigate(['/login'], { queryParams: { service: this.serviceType } });
-  }
-
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
   }
 }

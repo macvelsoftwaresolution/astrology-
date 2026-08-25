@@ -12,19 +12,23 @@ import { ToastController } from '@ionic/angular';
 export class ForgotPasswordPage implements OnInit {
   mobileNumber: string = '';
   recoveredPassword: string | null = null;
+  errorMessage: string = '';
+  successMessage: string = '';
 
   constructor(
     private router: Router,
-    private authService: AuthService,
-    private toastController: ToastController
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
   }
 
   onResetPassword() {
+    this.errorMessage = '';
+    this.successMessage = '';
+
     if (!this.mobileNumber) {
-      this.showToast('தயவுசெய்து உங்கள் அலைபேசி எண்ணை உள்ளிடவும்', 'warning');
+      this.errorMessage = 'தயவுசெய்து உங்கள் அலைபேசி எண்ணை உள்ளிடவும்';
       return;
     }
 
@@ -32,30 +36,20 @@ export class ForgotPasswordPage implements OnInit {
       next: (res) => {
         if (res.success) {
           this.recoveredPassword = `சரிபார்க்கப்பட்டது: ${res.user?.email || res.message}`;
-          this.showToast(res.message, 'success');
+          this.successMessage = res.message || 'கடவுச்சொல் மீட்பு விவரங்கள் பெறப்பட்டன.';
         } else {
           this.recoveredPassword = null;
-          this.showToast('இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை', 'danger');
+          this.errorMessage = 'இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை';
         }
       },
       error: () => {
         this.recoveredPassword = null;
-        this.showToast('இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை', 'danger');
+        this.errorMessage = 'இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை';
       }
     });
   }
 
   goBack() {
     this.router.navigate(['/login']);
-  }
-
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
   }
 }

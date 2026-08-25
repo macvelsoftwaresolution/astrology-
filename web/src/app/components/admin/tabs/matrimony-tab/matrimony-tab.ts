@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../environments/environment';
@@ -22,7 +22,8 @@ export class MatrimonyTab implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -34,6 +35,7 @@ export class MatrimonyTab implements OnInit {
   loadProfiles(): void {
     if (typeof window === 'undefined') return;
     this.loading = true;
+    this.cdr.detectChanges();
     const headers = this.authService.getAuthHeaders();
     
     this.http.get<any>(`${environment.apiUrl}/admin/matrimony-profiles`, headers).subscribe({
@@ -42,10 +44,12 @@ export class MatrimonyTab implements OnInit {
           this.profiles = res.profiles || [];
         }
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching matrimony profiles', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -53,11 +57,13 @@ export class MatrimonyTab implements OnInit {
   viewProfile(profile: any): void {
     this.viewingProfile = profile;
     this.isViewModalOpen = true;
+    this.cdr.detectChanges();
   }
 
   closeViewModal(): void {
     this.isViewModalOpen = false;
     this.viewingProfile = null;
+    this.cdr.detectChanges();
   }
 
   isImageUrl(value: any): boolean {

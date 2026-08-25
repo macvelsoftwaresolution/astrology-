@@ -316,28 +316,44 @@ class AstrologyController extends Controller
                 $api->utility->verifyPaymentSignature($attributes);
             }
 
-            // Fetch booking
+            // Extract user_id from Sanctum Bearer token if present
+            $userId = null;
+            if ($request->bearerToken()) {
+                $token = DB::table('personal_access_tokens')
+                    ->where('token', hash('sha256', $request->bearerToken()))
+                    ->first();
+                $userId = $token?->tokenable_id;
+            }
+
+            // Fetch booking if exists
             $booking = DB::table('bookings')->where('id', $request->order_id)->first();
 
-            // Record transaction if not already logged (avoid duplicate)
-            if ($booking) {
-                DB::table('payment_transactions')->updateOrInsert(
-                    ['razorpay_payment_id' => $request->razorpay_payment_id],
-                    [
-                        'user_id' => $booking->user_id ?? 1,
-                        'booking_id' => $request->order_id,
-                        'order_type' => 'booking',
-                        'razorpay_order_id' => $request->razorpay_order_id,
-                        'amount' => $booking->price ?? 0,
-                        'currency' => 'INR',
-                        'status' => 'Paid',
-                        'description' => 'ஜோதிட ஆலோசனை முன்பதிவு கட்டணம்',
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]
-                );
+            $payId = $request->razorpay_payment_id ?: ('pay_' . uniqid());
+            $orderId = $request->order_id ?: ($request->razorpay_order_id ?: ('order_' . uniqid()));
+            $userToLink = $booking->user_id ?? ($userId ?? 1);
+            $amountToLog = $request->amount ?? ($booking->price ?? 100);
+            $descToLog = $request->description ?? ($booking ? 'ஜோதிட ஆலோசனை முன்பதிவு கட்டணம்' : 'திருமணப் பொருத்தம் கணிப்பு கட்டணம்');
+            $orderTypeToLog = $request->order_type ?? ($booking ? 'booking' : 'marriage_matching');
 
-                // Update booking
+            // Record transaction in payment_transactions table
+            DB::table('payment_transactions')->updateOrInsert(
+                ['razorpay_payment_id' => $payId],
+                [
+                    'user_id' => $userToLink,
+                    'booking_id' => $orderId,
+                    'order_type' => $orderTypeToLog,
+                    'razorpay_order_id' => $request->razorpay_order_id ?: $orderId,
+                    'amount' => $amountToLog,
+                    'currency' => 'INR',
+                    'status' => 'Paid',
+                    'description' => $descToLog,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            );
+
+            // Update booking status if booking exists
+            if ($booking) {
                 DB::table('bookings')
                     ->where('id', $request->order_id)
                     ->update([
@@ -348,7 +364,7 @@ class AstrologyController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Payment verified and booking updated successfully'
+                'message' => 'Payment verified and transaction recorded successfully'
             ]);
         } catch (\Exception $e) {
             return response()->json([

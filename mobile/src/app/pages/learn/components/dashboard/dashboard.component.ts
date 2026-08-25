@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef } from '@angular/core';
-import { ToastController } from '@ionic/angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
@@ -65,7 +64,6 @@ export class LearnDashboardComponent implements OnInit {
   marqueeMessage = '📢 ஆருத்ரா ஜோதிட பயிலரங்கத்திற்கு தங்களை அன்புடன் வரவேற்கிறோம்! ✦ புதிய நேரலை வகுப்புகள் மற்றும் பாடக்குறிப்புகள் உடனுக்குடன் புதுப்பிக்கப்படுகின்றன ✦ பாடங்களை முழுமையாக படித்து தேர்வு எழுதி சான்றிதழ் பெறுங்கள்!';
 
   constructor(
-    private toastController: ToastController,
     private http: HttpClient,
     private authService: AuthService,
     private router: Router,
@@ -376,14 +374,7 @@ export class LearnDashboardComponent implements OnInit {
   async confirmCheckoutPayment() {
     if (this.selectedCheckoutBook) {
       if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
-        const toast = await this.toastController.create({
-          message: 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).',
-          duration: 2500,
-          color: 'warning',
-          position: 'bottom',
-          cssClass: 'custom-astrology-toast'
-        });
-        await toast.present();
+        this.showToast('தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).', 'warning');
         return;
       }
 
@@ -396,7 +387,7 @@ export class LearnDashboardComponent implements OnInit {
 
       const authHeaders = this.authService.getAuthHeaders('education').headers;
       this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
-        next: async (res) => {
+        next: (res) => {
           if (this.selectedCheckoutBook) {
             this.selectedCheckoutBook.bought = true;
             this.selectedCheckoutBook.order = res.order || {
@@ -408,26 +399,12 @@ export class LearnDashboardComponent implements OnInit {
           }
           this.activeBookCheckout = false;
           this.loadMyBookOrders();
-          const toast = await this.toastController.create({
-            message: `${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`,
-            duration: 3000,
-            color: 'success',
-            position: 'bottom',
-            cssClass: 'custom-astrology-toast'
-          });
-          await toast.present();
+          this.showToast(`${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`, 'success');
           this.selectedCheckoutBook = null;
         },
-        error: async (err) => {
+        error: (err) => {
           console.error('Error placing book order:', err);
-          const toast = await this.toastController.create({
-            message: 'ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.',
-            duration: 3000,
-            color: 'danger',
-            position: 'bottom',
-            cssClass: 'custom-astrology-toast'
-          });
-          await toast.present();
+          this.showToast('ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.', 'warning');
         }
       });
     }
@@ -438,14 +415,8 @@ export class LearnDashboardComponent implements OnInit {
     this.selectedCheckoutBook = null;
   }
 
-  async downloadPDF(fileName: string, url?: string) {
-    const toast = await this.toastController.create({
-      message: `${fileName} - PDF தரவிறக்கப்படுகிறது...`,
-      duration: 2500,
-      color: 'success',
-      position: 'bottom'
-    });
-    await toast.present();
+  downloadPDF(fileName: string, url?: string) {
+    this.showToast(`${fileName} - PDF தரவிறக்கப்படுகிறது...`, 'success');
 
     if (url) {
       window.open(url, '_blank');

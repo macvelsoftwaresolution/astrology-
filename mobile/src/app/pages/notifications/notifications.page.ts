@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
+import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -20,7 +21,9 @@ export class NotificationsPage implements OnInit {
     private navCtrl: NavController,
     private router: Router,
     private http: HttpClient,
-    private backButtonService: BackButtonService
+    private backButtonService: BackButtonService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -49,17 +52,19 @@ export class NotificationsPage implements OnInit {
   }
 
   get token() {
-    return sessionStorage.getItem('auth_token') || '';
+    return this.authService.getToken() || '';
   }
 
   get headers() {
-    return { headers: { Authorization: `Bearer ${this.token}` } };
+    return this.authService.getAuthHeaders();
   }
 
   loadNotifications() {
     this.loading = true;
-    const userNotifs$ = this.http.get<any>(`${environment.apiUrl}/user/notifications`, this.headers);
-    const liveClasses$ = this.http.get<any>(`${environment.apiUrl}/public/live-class/ILANILAI`);
+    this.cdr.detectChanges();
+    const timestamp = Date.now();
+    const userNotifs$ = this.http.get<any>(`${environment.apiUrl}/user/notifications?_t=${timestamp}`, this.headers);
+    const liveClasses$ = this.http.get<any>(`${environment.apiUrl}/public/live-class/ILANILAI?_t=${timestamp}`);
 
     userNotifs$.subscribe({
       next: (res) => {
