@@ -362,6 +362,42 @@ class AstrologyController extends Controller
                     ]);
             }
 
+            // --- Notifications ---
+            try {
+                // Admin Notification
+                $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+                $adminNotifs = [];
+                foreach ($admins as $adminId) {
+                    $adminNotifs[] = [
+                        'user_id'    => $adminId,
+                        'title'      => 'புதிய கட்டணம் பெறப்பட்டது!',
+                        'body'       => $descToLog . ' க்காக ரூ. ' . $amountToLog . ' பெறப்பட்டது.',
+                        'type'       => 'payment',
+                        'target_tab' => 'payments',
+                        'is_read'    => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                if (!empty($adminNotifs)) {
+                    DB::table('notifications')->insert($adminNotifs);
+                }
+
+                // User Notification
+                if ($userId) {
+                    DB::table('notifications')->insert([
+                        'user_id'    => $userId,
+                        'title'      => 'கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது!',
+                        'body'       => $descToLog . ' க்காக ரூ. ' . $amountToLog . ' செலுத்தப்பட்டது. (ID: ' . $payId . ')',
+                        'type'       => 'payment',
+                        'target_tab' => 'profile',
+                        'is_read'    => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
+
             return response()->json([
                 'success' => true,
                 'message' => 'Payment verified and transaction recorded successfully'

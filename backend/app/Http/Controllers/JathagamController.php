@@ -228,6 +228,7 @@ class JathagamController extends Controller
                     'title'      => 'திருமணப் பொருத்தம் கணிக்கப்பட்டது!',
                     'body'       => $request->boy_name . ' & ' . $request->girl_name . ' இடையே ' . $totalScore . '/' . $totalPoruthams . ' பொருத்தம் உள்ளது (' . $matchStatus . ').',
                     'type'       => 'marriage_match',
+                    'target_tab' => 'profile',
                     'is_read'    => false,
                     'data'       => json_encode(['match_id' => $id]),
                     'created_at' => now(),
@@ -235,6 +236,27 @@ class JathagamController extends Controller
                 ]);
             } catch (\Throwable $e) {}
         }
+
+        // --- Notify Admins ---
+        try {
+            $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+            $adminNotifs = [];
+            foreach ($admins as $adminId) {
+                $adminNotifs[] = [
+                    'user_id'    => $adminId,
+                    'title'      => 'புதிய திருமணப் பொருத்தம்!',
+                    'body'       => $request->boy_name . ' & ' . $request->girl_name . ' ஜாதகங்கள் சமர்ப்பிக்கப்பட்டுள்ளன.',
+                    'type'       => 'marriage_match',
+                    'target_tab' => 'matches',
+                    'is_read'    => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            if (!empty($adminNotifs)) {
+                DB::table('notifications')->insert($adminNotifs);
+            }
+        } catch (\Throwable $e) {}
 
         return response()->json([
             'success'       => true,

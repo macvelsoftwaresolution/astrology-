@@ -49,6 +49,27 @@ class MatrimonyProfileController extends Controller
         $profile->extra_details = json_encode($request->except(['name', 'gender', 'phone1', 'rasi', 'star', 'address', 'nativePlace', 'currentPlace']));
         $profile->save();
 
+        // --- Notify Admins ---
+        try {
+            $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+            $adminNotifs = [];
+            foreach ($admins as $adminId) {
+                $adminNotifs[] = [
+                    'user_id'    => $adminId,
+                    'title'      => 'புதிய திருமண பதிவு!',
+                    'body'       => $request->input('name') . ' புதிய வரன் பதிவு செய்துள்ளார்.',
+                    'type'       => 'matrimony_registration',
+                    'target_tab' => 'matrimony',
+                    'is_read'    => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            if (!empty($adminNotifs)) {
+                DB::table('notifications')->insert($adminNotifs);
+            }
+        } catch (\Throwable $e) {}
+
         return response()->json([
             'success' => true,
             'message' => 'Matrimony profile registered successfully.',
