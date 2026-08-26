@@ -144,16 +144,12 @@
       <div class="category-main-card" (click)="selectServiceCategory(cat)">
         <div class="cmc-thumb">
           <img [src]="cat.image" [alt]="cat.title">
-          <div class="thumb-badge">{{ cat.tag }}</div>
         </div>
         <div class="cmc-content">
           <div class="cmc-header">
             <h3>{{ cat.title }}</h3>
-            <span class="cmc-expert-count"><i class="bi bi-person-badge-fill me-1"></i> {{
-              getAstrologersForCategory(cat).length }} {{ 'home.expertsCount' | translate }}</span>
           </div>
           <div class="cmc-footer">
-            <span class="cmc-badge-tag"><i [class]="cat.icon" class="me-1"></i> {{ cat.badge }}</span>
             @if (hasBookedService(cat.title)) {
               <span style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">முன்பதிவு செய்யப்பட்டது (Booked)</span>
             }
