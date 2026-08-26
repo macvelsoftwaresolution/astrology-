@@ -6,6 +6,7 @@ import { SplashPage } from './pages/splash/splash.page';
 import { WelcomePage } from './pages/welcome/welcome.page';
 import { LoginPage } from './pages/login/login.page';
 import { RegisterPage } from './pages/register/register.page';
+import { ForgotPasswordPage } from './pages/forgot-password/forgot-password.page';
 
 // Feature Pages
 import { LearnPage } from './pages/learn/learn.page';
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'welcome', component: WelcomePage },
   { path: 'login', component: LoginPage },
   { path: 'register', component: RegisterPage },
+  { path: 'forgot-password', component: ForgotPasswordPage },
   { path: 'learn', component: LearnPage },
   { path: 'profile', component: ProfilePage },
 

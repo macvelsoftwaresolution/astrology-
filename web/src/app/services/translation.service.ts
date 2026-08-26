@@ -68,6 +68,9 @@ export class TranslationService {
   public setLanguage(lang: LanguageCode): void {
     if (lang !== 'ta' && lang !== 'en') return;
     this.currentLanguageSignal.set(lang);
+    if (!this.translations[lang] || Object.keys(this.translations[lang]).length === 0) {
+      this.loadTranslations(lang);
+    }
     this.version.update((v) => v + 1);
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('astro_admin_lang', lang);

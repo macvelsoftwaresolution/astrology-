@@ -9,6 +9,12 @@
     "tamil": "தமிழ்",
     "english": "English"
   },
+  "notifications": {
+    "title": "Live Activity Notifications",
+    "newBadge": "new",
+    "markAllRead": "Mark All Read",
+    "noAlerts": "No notifications yet"
+  },
   "nav": {
     "overview": "Overview & Analytics",
     "astrology": "Astrology",
@@ -18,6 +24,7 @@
     "services": "Appointment Bookings",
     "rasi_editor": "Rasi Palan Editor",
     "matches": "Marriage Match Log",
+    "matrimony": "Matrimony Hub",
     "lms": "Learn & Course Studio",
     "lmsSettings": "Intro & Guidelines",
     "courier": "Courier & Book Orders",
@@ -99,7 +106,8 @@
     "loading": "Loading data from database...",
     "noRecords": "No records found",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "selectFromList": "Select from list"
   },
   "overview": {
     "title": "Command Center & Analytics",
@@ -210,6 +218,7 @@
     "registeredAstrologers": "Registered Astrologers:",
     "astrologyCategory": "Astrology Category *",
     "addNewCategory": "+ Add New Category",
+    "enterNewCategory": "Enter new category name...",
     "callOptions": "Call Options"
   },
   "lms": {
@@ -242,7 +251,23 @@
     "contentType": "Content Type",
     "contentUrl": "Video / Audio / PDF URL *",
     "duration": "Duration (e.g. 20 mins)",
-    "freePreview": "Allow Free Preview"
+    "freePreview": "Allow Free Preview",
+    "seminars": "Seminars",
+    "seminarsSub": "Special webinars & workshops",
+    "addSeminar": "+ Add Seminar",
+    "noSeminars": "No seminars found.",
+    "liveClasses": "Live Classes",
+    "liveClassesSub": "Scheduled live video classes",
+    "addLiveClass": "+ Add Live Class",
+    "noLiveClasses": "No live classes scheduled.",
+    "materials": "Study Materials",
+    "materialsSub": "PDF study notes & books",
+    "addMaterial": "+ Upload Material",
+    "noMaterials": "No materials uploaded.",
+    "exams": "Exams",
+    "examsSub": "Valuation papers & online quizzes",
+    "addExam": "+ Create Exam",
+    "noExams": "No exams created."
   },
   "courier": {
     "title": "Courier & Book Orders Management",
@@ -344,7 +369,6 @@
     "chooseVideo": "Choose Video File (MP4)",
     "chars": "chars",
     "savePrediction": "Save Prediction"
-  }
   },
   "payments": {
     "title": "Payment Transactions Ledger",

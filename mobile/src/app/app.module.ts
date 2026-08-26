@@ -15,6 +15,7 @@ import { SplashPage } from './pages/splash/splash.page';
 import { WelcomePage } from './pages/welcome/welcome.page';
 import { LoginPage } from './pages/login/login.page';
 import { RegisterPage } from './pages/register/register.page';
+import { ForgotPasswordPage } from './pages/forgot-password/forgot-password.page';
 
 // Learn Module
 import { LearnPage } from './pages/learn/learn.page';
@@ -45,6 +46,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
     WelcomePage,
     LoginPage,
     RegisterPage,
+    ForgotPasswordPage,
     LearnPage,
     LearnIntroComponent,
     LearnRulesComponent,
