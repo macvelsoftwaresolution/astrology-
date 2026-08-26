@@ -210,10 +210,21 @@ class NotificationController extends Controller
         $alerts = [];
 
         try {
-            // Strictly query ONLY real records from the notifications database table
-            $dbNotifs = DB::table('notifications')
-                ->whereIn('type', ['booking', 'book_order', 'submission', 'payment', 'marriage_match', 'user_registration', 'user'])
-                ->orderBy('id', 'desc')
+            $adminIds = DB::table('users')->where('role', 'admin')->pluck('id')->toArray();
+            $currentAdminId = $request->user() ? $request->user()->id : null;
+            if ($currentAdminId && !in_array($currentAdminId, $adminIds)) {
+                $adminIds[] = $currentAdminId;
+            }
+
+            // Strictly query ONLY records intended for Admin(s)
+            $query = DB::table('notifications');
+            if (!empty($adminIds)) {
+                $query->whereIn('user_id', $adminIds);
+            } else {
+                $query->whereIn('type', ['booking', 'book_order', 'submission', 'payment', 'marriage_match', 'user_registration', 'user']);
+            }
+
+            $dbNotifs = $query->orderBy('id', 'desc')
                 ->limit(20)
                 ->get();
 

@@ -298,14 +298,29 @@ export class HomePage implements OnInit {
   unreadNotificationsCount: number = 0;
   latestUnreadNotif: any = null;
   showNotifPopupBanner: boolean = false;
+  isHidingBanner: boolean = false;
+  private notifTimer: any = null;
 
   openNotifications() {
+    if (this.notifTimer) {
+      clearTimeout(this.notifTimer);
+      this.notifTimer = null;
+    }
     this.showNotifPopupBanner = false;
+    this.isHidingBanner = false;
     this.router.navigate(['/notifications']);
   }
 
   closeNotifBanner() {
-    this.showNotifPopupBanner = false;
+    if (this.notifTimer) {
+      clearTimeout(this.notifTimer);
+      this.notifTimer = null;
+    }
+    this.isHidingBanner = true;
+    setTimeout(() => {
+      this.showNotifPopupBanner = false;
+      this.isHidingBanner = false;
+    }, 350);
   }
 
   loadNotificationsCount() {
@@ -319,8 +334,16 @@ export class HomePage implements OnInit {
           const unreadList = res.notifications.filter((n: any) => !n.is_read);
           if (unreadList.length > 0) {
             this.latestUnreadNotif = unreadList[0];
-            if (!sessionStorage.getItem('notif_banner_dismissed')) {
+            const dismissKey = 'notif_banner_dismissed_' + unreadList[0].id;
+            if (!sessionStorage.getItem(dismissKey)) {
               this.showNotifPopupBanner = true;
+              this.isHidingBanner = false;
+              sessionStorage.setItem(dismissKey, 'true');
+
+              if (this.notifTimer) clearTimeout(this.notifTimer);
+              this.notifTimer = setTimeout(() => {
+                this.closeNotifBanner();
+              }, 3000);
             }
           }
         }

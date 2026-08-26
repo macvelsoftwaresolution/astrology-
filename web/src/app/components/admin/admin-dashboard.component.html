@@ -33,7 +33,7 @@
 
   <!-- FLOATING SLIDE-DOWN ANIMATED TOAST BANNER FOR ADMIN LIVE ALERTS -->
   @if (showAdminAlertBanner && latestAdminAlert) {
-    <div class="admin-floating-alert-banner">
+    <div class="admin-floating-alert-banner" [class.hiding]="isHidingAdminBanner" (click)="openNotification(latestAdminAlert); closeAdminAlertBanner()">
       <div class="banner-icon-box" [ngClass]="getNotificationColorClass(latestAdminAlert.type)">
         <i class="bi" [ngClass]="getNotificationIcon(latestAdminAlert.type)"></i>
       </div>
@@ -41,10 +41,7 @@
         <h4>🔔 {{ translationService.currentLanguage() === 'ta' ? latestAdminAlert.title : (latestAdminAlert.title_en || latestAdminAlert.title) }}</h4>
         <p>{{ latestAdminAlert.message }}</p>
       </div>
-      <button class="banner-action-btn" (click)="openNotification(latestAdminAlert); closeAdminAlertBanner()">
-        பார்வை (View)
-      </button>
-      <button class="banner-close-btn" (click)="closeAdminAlertBanner()">
+      <button class="banner-close-btn" (click)="$event.stopPropagation(); closeAdminAlertBanner()" title="Close">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>

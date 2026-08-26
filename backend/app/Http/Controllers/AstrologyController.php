@@ -173,9 +173,9 @@ class AstrologyController extends Controller
             );
         }
 
-        // Insert Real Notification for User
-        if ($userId) {
-            try {
+        // Insert Real Notification for User & Admin
+        try {
+            if ($userId) {
                 DB::table('notifications')->insert([
                     'user_id'    => $userId,
                     'title'      => 'முன்பதிவு பெறப்பட்டது! (Booking Received)',
@@ -186,8 +186,27 @@ class AstrologyController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-            } catch (\Throwable $e) {}
-        }
+            }
+
+            // Notify Admins
+            $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+            $adminNotifs = [];
+            foreach ($admins as $adminId) {
+                $adminNotifs[] = [
+                    'user_id'    => $adminId,
+                    'title'      => 'புதிய முன்பதிவு வரப்பெற்றது!',
+                    'body'       => 'பயனரிடமிருந்து ' . ($request->service_type ?: 'ஜோதிட ஆலோசனை') . ' முன்பதிவு #' . $orderId . ' வரப்பெற்றது.',
+                    'type'       => 'booking',
+                    'target_tab' => 'services',
+                    'is_read'    => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            if (!empty($adminNotifs)) {
+                DB::table('notifications')->insert($adminNotifs);
+            }
+        } catch (\Throwable $e) {}
 
         return response()->json([
             'success' => true,
