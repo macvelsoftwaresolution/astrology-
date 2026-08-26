@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../environments/environment';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-matrimony-tab',
@@ -26,6 +27,7 @@ export class MatrimonyTab implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -38,21 +40,29 @@ export class MatrimonyTab implements OnInit {
   loadProfiles(): void {
     if (typeof window === 'undefined') return;
     this.loading = true;
-    this.cdr.detectChanges();
     const headers = this.authService.getAuthHeaders();
     
     this.http.get<any>(`${environment.apiUrl}/admin/matrimony-profiles`, headers).subscribe({
       next: (res) => {
-        if (res.success) {
+        if (res && res.success) {
           this.profiles = res.profiles || [];
+        } else if (Array.isArray(res)) {
+          this.profiles = res;
+        } else if (res && res.profiles) {
+          this.profiles = res.profiles;
+        } else {
+          this.profiles = [];
         }
         this.loading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: (err) => {
         console.error('Error fetching matrimony profiles', err);
+        this.profiles = [];
         this.loading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       }
     });
   }
@@ -101,7 +111,7 @@ export class MatrimonyTab implements OnInit {
       error: () => {
         this.loading = false;
         this.cdr.detectChanges();
-        alert('File upload failed.');
+        this.toastService.error('File upload failed.');
       }
     });
   }
@@ -110,14 +120,14 @@ export class MatrimonyTab implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.put<any>(`${environment.apiUrl}/admin/matrimony-profiles/${profileId}`, { result_document: url }, headers).subscribe({
       next: () => {
-        alert('Result document uploaded successfully!');
+        this.toastService.success('Result document uploaded successfully!', 'ஆவணம் பதிவேற்றப்பட்டது');
         this.uploadingProfileId = null;
         this.loadProfiles();
       },
       error: () => {
         this.loading = false;
         this.cdr.detectChanges();
-        alert('Failed to save result document.');
+        this.toastService.error('Failed to save result document.', 'பிழை ஏற்பட்டது');
       }
     });
   }

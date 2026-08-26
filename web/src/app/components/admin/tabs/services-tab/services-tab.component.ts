@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
@@ -41,6 +42,7 @@ export class ServicesTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     public translationService: TranslationService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -54,8 +56,9 @@ export class ServicesTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/bookings`, headers).subscribe({
       next: (res) => {
-        this.serviceBookings = res || [];
-        this.cdr.detectChanges();
+        this.serviceBookings = Array.isArray(res) ? res : (res?.bookings || []);
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {}
     });
@@ -120,7 +123,7 @@ export class ServicesTabComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('Chart upload failed.');
+        this.toastService.error('Chart upload failed.');
         this.isUploadingFulfillChart = false;
         this.cdr.detectChanges();
       }
@@ -147,7 +150,7 @@ export class ServicesTabComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('Parigaram document upload failed.');
+        this.toastService.error('Parigaram document upload failed.');
         this.isUploadingFulfillParigaram = false;
         this.cdr.detectChanges();
       }
@@ -179,11 +182,12 @@ export class ServicesTabComponent implements OnInit {
             next: () => {
               booking.parigaram_document = res.url;
               booking.isUploadingParigaram = false;
+              this.toastService.success('Parigaram document updated successfully.');
               this.cdr.detectChanges();
             },
             error: () => {
               booking.isUploadingParigaram = false;
-              alert('Failed to save Parigaram document to booking.');
+              this.toastService.error('Failed to save Parigaram document to booking.');
               this.cdr.detectChanges();
             }
           });
@@ -191,7 +195,7 @@ export class ServicesTabComponent implements OnInit {
       },
       error: () => {
         booking.isUploadingParigaram = false;
-        alert('Parigaram document upload failed.');
+        this.toastService.error('Parigaram document upload failed.');
         this.cdr.detectChanges();
       }
     });
@@ -202,11 +206,11 @@ export class ServicesTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.put<any>(`${environment.apiUrl}/admin/bookings/${this.selectedBookingForFulfill.id}/fulfill`, this.fulfillForm, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Booking status updated successfully!');
+        this.toastService.success(res.message || 'Booking status updated successfully!', 'ஆலோசனை நிலை புதுப்பிக்கப்பட்டது');
         this.selectedBookingForFulfill = null;
         this.loadBookings();
       },
-      error: () => alert('❌ Failed to update booking status.')
+      error: () => this.toastService.error('Failed to update booking status.', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -215,10 +219,10 @@ export class ServicesTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/bookings/${id}`, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Booking deleted successfully!');
+        this.toastService.success(res.message || 'Booking deleted successfully!', 'பதிவு நீக்கப்பட்டது');
         this.loadBookings();
       },
-      error: () => alert('❌ Failed to delete booking.')
+      error: () => this.toastService.error('Failed to delete booking.', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -239,7 +243,7 @@ export class ServicesTabComponent implements OnInit {
 
   submitManualBooking(): void {
     if (!this.manualBookingForm.user_name || !this.manualBookingForm.user_phone) {
-      alert('Client name and phone are required.');
+      this.toastService.error('Client name and phone are required.', 'விவரங்கள் தேவை');
       return;
     }
 
@@ -261,12 +265,12 @@ export class ServicesTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/bookings/create`, payload, headers).subscribe({
       next: (res) => {
-        alert(`Booking #${res.order_id || 'AST'} created successfully!`);
+        this.toastService.success(`Booking #${res.order_id || 'AST'} created successfully!`, 'பதிவு உருவாக்கப்பட்டது');
         this.manualBookingModalOpen = false;
         this.loadBookings();
       },
       error: (err) => {
-        alert(err.error?.message || 'Failed to create booking.');
+        this.toastService.error(err.error?.message || 'Failed to create booking.', 'பிழை ஏற்பட்டது');
       }
     });
   }

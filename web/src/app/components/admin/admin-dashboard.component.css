@@ -2909,4 +2909,198 @@
     transform: translateY(-50px) scale(0.2);
     opacity: 0;
   }
+}
+
+/* =========================================================
+   GLOBAL BOTTOM FLOATING ANIMATED TOAST NOTIFICATION
+   ========================================================= */
+.bottom-toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1.5px solid #e2e8f0;
+  max-width: 440px;
+  min-width: 320px;
+  overflow: hidden;
+  animation: slideUpToastGlobal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpToastGlobal {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+/* 1. SUCCESS THEME (வெற்றி - Emerald Green) */
+.toast-success {
+  border-left: 5px solid #10b981;
+  background: linear-gradient(135deg, #ffffff 86%, #f0fdf4 100%);
+  box-shadow: 0 14px 38px rgba(16, 185, 129, 0.16), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.toast-success .toast-icon-circle {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1.5px solid #bbf7d0;
+}
+
+.toast-success .toast-title {
+  color: #166534;
+}
+
+.toast-success .toast-progress-bar {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* 2. ERROR THEME (பிழை / நீக்கம் - Crimson Red) */
+.toast-error {
+  border-left: 5px solid #ef4444;
+  background: linear-gradient(135deg, #ffffff 86%, #fef2f2 100%);
+  box-shadow: 0 14px 38px rgba(239, 68, 68, 0.18), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.toast-error .toast-icon-circle {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1.5px solid #fecaca;
+}
+
+.toast-error .toast-title {
+  color: #991b1b;
+}
+
+.toast-error .toast-progress-bar {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+/* 3. WARNING THEME (எச்சரிக்கை - Amber Gold) */
+.toast-warning {
+  border-left: 5px solid #f59e0b;
+  background: linear-gradient(135deg, #ffffff 86%, #fffbeb 100%);
+  box-shadow: 0 14px 38px rgba(245, 158, 11, 0.18), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.toast-warning .toast-icon-circle {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1.5px solid #fde68a;
+}
+
+.toast-warning .toast-title {
+  color: #92400e;
+}
+
+.toast-warning .toast-progress-bar {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+/* 4. INFO THEME (தகவல் - Royal Blue) */
+.toast-info {
+  border-left: 5px solid #3b82f6;
+  background: linear-gradient(135deg, #ffffff 86%, #eff6ff 100%);
+  box-shadow: 0 14px 38px rgba(59, 130, 246, 0.18), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.toast-info .toast-icon-circle {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1.5px solid #bfdbfe;
+}
+
+.toast-info .toast-title {
+  color: #1e40af;
+}
+
+.toast-info .toast-progress-bar {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.toast-msg {
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.toast-close-btn:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3.5px;
+  width: 100%;
+  animation: toastProgressGlobal 3.8s linear forwards;
+}
+
+@keyframes toastProgressGlobal {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+@media (max-width: 640px) {
+  .bottom-toast-container {
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    min-width: unset;
+    max-width: unset;
+  }
 }

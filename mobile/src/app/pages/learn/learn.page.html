@@ -113,6 +113,8 @@
       (dashboardTabChange)="onDashboardTabChange($event)"
       [currentLessonView]="currentLessonView"
       (currentLessonViewChange)="onLessonViewChange($event)"
+      [initialOption]="dashboardOption"
+      [orderNumber]="dashboardOrderNumber"
       (back)="handleDashboardBack()"
       (logout)="logoutCourse()"
       (startQuiz)="activeQuiz = $event"

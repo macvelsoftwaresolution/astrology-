@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
@@ -38,6 +39,9 @@ export class TeamTabComponent implements OnInit {
   teamList: any[] = [];
   isLoading = false;
   openAddAdminModal = false;
+  isCreatingNewMember = false;
+  showPasswordToggle = false;
+  isSubmittingNewMember = false;
   newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin' };
 
   astrologersList: any[] = [];
@@ -64,6 +68,7 @@ export class TeamTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     public translationService: TranslationService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -72,6 +77,26 @@ export class TeamTabComponent implements OnInit {
       this.loadTeam();
       this.loadAstrologers();
     }
+  }
+
+  toast = { show: false, message: '', type: 'success' as const, title: '' };
+
+  showToast(message: string, type: 'success' | 'error' | 'info' = 'success', title: string = ''): void {
+    this.toastService.show(message, type, title);
+  }
+
+  openCreateMemberView(): void {
+    this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin' };
+    this.showPasswordToggle = false;
+    this.isSubmittingNewMember = false;
+    this.isCreatingNewMember = true;
+    this.selectedAstrologerForManage = null;
+    this.cdr.detectChanges();
+  }
+
+  cancelCreateMember(): void {
+    this.isCreatingNewMember = false;
+    this.cdr.detectChanges();
   }
 
   // ================= ADMINS / TEAM CRUD =================
@@ -93,20 +118,27 @@ export class TeamTabComponent implements OnInit {
 
   createAdmin(): void {
     if (!this.newAdmin.name || !this.newAdmin.email || !this.newAdmin.password) {
-      alert('Please fill all required fields.');
+      this.showToast('Please fill all required fields (Name, Email, and Password).', 'error', 'விவரங்கள் தேவை');
       return;
     }
 
+    this.isSubmittingNewMember = true;
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/create-admin`, this.newAdmin, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Account created successfully!');
+        this.isSubmittingNewMember = false;
+        this.showToast(res.message || 'Administrator account created successfully!', 'success', 'கணக்கு உருவாக்கப்பட்டது');
+        this.isCreatingNewMember = false;
         this.openAddAdminModal = false;
         this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin' };
         this.loadTeam();
+        this.loadAstrologers();
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        alert(err.error?.message || 'Failed to create account.');
+        this.isSubmittingNewMember = false;
+        this.showToast(err.error?.message || 'Failed to create account.', 'error', 'பிழை ஏற்பட்டது');
+        this.cdr.detectChanges();
       }
     });
   }
@@ -116,10 +148,10 @@ export class TeamTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/team/${id}`, headers).subscribe({
       next: () => {
-        alert('Account deleted successfully.');
+        this.showToast('Administrator account deleted successfully.', 'success', 'கணக்கு நீக்கப்பட்டது');
         this.loadTeam();
       },
-      error: () => alert('Failed to delete account.')
+      error: () => this.showToast('Failed to delete account.', 'error', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -253,7 +285,7 @@ export class TeamTabComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('Avatar upload failed.');
+        this.toastService.error('Avatar upload failed.');
         this.isUploadingAstrologerAvatar = false;
         this.cdr.detectChanges();
       }
@@ -271,6 +303,7 @@ export class TeamTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/astrologers/${astro.id}`, headers).subscribe({
       next: () => {
+        this.toastService.success('ஜோதிடர் வெற்றிகரமாக நீக்கப்பட்டார்.', 'நீக்கப்பட்டது');
         this.astrologersList = this.astrologersList.filter(a => a.id !== astro.id);
         if (this.selectedAstrologerForManage?.id === astro.id) {
           this.selectedAstrologerForManage = null;
@@ -278,7 +311,7 @@ export class TeamTabComponent implements OnInit {
         this.loadAstrologers();
         this.cdr.detectChanges();
       },
-      error: () => alert('❌ ஜோதிடரை நீக்குவதில் பிழை ஏற்பட்டது.')
+      error: () => this.toastService.error('ஜோதிடரை நீக்குவதில் பிழை ஏற்பட்டது.', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -408,7 +441,7 @@ export class TeamTabComponent implements OnInit {
     if (!this.selectedAstrologerForManage) return;
     const sundays = this.astrologerCalendarDays.filter(d => d.isCurrentMonth && d.dayOfWeek === 0 && !d.isBlocked);
     if (sundays.length === 0) {
-      alert('இந்த மாதத்தின் அனைத்து ஞாயிற்றுக்கிழமைகளும் ஏற்கனவே விடுப்பு நாட்களாக முடக்கப்பட்டுள்ளன.');
+      this.toastService.info('இந்த மாதத்தின் அனைத்து ஞாயிற்றுக்கிழமைகளும் ஏற்கனவே விடுப்பு நாட்களாக முடக்கப்பட்டுள்ளன.');
       return;
     }
     sundays.forEach(s => this.toggleAstrologerDate(s.date, 'busy'));
@@ -418,7 +451,7 @@ export class TeamTabComponent implements OnInit {
     if (!this.selectedAstrologerForManage) return;
     const blockedDays = this.astrologerCalendarDays.filter(d => d.isCurrentMonth && d.isBlocked);
     if (blockedDays.length === 0) {
-      alert('இந்த மாதத்தில் விடுப்பு நாட்கள் எதுவும் இல்லை.');
+      this.toastService.info('இந்த மாதத்தில் விடுப்பு நாட்கள் எதுவும் இல்லை.');
       return;
     }
     blockedDays.forEach(b => this.toggleAstrologerDate(b.date, 'available'));
@@ -464,7 +497,7 @@ export class TeamTabComponent implements OnInit {
   saveAstrologerFullProfile(): void {
     if (!this.selectedAstrologerForManage) return;
     if (!this.selectedAstrologerForManage.name || !this.selectedAstrologerForManage.name.trim()) {
-      alert('தயவுசெய்து ஜோதிடரின் பெயரை உள்ளிடவும்.');
+      this.showToast('தயவுசெய்து ஜோதிடரின் பெயரை உள்ளிடவும்.', 'error', 'பெயர் தேவை');
       return;
     }
     if (this.customCategoryMode && this.customCategoryInput.trim()) {
@@ -477,7 +510,7 @@ export class TeamTabComponent implements OnInit {
       this.http.post<any>(`${environment.apiUrl}/admin/astrologers`, this.selectedAstrologerForManage, headers).subscribe({
         next: (res) => {
           this.astrologerSaving = false;
-          this.astrologerSuccessMsg = '✅ புதிய ஜோதிடர் வெற்றிகரமாக சேர்க்கப்பட்டார்!';
+          this.showToast('புதிய ஜோதிடர் வெற்றிகரமாக சேர்க்கப்பட்டார்!', 'success', 'ஜோதிடர் சேர்க்கப்பட்டார்');
           this.isCreatingNewAstrologer = false;
           if (res.astrologer) {
             this.selectedAstrologerForManage = {
@@ -487,30 +520,22 @@ export class TeamTabComponent implements OnInit {
             };
           }
           this.loadAstrologers();
-          setTimeout(() => {
-            this.astrologerSuccessMsg = '';
-            this.cdr.detectChanges();
-          }, 3000);
         },
         error: (err) => {
           this.astrologerSaving = false;
-          alert(err.error?.message || '❌ ஜோதிடரை சேர்ப்பதில் பிழை ஏற்பட்டது.');
+          this.showToast(err.error?.message || 'ஜோதிடரை சேர்ப்பதில் பிழை ஏற்பட்டது.', 'error', 'பிழை ஏற்பட்டது');
         }
       });
     } else {
       this.http.put<any>(`${environment.apiUrl}/admin/astrologers/${this.selectedAstrologerForManage.id}`, this.selectedAstrologerForManage, headers).subscribe({
         next: (res) => {
           this.astrologerSaving = false;
-          this.astrologerSuccessMsg = '✅ ஜோதிடர் விவரங்கள் வெற்றிகரமாக சேமிக்கப்பட்டன!';
+          this.showToast('ஜோதிடர் விவரங்கள் வெற்றிகரமாக சேமிக்கப்பட்டன!', 'success', 'விவரங்கள் சேமிக்கப்பட்டது');
           this.loadAstrologers();
-          setTimeout(() => {
-            this.astrologerSuccessMsg = '';
-            this.cdr.detectChanges();
-          }, 3000);
         },
         error: () => {
           this.astrologerSaving = false;
-          alert('❌ விவரங்களை சேமிப்பதில் பிழை ஏற்பட்டது.');
+          this.showToast('விவரங்களை சேமிப்பதில் பிழை ஏற்பட்டது.', 'error', 'பிழை ஏற்பட்டது');
         }
       });
     }

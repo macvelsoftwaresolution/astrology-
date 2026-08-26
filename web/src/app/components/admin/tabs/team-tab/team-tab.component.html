@@ -3,7 +3,7 @@
   <!-- =========================================================
        MAIN DUAL CONTAINER VIEW: TEAM (TOP) & ASTROLOGERS (BOTTOM)
        ========================================================= -->
-  @if (!selectedAstrologerForManage) {
+  @if (!selectedAstrologerForManage && !isCreatingNewMember) {
   <!-- 1. TOP HEADER BANNER -->
   <div class="card-box header-banner-card"
     style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <button class="btn-primary" (click)="openAddAdminModal = true"
+      <button class="btn-primary" (click)="openCreateMemberView()"
         style="padding: 8px 18px; font-size: 13px; border-radius: 9px;">
         <i class="bi bi-person-plus-fill"></i> {{ 'team.addMember' | translate }}
       </button>
@@ -677,46 +677,121 @@
   </div>
   }
 
-  <!-- MODAL: ADD ADMIN / ASTROLOGER -->
-  @if (openAddAdminModal) {
-  <div class="modal-overlay" (click)="openAddAdminModal = false">
-    <div class="modal-box" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3><i class="bi bi-person-plus-fill" style="color:#d97706;margin-right:6px;"></i>{{ 'team.modalTitle' |
-          translate }}</h3>
-        <button class="close-btn" (click)="openAddAdminModal = false"><i class="bi bi-x-lg"></i></button>
+  <!-- =========================================================
+       SIMPLE & CLEAN FULL-PAGE: CREATE NEW ADMINISTRATOR
+       ========================================================= -->
+  @if (isCreatingNewMember) {
+  <div class="simple-create-studio">
+    <!-- Header with Back Button -->
+    <div class="simple-header card-box">
+      <div class="simple-header-left">
+        <button type="button" class="btn-back-simple" (click)="cancelCreateMember()" title="Back to Team Directory">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div>
+          <h2 class="simple-title">
+            <i class="bi bi-shield-lock-fill" style="color: #d97706; margin-right: 8px;"></i>
+            Create New Administrator Account
+          </h2>
+          <p class="simple-desc">புதிய நிர்வாகி கணக்கை உருவாக்கத் தேவையான விவரங்களை உள்ளிடவும்.</p>
+        </div>
       </div>
+    </div>
+
+    <!-- Clean Single Unified Form Card -->
+    <div class="card-box simple-form-card">
       <form (ngSubmit)="createAdmin()">
-        <div class="form-group">
-          <label>{{ 'team.fullName' | translate }}</label>
-          <input [(ngModel)]="newAdmin.name" name="aname" required class="ctrl" placeholder="e.g. Guru Sri" />
+        
+        <!-- Row 1: Name & Phone -->
+        <div class="form-row-2">
+          <div class="field-item">
+            <label class="clean-label">{{ 'team.fullName' | translate }}</label>
+            <div class="clean-input-wrap">
+              <i class="bi bi-person"></i>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.name"
+                name="name"
+                required
+                class="clean-input"
+                placeholder="எ.கா: Guru Sri"
+              />
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label class="clean-label">{{ 'team.phone' | translate }}</label>
+            <div class="clean-input-wrap">
+              <i class="bi bi-telephone"></i>
+              <input
+                type="tel"
+                [(ngModel)]="newAdmin.phone"
+                name="phone"
+                class="clean-input"
+                placeholder="10 digit mobile number"
+              />
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>{{ 'team.email' | translate }} *</label>
-          <input type="email" [(ngModel)]="newAdmin.email" name="aemail" required class="ctrl"
-            placeholder="admin@astrodivine.com" />
+
+        <!-- Row 2: Email & Password -->
+        <div class="form-row-2" style="margin-top: 20px;">
+          <div class="field-item">
+            <label class="clean-label">{{ 'team.email' | translate }} *</label>
+            <div class="clean-input-wrap">
+              <i class="bi bi-envelope"></i>
+              <input
+                type="email"
+                [(ngModel)]="newAdmin.email"
+                name="email"
+                required
+                autocomplete="off"
+                class="clean-input"
+                placeholder="admin@astrodivine.com"
+              />
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label class="clean-label">{{ 'team.securePass' | translate }}</label>
+            <div class="clean-input-wrap pass-wrap">
+              <i class="bi bi-lock"></i>
+              <input
+                [type]="showPasswordToggle ? 'text' : 'password'"
+                [(ngModel)]="newAdmin.password"
+                name="password"
+                required
+                autocomplete="new-password"
+                class="clean-input"
+                placeholder="Minimum 6 characters"
+              />
+              <button
+                type="button"
+                class="btn-eye-toggle"
+                (click)="showPasswordToggle = !showPasswordToggle"
+                tabindex="-1"
+                title="Toggle password visibility"
+              >
+                <i class="bi" [ngClass]="showPasswordToggle ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>{{ 'team.securePass' | translate }}</label>
-          <input type="password" [(ngModel)]="newAdmin.password" name="apass" required class="ctrl"
-            placeholder="Minimum 6 characters" />
+
+        <!-- Actions Row -->
+        <div class="form-actions-row">
+          <button type="button" class="btn-cancel-clean" (click)="cancelCreateMember()">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="submit" class="btn-primary btn-submit-clean" [disabled]="isSubmittingNewMember">
+            @if (isSubmittingNewMember) {
+              <i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}...
+            } @else {
+              <i class="bi bi-check2"></i> {{ 'team.createAccount' | translate }}
+            }
+          </button>
         </div>
-        <div class="form-group">
-          <label>{{ 'team.phone' | translate }}</label>
-          <input [(ngModel)]="newAdmin.phone" name="aphone" class="ctrl" placeholder="10 digit number" />
-        </div>
-        <div class="form-group">
-          <label>{{ 'team.platformRole' | translate }}</label>
-          <select [(ngModel)]="newAdmin.role" name="arole" class="ctrl">
-            <option value="admin">{{ 'team.roleAdmin' | translate }}</option>
-            <option value="astrologer">{{ 'team.roleAstro' | translate }}</option>
-          </select>
-        </div>
-        <div class="modal-btns">
-          <button type="button" (click)="openAddAdminModal = false" class="btn-cancel">{{ 'common.cancel' | translate
-            }}</button>
-          <button type="submit" class="btn-primary">{{ 'team.createAccount' | translate }}</button>
-        </div>
+
       </form>
     </div>
   </div>

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 export interface Metrics {
@@ -41,12 +42,13 @@ export class OverviewTabComponent implements OnInit {
   banners: any[] = [];
   isLoading = false;
 
-  editingBanner: any = null;
+  editingBanner: any = { title: '', image_url: '', target_route: '', is_active: 1, sort_order: 0 };
   showBannerModal = false;
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -122,7 +124,7 @@ export class OverviewTabComponent implements OnInit {
 
   saveBanner(): void {
     if (!this.editingBanner.title) {
-      alert('Banner title is required.');
+      this.toastService.error('Banner title is required.', 'விவரங்கள் தேவை');
       return;
     }
     const headers = this.authService.getAuthHeaders();
@@ -136,10 +138,11 @@ export class OverviewTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
+        this.toastService.success('Hero banner saved successfully!', 'பேனர் சேமிக்கப்பட்டது');
         this.showBannerModal = false;
         this.loadBanners();
       },
-      error: () => alert('Failed to save banner.')
+      error: () => this.toastService.error('Failed to save banner.', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -160,10 +163,11 @@ export class OverviewTabComponent implements OnInit {
           this.editingBanner.image_url = res.url;
         }
         this.isUploadingBannerImage = false;
+        this.toastService.success('Banner image uploaded successfully.');
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('File upload failed.');
+        this.toastService.error('File upload failed.');
         this.isUploadingBannerImage = false;
         this.cdr.detectChanges();
       }
@@ -174,8 +178,11 @@ export class OverviewTabComponent implements OnInit {
     if (!confirm('Are you sure you want to delete this banner?')) return;
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/banners/${id}`, headers).subscribe({
-      next: () => this.loadBanners(),
-      error: () => alert('Failed to delete banner.')
+      next: () => {
+        this.toastService.success('Hero banner deleted successfully.', 'பேனர் நீக்கப்பட்டது');
+        this.loadBanners();
+      },
+      error: () => this.toastService.error('Failed to delete banner.', 'பிழை ஏற்பட்டது')
     });
   }
 

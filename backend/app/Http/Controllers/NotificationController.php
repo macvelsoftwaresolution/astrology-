@@ -68,6 +68,35 @@ class NotificationController extends Controller
     }
 
     /**
+     * Delete a single notification
+     */
+    public function deleteNotification(Request $request, $id)
+    {
+        $user = $request->user();
+
+        DB::table('notifications')
+            ->where('id', $id)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return response()->json(['success' => true, 'message' => 'Notification deleted successfully']);
+    }
+
+    /**
+     * Clear all notifications for user
+     */
+    public function clearAllNotifications(Request $request)
+    {
+        $user = $request->user();
+
+        DB::table('notifications')
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return response()->json(['success' => true, 'message' => 'All notifications cleared']);
+    }
+
+    /**
      * Admin: Broadcast notification to all users or specific user
      */
     public function broadcastNotification(Request $request)
@@ -203,7 +232,7 @@ class NotificationController extends Controller
 
     /**
      * Admin: Get Live Activity Alerts for Admin Bell Notification Dropdown
-     * (100% Dynamic from Database `notifications` table - ZERO hardcoded titles or fallbacks)
+     * (100% Dynamic from Database `notifications` table - Incoming user activity ONLY)
      */
     public function getAdminActivityAlerts(Request $request)
     {
@@ -216,29 +245,52 @@ class NotificationController extends Controller
                 $adminIds[] = $currentAdminId;
             }
 
-            // Strictly query ONLY records intended for Admin(s)
-            $query = DB::table('notifications');
-            if (!empty($adminIds)) {
-                $query->whereIn('user_id', $adminIds);
-            } else {
-                $query->whereIn('type', ['booking', 'book_order', 'submission', 'payment', 'marriage_match', 'user_registration', 'user']);
-            }
-
-            $dbNotifs = $query->orderBy('id', 'desc')
-                ->limit(20)
+            // Query ONLY incoming alerts for Admin (new bookings, new book orders, new matrimony, new exam submissions)
+            // Exclude outgoing notifications sent from Admin to user (e.g. 'புத்தக ஆர்டர் நிலை: Shipped', 'Packed', etc.)
+            $dbNotifs = DB::table('notifications')
+                ->leftJoin('users', 'notifications.user_id', '=', 'users.id')
+                ->where(function ($q) use ($adminIds) {
+                    if (!empty($adminIds)) {
+                        $q->whereIn('notifications.user_id', $adminIds);
+                    }
+                    // Also include incoming customer actions
+                    $q->orWhere(function ($sub) {
+                        $sub->whereIn('notifications.type', ['booking', 'matrimony_registration', 'marriage_match', 'user_registration'])
+                            ->orWhere(function ($bSub) {
+                                $bSub->where('notifications.type', 'book_order')
+                                     ->where('notifications.title', 'like', '%புத்தக ஆர்டர் பெறப்பட்டது%');
+                            })
+                            ->orWhere(function ($sSub) {
+                                $sSub->where('notifications.type', 'submission')
+                                     ->where('notifications.title', 'like', '%தேர்வு சமர்ப்பிக்கப்பட்டது%');
+                            });
+                    });
+                })
+                ->where('notifications.title', 'not like', '%புத்தக ஆர்டர் நிலை:%')
+                ->select(
+                    'notifications.*',
+                    'users.name as user_name',
+                    'users.phone as user_phone',
+                    'users.role as user_role'
+                )
+                ->orderBy('notifications.id', 'desc')
+                ->limit(30)
                 ->get();
 
             foreach ($dbNotifs as $n) {
                 $targetTab = 'overview';
-                if (in_array($n->type, ['booking', 'booking_confirmed'])) $targetTab = 'services';
+                if (in_array($n->type, ['booking', 'booking_confirmed', 'booking_fulfilled'])) $targetTab = 'services';
                 else if ($n->type === 'book_order') $targetTab = 'courier';
                 else if ($n->type === 'submission' || $n->type === 'certificate') $targetTab = 'grading';
-                else if ($n->type === 'payment') $targetTab = 'payments';
-                else if ($n->type === 'marriage_match') $targetTab = 'matches';
+                else if ($n->type === 'payment' || $n->type === 'transaction') $targetTab = 'payments';
+                else if ($n->type === 'marriage_match' || $n->type === 'marriage' || $n->type === 'matrimony' || $n->type === 'matrimony_registration') $targetTab = 'matrimony';
+                else if ($n->type === 'jathagam') $targetTab = 'services';
+
+                $userLabel = ($n->user_name && $n->user_role !== 'admin') ? " ({$n->user_name})" : '';
 
                 $alerts[] = [
                     'id' => 'notif_' . $n->id,
-                    'title' => $n->title,
+                    'title' => $n->title . $userLabel,
                     'title_en' => $n->title,
                     'message' => $n->body ?? $n->message ?? '',
                     'type' => $n->type,

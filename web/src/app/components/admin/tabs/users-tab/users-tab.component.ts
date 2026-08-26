@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
 
@@ -22,6 +23,7 @@ export class UsersTabComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -38,11 +40,13 @@ export class UsersTabComponent implements OnInit {
       next: (res) => {
         this.users = res.users || [];
         this.isLoading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {
         this.isLoading = false;
-        this.cdr.detectChanges();
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
       }
     });
   }
@@ -67,10 +71,10 @@ export class UsersTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}`, headers).subscribe({
       next: () => {
-        alert('User deleted successfully.');
+        this.toastService.success('User deleted successfully.', 'பயனர் நீக்கப்பட்டார்');
         this.loadUsers();
       },
-      error: () => alert('Failed to delete user.')
+      error: () => this.toastService.error('Failed to delete user.', 'பிழை ஏற்பட்டது')
     });
   }
 

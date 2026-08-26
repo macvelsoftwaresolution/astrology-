@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
 import { AuthService } from '../../services/auth.service';
@@ -16,10 +16,12 @@ export class NotificationsPage implements OnInit {
   notifications: any[] = [];
   unreadCount: number = 0;
   loading: boolean = false;
+  currentContext: 'all' | 'learn' | 'astrology' = 'all';
 
   constructor(
     private navCtrl: NavController,
     private router: Router,
+    private route: ActivatedRoute,
     private http: HttpClient,
     private backButtonService: BackButtonService,
     private authService: AuthService,
@@ -27,7 +29,19 @@ export class NotificationsPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.detectContext();
     this.loadNotifications();
+  }
+
+  detectContext() {
+    const fromParam = this.route.snapshot.queryParams['from'];
+    if (fromParam === 'learn') {
+      this.currentContext = 'learn';
+    } else if (fromParam === 'astrology') {
+      this.currentContext = 'astrology';
+    } else {
+      this.currentContext = 'all';
+    }
   }
 
   ionViewDidEnter() {
@@ -48,6 +62,7 @@ export class NotificationsPage implements OnInit {
   };
 
   ionViewWillEnter() {
+    this.detectContext();
     this.loadNotifications();
   }
 
@@ -57,6 +72,17 @@ export class NotificationsPage implements OnInit {
 
   get headers() {
     return this.authService.getAuthHeaders();
+  }
+
+  filterByContext(notifs: any[]): any[] {
+    if (this.currentContext === 'learn') {
+      const learnTypes = ['book_order', 'course', 'certificate', 'submission', 'live_class'];
+      return notifs.filter(n => learnTypes.includes(n.type) || (typeof n.id === 'string' && n.id.startsWith('live_')));
+    } else if (this.currentContext === 'astrology') {
+      const astroTypes = ['booking', 'booking_confirmed', 'booking_fulfilled', 'jathagam', 'marriage', 'marriage_match', 'payment', 'transaction', 'rasi_palan', 'general'];
+      return notifs.filter(n => astroTypes.includes(n.type) && !(typeof n.id === 'string' && n.id.startsWith('live_')));
+    }
+    return notifs;
   }
 
   loadNotifications() {
@@ -69,9 +95,59 @@ export class NotificationsPage implements OnInit {
     userNotifs$.subscribe({
       next: (res) => {
         let notifs = res.notifications || [];
-        this.unreadCount = res.unread_count || 0;
 
-        // Fetch live class announcements to enrich the notifications feed
+        // If context is astrology, do not load live class education items
+        if (this.currentContext === 'astrology') {
+          const filtered = this.filterByContext(notifs);
+          this.notifications = this.consolidateNotifications(filtered);
+          this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+          this.loading = false;
+          return;
+        }
+
+        // Fetch live class announcements for learn context
+        liveClasses$.subscribe({
+          next: (lcRes) => {
+            if (lcRes && lcRes.data && Array.isArray(lcRes.data)) {
+              const activeLives = lcRes.data.filter((lc: any) => {
+                if (!lc.is_active) return false;
+                try {
+                  if (localStorage.getItem('dismissed_live_live_' + lc.id)) return false;
+                } catch {}
+                return true;
+              });
+              const liveNotifs = activeLives.map((lc: any) => ({
+                id: 'live_' + lc.id,
+                title: '🔴 நேரலை வகுப்பு: ' + lc.title,
+                body: lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.',
+                type: 'course',
+                is_read: false,
+                is_live: true,
+                link: lc.link,
+                created_at: lc.created_at || new Date().toISOString()
+              }));
+              notifs = [...liveNotifs, ...notifs];
+            }
+            const filtered = this.filterByContext(notifs);
+            this.notifications = this.consolidateNotifications(filtered);
+            this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+            this.loading = false;
+          },
+          error: () => {
+            const filtered = this.filterByContext(notifs);
+            this.notifications = this.consolidateNotifications(filtered);
+            this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+            this.loading = false;
+          }
+        });
+      },
+      error: () => {
+        if (this.currentContext === 'astrology') {
+          this.notifications = [];
+          this.unreadCount = 0;
+          this.loading = false;
+          return;
+        }
         liveClasses$.subscribe({
           next: (lcRes) => {
             if (lcRes && lcRes.data && Array.isArray(lcRes.data)) {
@@ -86,35 +162,9 @@ export class NotificationsPage implements OnInit {
                 link: lc.link,
                 created_at: lc.created_at || new Date().toISOString()
               }));
-              notifs = [...liveNotifs, ...notifs];
-              this.unreadCount += liveNotifs.length;
-            }
-            this.notifications = notifs;
-            this.loading = false;
-          },
-          error: () => {
-            this.notifications = notifs;
-            this.loading = false;
-          }
-        });
-      },
-      error: () => {
-        // Fallback: still try to load live classes even if user auth fails
-        liveClasses$.subscribe({
-          next: (lcRes) => {
-            if (lcRes && lcRes.data && Array.isArray(lcRes.data)) {
-              const activeLives = lcRes.data.filter((lc: any) => lc.is_active);
-              this.notifications = activeLives.map((lc: any) => ({
-                id: 'live_' + lc.id,
-                title: '🔴 நேரலை வகுப்பு: ' + lc.title,
-                body: lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.',
-                type: 'course',
-                is_read: false,
-                is_live: true,
-                link: lc.link,
-                created_at: lc.created_at || new Date().toISOString()
-              }));
-              this.unreadCount = this.notifications.length;
+              const filtered = this.filterByContext(liveNotifs);
+              this.notifications = this.consolidateNotifications(filtered);
+              this.unreadCount = this.notifications.filter(n => !n.is_read).length;
             }
             this.loading = false;
           },
@@ -123,6 +173,69 @@ export class NotificationsPage implements OnInit {
           }
         });
       }
+    });
+  }
+
+  consolidateNotifications(rawNotifs: any[]): any[] {
+    const seenOrders = new Set<string>();
+    const result: any[] = [];
+
+    for (const n of rawNotifs) {
+      if (n.type === 'book_order') {
+        let orderNum = n.data?.order_number;
+        if (!orderNum && n.body) {
+          const match = (n.body + ' ' + (n.title || '')).match(/(BOOK-ORD-[A-Za-z0-9\-]+)/);
+          if (match) orderNum = match[1];
+        }
+
+        if (orderNum) {
+          if (seenOrders.has(orderNum)) {
+            // Skip older status entries for this same order
+            continue;
+          }
+          seenOrders.add(orderNum);
+        }
+      }
+      result.push(n);
+    }
+    return result;
+  }
+
+  deleteNotification(n: any, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    const idx = this.notifications.findIndex(item => item.id === n.id);
+    if (idx !== -1) {
+      if (!n.is_read) {
+        this.unreadCount = Math.max(0, this.unreadCount - 1);
+      }
+      this.notifications.splice(idx, 1);
+    }
+
+    if (typeof n.id === 'string' && n.id.startsWith('live_')) {
+      try {
+        localStorage.setItem('dismissed_live_' + n.id, 'true');
+      } catch {}
+      return;
+    }
+
+    this.http.delete<any>(`${environment.apiUrl}/user/notifications/${n.id}`, this.headers).subscribe({
+      next: () => {},
+      error: () => {}
+    });
+  }
+
+  clearAll() {
+    if (this.notifications.length === 0) return;
+    if (!confirm('அனைத்து அறிவிப்புகளையும் நீக்க விரும்புகிறீர்களா?')) {
+      return;
+    }
+    this.notifications = [];
+    this.unreadCount = 0;
+    this.http.delete<any>(`${environment.apiUrl}/user/notifications`, this.headers).subscribe({
+      next: () => {},
+      error: () => {}
     });
   }
 
@@ -151,6 +264,7 @@ export class NotificationsPage implements OnInit {
       booking: 'bi-calendar-check-fill',
       booking_confirmed: 'bi-check-circle-fill',
       booking_fulfilled: 'bi-patch-check-fill',
+      book_order: 'bi-box-seam-fill',
       rasi_palan: 'bi-stars',
       certificate: 'bi-award-fill',
       course: 'bi-book-fill',
@@ -167,6 +281,7 @@ export class NotificationsPage implements OnInit {
       booking: 'cat-booking',
       booking_confirmed: 'cat-success',
       booking_fulfilled: 'cat-success',
+      book_order: 'cat-warning',
       rasi_palan: 'cat-gold',
       certificate: 'cat-warning',
       course: 'cat-info',
@@ -215,6 +330,22 @@ export class NotificationsPage implements OnInit {
     }
 
     // 2. Type-based direct route redirection
+    if (n.type === 'book_order') {
+      let orderNumber = n.data?.order_number || null;
+      if (!orderNumber && n.body) {
+        const match = (n.body + ' ' + (n.title || '')).match(/(BOOK-ORD-[A-Za-z0-9\-]+)/);
+        if (match) orderNumber = match[1];
+      }
+      this.router.navigate(['/learn'], {
+        queryParams: {
+          tab: 'profile',
+          option: 'orders',
+          order: orderNumber
+        }
+      });
+      return;
+    }
+
     if (n.type === 'booking_fulfilled' || n.type === 'booking_confirmed') {
       this.router.navigate(['/home'], { queryParams: { tab: 'profile', option: 'services' } });
       return;
@@ -241,7 +372,7 @@ export class NotificationsPage implements OnInit {
     }
 
     if (n.type === 'course' || n.type === 'certificate') {
-      this.router.navigate(['/home'], { queryParams: { tab: 'services' } });
+      this.router.navigate(['/learn'], { queryParams: { tab: 'lessons' } });
       return;
     }
 

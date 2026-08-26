@@ -163,6 +163,40 @@ class SuperAdminController extends Controller
         ]);
     }
 
+    /**
+     * Delete Admin / Team Member
+     */
+    public function deleteAdmin(Request $request, $id)
+    {
+        $currentUser = $request->user();
+        if ($currentUser && $currentUser->id == $id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'தற்போது உள்நுழைந்துள்ள உங்கள் சொந்த கணக்கை நீக்க முடியாது (Cannot delete your own active session account).'
+            ], 400);
+        }
+
+        $admin = User::where('id', $id)->first();
+        if (!$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'நிர்வாகி கணக்கு காணப்படவில்லை (Account not found).'
+            ], 404);
+        }
+
+        // Clean up user notifications and delete user
+        try {
+            DB::table('notifications')->where('user_id', $id)->delete();
+        } catch (\Throwable $e) {}
+
+        $admin->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'நிர்வாகி கணக்கு வெற்றிகரமாக நீக்கப்பட்டது (Admin account deleted successfully).'
+        ]);
+    }
+
     // ==========================================
     // APP HERO BANNERS MANAGEMENT
     // ==========================================

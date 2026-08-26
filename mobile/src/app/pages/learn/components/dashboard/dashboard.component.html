@@ -17,11 +17,11 @@
 <!-- ================= PASSING MESSAGE MARQUEE / TICKER ================= -->
 @if (marqueeMessage && !hideTicker && (dashboardTab === 'home' || hasActiveLiveClass)) {
   <div class="announcement-ticker-bar">
-    <div class="ticker-badge" (click)="openNotificationsModal()">
+    <div class="ticker-badge" (click)="onTickerClick()">
       <i class="bi bi-megaphone-fill ticker-icon"></i>
       <span>அறிவிப்பு</span>
     </div>
-    <div class="ticker-content-wrapper" (click)="openNotificationsModal()">
+    <div class="ticker-content-wrapper" (click)="onTickerClick()">
       <div class="ticker-text-marquee">
         <span>{{ marqueeMessage }}</span>
       </div>
@@ -517,82 +517,7 @@
   </div>
 }
 
-<!-- Notifications & Announcements Modal Overlay -->
-@if (showNotificationsModal) {
-  <div class="checkout-modal-overlay notif-modal-overlay">
-    <div class="checkout-modal-card notif-modal-card">
-      <div class="checkout-modal-header notif-modal-header">
-        <div class="notif-header-title">
-          <i class="bi bi-bell-fill header-bell-icon"></i>
-          <h3>முக்கிய அறிவிப்புகள் (Notifications)</h3>
-          @if (unreadCount > 0) {
-            <span class="notif-header-badge">{{ unreadCount }} புதியது</span>
-          }
-        </div>
-        <button class="close-checkout-btn" (click)="closeNotificationsModal()">×</button>
-      </div>
 
-      <div class="checkout-modal-body notif-modal-body">
-        <!-- Live Class Announcement Card if any -->
-        @for (lc of liveClasses; track lc.id) {
-          <div class="notif-item-card live-alert-card" (click)="playLiveClass(lc.link); closeNotificationsModal()">
-            <div class="notif-item-icon live">
-              <i class="bi bi-broadcast"></i>
-            </div>
-            <div class="notif-item-content">
-              <div class="notif-item-top">
-                <strong>{{ lc.title }}</strong>
-                <span class="live-pill">நேரலை</span>
-              </div>
-              <div style="font-size:11px;color:#d97706;font-weight:600;margin:2px 0 4px 0;">
-                <i class="bi bi-calendar3 me-1"></i>{{ lc.date_text || 'இன்று' }} • <i class="bi bi-clock me-1"></i>{{ lc.time_text || 'மாலை 06:00 - 07:30' }}
-              </div>
-              <p>{{ lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.' }}</p>
-              <button class="notif-action-btn">வகுப்பில் சேர் ➔</button>
-            </div>
-          </div>
-        }
-
-        <!-- Dynamic User Notifications -->
-        @for (n of notifications; track n.id) {
-          <div class="notif-item-card" [class.unread]="!n.is_read" (click)="markNotificationAsRead(n)">
-            <div class="notif-item-icon">
-              <i class="bi bi-bell"></i>
-            </div>
-            <div class="notif-item-content">
-              <div class="notif-item-top">
-                <strong>{{ n.title }}</strong>
-                @if (n.created_at) {
-                  <span class="notif-time">{{ n.created_at | date:'shortTime' }}</span>
-                }
-              </div>
-              <p>{{ n.body || n.message }}</p>
-            </div>
-          </div>
-        }
-
-        @if (liveClasses.length === 0 && notifications.length === 0) {
-          <div class="notif-empty-state">
-            <div class="empty-icon">🔔</div>
-            <h4>தற்சமயம் புதிய அறிவிப்புகள் எதுவும் இல்லை</h4>
-            <p>வகுப்பு தேதிகள், தேர்வு அட்டவணைகள் மற்றும் முக்கிய தகவல்கள் இங்கு உடனுக்குடன் பகிரப்படும்.</p>
-          </div>
-        }
-      </div>
-
-      <div class="notif-modal-footer">
-        @if (unreadCount > 0) {
-          <button class="notif-secondary-btn" (click)="markAllNotificationsRead()">
-            <i class="bi bi-check-all"></i> அனைத்தும் படித்ததாகக் குறி
-          </button>
-        }
-        <button class="notif-primary-btn" (click)="goToFullNotifications()">
-          அனைத்து அறிவிப்புகளையும் காண்க ➔
-        </button>
-      </div>
-    </div>
-  </div>
-}
 
 <!-- ================= LUXURY ANIMATED TOAST NOTIFICATION ================= -->
 @if (activeToast) {

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -41,6 +42,7 @@ export class CourierTabComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -56,12 +58,13 @@ export class CourierTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/book-orders`, headers).subscribe({
       next: (res) => {
-        this.bookOrders = res.orders || [];
+        this.bookOrders = res?.orders || (Array.isArray(res) ? res : []);
         this.isLoading = false;
         try { this.cdr.markForCheck(); } catch {}
         try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {
+        this.bookOrders = [];
         this.isLoading = false;
         try { this.cdr.markForCheck(); } catch {}
         try { this.cdr.detectChanges(); } catch {}
@@ -74,12 +77,13 @@ export class CourierTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/books`, headers).subscribe({
       next: (res) => {
-        this.books = res.books || [];
+        this.books = res?.books || (Array.isArray(res) ? res : []);
         this.isBooksLoading = false;
         try { this.cdr.markForCheck(); } catch {}
         try { this.cdr.detectChanges(); } catch {}
       },
       error: () => {
+        this.books = [];
         this.isBooksLoading = false;
         try { this.cdr.markForCheck(); } catch {}
         try { this.cdr.detectChanges(); } catch {}
@@ -119,10 +123,10 @@ export class CourierTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/books/${book.id}`, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Book deleted successfully!');
+        this.toastService.success(res.message || 'Book deleted successfully!', 'புத்தகம் நீக்கப்பட்டது');
         this.loadBooks();
       },
-      error: () => alert('Failed to delete book.')
+      error: () => this.toastService.error('Failed to delete book.', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -140,7 +144,7 @@ export class CourierTabComponent implements OnInit {
 
   saveBook(): void {
     if (!this.newBookForm.title || !this.newBookForm.price) {
-      alert('Title and Price are required.');
+      this.toastService.error('Title and Price are required.', 'விவரங்கள் தேவை');
       return;
     }
 
@@ -167,14 +171,14 @@ export class CourierTabComponent implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/admin/books`, formData, { headers }).subscribe({
       next: (res) => {
-        alert(res.message || 'Book saved successfully!');
+        this.toastService.success(res.message || 'Book saved successfully!', 'புத்தகம் சேமிக்கப்பட்டது');
         this.showAddBookModal = false;
         this.newBookForm = { id: null, title: '', author: '', price: '', description: '' };
         this.selectedCoverImage = null;
         this.selectedBookImages = [];
         this.loadBooks();
       },
-      error: () => alert('Failed to save book.')
+      error: () => this.toastService.error('Failed to save book.', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -215,11 +219,11 @@ export class CourierTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.put<any>(`${environment.apiUrl}/admin/book-orders/${this.selectedOrderForCourier.id}/courier`, this.courierForm, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Courier status updated successfully!');
+        this.toastService.success(res.message || 'Courier status updated successfully!', 'கூரியர் நிலை மாற்றப்பட்டது');
         this.selectedOrderForCourier = null;
         this.loadOrders();
       },
-      error: () => alert('Failed to update courier status.')
+      error: () => this.toastService.error('Failed to update courier status.', 'பிழை ஏற்பட்டது')
     });
   }
 }

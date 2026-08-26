@@ -79,7 +79,7 @@ class CourierManagementController extends Controller
             'updated_at' => now(),
         ]);
 
-        // Real notification for user
+        // Real notification for user & admin
         try {
             DB::table('notifications')->insert([
                 'user_id'    => $studentId,
@@ -91,6 +91,25 @@ class CourierManagementController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            $adminIds = DB::table('users')->where('role', 'admin')->pluck('id')->toArray();
+            $adminNotifs = [];
+            foreach ($adminIds as $aId) {
+                $adminNotifs[] = [
+                    'user_id'    => $aId,
+                    'title'      => 'புதிய புத்தக ஆர்டர்! #' . $orderNumber,
+                    'body'       => ($request->student_name ?: 'பயனர்') . ' என்பவர் ' . $request->book_title . ' புத்தகத்தை ஆர்டர் செய்துள்ளார்.',
+                    'type'       => 'book_order',
+                    'target_tab' => 'courier',
+                    'is_read'    => false,
+                    'data'       => json_encode(['order_number' => $orderNumber]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            if (!empty($adminNotifs)) {
+                DB::table('notifications')->insert($adminNotifs);
+            }
         } catch (\Throwable $e) {}
 
         return response()->json([

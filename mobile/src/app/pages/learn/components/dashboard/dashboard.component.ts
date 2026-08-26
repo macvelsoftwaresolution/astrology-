@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnChanges, SimpleChanges, Output, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../services/auth.service';
@@ -11,7 +11,7 @@ import { AuthService } from '../../../../services/auth.service';
   styleUrls: ['./dashboard.component.scss'],
   standalone: false
 })
-export class LearnDashboardComponent implements OnInit {
+export class LearnDashboardComponent implements OnInit, OnChanges {
   @Input() enrollForm: any;
   @Output() back = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
@@ -23,6 +23,9 @@ export class LearnDashboardComponent implements OnInit {
 
   @Input() currentLessonView: 'list' | 'detail' = 'list';
   @Output() currentLessonViewChange = new EventEmitter<'list' | 'detail'>();
+
+  @Input() initialOption: string | null = null;
+  @Input() orderNumber: string | null = null;
 
   // Syllabus details (Dynamic from DB courses/modules/lessons)
   chapters: Chapter[] = [];
@@ -61,12 +64,15 @@ export class LearnDashboardComponent implements OnInit {
   notifications: any[] = [];
   unreadCount: number = 0;
   showNotificationsModal = false;
-  marqueeMessage = '📢 ஆருத்ரா ஜோதிட பயிலரங்கத்திற்கு தங்களை அன்புடன் வரவேற்கிறோம்! ✦ புதிய நேரலை வகுப்புகள் மற்றும் பாடக்குறிப்புகள் உடனுக்குடன் புதுப்பிக்கப்படுகின்றன ✦ பாடங்களை முழுமையாக படித்து தேர்வு எழுதி சான்றிதழ் பெறுங்கள்!';
+  marqueeMessage = '';
+  currentDisplayedNotifs: any[] = [];
+  currentDisplayedLives: any[] = [];
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -85,6 +91,32 @@ export class LearnDashboardComponent implements OnInit {
     this.loadMaterials();
     this.loadExams();
     this.loadNotifications();
+    this.checkInitialOption();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['initialOption'] || changes['orderNumber']) {
+      this.checkInitialOption();
+    }
+  }
+
+  checkInitialOption() {
+    if (this.initialOption === 'orders') {
+      if (this.orderNumber) {
+        if (this.myBookOrders && this.myBookOrders.length > 0) {
+          const order = this.myBookOrders.find((o: any) => o.order_number === this.orderNumber);
+          if (order) {
+            this.viewOrderStatus(order);
+            return;
+          }
+        }
+        if (this.isLoadingOrders) {
+          return;
+        }
+      }
+      this.showMyOrdersModal = true;
+      this.showOrderStatusModal = false;
+    }
   }
 
   loadUserProfile() {
@@ -127,8 +159,10 @@ export class LearnDashboardComponent implements OnInit {
     const authHeaders = this.authService.getAuthHeaders().headers;
     this.http.get<any>(`${environment.apiUrl}/user/notifications`, { headers: authHeaders }).subscribe({
       next: (res) => {
-        this.notifications = res.notifications || [];
-        this.unreadCount = res.unread_count || 0;
+        const learnTypes = ['book_order', 'course', 'certificate', 'submission', 'live_class'];
+        const allNotifs = res.notifications || [];
+        this.notifications = allNotifs.filter((n: any) => learnTypes.includes(n.type));
+        this.unreadCount = this.notifications.filter((n: any) => !n.is_read).length;
         this.updateMarqueeMessage();
       },
       error: () => {
@@ -139,46 +173,116 @@ export class LearnDashboardComponent implements OnInit {
 
   hideTicker = false;
   get hasActiveLiveClass(): boolean {
-    return !!(this.liveClasses && this.liveClasses.length > 0);
+    return !!(this.currentDisplayedLives && this.currentDisplayedLives.length > 0);
+  }
+
+  private isToday(dateStr: string): boolean {
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return false;
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() &&
+           d.getMonth() === now.getMonth() &&
+           d.getDate() === now.getDate();
   }
 
   dismissTicker(e?: Event) {
     if (e) e.stopPropagation();
+    if (this.currentDisplayedNotifs && this.currentDisplayedNotifs.length > 0) {
+      this.currentDisplayedNotifs.forEach(n => {
+        try {
+          localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
+        } catch {}
+        this.markNotificationAsRead(n);
+      });
+    }
+    if (this.currentDisplayedLives && this.currentDisplayedLives.length > 0) {
+      this.currentDisplayedLives.forEach(lc => {
+        try {
+          localStorage.setItem('ticker_live_dismissed_' + lc.id, 'true');
+        } catch {}
+      });
+    }
     this.hideTicker = true;
+    this.marqueeMessage = '';
+    this.cdr.detectChanges();
+  }
+
+  onTickerClick() {
+    if (this.currentDisplayedNotifs && this.currentDisplayedNotifs.length > 0) {
+      this.currentDisplayedNotifs.forEach(n => {
+        try {
+          localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
+        } catch {}
+        this.markNotificationAsRead(n);
+      });
+    }
+    if (this.currentDisplayedLives && this.currentDisplayedLives.length > 0) {
+      this.currentDisplayedLives.forEach(lc => {
+        try {
+          localStorage.setItem('ticker_live_dismissed_' + lc.id, 'true');
+        } catch {}
+      });
+    }
+    this.hideTicker = true;
+    this.marqueeMessage = '';
+    this.openNotificationsModal();
   }
 
   updateMarqueeMessage() {
     const parts: string[] = [];
+    this.currentDisplayedNotifs = [];
+    this.currentDisplayedLives = [];
 
-    // 1. Live class announcements
+    // 1. Live class announcements for today only (if not dismissed)
     if (this.liveClasses && this.liveClasses.length > 0) {
-      const lc = this.liveClasses[0];
-      const dayPrefix = lc.is_today ? '🔴 இன்றைய நேரலை வகுப்பு' : `📅 நேரலை வகுப்பு (${lc.date_text || ''})`;
-      parts.push(`${dayPrefix}: ${lc.title} • ${lc.time_text || ''} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
-    }
-
-    // 2. Meaningful real notifications (skip dummy/test words if any)
-    if (this.notifications && this.notifications.length > 0) {
-      const validNotes = this.notifications
-        .filter((n: any) => n.title && n.title.toLowerCase() !== 'hello' && n.title.toLowerCase() !== 'test')
-        .slice(0, 2);
-      validNotes.forEach((n: any) => {
-        parts.push(`🔔 ${n.title}: ${n.body || n.message || ''}`);
+      const todayLives = this.liveClasses.filter((lc: any) => {
+        if (!lc.is_active) return false;
+        try {
+          if (localStorage.getItem('ticker_live_dismissed_' + lc.id)) return false;
+        } catch {}
+        return lc.is_today || this.isToday(lc.created_at || lc.date);
       });
+
+      if (todayLives.length > 0) {
+        this.currentDisplayedLives = todayLives;
+        const lc = todayLives[0];
+        const dayPrefix = lc.is_today ? '🔴 இன்றைய நேரலை வகுப்பு' : `📅 நேரலை வகுப்பு (${lc.date_text || ''})`;
+        parts.push(`${dayPrefix}: ${lc.title} • ${lc.time_text || ''} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
+      }
     }
 
-    // 3. Educational / LMS reminders only if no active announcements
-    if (parts.length === 0) {
-      parts.push('📢 ஆருத்ரா ஜோதிட பயிலரங்கம்: அனைத்து பாடங்களையும் முழுமையாக கற்று தேர்வு எழுதி சான்றிதழ் பெற்றிடுங்கள்!');
-      parts.push('✨ உங்கள் சந்தேகங்களை நேரலை வகுப்புகளில் ஆசிரியரிடம் நேரடியாக கேட்டுத் தெரிந்து கொள்ளலாம்.');
+    // 2. Real unread notifications for THAT DAY (today) only (if not viewed/dismissed)
+    if (this.notifications && this.notifications.length > 0) {
+      const todayUnreadNotes = this.notifications.filter((n: any) => {
+        if (n.is_read) return false;
+        try {
+          if (localStorage.getItem('ticker_notif_seen_' + n.id)) return false;
+        } catch {}
+        return this.isToday(n.created_at);
+      });
+
+      if (todayUnreadNotes.length > 0) {
+        this.currentDisplayedNotifs = todayUnreadNotes;
+        todayUnreadNotes.slice(0, 2).forEach((n: any) => {
+          parts.push(`🔔 ${n.title}: ${n.body || n.message || ''}`);
+        });
+      }
     }
 
+    // Only show ticker if there is a real notification/live class for today!
     this.marqueeMessage = parts.join('   ✦✦   ');
+    if (!this.marqueeMessage) {
+      this.hideTicker = true;
+    } else {
+      this.hideTicker = false;
+    }
+    this.cdr.detectChanges();
   }
 
   openNotificationsModal() {
-    this.showNotificationsModal = true;
-    this.loadNotifications();
+    this.showNotificationsModal = false;
+    this.router.navigate(['/notifications'], { queryParams: { from: 'learn' } });
   }
 
   closeNotificationsModal() {
@@ -187,28 +291,42 @@ export class LearnDashboardComponent implements OnInit {
 
   goToFullNotifications() {
     this.showNotificationsModal = false;
-    this.router.navigate(['/notifications']);
+    this.router.navigate(['/notifications'], { queryParams: { from: 'learn' } });
   }
 
   markNotificationAsRead(n: any) {
-    if (n.is_read || !this.authService.isLoggedIn()) return;
+    try {
+      localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
+    } catch {}
+    if (n.is_read || !this.authService.isLoggedIn()) {
+      this.updateMarqueeMessage();
+      return;
+    }
     const authHeaders = this.authService.getAuthHeaders().headers;
     this.http.put<any>(`${environment.apiUrl}/user/notifications/${n.id}/read`, {}, { headers: authHeaders }).subscribe({
       next: () => {
         n.is_read = true;
         this.unreadCount = Math.max(0, this.unreadCount - 1);
+        this.updateMarqueeMessage();
       }
     });
   }
 
   markAllNotificationsRead() {
+    if (this.notifications) {
+      this.notifications.forEach((n: any) => {
+        try {
+          localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
+        } catch {}
+        n.is_read = true;
+      });
+    }
+    this.unreadCount = 0;
+    this.updateMarqueeMessage();
     if (!this.authService.isLoggedIn()) return;
     const authHeaders = this.authService.getAuthHeaders().headers;
     this.http.put<any>(`${environment.apiUrl}/user/notifications/read-all`, {}, { headers: authHeaders }).subscribe({
-      next: () => {
-        this.notifications.forEach((n: any) => n.is_read = true);
-        this.unreadCount = 0;
-      }
+      next: () => {}
     });
   }
 
@@ -224,6 +342,7 @@ export class LearnDashboardComponent implements OnInit {
         if (res && res.orders) {
           this.myBookOrders = res.orders;
           this.syncBooksWithOrders();
+          this.checkInitialOption();
         }
         this.isLoadingOrders = false;
         // Now load books if not loaded, or sync if already loaded
@@ -255,22 +374,36 @@ export class LearnDashboardComponent implements OnInit {
 
   openMyOrders() {
     this.showMyOrdersModal = true;
+    this.showOrderStatusModal = false;
     // Orders already loaded on init, but we can refresh
     this.loadMyBookOrders();
   }
 
   closeMyOrders() {
     this.showMyOrdersModal = false;
+    this.clearOrderQueryParams();
   }
 
   viewOrderStatus(order: any) {
     this.selectedOrderDetails = order;
     this.showOrderStatusModal = true;
+    this.showMyOrdersModal = false;
   }
 
   closeOrderStatus() {
     this.showOrderStatusModal = false;
     this.selectedOrderDetails = null;
+    this.clearOrderQueryParams();
+  }
+
+  private clearOrderQueryParams() {
+    this.initialOption = null;
+    this.orderNumber = null;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { option: null, order: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   // Exams List (Dynamic from DB)

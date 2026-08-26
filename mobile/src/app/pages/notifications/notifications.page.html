@@ -10,12 +10,20 @@
       </div>
     </div>
 
-    @if (unreadCount > 0) {
-      <button type="button" class="mark-read-btn" (click)="markAllRead()" title="Mark all as read">
-        <i class="bi bi-check2-all"></i>
-        <span>அனைத்தும் படித்தவை</span>
-      </button>
-    }
+    <div class="header-right-actions">
+      @if (unreadCount > 0) {
+        <button type="button" class="mark-read-btn" (click)="markAllRead()" title="Mark all as read">
+          <i class="bi bi-check2-all"></i>
+          <span>படித்தவை</span>
+        </button>
+      }
+      @if (notifications.length > 0) {
+        <button type="button" class="clear-all-btn" (click)="clearAll()" title="Clear all notifications">
+          <i class="bi bi-trash3-fill"></i>
+          <span>நீக்கு</span>
+        </button>
+      }
+    </div>
   </div>
 </ion-header>
 
@@ -59,9 +67,14 @@
             <div class="notif-body">
               <div class="notif-top">
                 <h3 class="notif-title">{{ n.title }}</h3>
-                @if (!n.is_read) {
-                  <span class="unread-pill">புதியது</span>
-                }
+                <div class="notif-top-actions">
+                  @if (!n.is_read) {
+                    <span class="unread-pill">புதியது</span>
+                  }
+                  <button type="button" class="card-delete-btn" (click)="deleteNotification(n, $event)" title="அறிவிப்பை நீக்கு (Delete)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
               </div>
 
               <p class="notif-msg">{{ n.body }}</p>

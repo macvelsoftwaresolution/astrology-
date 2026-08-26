@@ -97,6 +97,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/notifications',                    [NotificationController::class, 'getMyNotifications']);
     Route::put('/user/notifications/{id}/read',          [NotificationController::class, 'markRead']);
     Route::put('/user/notifications/read-all',           [NotificationController::class, 'markAllRead']);
+    Route::delete('/user/notifications/{id}',            [NotificationController::class, 'deleteNotification']);
+    Route::delete('/user/notifications',                 [NotificationController::class, 'clearAllNotifications']);
     Route::get('/user/notification-preferences',         [NotificationController::class, 'getNotificationPreferences']);
     Route::put('/user/notification-preferences',         [NotificationController::class, 'updateNotificationPreferences']);
 
@@ -116,6 +118,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/team',             [SuperAdminController::class, 'createAdmin']);
     Route::post('/create-admin',     [SuperAdminController::class, 'createAdmin']);
     Route::put('/team/{id}/toggle',  [SuperAdminController::class, 'toggleAdminStatus']);
+    Route::delete('/team/{id}',      [SuperAdminController::class, 'deleteAdmin']);
 
     // LMS Courses CRUD
     Route::get('/courses',                          [CourseController::class, 'index']);

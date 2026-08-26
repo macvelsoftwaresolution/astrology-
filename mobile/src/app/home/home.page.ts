@@ -308,7 +308,7 @@ export class HomePage implements OnInit {
     }
     this.showNotifPopupBanner = false;
     this.isHidingBanner = false;
-    this.router.navigate(['/notifications']);
+    this.router.navigate(['/notifications'], { queryParams: { from: 'astrology' } });
   }
 
   closeNotifBanner() {
@@ -323,28 +323,43 @@ export class HomePage implements OnInit {
     }, 350);
   }
 
+  private isToday(dateStr: string): boolean {
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return false;
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() &&
+           d.getMonth() === now.getMonth() &&
+           d.getDate() === now.getDate();
+  }
+
   loadNotificationsCount() {
     const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('edu_auth_token');
     if (!token) return;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     this.http.get<any>(`${environment.apiUrl}/user/notifications`, headers).subscribe({
       next: (res) => {
-        this.unreadNotificationsCount = res.unread_count || 0;
-        if (res.notifications && Array.isArray(res.notifications)) {
-          const unreadList = res.notifications.filter((n: any) => !n.is_read);
+        const astroTypes = ['booking', 'booking_confirmed', 'booking_fulfilled', 'jathagam', 'marriage', 'marriage_match', 'payment', 'transaction', 'rasi_palan', 'general'];
+        const astroNotifs = (res.notifications || []).filter((n: any) => astroTypes.includes(n.type));
+        this.unreadNotificationsCount = astroNotifs.filter((n: any) => !n.is_read).length;
+        if (astroNotifs.length > 0) {
+          const unreadList = astroNotifs.filter((n: any) => !n.is_read && this.isToday(n.created_at));
           if (unreadList.length > 0) {
             this.latestUnreadNotif = unreadList[0];
             const dismissKey = 'notif_banner_dismissed_' + unreadList[0].id;
-            if (!sessionStorage.getItem(dismissKey)) {
-              this.showNotifPopupBanner = true;
-              this.isHidingBanner = false;
-              sessionStorage.setItem(dismissKey, 'true');
+            try {
+              if (!localStorage.getItem(dismissKey) && !sessionStorage.getItem(dismissKey)) {
+                this.showNotifPopupBanner = true;
+                this.isHidingBanner = false;
+                localStorage.setItem(dismissKey, 'true');
+                sessionStorage.setItem(dismissKey, 'true');
 
-              if (this.notifTimer) clearTimeout(this.notifTimer);
-              this.notifTimer = setTimeout(() => {
-                this.closeNotifBanner();
-              }, 3000);
-            }
+                if (this.notifTimer) clearTimeout(this.notifTimer);
+                this.notifTimer = setTimeout(() => {
+                  this.closeNotifBanner();
+                }, 8000);
+              }
+            } catch {}
           }
         }
       },

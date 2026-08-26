@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { ToastService, ToastData } from '../../services/toast.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { environment } from '../../../environments/environment';
 
@@ -52,6 +53,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   mobileMenuOpen = false;
 
+  // Global Toast State
+  toastData: ToastData = { show: false, message: '', type: 'success', title: '' };
+  private toastSub: any;
+
   // Sidebar Category Dropdown States
   astrologyCategoryOpen = false;
   learnCategoryOpen = false;
@@ -84,6 +89,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     public translationService: TranslationService,
+    public toastService: ToastService,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -97,6 +103,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getUser();
+
+    // Subscribe to Global Toast
+    this.toastSub = this.toastService.toast$.subscribe((data) => {
+      this.toastData = data;
+      this.cdr.detectChanges();
+    });
     
     // Load read notifications from sessionStorage
     if (typeof window !== 'undefined') {
@@ -133,6 +145,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.toastSub) {
+      this.toastSub.unsubscribe();
+    }
     if (this.notifInterval) {
       clearInterval(this.notifInterval);
       this.notifInterval = null;

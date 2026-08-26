@@ -68,6 +68,8 @@ export class LearnPage implements OnInit {
 
   dashboardTab: 'home' | 'lessons' | 'library' | 'profile' = 'home';
   currentLessonView: 'list' | 'detail' = 'list';
+  dashboardOption: string | null = null;
+  dashboardOrderNumber: string | null = null;
 
   // Generated credentials variables
   generatedLoginId = '';
@@ -127,6 +129,8 @@ export class LearnPage implements OnInit {
       } else {
         this.currentLessonView = 'list';
       }
+      this.dashboardOption = params['option'] || null;
+      this.dashboardOrderNumber = params['order'] || null;
     });
   }
 

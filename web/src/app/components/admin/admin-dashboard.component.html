@@ -459,4 +459,35 @@
       </div>
     </div>
   }
+
+  <!-- =========================================================
+       GLOBAL BOTTOM FLOATING ANIMATED TOAST (ALL ADMIN TABS)
+       ========================================================= -->
+  @if (toastData.show) {
+    <div class="bottom-toast-container"
+      [class.toast-success]="toastData.type === 'success'"
+      [class.toast-error]="toastData.type === 'error'"
+      [class.toast-warning]="toastData.type === 'warning'"
+      [class.toast-info]="toastData.type === 'info'">
+      <div class="toast-icon-circle">
+        @if (toastData.type === 'success') {
+          <i class="bi bi-check-circle-fill"></i>
+        } @else if (toastData.type === 'error') {
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        } @else if (toastData.type === 'warning') {
+          <i class="bi bi-exclamation-circle-fill"></i>
+        } @else {
+          <i class="bi bi-info-circle-fill"></i>
+        }
+      </div>
+      <div class="toast-content">
+        <strong class="toast-title">{{ toastData.title }}</strong>
+        <span class="toast-msg">{{ toastData.message }}</span>
+      </div>
+      <button type="button" class="toast-close-btn" (click)="toastService.hide()" title="Dismiss">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="toast-progress-bar"></div>
+    </div>
+  }
 </div>
