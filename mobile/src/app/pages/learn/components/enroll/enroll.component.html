@@ -127,15 +127,9 @@
         </div>
       </div>
 
-      <div class="form-row-2">
-        <div class="simple-field-group">
-          <label class="simple-label">{{ 'learn.job' | translate }}</label>
-          <input type="text" [(ngModel)]="localForm.occupation" [placeholder]="'learn.job' | translate">
-        </div>
-        <div class="simple-field-group">
-          <label class="simple-label">தாய்மொழி</label>
-          <input type="text" [(ngModel)]="localForm.motherTongue" placeholder="தமிழ்">
-        </div>
+      <div class="simple-field-group">
+        <label class="simple-label">தாய்மொழி</label>
+        <input type="text" [(ngModel)]="localForm.motherTongue" placeholder="தமிழ்">
       </div>
     </div>
 
@@ -192,7 +186,7 @@
   </div>
   }
 
-  <!-- ================= STEP 3: COURSE PREFERENCES ================= -->
+  <!-- ================= STEP 3: EDUCATION & OCCUPATION ================= -->
   @if (currentStep === 3) {
   <div class="simple-form-card">
     <div class="simple-card-header">
@@ -201,7 +195,7 @@
 
     <div class="simple-fields-stack">
       <div class="simple-field-group">
-        <label class="simple-label">{{ 'learn.education' | translate }}</label>
+        <label class="simple-label">{{ 'learn.education' | translate }} <span class="req">*</span></label>
         <select [(ngModel)]="localForm.qualification">
           <option value="">{{ 'common.select' | translate }}</option>
           <option value="10th / 12th">10th / 12th</option>
@@ -211,6 +205,35 @@
           <option value="other">Other</option>
         </select>
       </div>
+
+      <div class="simple-field-group">
+        <label class="simple-label">{{ 'learn.job' | translate }}</label>
+        <input type="text" [(ngModel)]="localForm.occupation" [placeholder]="'learn.job' | translate">
+      </div>
+
+      @if (localForm.courseLevel === 'mudhunilai') {
+        <div class="mudhunilai-details-section">
+          <h4 class="sub-section-title">இளநிலை சான்றிதழ் விவரங்கள்</h4>
+          <div class="simple-field-group">
+            <label class="simple-label">இளநிலை நிறைவு செய்த ஆண்டு</label>
+            <input type="text" [(ngModel)]="localForm.completionYear" placeholder="எ.கா: 2024">
+          </div>
+          <div class="simple-field-group">
+            <label class="simple-label">முந்தைய மதிப்பெண் / தரம்</label>
+            <input type="text" [(ngModel)]="localForm.prevMarks" placeholder="எ.கா: 85% அல்லது A Grade">
+          </div>
+          <div class="simple-field-group">
+            <label class="simple-label">இளநிலை சான்றிதழ் நகல் (Certificate)</label>
+            <div class="simple-file-btn">
+              <input type="file" id="prevCertUpload" (change)="onCertificateChange($event)">
+              <label for="prevCertUpload">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i>
+                {{ localForm.prevCertificate ? localForm.prevCertificate : 'சான்றிதழ் கோப்பைத் தேர்வு செய்க' }}
+              </label>
+            </div>
+          </div>
+        </div>
+      }
     </div>
 
     <div class="wizard-nav-footer">
@@ -226,34 +249,66 @@
   </div>
   }
 
-  <!-- ================= STEP 4: CONFIRMATION & PAYMENT ================= -->
+  <!-- ================= STEP 4: SUMMARY & SUBMISSION ================= -->
   @if (currentStep === 4) {
   <div class="simple-form-card">
     <div class="simple-card-header">
       <h3>4. {{ 'learn.step4' | translate }}</h3>
     </div>
 
-    <!-- Clean Summary Box -->
+    <!-- Structured & Perfectly Aligned Summary Card -->
     <div class="simple-summary-card">
       <div class="summary-item">
-        <span class="lbl">{{ 'learn.selectCategory' | translate }}:</span>
+        <span class="lbl">{{ 'learn.selectCategory' | translate }}</span>
         <span class="val">{{ localForm.courseLevel === 'mudhunilai' ? 'முதுநிலை (Master)' : 'இளநிலை (Fast Track)' }}</span>
       </div>
       <div class="summary-item">
-        <span class="lbl">{{ 'learn.studentName' | translate }}:</span>
+        <span class="lbl">{{ 'learn.studentName' | translate }}</span>
         <span class="val">{{ localForm.fullName }}</span>
       </div>
+      @if (localForm.fatherName) {
       <div class="summary-item">
-        <span class="lbl">{{ 'learn.phone' | translate }}:</span>
+        <span class="lbl">{{ 'learn.fatherName' | translate }}</span>
+        <span class="val">{{ localForm.fatherName }}</span>
+      </div>
+      }
+      <div class="summary-item">
+        <span class="lbl">{{ 'learn.dob' | translate }} / {{ 'learn.age' | translate }}</span>
+        <span class="val">{{ localForm.dob }} ({{ localForm.age || '-' }})</span>
+      </div>
+      <div class="summary-item">
+        <span class="lbl">{{ 'learn.gender' | translate }}</span>
+        <span class="val">{{ localForm.gender }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="lbl">{{ 'learn.phone' | translate }}</span>
         <span class="val">{{ localForm.mobileNumber }}</span>
       </div>
       <div class="summary-item">
-        <span class="lbl">{{ 'learn.email' | translate }}:</span>
-        <span class="val">{{ localForm.emailAddress }}</span>
+        <span class="lbl">{{ 'learn.email' | translate }}</span>
+        <span class="val email-val">{{ localForm.emailAddress }}</span>
       </div>
+      @if (localForm.postalAddress) {
+      <div class="summary-item">
+        <span class="lbl">{{ 'learn.address' | translate }}</span>
+        <span class="val">{{ localForm.postalAddress }}{{ localForm.pincode ? ' - ' + localForm.pincode : '' }}</span>
+      </div>
+      }
+      @if (localForm.qualification) {
+      <div class="summary-item">
+        <span class="lbl">{{ 'learn.education' | translate }}</span>
+        <span class="val">{{ localForm.qualification }}</span>
+      </div>
+      }
+      @if (localForm.occupation) {
+      <div class="summary-item">
+        <span class="lbl">{{ 'learn.job' | translate }}</span>
+        <span class="val">{{ localForm.occupation }}</span>
+      </div>
+      }
     </div>
 
-    <!-- Declaration -->
+    <!-- Declaration Checkbox -->
     <div class="simple-declaration-box">
       <label class="simple-checkbox-label">
         <input type="checkbox" [(ngModel)]="localForm.agreedDeclaration">
