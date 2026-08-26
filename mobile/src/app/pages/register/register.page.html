@@ -5,7 +5,7 @@
       <button class="back-btn" (click)="goBack()">
         <i class="bi bi-arrow-left"></i>
       </button>
-      <h1 class="brand-title">ஆருத்ரா</h1>
+      <h1 class="brand-title">{{ 'register.title' | translate }}</h1>
       <div style="width: 40px;"></div> <!-- placeholder to balance back button -->
     </div>
 
@@ -18,8 +18,8 @@
 
     <!-- Header Titles -->
     <div class="form-header">
-      <h2 class="form-title">Begin Your Journey</h2>
-      <p class="form-subtitle">பதிவு செய்தல்</p>
+      <h2 class="form-title">{{ 'register.title' | translate }}</h2>
+      <p class="form-subtitle">{{ 'register.subtitle' | translate }}</p>
     </div>
 
     <!-- Form -->
@@ -36,39 +36,39 @@
               <i class="bi bi-camera-fill" style="font-size: 24px; color: #A27B38;"></i>
             </div>
           }
-          <span class="upload-text" style="color: #A27B38; font-size: 14px;">படம் பதிவேற்றவும்</span>
+          <span class="upload-text" style="color: #A27B38; font-size: 14px;">{{ 'register.uploadPhoto' | translate }}</span>
         </label>
         <input type="file" id="profilePicInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
       </div>
 
       <div class="input-group">
-        <label>Full Name</label>
+        <label>{{ 'register.namePlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="text" name="fullName" [(ngModel)]="fullName" required minlength="2" placeholder="உள்நுழைய பெயர்">
+          <input type="text" name="fullName" [(ngModel)]="fullName" required minlength="2" [placeholder]="'register.namePlaceholder' | translate">
           <span class="input-icon"><i class="bi bi-person"></i></span>
         </div>
       </div>
 
       <div class="input-group">
-        <label>Mobile Number</label>
+        <label>{{ 'register.phonePlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="tel" name="mobileNumber" [(ngModel)]="mobileNumber" required pattern="^[6-9]\d{9}$" placeholder="அலைபேசி எண்">
+          <input type="tel" name="mobileNumber" [(ngModel)]="mobileNumber" required pattern="^[6-9]\d{9}$" [placeholder]="'register.phonePlaceholder' | translate">
           <span class="input-icon"><i class="bi bi-phone"></i></span>
         </div>
       </div>
 
       <div class="input-group">
-        <label>Email Address</label>
+        <label>{{ 'register.emailPlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="email" name="emailAddress" [(ngModel)]="emailAddress" required placeholder="மின்னஞ்சல் முகவரி">
+          <input type="email" name="emailAddress" [(ngModel)]="emailAddress" required [placeholder]="'register.emailPlaceholder' | translate">
           <span class="input-icon"><i class="bi bi-envelope"></i></span>
         </div>
       </div>
 
       <div class="input-group">
-        <label>Password (கடவுச்சொல்)</label>
+        <label>{{ 'register.passwordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" placeholder="குறைந்தது 6 எழுத்துக்கள்">
+          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" [placeholder]="'register.passwordPlaceholder' | translate">
           <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
             <i class="bi" [class.bi-eye]="showPassword" [class.bi-key]="!showPassword"></i>
           </span>
@@ -76,9 +76,9 @@
       </div>
 
       <div class="input-group">
-        <label>Confirm Password (உறுதிப்படுத்தல்)</label>
+        <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6" placeholder="மீண்டும் கடவுச்சொல் உள்ளிடவும்">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6" [placeholder]="'register.confirmPasswordPlaceholder' | translate">
           <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
             <i class="bi" [class.bi-eye]="showConfirmPassword" [class.bi-lock]="!showConfirmPassword"></i>
           </span>
@@ -88,20 +88,19 @@
       @if (errorMessage) {
         <div class="register-error-alert" style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; line-height: 1.35;">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          <span>{{ errorMessage }}</span>
+          <span>{{ errorMessage | translate }}</span>
         </div>
       }
 
       <button type="submit" class="submit-btn">
-        <span class="btn-primary-text">Register and Continue</span>
-        <span class="btn-secondary-text">பதிவு செய்து தொடரவும்</span>
+        <span class="btn-primary-text">{{ 'register.submitBtn' | translate }}</span>
       </button>
     </form>
 
     <!-- Switch to login -->
     <div class="switch-auth-mode">
-      <span>ஏற்கனவே கணக்கு உள்ளதா? </span>
-      <a (click)="goToLogin()">உள்நுழைய</a>
+      <span>{{ 'register.haveAccount' | translate }} </span>
+      <a (click)="goToLogin()">{{ 'register.loginNow' | translate }}</a>
     </div>
 
     <!-- Privacy Note -->

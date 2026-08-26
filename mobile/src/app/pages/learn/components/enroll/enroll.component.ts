@@ -195,11 +195,11 @@ export class LearnEnrollComponent implements OnInit {
 
   validateStep1(): boolean {
     if (!this.localForm.fullName || !this.localForm.fullName.trim()) {
-      this.errorMessage = 'தயவுசெய்து மாணவர் பெயரை உள்ளிடவும்.';
+      this.errorMessage = 'errors.enterStudentName';
       return false;
     }
     if (!this.localForm.dob) {
-      this.errorMessage = 'தயவுசெய்து பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்.';
+      this.errorMessage = 'errors.selectDob';
       return false;
     }
     return true;
@@ -207,20 +207,20 @@ export class LearnEnrollComponent implements OnInit {
 
   validateStep2(): boolean {
     if (!this.localForm.postalAddress || !this.localForm.postalAddress.trim()) {
-      this.errorMessage = 'தயவுசெய்து உங்கள் அஞ்சல் முகவரியை உள்ளிடவும்.';
+      this.errorMessage = 'errors.enterPostalAddress';
       return false;
     }
     if (!this.localForm.pincode) {
-      this.errorMessage = 'தயவுசெய்து பின்கோடு எண்ணை உள்ளிடவும்.';
+      this.errorMessage = 'errors.enterPincode';
       return false;
     }
     const cleanPhone = (this.localForm.mobileNumber || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      this.errorMessage = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      this.errorMessage = 'errors.enterValidMobile';
       return false;
     }
     if (!this.localForm.emailAddress || !this.localForm.emailAddress.trim() || !this.localForm.emailAddress.includes('@')) {
-      this.errorMessage = 'தயவுசெய்து சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்! (எ.கா: student@gmail.com)';
+      this.errorMessage = 'errors.enterValidEmail';
       return false;
     }
     return true;
@@ -229,7 +229,7 @@ export class LearnEnrollComponent implements OnInit {
   validateStep3(): boolean {
     if (this.localForm.courseLevel === 'mudhunilai') {
       if (!this.localForm.prevCertificate && !this.localForm.prevUserId) {
-        this.errorMessage = 'முதுநிலை வகுப்பிற்கு இளநிலை சான்றிதழ் அல்லது பயனர் ஐடி கட்டாயம்.';
+        this.errorMessage = 'errors.mudhunilaiCertRequired';
         return false;
       }
     }
@@ -250,7 +250,7 @@ export class LearnEnrollComponent implements OnInit {
       return;
     }
     if (!this.localForm.agreedDeclaration) {
-      this.errorMessage = 'தயவுசெய்து விதிமுறைகள் உறுதிமொழியை ஏற்கவும்.';
+      this.errorMessage = 'errors.acceptRules';
       return;
     }
     this.errorMessage = '';

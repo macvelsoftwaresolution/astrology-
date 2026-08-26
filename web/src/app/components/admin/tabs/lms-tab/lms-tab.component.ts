@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -56,6 +57,7 @@ export class LmsTabComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    public translationService: TranslationService,
     private cdr: ChangeDetectorRef
   ) { }
 

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 const RASIS = [
   'மேஷம்', 'ரிஷபம்', 'மிதுனம்', 'கடகம்', 'சிம்மம்', 'கன்னி',
@@ -20,7 +21,7 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-my-jathagam',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe],
   template: `
     <div class="my-jathagam-wrapper">
       <div class="section-header">
@@ -132,7 +133,7 @@ const NAKSHATRAS = [
           </div>
 
           @if (errorMsg) {
-            <p class="error-msg">{{ errorMsg }}</p>
+            <p class="error-msg">{{ errorMsg | translate }}</p>
           }
           @if (successMsg) {
             <p class="success-msg">✅ {{ successMsg }}</p>
@@ -215,11 +216,11 @@ export class MyJathagamComponent implements OnInit {
 
   save() {
     if (!this.form.dob || !this.form.rasi) {
-      this.errorMsg = 'பிறந்த தேதி மற்றும் ராசி கட்டாயம்.';
+      this.errorMsg = 'errors.dobRasiRequired';
       return;
     }
     const token = sessionStorage.getItem('auth_token');
-    if (!token) { this.errorMsg = 'உள்நுழைவு செய்யவும்.'; return; }
+    if (!token) { this.errorMsg = 'errors.loginRequired'; return; }
     this.saving = true;
     this.errorMsg = '';
     this.http.post<any>(`${environment.apiUrl}/user/jathagam`, this.form, {
@@ -229,10 +230,10 @@ export class MyJathagamComponent implements OnInit {
         this.saved = res.jathagam_details;
         this.editing = false;
         this.saving = false;
-        this.successMsg = 'ஜாதக விவரங்கள் சேமிக்கப்பட்டன!';
+        this.successMsg = 'common.success';
         setTimeout(() => this.successMsg = '', 3000);
       },
-      error: () => { this.errorMsg = 'சேமிப்பில் பிழை ஏற்பட்டது.'; this.saving = false; }
+      error: () => { this.errorMsg = 'errors.saveError'; this.saving = false; }
     });
   }
 }

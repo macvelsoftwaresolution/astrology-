@@ -125,233 +125,233 @@
   <form ngNoForm (submit)="$event.preventDefault(); goToRegPayment()" class="matching-form-card">
     <div class="overlay-header-inline">
       <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
-      <h2>பதிவு விண்ணப்பம்</h2>
+      <h2>{{ translationService.currentLanguage() === 'en' ? 'Matrimony Registration Form' : 'பதிவு விண்ணப்பம்' }}</h2>
     </div>
-    <div class="form-section-title">அடிப்படை விவரங்கள்</div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Basic Details' : 'அடிப்படை விவரங்கள்' }}</div>
     <div class="input-grid">
       <div class="input-row">
-        <label>பதிவு எண்</label>
-        <input type="text" [(ngModel)]="regForm.regNo" placeholder="உ.ம்: 1234">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Registration No.' : 'பதிவு எண்' }}</label>
+        <input type="text" [(ngModel)]="regForm.regNo" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 1234' : 'உ.ம்: 1234'">
       </div>
       <div class="input-row">
-        <label>தேதி</label>
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Date' : 'தேதி' }}</label>
         <input type="date" [(ngModel)]="regForm.date">
       </div>
     </div>
     <div class="input-row">
-      <label>பெயர்</label>
-      <input type="text" [(ngModel)]="regForm.name" placeholder="முழு பெயர்">
+      <label>{{ 'profile.name' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.name" [placeholder]="'register.namePlaceholder' | translate">
     </div>
     <div class="input-row">
-      <label>இனம்</label>
+      <label>{{ 'learn.gender' | translate }}</label>
       <div class="radio-row">
-        <label><input type="radio" name="rGender" value="ஆண்" [(ngModel)]="regForm.gender"> ஆண்</label>
-        <label><input type="radio" name="rGender" value="பெண்" [(ngModel)]="regForm.gender"> பெண்</label>
+        <label><input type="radio" name="rGender" value="ஆண்" [(ngModel)]="regForm.gender"> {{ 'learn.male' | translate }}</label>
+        <label><input type="radio" name="rGender" value="பெண்" [(ngModel)]="regForm.gender"> {{ 'learn.female' | translate }}</label>
       </div>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>மதம்</label>
-        <input type="text" [(ngModel)]="regForm.religion" placeholder="மதம்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Religion' : 'மதம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.religion" [placeholder]="translationService.currentLanguage() === 'en' ? 'Religion' : 'மதம்'">
       </div>
       <div class="input-row">
-        <label>ஜாதி</label>
-        <input type="text" [(ngModel)]="regForm.caste" placeholder="ஜாதி">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Caste' : 'ஜாதி' }}</label>
+        <input type="text" [(ngModel)]="regForm.caste" [placeholder]="translationService.currentLanguage() === 'en' ? 'Caste' : 'ஜாதி'">
       </div>
       <div class="input-row">
-        <label>உட்பிரிவு</label>
-        <input type="text" [(ngModel)]="regForm.subcaste" placeholder="உட்பிரிவு">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Sub-caste' : 'உட்பிரிவு' }}</label>
+        <input type="text" [(ngModel)]="regForm.subcaste" [placeholder]="translationService.currentLanguage() === 'en' ? 'Sub-caste' : 'உட்பிரிவு'">
       </div>
     </div>
-    <div class="form-section-title">பிறப்பு விவரங்கள்</div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Birth Details' : 'பிறப்பு விவரங்கள்' }}</div>
     <div class="input-grid">
       <div class="input-row">
-        <label>பிறந்த தேதி</label>
+        <label>{{ 'astrology.dob' | translate }}</label>
         <input type="date" [(ngModel)]="regForm.dob">
       </div>
       <div class="input-row">
-        <label>நேரம்</label>
+        <label>{{ 'astrology.tob' | translate }}</label>
         <input type="time" [(ngModel)]="regForm.tob">
       </div>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>பிறந்த இடம்</label>
-        <input type="text" [(ngModel)]="regForm.pob" placeholder="ஊர்">
+        <label>{{ 'astrology.pob' | translate }}</label>
+        <input type="text" [(ngModel)]="regForm.pob" [placeholder]="translationService.currentLanguage() === 'en' ? 'City / Town' : 'ஊர்'">
       </div>
       <div class="input-row">
-        <label>வயது</label>
-        <input type="number" [(ngModel)]="regForm.age" placeholder="வயது">
-      </div>
-    </div>
-    <div class="form-section-title">உடல் & கல்வி</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>உயரம்</label>
-        <input type="text" [(ngModel)]="regForm.height" placeholder="உ.ம்: 5'6">
-      </div>
-      <div class="input-row">
-        <label>நிறம்</label>
-        <input type="text" [(ngModel)]="regForm.complexion" placeholder="நிறம்">
+        <label>{{ 'learn.age' | translate }}</label>
+        <input type="number" [(ngModel)]="regForm.age" [placeholder]="'learn.age' | translate">
       </div>
     </div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Physical & Education' : 'உடல் & கல்வி' }}</div>
     <div class="input-grid">
       <div class="input-row">
-        <label>இரத்த பிரிவு</label>
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Height' : 'உயரம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.height" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 5\'6' : 'உ.ம்: 5\'6'">
+      </div>
+      <div class="input-row">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Complexion' : 'நிறம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.complexion" [placeholder]="translationService.currentLanguage() === 'en' ? 'Complexion' : 'நிறம்'">
+      </div>
+    </div>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Blood Group' : 'இரத்த பிரிவு' }}</label>
         <input type="text" [(ngModel)]="regForm.bloodGroup" placeholder="B+">
       </div>
       <div class="input-row">
-        <label>கல்வித் தகுதி</label>
-        <input type="text" [(ngModel)]="regForm.education" placeholder="படிப்பு">
+        <label>{{ 'learn.education' | translate }}</label>
+        <input type="text" [(ngModel)]="regForm.education" [placeholder]="translationService.currentLanguage() === 'en' ? 'Qualification' : 'படிப்பு'">
       </div>
     </div>
-    <div class="form-section-title">பணி & வருமானம்</div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Work & Income' : 'பணி & வருமானம்' }}</div>
     <div class="input-row">
-      <label>வேலை / தொழில்</label>
-      <input type="text" [(ngModel)]="regForm.job" placeholder="வேலை விவரம்">
+      <label>{{ 'learn.job' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.job" [placeholder]="translationService.currentLanguage() === 'en' ? 'Job details' : 'வேலை விவரம்'">
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>பணியிடம்</label>
-        <input type="text" [(ngModel)]="regForm.workPlace" placeholder="பணியிடம்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Work Place' : 'பணியிடம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.workPlace" [placeholder]="translationService.currentLanguage() === 'en' ? 'Work Place' : 'பணியிடம்'">
       </div>
       <div class="input-row">
-        <label>மாத வருமானம்</label>
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Monthly Income' : 'மாத வருமானம்' }}</label>
         <input type="text" [(ngModel)]="regForm.monthlyIncome" placeholder="₹">
       </div>
     </div>
-    <div class="form-section-title">குடும்ப விவரங்கள்</div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Family Details' : 'குடும்ப விவரங்கள்' }}</div>
     <div class="input-grid">
       <div class="input-row">
-        <label>தந்தை பெயர்</label>
-        <input type="text" [(ngModel)]="regForm.fatherName" placeholder="தந்தை பெயர்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Father Name' : 'தந்தை பெயர்' }}</label>
+        <input type="text" [(ngModel)]="regForm.fatherName" [placeholder]="translationService.currentLanguage() === 'en' ? 'Father Name' : 'தந்தை பெயர்'">
       </div>
       <div class="input-row">
-        <label>தாய் பெயர்</label>
-        <input type="text" [(ngModel)]="regForm.motherName" placeholder="தாய் பெயர்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Mother Name' : 'தாய் பெயர்' }}</label>
+        <input type="text" [(ngModel)]="regForm.motherName" [placeholder]="translationService.currentLanguage() === 'en' ? 'Mother Name' : 'தாய் பெயர்'">
       </div>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>தந்தை வேலை</label>
-        <input type="text" [(ngModel)]="regForm.fatherJob" placeholder="தந்தை வேலை">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Father Occupation' : 'தந்தை வேலை' }}</label>
+        <input type="text" [(ngModel)]="regForm.fatherJob" [placeholder]="translationService.currentLanguage() === 'en' ? 'Father Occupation' : 'தந்தை வேலை'">
       </div>
       <div class="input-row">
-        <label>தாய் வேலை</label>
-        <input type="text" [(ngModel)]="regForm.motherJob" placeholder="தாய் வேலை">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>பூர்வீகம்</label>
-        <input type="text" [(ngModel)]="regForm.nativePlace" placeholder="பூர்வீக ஊர்">
-      </div>
-      <div class="input-row">
-        <label>வசிப்பிடம்</label>
-        <input type="text" [(ngModel)]="regForm.currentPlace" placeholder="தற்போதைய ஊர்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Mother Occupation' : 'தாய் வேலை' }}</label>
+        <input type="text" [(ngModel)]="regForm.motherJob" [placeholder]="translationService.currentLanguage() === 'en' ? 'Mother Occupation' : 'தாய் வேலை'">
       </div>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>குலதெய்வம்</label>
-        <input type="text" [(ngModel)]="regForm.familyDeity" placeholder="குலதெய்வம்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Native Place' : 'பூர்வீகம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.nativePlace" [placeholder]="translationService.currentLanguage() === 'en' ? 'Native Town' : 'பூர்வீக ஊர்'">
       </div>
       <div class="input-row">
-        <label>கோத்ரம்</label>
-        <input type="text" [(ngModel)]="regForm.gotra" placeholder="கோத்ரம்">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Current City' : 'வசிப்பிடம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.currentPlace" [placeholder]="translationService.currentLanguage() === 'en' ? 'Current City' : 'தற்போதைய ஊர்'">
       </div>
     </div>
-    <div class="form-section-title">உடன்பிறந்தோர்</div>
     <div class="input-grid">
       <div class="input-row">
-        <label>ஆண்</label>
-        <input type="number" [(ngModel)]="regForm.brothers" placeholder="எண்ணிக்கை">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Family Deity' : 'குலதெய்வம்' }}</label>
+        <input type="text" [(ngModel)]="regForm.familyDeity" [placeholder]="translationService.currentLanguage() === 'en' ? 'Family Deity' : 'குலதெய்வம்'">
       </div>
       <div class="input-row">
-        <label>பெண்</label>
-        <input type="number" [(ngModel)]="regForm.sisters" placeholder="எண்ணிக்கை">
+        <label>{{ 'astrology.gothram' | translate }}</label>
+        <input type="text" [(ngModel)]="regForm.gotra" [placeholder]="'astrology.gothram' | translate">
+      </div>
+    </div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Siblings' : 'உடன்பிறந்தோர்' }}</div>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Brothers' : 'ஆண்' }}</label>
+        <input type="number" [(ngModel)]="regForm.brothers" [placeholder]="translationService.currentLanguage() === 'en' ? 'Count' : 'எண்ணிக்கை'">
+      </div>
+      <div class="input-row">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Sisters' : 'பெண்' }}</label>
+        <input type="number" [(ngModel)]="regForm.sisters" [placeholder]="translationService.currentLanguage() === 'en' ? 'Count' : 'எண்ணிக்கை'">
       </div>
     </div>
     <div class="input-row">
-      <label>திருமண நிலை (உடன்பிறந்தோர்)</label>
-      <input type="text" [(ngModel)]="regForm.siblingsMaritalStatus" placeholder="திருமணமானவர்கள் விவரம்">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Siblings Marital Status' : 'திருமண நிலை (உடன்பிறந்தோர்)' }}</label>
+      <input type="text" [(ngModel)]="regForm.siblingsMaritalStatus" [placeholder]="translationService.currentLanguage() === 'en' ? 'Married/Unmarried details' : 'திருமணமானவர்கள் விவரம்'">
     </div>
-    <div class="form-section-title">எதிர்பார்ப்பு & சொத்து</div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Expectation & Property' : 'எதிர்பார்ப்பு & சொத்து' }}</div>
     <div class="input-row">
-      <label>சீர் வரிசை</label>
-      <input type="text" [(ngModel)]="regForm.dowryExpectation" placeholder="சீர் வரிசை விவரம்">
-    </div>
-    <div class="input-row">
-      <label>சொத்து விவரம்</label>
-      <input type="text" [(ngModel)]="regForm.propertyDetails" placeholder="சொத்து விவரம்">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Dowry / Assets Expectation' : 'சீர் வரிசை' }}</label>
+      <input type="text" [(ngModel)]="regForm.dowryExpectation" [placeholder]="translationService.currentLanguage() === 'en' ? 'Assets expectation details' : 'சீர் வரிசை விவரம்'">
     </div>
     <div class="input-row">
-      <label>எதிர்பார்ப்பு</label>
-      <textarea [(ngModel)]="regForm.partnerExpectation" placeholder="வரன் பற்றிய எதிர்பார்ப்பு..." rows="3"></textarea>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Property Details' : 'சொத்து விவரம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.propertyDetails" [placeholder]="translationService.currentLanguage() === 'en' ? 'Property details' : 'சொத்து விவரம்'">
     </div>
-    <div class="form-section-title">ஜாதக விவரங்கள்</div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Partner Expectation' : 'எதிர்பார்ப்பு' }}</label>
+      <textarea [(ngModel)]="regForm.partnerExpectation" [placeholder]="translationService.currentLanguage() === 'en' ? 'Expectations about partner...' : 'வரன் பற்றிய எதிர்பார்ப்பு...'" rows="3"></textarea>
+    </div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Horoscope Details' : 'ஜாதக விவரங்கள்' }}</div>
     <div class="input-grid">
       <div class="input-row">
-        <label>லக்னம்</label>
-        <input type="text" [(ngModel)]="regForm.lagnam" placeholder="லக்னம்">
+        <label>{{ 'profile.lagnam' | translate }}</label>
+        <input type="text" [(ngModel)]="regForm.lagnam" [placeholder]="'profile.lagnam' | translate">
       </div>
       <div class="input-row">
-        <label>ராசி</label>
+        <label>{{ 'profile.rasi' | translate }}</label>
         <select [(ngModel)]="regForm.rasi">
           @for (r of rasis; track r) {
-            <option [value]="r.name">{{ r.name }}</option>
+            <option [value]="r.name">{{ translationService.currentLanguage() === 'en' ? r.english : r.name }}</option>
           }
         </select>
       </div>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>நட்சத்திரம்</label>
-        <input type="text" [(ngModel)]="regForm.star" placeholder="நட்சத்திரம்">
+        <label>{{ 'profile.star' | translate }}</label>
+        <input type="text" [(ngModel)]="regForm.star" [placeholder]="'profile.star' | translate">
       </div>
       <div class="input-row">
-        <label>திசா இருப்பு (வருடம், மாதம், நாள்)</label>
-        <input type="text" [(ngModel)]="regForm.dasaBalance" placeholder="உ.ம்: 2வ 3மா 10நா">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Dasa Balance (Y, M, D)' : 'திசா இருப்பு (வருடம், மாதம், நாள்)' }}</label>
+        <input type="text" [(ngModel)]="regForm.dasaBalance" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 2Y 3M 10D' : 'உ.ம்: 2வ 3மா 10நா'">
       </div>
     </div>
-    <div class="form-section-title">தொடர்பு விவரங்கள்</div>
+    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Contact Details' : 'தொடர்பு விவரங்கள்' }}</div>
     <div class="input-row">
-      <label>முகவரி</label>
-      <textarea [(ngModel)]="regForm.address" placeholder="முழு முகவரி" rows="3"></textarea>
+      <label>{{ 'profile.address' | translate }}</label>
+      <textarea [(ngModel)]="regForm.address" [placeholder]="translationService.currentLanguage() === 'en' ? 'Full Address' : 'முழு முகவரி'" rows="3"></textarea>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>பதிவு செய்தவர் உறவு நிலை</label>
-        <input type="text" [(ngModel)]="regForm.contactPersonRelation" placeholder="உறவு">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Contact Person Relation' : 'பதிவு செய்தவர் உறவு நிலை' }}</label>
+        <input type="text" [(ngModel)]="regForm.contactPersonRelation" [placeholder]="translationService.currentLanguage() === 'en' ? 'Relation' : 'உறவு'">
       </div>
       <div class="input-row">
-        <label>பெயர்</label>
-        <input type="text" [(ngModel)]="regForm.contactPersonName" placeholder="பெயர்">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>அலைபேசி எண் 1</label>
-        <input type="tel" [(ngModel)]="regForm.phone1" placeholder="எண் 1">
-      </div>
-      <div class="input-row">
-        <label>அலைபேசி எண் 2</label>
-        <input type="tel" [(ngModel)]="regForm.phone2" placeholder="எண் 2">
+        <label>{{ 'profile.name' | translate }}</label>
+        <input type="text" [(ngModel)]="regForm.contactPersonName" [placeholder]="'profile.name' | translate">
       </div>
     </div>
     <div class="input-grid">
       <div class="input-row">
-        <label>புகைப்படம் (Photo)</label>
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Phone Number 1' : 'அலைபேசி எண் 1' }}</label>
+        <input type="tel" [(ngModel)]="regForm.phone1" [placeholder]="translationService.currentLanguage() === 'en' ? 'Number 1' : 'எண் 1'">
+      </div>
+      <div class="input-row">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Phone Number 2' : 'அலைபேசி எண் 2' }}</label>
+        <input type="tel" [(ngModel)]="regForm.phone2" [placeholder]="translationService.currentLanguage() === 'en' ? 'Number 2' : 'எண் 2'">
+      </div>
+    </div>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம் (Photo)' }}</label>
         <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="image/*">
         @if (regForm.photoUrl) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
         }
       </div>
       <div class="input-row">
-        <label>ஜாதக கட்டம் (Horoscope)</label>
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம் (Horoscope)' }}</label>
         <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="image/*,application/pdf">
         @if (regForm.jadhagamUrl) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+          <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
         }
       </div>
     </div>
@@ -363,7 +363,7 @@
       </div>
     }
 
-    <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">கட்டணம் செலுத்த (பதிவு கட்டணம்)</button>
+    <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">{{ translationService.currentLanguage() === 'en' ? 'Proceed to Payment (Registration Fee)' : 'கட்டணம் செலுத்த (பதிவு கட்டணம்)' }}</button>
   </form>
 }
 

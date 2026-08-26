@@ -28,23 +28,23 @@ export class ForgotPasswordPage implements OnInit {
     this.successMessage = '';
 
     if (!this.mobileNumber) {
-      this.errorMessage = 'தயவுசெய்து உங்கள் அலைபேசி எண்ணை உள்ளிடவும்';
+      this.errorMessage = 'errors.enterPhone';
       return;
     }
 
     this.authService.forgotPassword(this.mobileNumber).subscribe({
       next: (res) => {
         if (res.success) {
-          this.recoveredPassword = `சரிபார்க்கப்பட்டது: ${res.user?.email || res.message}`;
-          this.successMessage = res.message || 'கடவுச்சொல் மீட்பு விவரங்கள் பெறப்பட்டன.';
+          this.recoveredPassword = `${res.user?.email || res.message}`;
+          this.successMessage = res.message || 'common.success';
         } else {
           this.recoveredPassword = null;
-          this.errorMessage = 'இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை';
+          this.errorMessage = 'errors.accountNotFound';
         }
       },
       error: () => {
         this.recoveredPassword = null;
-        this.errorMessage = 'இந்த அலைபேசி எண்ணில் எந்தவொரு கணக்கும் இல்லை';
+        this.errorMessage = 'errors.accountNotFound';
       }
     });
   }
