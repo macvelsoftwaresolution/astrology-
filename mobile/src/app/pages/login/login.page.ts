@@ -32,7 +32,7 @@ export class LoginPage implements OnInit {
 
   onLogin() {
     if (!this.mobileNumber || !this.password) {
-      this.errorMessage = 'தயவுசெய்து அலைபேசி எண் மற்றும் கடவுச்சொல்லை உள்ளிடவும்';
+      this.errorMessage = 'errors.enterPhoneAndPassword';
       return;
     }
 

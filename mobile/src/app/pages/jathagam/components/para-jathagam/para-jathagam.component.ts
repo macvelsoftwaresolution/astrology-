@@ -15,10 +15,12 @@ const RASI_SYMBOLS: Record<string, string> = {
   'தனுசு': '♐', 'மகரம்': '♑', 'கும்பம்': '♒', 'மீனம்': '♓'
 };
 
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+
 @Component({
   selector: 'app-para-jathagam',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe],
   template: `
     <div class="para-wrapper">
       <div class="section-header">
@@ -66,7 +68,7 @@ const RASI_SYMBOLS: Record<string, string> = {
             }
           </button>
           @if (errorMsg) {
-            <p class="error-msg">{{ errorMsg }}</p>
+            <p class="error-msg">{{ errorMsg | translate }}</p>
           }
         </div>
       }
@@ -150,14 +152,14 @@ export class ParaJathagamComponent {
 
   getReading() {
     if (!this.form.name || !this.form.dob || !this.form.rasi) {
-      this.errorMsg = 'பெயர், பிறந்த தேதி மற்றும் ராசி கட்டாயம்.';
+      this.errorMsg = 'errors.nameDobRasiRequired';
       return;
     }
     this.errorMsg = '';
     this.loading = true;
     this.http.post<any>(`${environment.apiUrl}/jathagam/para-reading`, this.form).subscribe({
       next: res => { this.result = res; this.loading = false; },
-      error: () => { this.errorMsg = 'பிழை ஏற்பட்டது. மீண்டும் முயலவும்.'; this.loading = false; }
+      error: () => { this.errorMsg = 'errors.somethingWentWrong'; this.loading = false; }
     });
   }
 }

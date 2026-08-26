@@ -680,8 +680,13 @@ export class HomePage implements OnInit {
 
   get availableUpcomingDates(): { dateStr: string; label: string; dayName: string; isBlocked: boolean }[] {
     const dates: { dateStr: string; label: string; dayName: string; isBlocked: boolean }[] = [];
-    const tamilDays = ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
-    const tamilMonths = ['ஜன', 'பிப்', 'மார்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச'];
+    const isEn = this.translationService.currentLanguage() === 'en';
+    const days = isEn
+      ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      : ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
+    const months = isEn
+      ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      : ['ஜன', 'பிப்', 'மார்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச'];
 
     const today = new Date();
     for (let i = 0; i < 7; i++) {
@@ -695,14 +700,14 @@ export class HomePage implements OnInit {
 
       const isBlocked = !!(this.selectedAstrologer?.blocked_dates?.includes(dateStr));
 
-      let label = `${tamilMonths[d.getMonth()]} ${d.getDate()}`;
-      if (i === 0) label = 'இன்று';
-      else if (i === 1) label = 'நாளை';
+      let label = `${months[d.getMonth()]} ${d.getDate()}`;
+      if (i === 0) label = isEn ? 'Today' : 'இன்று';
+      else if (i === 1) label = isEn ? 'Tomorrow' : 'நாளை';
 
       dates.push({
         dateStr,
         label,
-        dayName: tamilDays[d.getDay()],
+        dayName: days[d.getDay()],
         isBlocked
       });
     }

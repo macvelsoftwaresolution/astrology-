@@ -5,7 +5,7 @@
       <button class="back-btn" (click)="goBack()">
         <i class="bi bi-arrow-left"></i>
       </button>
-      <h1 class="brand-title">ஆருத்ரா</h1>
+      <h1 class="brand-title">{{ 'login.title' | translate }}</h1>
       <div style="width: 40px;"></div>
     </div>
 
@@ -18,25 +18,25 @@
 
     <!-- Header Titles -->
     <div class="form-header">
-      <h2 class="form-title">Welcome Back</h2>
-      <p class="form-subtitle">உள்நுழைவு</p>
+      <h2 class="form-title">{{ 'login.title' | translate }}</h2>
+      <p class="form-subtitle">{{ 'login.subtitle' | translate }}</p>
     </div>
 
 
     <!-- Form -->
     <form #loginFormRef="ngForm" (ngSubmit)="onLogin()" class="login-form" novalidate>
       <div class="input-group">
-        <label>Mobile Number / Username</label>
+        <label>{{ 'login.usernamePlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required placeholder="அலைபேசி எண் / பெயர்">
+          <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required [placeholder]="'login.usernamePlaceholder' | translate">
           <span class="input-icon"><i class="bi bi-person"></i></span>
         </div>
       </div>
 
       <div class="input-group">
-        <label>Password</label>
+        <label>{{ 'login.passwordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="password" name="password" [(ngModel)]="password" required minlength="6" placeholder="கடவுச்சொல்">
+          <input type="password" name="password" [(ngModel)]="password" required minlength="6" [placeholder]="'login.passwordPlaceholder' | translate">
           <span class="input-icon"><i class="bi bi-key"></i></span>
         </div>
       </div>
@@ -44,20 +44,19 @@
       @if (errorMessage) {
         <div class="login-error-alert">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          <span>{{ errorMessage }}</span>
+          <span>{{ errorMessage | translate }}</span>
         </div>
       }
 
       <button type="submit" class="submit-btn">
-        <span class="btn-primary-text">Login and Continue</span>
-        <span class="btn-secondary-text">உள்நுழைந்து தொடரவும்</span>
+        <span class="btn-primary-text">{{ 'login.submitBtn' | translate }}</span>
       </button>
     </form>
 
     <!-- Switch to register -->
     <div class="switch-auth-mode">
-      <span>புதிய கணக்கு வேண்டுமா? </span>
-      <a (click)="goToRegister()">பதிவு செய்க</a>
+      <span>{{ 'login.needAccount' | translate }} </span>
+      <a (click)="goToRegister()">{{ 'login.registerNow' | translate }}</a>
     </div>
 
     <!-- Privacy Note -->

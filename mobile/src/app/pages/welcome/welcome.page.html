@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true" class="welcome-content">
   <div class="welcome-container">
     <!-- Header title -->
-    <h1 class="brand-title">ஆருத்ரா</h1>
+    <h1 class="brand-title">{{ 'welcome.brand' | translate }}</h1>
 
     <!-- Guru profile block -->
     <div class="guru-profile-card">
@@ -9,15 +9,15 @@
         <img src="assets/images/user_avatar.png" alt="Jegadeeshwaran" class="guru-avatar">
       </div>
       <div class="guru-info">
-        <h3 class="guru-name">ஜெக சீனிவாசன்</h3>
-        <p class="guru-title">ஆன்மீக வழிகாட்டி மற்றும் வேத நிபுணர்</p>
+        <h3 class="guru-name">{{ 'welcome.guruName' | translate }}</h3>
+        <p class="guru-title">{{ 'welcome.guruTitle' | translate }}</p>
       </div>
     </div>
 
     <!-- Path Selector Section -->
     <div class="welcome-message-block">
-      <h2 class="welcome-heading">வரவேற்கிறோம்</h2>
-      <p class="welcome-subheading">உங்கள் ஞானத்தின் பாதையைத் தேர்ந்தெடுக்கவும்</p>
+      <h2 class="welcome-heading">{{ 'welcome.greeting' | translate }}</h2>
+      <p class="welcome-subheading">{{ 'welcome.choosePath' | translate }}</p>
     </div>
 
     <!-- Options grid/list -->
@@ -25,10 +25,10 @@
       <!-- Astrology Services -->
       <div class="path-card astrology-card" (click)="selectAstrologyServices()">
         <div class="card-content">
-          <h3 class="card-title">ஜோதிட சேவைகள்</h3>
-          <p class="card-desc">நிபுணத்துவ ஜாதக வாசிப்புகள் மூலம் உங்கள் வாழ்க்கைப் பாதையை அறியுங்கள்</p>
+          <h3 class="card-title">{{ 'welcome.astrologyTitle' | translate }}</h3>
+          <p class="card-desc">{{ 'welcome.astrologyDesc' | translate }}</p>
           <div class="action-btn">
-            <span>தொடங்க</span> <i class="bi bi-arrow-right"></i>
+            <span>{{ 'welcome.startBtn' | translate }}</span> <i class="bi bi-arrow-right"></i>
           </div>
         </div>
       </div>
@@ -36,10 +36,10 @@
       <!-- Spiritual Education -->
       <div class="path-card education-card" (click)="selectSpiritualEducation()">
         <div class="card-content">
-          <h3 class="card-title">ஆன்மீக கல்வி</h3>
-          <p class="card-desc">புனித நூல்கள் மற்றும் தியான வழிகாட்டிகளோடு உங்கள் ஆன்மீக அறிவை வளருங்கள்</p>
+          <h3 class="card-title">{{ 'welcome.learnTitle' | translate }}</h3>
+          <p class="card-desc">{{ 'welcome.learnDesc' | translate }}</p>
           <div class="action-btn">
-            <span>ஆராய</span> <i class="bi bi-arrow-right"></i>
+            <span>{{ 'welcome.exploreBtn' | translate }}</span> <i class="bi bi-arrow-right"></i>
           </div>
         </div>
       </div>

@@ -16,17 +16,17 @@
 
     <!-- Middle Row: Nalla Neram -->
     <div class="panch-item middle-full">
-      <span class="panch-label label-gold"><i class="bi bi-clock-fill me-1"></i> நல்ல நேரம் (சுப காலம்)</span>
+      <span class="panch-label label-gold"><i class="bi bi-clock-fill me-1"></i> {{ 'panchangam.sub' | translate }}</span>
       <span class="panch-value value-gold">{{ panchangam.nalla_neram || '-' }}</span>
     </div>
 
     <!-- Bottom Row: Rahukalam & Yamagandam -->
     <div class="panch-item bottom-left">
-      <span class="panch-label label-red"><i class="bi bi-exclamation-triangle-fill me-1"></i> இராகு காலம்</span>
+      <span class="panch-label label-red"><i class="bi bi-exclamation-triangle-fill me-1"></i> {{ 'panchangam.rahuKalam' | translate }}</span>
       <span class="panch-value value-red">{{ panchangam.rahukalam || '-' }}</span>
     </div>
     <div class="panch-item bottom-right">
-      <span class="panch-label label-orange"><i class="bi bi-shield-exclamation me-1"></i> எமகண்டம்</span>
+      <span class="panch-label label-orange"><i class="bi bi-shield-exclamation me-1"></i> {{ 'panchangam.yamagandam' | translate }}</span>
       <span class="panch-value value-orange">{{ panchangam.yamagandam || '-' }}</span>
     </div>
   </div>

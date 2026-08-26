@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+
 import { IonSpinner } from '@ionic/angular/standalone';
 
 const RASIS = [
@@ -20,7 +22,7 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-matching',
   standalone: true,
-  imports: [FormsModule, IonSpinner],
+  imports: [FormsModule, IonSpinner, TranslatePipe],
   template: `
     <div class="matching-wrapper">
 
@@ -97,7 +99,7 @@ const NAKSHATRAS = [
           </button>
 
           @if (errorMsg) {
-            <p class="error-msg">{{ errorMsg }}</p>
+            <p class="error-msg">{{ errorMsg | translate }}</p>
           }
         </div>
       }
@@ -206,14 +208,14 @@ export class MatchingComponent {
   calculate() {
     if (!this.form.boy_name || !this.form.boy_dob || !this.form.boy_rasi ||
         !this.form.girl_name || !this.form.girl_dob || !this.form.girl_rasi) {
-      this.errorMsg = 'அனைத்து கட்டாய விவரங்களையும் நிரப்பவும்.';
+      this.errorMsg = 'errors.fillRequiredFields';
       return;
     }
     this.errorMsg = '';
     this.loading = true;
     this.http.post<any>(`${environment.apiUrl}/jathagam/match`, this.form).subscribe({
       next: res => { this.result = res; this.step = 'result'; this.loading = false; },
-      error: () => { this.errorMsg = 'பிழை ஏற்பட்டது. மீண்டும் முயலவும்.'; this.loading = false; }
+      error: () => { this.errorMsg = 'errors.somethingWentWrong'; this.loading = false; }
     });
   }
 

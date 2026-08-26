@@ -20,7 +20,17 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     close: "மூடு",
     status: "நிலை",
     success: "வெற்றிகரமாக முடிந்தது!",
-    error: "பிழை ஏற்பட்டது!"
+    error: "பிழை ஏற்பட்டது!",
+    select: "தேர்ந்தெடுக்கவும்",
+    required: "அவசியம்",
+    all: "அனைத்தும்",
+    yes: "ஆம்",
+    no: "இல்லை",
+    none: "ஏதுமில்லை",
+    actions: "செயல்கள்",
+    download: "பதிவிறக்க",
+    watch: "பார்க்க",
+    view: "பார்க்க"
   },
   nav: {
     home: "முகப்பு",
@@ -28,6 +38,41 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     astrology: "ஜோதிடம்",
     matching: "பொருத்தம்",
     profile: "சுயவிவரம்"
+  },
+  welcome: {
+    brand: "ஆருத்ரா",
+    guruName: "ஜெக சீனிவாசன்",
+    guruTitle: "ஆன்மீக வழிகாட்டி மற்றும் வேத நிபுணர்",
+    greeting: "வரவேற்கிறோம்",
+    choosePath: "உங்கள் ஞானத்தின் பாதையைத் தேர்ந்தெடுக்கவும்",
+    astrologyTitle: "ஜோதிட சேவைகள்",
+    astrologyDesc: "நிபுணத்துவ ஜாதக வாசிப்புகள் மூலம் உங்கள் வாழ்க்கைப் பாதையை அறியுங்கள்",
+    startBtn: "தொடங்க",
+    learnTitle: "ஆன்மீக கல்வி",
+    learnDesc: "புனித நூல்கள் மற்றும் தியான வழிகாட்டிகளோடு உங்கள் ஆன்மீக அறிவை வளருங்கள்",
+    exploreBtn: "ஆராய"
+  },
+  login: {
+    title: "ஆருத்ரா",
+    subtitle: "உள்நுழைவு",
+    usernamePlaceholder: "அலைபேசி எண் / பயனர் ஐடி",
+    passwordPlaceholder: "கடவுச்சொல்",
+    submitBtn: "உள்நுழைந்து தொடரவும்",
+    needAccount: "புதிய கணக்கு வேண்டுமா?",
+    registerNow: "பதிவு செய்க"
+  },
+  register: {
+    title: "ஆருத்ரா",
+    subtitle: "பதிவு செய்தல்",
+    uploadPhoto: "படம் பதிவேற்றவும்",
+    namePlaceholder: "உங்கள் முழுப் பெயர்",
+    phonePlaceholder: "அலைபேசி எண்",
+    emailPlaceholder: "மின்னஞ்சல் முகவரி",
+    passwordPlaceholder: "கடவுச்சொல் (குறைந்தது 6 எழுத்துக்கள்)",
+    confirmPasswordPlaceholder: "மீண்டும் கடவுச்சொல் உள்ளிடவும்",
+    submitBtn: "பதிவு செய்து தொடரவும்",
+    haveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
+    loginNow: "உள்நுழைய"
   },
   home: {
     greeting: "வணக்கம்",
@@ -48,7 +93,9 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     allServices: "சேவைகள்",
     viewAll: "அனைத்தும்",
     expertsCount: "நிபுணர்கள்",
-    expertConsultation: "நிபுணர் ஆலோசனை"
+    expertConsultation: "நிபுணர் ஆலோசனை",
+    bookAppointment: "ஆலோசனை முன்பதிவு",
+    price: "கட்டணம்"
   },
   profile: {
     title: "சுயவிவரம்",
@@ -94,7 +141,7 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     noNotifs: "புதிய அறிவிப்புகள் இல்லை.",
     settingsTitle: "அமைப்புகள் & விருப்பத்தேர்வுகள்",
     settingsSubtitle: "உங்கள் மொழி மற்றும் அறிவிப்பு அமைப்புகளை நிர்வகிக்கவும்",
-    languageSetting: "செயலியின் மொழி (App Language)",
+    languageSetting: "செயலியின் மொழி",
     dailyNotif: "தினசரி ராசி பலன் அறிவிப்பு",
     dailyNotifDesc: "ஒவ்வொரு காலையிலும் 6 மணிக்கு உங்கள் ராசி பலன் அறிவிப்பு"
   },
@@ -110,7 +157,17 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     checkPoruthamBtn: "பொருத்தம் பார்க்க",
     historyToggle: "முந்தைய பதிவுகளின் வரலாறு",
     matchRecords: "திருமண பொருத்தம் பதிவுகள்",
-    regRecords: "திருமணப் பதிவு விவரங்கள்"
+    regRecords: "திருமணப் பதிவு விவரங்கள்",
+    boyDetails: "ஆண் ஜாதக விவரங்கள்",
+    girlDetails: "பெண் ஜாதக விவரங்கள்",
+    boyName: "ஆண் பெயர்",
+    girlName: "பெண் பெயர்",
+    matchScore: "பொருத்தம் மதிப்பெண்",
+    verdict: "முடிவு",
+    superMatch: "உத்தம பொருத்தம் (Super Match)",
+    goodMatch: "மத்தியம பொருத்தம் (Good Match)",
+    averageMatch: "சாதாரண பொருத்தம்",
+    poorMatch: "பொருத்தம் இல்லை"
   },
   learn: {
     title: "ஜோதிட சாஸ்திர வித்யாலயம்",
@@ -128,6 +185,8 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     studentName: "மாணவர் பெயர் *",
     fatherName: "தந்தை / கணவர் பெயர்",
     gender: "பாலினம் *",
+    male: "ஆண்",
+    female: "பெண்",
     dob: "பிறந்த தேதி *",
     age: "வயது",
     education: "கல்வித் தகுதி *",
@@ -145,7 +204,20 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     courseStatus: "பாடநெறி நிலை",
     buyBooksTitle: "ஜோதிடப் பாடப் புத்தகங்கள் (Books Store)",
     buyBookBtn: "புத்தகம் வாங்குக",
-    boughtTag: "வாங்கப்பட்டது"
+    boughtTag: "வாங்கப்பட்டது",
+    studentLogin: "மாணவர் உள்நுழைவு",
+    studentLoginDesc: "உங்கள் பயனர் ஐடி / அலைபேசி எண் மற்றும் கடவுச்சொல் உள்ளிட்டு வகுப்பைத் தொடரவும்.",
+    userIdLabel: "பயனர் ஐடி / அலைபேசி எண் / மின்னஞ்சல் *",
+    passwordLabel: "கடவுச்சொல் *",
+    loginBtn: "உள்நுழைவு ➔",
+    backToIntro: "← புதிய சேர்க்கை பக்கத்திற்குச் செல்ல",
+    quizTitle: "பயிற்சித் தேர்வு",
+    question: "கேள்வி",
+    of: "இல்",
+    nextQuestion: "அடுத்த கேள்வி",
+    submitQuiz: "தேர்வைச் சமர்ப்பி",
+    quizPassed: "தேர்வில் வெற்றி பெற்றுள்ளீர்கள்!",
+    quizFailed: "மீண்டும் முயற்சிக்கவும்!"
   },
   astrology: {
     title: "வேத ஜோதிட சேவைகள்",
@@ -158,7 +230,52 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     services: "ஆலோசனை முன்பதிவு",
     quickAstrology: "விரைவு ஜோதிட சேவைகள்",
     selectRasi: "உங்கள் ராசியைத் தேர்வு செய்க",
-    viewHoroscope: "ஜாதகம் பார்க்க"
+    viewHoroscope: "ஜாதகம் பார்க்க",
+    bookNow: "முன்பதிவு செய்ய",
+    bookingTitle: "ஆலோசனை முன்பதிவு",
+    selectDate: "தேதியைத் தேர்ந்தெடுக்கவும்",
+    selectSlot: "நேரத்தைத் தேர்ந்தெடுக்கவும்",
+    yourDetails: "உங்கள் விவரங்கள்",
+    name: "பெயர்",
+    dob: "பிறந்த தேதி",
+    tob: "பிறந்த நேரம்",
+    pob: "பிறந்த இடம்",
+    gothram: "கோத்திரம்",
+    question: "உங்கள் கேள்வி / கருத்து",
+    payAndBook: "கட்டணம் செலுத்தி முன்பதிவு செய்க",
+    bookingConfirmed: "முன்பதிவு பெறப்பட்டது!",
+    bookingSuccessMsg: "உங்கள் முன்பதிவு வெற்றிகரமாக முடிந்தது."
+  },
+  notifications: {
+    title: "அறிவிப்புகள்",
+    subtitle: "Notifications",
+    markAllRead: "அனைத்தும் படித்தவை",
+    emptyTitle: "புதிய அறிவிப்புகள் ஏதுமில்லை",
+    emptyDesc: "தற்போது உங்களுக்கு எந்த புதிய தகவல்களும் இல்லை.",
+    newBadge: "புதியது",
+    downloadChart: "ஜாதகக் கோப்பைப் பார்க்க / பதிவிறக்க",
+    watchVideo: "காணொளியைப் பார்க்க",
+    viewDetail: "விவரம்"
+  },
+  panchangam: {
+    title: "இன்றைய பஞ்சாங்கம்",
+    sub: "துல்லிய கணிப்புகள்",
+    thithi: "திதி",
+    nakshatra: "நட்சத்திரம்",
+    yogam: "யோகம்",
+    karanam: "கரணம்",
+    rahuKalam: "ராகு காலம்",
+    yamagandam: "எமகண்டம்",
+    gulikaKalam: "குளிகை காலம்",
+    sunrise: "சூரியோதயம்",
+    sunset: "சூரியாஸ்தமயம்"
+  },
+  rasipalan: {
+    title: "இன்றைய ராசி பலன்",
+    sub: "12 ராசிகளின் தினசரி பலன்கள்",
+    selectRasi: "உங்கள் ராசியைத் தேர்ந்தெடுக்கவும்",
+    luckyColor: "அதிர்ஷ்ட நிறம்",
+    luckyNumber: "அதிர்ஷ்ட எண்"
   }
 };
 
@@ -180,7 +297,17 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     close: "Close",
     status: "Status",
     success: "Success!",
-    error: "An error occurred!"
+    error: "An error occurred!",
+    select: "Select",
+    required: "Required",
+    all: "All",
+    yes: "Yes",
+    no: "No",
+    none: "None",
+    actions: "Actions",
+    download: "Download",
+    watch: "Watch",
+    view: "View"
   },
   nav: {
     home: "Home",
@@ -188,6 +315,41 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     astrology: "Astrology",
     matching: "Matching",
     profile: "Profile"
+  },
+  welcome: {
+    brand: "Arudra",
+    guruName: "Jega Srinivasan",
+    guruTitle: "Spiritual Guide & Vedic Expert",
+    greeting: "Welcome",
+    choosePath: "Choose Your Path of Knowledge",
+    astrologyTitle: "Astrology Services",
+    astrologyDesc: "Discover your life path through expert Vedic horoscope readings",
+    startBtn: "Get Started",
+    learnTitle: "Spiritual Education",
+    learnDesc: "Grow your spiritual knowledge with sacred texts and meditation guides",
+    exploreBtn: "Explore Now"
+  },
+  login: {
+    title: "Arudra",
+    subtitle: "Sign In",
+    usernamePlaceholder: "Mobile Number / User ID",
+    passwordPlaceholder: "Password",
+    submitBtn: "Sign In to Continue",
+    needAccount: "Need a new account?",
+    registerNow: "Register Now"
+  },
+  register: {
+    title: "Arudra",
+    subtitle: "Sign Up",
+    uploadPhoto: "Upload Profile Photo",
+    namePlaceholder: "Full Name",
+    phonePlaceholder: "Mobile Number",
+    emailPlaceholder: "Email Address",
+    passwordPlaceholder: "Password (Min 6 chars)",
+    confirmPasswordPlaceholder: "Confirm Password",
+    submitBtn: "Register & Continue",
+    haveAccount: "Already have an account?",
+    loginNow: "Sign In"
   },
   home: {
     greeting: "Welcome",
@@ -208,7 +370,9 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     allServices: "All Services",
     viewAll: "View All",
     expertsCount: "Astrologers",
-    expertConsultation: "Expert Consultation"
+    expertConsultation: "Expert Consultation",
+    bookAppointment: "Book Appointment",
+    price: "Fee"
   },
   profile: {
     title: "Profile",
@@ -270,7 +434,17 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     checkPoruthamBtn: "Check Match",
     historyToggle: "Previous Registration History",
     matchRecords: "Marriage Match Records",
-    regRecords: "Registration Details"
+    regRecords: "Registration Details",
+    boyDetails: "Boy's Horoscope Details",
+    girlDetails: "Girl's Horoscope Details",
+    boyName: "Boy's Name",
+    girlName: "Girl's Name",
+    matchScore: "Compatibility Score",
+    verdict: "Verdict",
+    superMatch: "Super Match",
+    goodMatch: "Good Match",
+    averageMatch: "Average Match",
+    poorMatch: "Not Recommended"
   },
   learn: {
     title: "Astrology Academy",
@@ -288,6 +462,8 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     studentName: "Student Name *",
     fatherName: "Father / Husband Name",
     gender: "Gender *",
+    male: "Male",
+    female: "Female",
     dob: "Date of Birth *",
     age: "Age",
     education: "Educational Qualification *",
@@ -303,9 +479,22 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     dashboardTitle: "Student Dashboard",
     welcome: "Welcome",
     courseStatus: "Course Status",
-    buyBooksTitle: "Astrology Study Books Store",
+    buyBooksTitle: "Astrology Books Store",
     buyBookBtn: "Buy Book",
-    boughtTag: "Purchased"
+    boughtTag: "Purchased",
+    studentLogin: "Student Login",
+    studentLoginDesc: "Enter your User ID / Phone / Email and Password to access your course.",
+    userIdLabel: "User ID / Phone / Email *",
+    passwordLabel: "Password *",
+    loginBtn: "Sign In ➔",
+    backToIntro: "← Back to Admission Form",
+    quizTitle: "Practice Exam",
+    question: "Question",
+    of: "of",
+    nextQuestion: "Next Question",
+    submitQuiz: "Submit Exam",
+    quizPassed: "Congratulations! You passed!",
+    quizFailed: "Please try again!"
   },
   astrology: {
     title: "Vedic Astrology Services",
@@ -318,7 +507,52 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     services: "Book Consultation",
     quickAstrology: "Quick Astrology Services",
     selectRasi: "Select Your Rasi",
-    viewHoroscope: "View Horoscope"
+    viewHoroscope: "View Horoscope",
+    bookNow: "Book Appointment",
+    bookingTitle: "Consultation Booking",
+    selectDate: "Select Date",
+    selectSlot: "Select Time Slot",
+    yourDetails: "Your Details",
+    name: "Full Name",
+    dob: "Date of Birth",
+    tob: "Time of Birth",
+    pob: "Place of Birth",
+    gothram: "Gothram",
+    question: "Your Question / Remarks",
+    payAndBook: "Pay & Book Consultation",
+    bookingConfirmed: "Booking Received!",
+    bookingSuccessMsg: "Your booking has been successfully placed."
+  },
+  notifications: {
+    title: "Notifications",
+    subtitle: "Notifications",
+    markAllRead: "Mark All as Read",
+    emptyTitle: "No new notifications",
+    emptyDesc: "You currently have no new notifications.",
+    newBadge: "NEW",
+    downloadChart: "View/Download Chart",
+    watchVideo: "Watch Video",
+    viewDetail: "View Details"
+  },
+  panchangam: {
+    title: "Today's Panchangam",
+    sub: "Accurate Vedic Calculations",
+    thithi: "Thithi",
+    nakshatra: "Nakshatra",
+    yogam: "Yogam",
+    karanam: "Karanam",
+    rahuKalam: "Rahu Kalam",
+    yamagandam: "Yamagandam",
+    gulikaKalam: "Gulika Kalam",
+    sunrise: "Sunrise",
+    sunset: "Sunset"
+  },
+  rasipalan: {
+    title: "Daily Horoscope",
+    sub: "Daily Predictions for 12 Zodiac Rasis",
+    selectRasi: "Select Your Rasi",
+    luckyColor: "Lucky Color",
+    luckyNumber: "Lucky Number"
   }
 };
 

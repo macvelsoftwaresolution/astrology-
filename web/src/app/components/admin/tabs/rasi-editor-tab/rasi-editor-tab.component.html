@@ -281,7 +281,7 @@
           </button>
           <span class="rasi-cycle-symbol">{{ rasiEditorList[selectedRasiIndex].symbol }}</span>
           <span class="rasi-cycle-label">
-            {{ rasiEditorList[selectedRasiIndex].name }} ({{ rasiEditorList[selectedRasiIndex].englishName }})
+            {{ getRasiDisplayName(rasiEditorList[selectedRasiIndex]) }}
           </span>
           <button type="button" class="btn-nav-cycle" (click)="nextRasi()" title="Next Rasi">
             <i class="bi bi-chevron-right"></i>
@@ -306,14 +306,14 @@
           </div>
           <div class="rasi-studio-header-meta">
             <h2 class="rasi-studio-title">
-              {{ rasiEditorList[selectedRasiIndex].name }} ({{ rasiEditorList[selectedRasiIndex].englishName }})
+              {{ getRasiDisplayName(rasiEditorList[selectedRasiIndex]) }}
             </h2>
             <div class="rasi-studio-badges">
               <span class="chip-stat gold">
                 <i class="bi bi-calendar3"></i> {{ selectedRasiDate }}
               </span>
               <span class="chip-stat">
-                <i class="bi bi-stars"></i> {{ rasiEditorType | titlecase }} பலன்
+                <i class="bi bi-stars"></i> {{ rasiEditorType | titlecase }}
               </span>
               <span class="chip-stat">
                 <i class="bi bi-clock-history"></i> {{ rasiEditorList[selectedRasiIndex].dates }}
@@ -327,16 +327,16 @@
           <div class="studio-field-header">
             <label class="studio-field-lbl">
               <i class="bi bi-pencil-square" style="color: #d97706;"></i>
-              {{ rasiEditorList[selectedRasiIndex].name }} பலன் விவரம் (Prediction Content):
+              {{ getRasiDisplayName(rasiEditorList[selectedRasiIndex]) }} {{ 'rasi_editor.predictionContent' | translate }}
             </label>
             <span class="char-count-badge">
-              {{ (rasiPredictions[selectedRasiIndex]?.prediction_text || '').length }} எழுத்துக்கள் (chars)
+              {{ (rasiPredictions[selectedRasiIndex]?.prediction_text || '').length }} {{ 'rasi_editor.chars' | translate }}
             </span>
           </div>
           <textarea
             [(ngModel)]="rasiPredictions[selectedRasiIndex].prediction_text"
             class="rasi-studio-textarea"
-            placeholder="இங்கு பலன்களை உள்ளிடவும்..."
+            [placeholder]="'rasi_editor.predictionContent' | translate"
           ></textarea>
         </div>
 
@@ -347,8 +347,8 @@
             <div class="media-card-header">
               <div class="media-icon-badge audio"><i class="bi bi-mic-fill"></i></div>
               <div>
-                <h4 class="media-card-title">ஆடியோ பதிவேற்றம் (Audio File Upload)</h4>
-                <span class="media-card-subtitle">MP3 / WAV குரல் பதிவு கோப்பு</span>
+                <h4 class="media-card-title">{{ 'rasi_editor.audioUpload' | translate }}</h4>
+                <span class="media-card-subtitle">MP3 / WAV</span>
               </div>
             </div>
 
@@ -368,18 +368,18 @@
                   [disabled]="isUploadingRasiAudio"
                 >
                   <i class="bi bi-cloud-arrow-up-fill"></i>
-                  <span>{{ isUploadingRasiAudio ? 'ஆடியோ பதிவேற்றப்படுகிறது...' : 'ஆடியோ கோப்பை தேர்வு செய்க (Upload MP3)' }}</span>
+                  <span>{{ isUploadingRasiAudio ? ('common.saving' | translate) : ('rasi_editor.chooseAudio' | translate) }}</span>
                 </button>
                 @if (isUploadingRasiAudio) {
                   <div class="upload-progress-text">
-                    <i class="bi bi-hourglass-split"></i> சேமிக்கப்படுகிறது...
+                    <i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}
                   </div>
                 }
               </div>
             } @else {
               <div class="uploaded-file-banner audio-active">
                 <div class="file-info-left" style="width: 100%;">
-                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> ஆடியோ தயார்</span>
+                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> Audio Ready</span>
                   <audio controls [src]="rasiPredictions[selectedRasiIndex].audio_url" class="mini-audio-player" style="width: 100%;"></audio>
                 </div>
                 <div class="file-actions-right" style="margin-top: 8px;">
@@ -389,7 +389,7 @@
                     (click)="removeRasiAudio(selectedRasiIndex)"
                     title="Remove Audio"
                   >
-                    <i class="bi bi-trash3-fill"></i> நீக்கு
+                    <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
                   </button>
                 </div>
               </div>
@@ -401,8 +401,8 @@
             <div class="media-card-header">
               <div class="media-icon-badge video"><i class="bi bi-camera-video-fill"></i></div>
               <div>
-                <h4 class="media-card-title">வீடியோ பதிவேற்றம் (Video File Upload)</h4>
-                <span class="media-card-subtitle">MP4 / WebM வீடியோ கோப்பு</span>
+                <h4 class="media-card-title">{{ 'rasi_editor.videoUpload' | translate }}</h4>
+                <span class="media-card-subtitle">MP4 / WebM</span>
               </div>
             </div>
 
@@ -422,11 +422,11 @@
                   [disabled]="isUploadingRasiVideo"
                 >
                   <i class="bi bi-cloud-arrow-up-fill"></i>
-                  <span>{{ isUploadingRasiVideo ? 'வீடியோ பதிவேற்றப்படுகிறது...' : 'வீடியோ கோப்பை தேர்வு செய்க (Upload MP4)' }}</span>
+                  <span>{{ isUploadingRasiVideo ? ('common.saving' | translate) : ('rasi_editor.chooseVideo' | translate) }}</span>
                 </button>
                 @if (isUploadingRasiVideo) {
                   <div class="upload-progress-text">
-                    <i class="bi bi-hourglass-split"></i> சேமிக்கப்படுகிறது...
+                    <i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}
                   </div>
                 }
               </div>

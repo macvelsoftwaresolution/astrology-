@@ -179,8 +179,8 @@
         </div>
         <div class="afp-title-box">
           <span class="afp-status-badge" [class.on-leave]="astro.status !== 'Available'">
-            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? 'நேரலை ஆலோசனை கிடைக்கும்' :
-            'தற்காலிக விடுமுறை' }}
+            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? ('home.expertConsultation' | translate) :
+            (translationService.currentLanguage() === 'en' ? 'On Leave' : 'தற்காலிக விடுமுறை') }}
           </span>
           <h2>{{ astro.name }}</h2>
           <span class="afp-role">{{ astro.role_title }}</span>
@@ -199,14 +199,14 @@
         <div class="afp-stat-row">
           <div class="stat-icon-badge exp-bg"><i class="bi bi-trophy-fill" style="color: #b45309;"></i></div>
           <div class="stat-row-content">
-            <strong class="stat-value">{{ astro.experience || '15+ ஆண்டுகள்' }}</strong>
+            <strong class="stat-value">{{ translationService.currentLanguage() === 'en' ? '15+ Years Exp' : (astro.experience || '15+ ஆண்டுகள்') }}</strong>
           </div>
         </div>
 
         <div class="afp-stat-row">
           <div class="stat-icon-badge consult-bg"><i class="bi bi-people-fill text-primary"></i></div>
           <div class="stat-row-content">
-            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ நபர்கள்</strong>
+            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ {{ translationService.currentLanguage() === 'en' ? 'Clients' : 'நபர்கள்' }}</strong>
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@
 
       <!-- Main Book Button CTA (No Amount) -->
       <button class="btn-book-full-cta" (click)="startAstrologerBooking(astro)">
-        <span>தொடர்க</span>
+        <span>{{ translationService.currentLanguage() === 'en' ? 'Continue' : 'தொடர்க' }}</span>
         <span class="cta-arrow-circle"><i class="bi bi-arrow-right"></i></span>
       </button>
     </div>
@@ -260,16 +260,16 @@
       <form ngNoForm (submit)="$event.preventDefault(); nextStep()" class="booking-form-box">
         <!-- Name -->
         <div class="form-input-card">
-          <label>உங்கள் பெயர் <span class="required-star">*</span></label>
+          <label>{{ 'astrology.name' | translate }} <span class="required-star">*</span></label>
           <div class="input-inner-wrap">
             <span class="input-icon"><i class="bi bi-person-fill"></i></span>
-            <input type="text" name="bookingName" [(ngModel)]="astrologerBookingForm.name" placeholder="முழுப் பெயரை உள்ளிடவும்">
+            <input type="text" name="bookingName" [(ngModel)]="astrologerBookingForm.name" [placeholder]="'register.namePlaceholder' | translate">
           </div>
         </div>
 
         <!-- Phone -->
         <div class="form-input-card">
-          <label>தொலைபேசி எண் <span class="required-star">*</span></label>
+          <label>{{ 'profile.phone' | translate }} <span class="required-star">*</span></label>
           <div class="input-inner-wrap">
             <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
             <input type="tel" name="bookingPhone" [(ngModel)]="astrologerBookingForm.phone" placeholder="+91 98765 43210">
@@ -279,25 +279,25 @@
         <!-- Vastu or Horoscope Specific Details -->
         @if (selectedCategory?.id === 'vasthu') {
         <div class="form-input-card">
-          <label>மனை / கட்டிடத்தின் முகவரி</label>
+          <label>{{ translationService.currentLanguage() === 'en' ? 'Site / Building Address' : 'மனை / கட்டிடத்தின் முகவரி' }}</label>
           <div class="input-inner-wrap textarea-wrap">
             <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
             <textarea name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
-              placeholder="வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்..." rows="2"></textarea>
+              [placeholder]="translationService.currentLanguage() === 'en' ? 'Address & City for Vastu Site Visit...' : 'வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்...'" rows="2"></textarea>
           </div>
         </div>
         } @else {
         <!-- DOB & TOB Grid -->
         <div class="form-dual-grid">
           <div class="form-input-card">
-            <label>பிறந்த தேதி</label>
+            <label>{{ 'astrology.dob' | translate }}</label>
             <div class="input-inner-wrap">
               <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
               <input type="date" name="bookingDob" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
             </div>
           </div>
           <div class="form-input-card">
-            <label>பிறந்த நேரம்</label>
+            <label>{{ 'astrology.tob' | translate }}</label>
             <div class="input-inner-wrap">
               <span class="input-icon"><i class="bi bi-clock"></i></span>
               <input type="time" name="bookingTob" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
@@ -307,17 +307,17 @@
 
         <!-- POB -->
         <div class="form-input-card">
-          <label>பிறந்த ஊர்</label>
+          <label>{{ 'astrology.pob' | translate }}</label>
           <div class="input-inner-wrap">
             <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <input type="text" name="bookingPob" [(ngModel)]="astrologerBookingForm.pob" placeholder="எ.கா: சென்னை, மதுரை, கோவை">
+            <input type="text" name="bookingPob" [(ngModel)]="astrologerBookingForm.pob" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Chennai, Madurai, Coimbatore' : 'எ.கா: சென்னை, மதுரை, கோவை'">
           </div>
         </div>
         }
 
         <!-- Consultation Date -->
         <div class="form-input-card">
-          <label>ஆலோசனை தேதி <span class="required-star">*</span></label>
+          <label>{{ 'astrology.selectDate' | translate }} <span class="required-star">*</span></label>
 
           <!-- Quick Date Pills Grid -->
           <div class="slots-pill-grid date-pills-grid">
@@ -330,7 +330,7 @@
               <i class="bi" [ngClass]="dateItem.isBlocked ? 'bi-x-circle-fill text-danger' : (astrologerBookingForm.date === dateItem.dateStr ? 'bi-check-circle-fill' : 'bi-calendar-event')"></i>
               <div class="date-pill-text">
                 <span class="date-main" [class.text-strike]="dateItem.isBlocked">{{ dateItem.label }}</span>
-                <small class="date-sub" [class.text-danger]="dateItem.isBlocked">{{ dateItem.isBlocked ? 'தடைப்பட்டது' : dateItem.dayName }}</small>
+                <small class="date-sub" [class.text-danger]="dateItem.isBlocked">{{ dateItem.isBlocked ? (translationService.currentLanguage() === 'en' ? 'Blocked' : 'தடைப்பட்டது') : dateItem.dayName }}</small>
               </div>
             </button>
             }
@@ -338,7 +338,7 @@
 
           <!-- Custom Native Date Picker -->
           <div class="custom-date-select-bar">
-            <span class="custom-date-label">வேறு தேதிக்கு:</span>
+            <span class="custom-date-label">{{ translationService.currentLanguage() === 'en' ? 'Select Other Date:' : 'வேறு தேதிக்கு:' }}</span>
             <div class="input-inner-wrap compact-date-input" [class.input-error-border]="isCurrentDateBlocked">
               <span class="input-icon"><i class="bi" [ngClass]="isCurrentDateBlocked ? 'bi-exclamation-circle-fill text-danger' : 'bi-calendar-range-fill'"></i></span>
               <input type="date" name="bookingCustomDate" [(ngModel)]="astrologerBookingForm.date" [min]="todayDateStr" class="custom-native-date">
@@ -349,14 +349,14 @@
           @if (isCurrentDateBlocked) {
             <div class="blocked-date-alert-banner">
               <i class="bi bi-exclamation-triangle-fill"></i>
-              <span>தேர்ந்தெடுத்த நாளில் ({{ astrologerBookingForm.date }}) ஜோதிடர் கிடைக்கவில்லை! வேறு தேதியைத் தேர்ந்தெடுக்கவும்.</span>
+              <span>{{ translationService.currentLanguage() === 'en' ? ('Astrologer unavailable on selected date (' + astrologerBookingForm.date + ')! Please pick another date.') : ('தேர்ந்தெடுத்த நாளில் (' + astrologerBookingForm.date + ') ஜோதிடர் கிடைக்கவில்லை! வேறு தேதியைத் தேர்ந்தெடுக்கவும்.') }}</span>
             </div>
           }
         </div>
 
         <!-- Time Slot Selection -->
         <div class="form-input-card">
-          <label>நேர இடைவெளி (Slot) <span class="required-star">*</span></label>
+          <label>{{ 'astrology.selectSlot' | translate }} <span class="required-star">*</span></label>
           <div class="slots-pill-grid">
             @for (slot of selectedAstrologer.available_slots || ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM - 04:30 PM', '05:00 PM - 06:00 PM']; track slot) {
             <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.slot === slot"
@@ -371,7 +371,7 @@
 
         <!-- Call Option Selection -->
         <div class="form-input-card">
-          <label>அழைப்பு முறை (Call Type) <span class="required-star">*</span></label>
+          <label>{{ translationService.currentLanguage() === 'en' ? 'Call Type *' : 'அழைப்பு முறை (Call Type) *' }} <span class="required-star">*</span></label>
           <div class="slots-pill-grid">
             @if (selectedAstrologer.is_phone_call_available) {
               <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Phone'"
@@ -399,11 +399,11 @@
 
         <!-- Optional Questions / Notes -->
         <div class="form-input-card">
-          <label>கேள்விகள் / குறிப்புகள் (விருப்பத்தேர்வு)</label>
+          <label>{{ 'astrology.question' | translate }}</label>
           <div class="input-inner-wrap textarea-wrap">
             <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
             <textarea [(ngModel)]="astrologerBookingForm.notes" rows="2"
-              placeholder="எ.கா: தொழில் முன்னேற்றம், திருமண யோகம்..."></textarea>
+              [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Career growth, Marriage matching...' : 'எ.கா: தொழில் முன்னேற்றம், திருமண யோகம்...'"></textarea>
           </div>
         </div>
 
@@ -417,7 +417,7 @@
 
         <!-- Continue Button -->
         <button type="submit" class="btn-form-continue">
-          <span>தொடர்க</span>
+          <span>{{ translationService.currentLanguage() === 'en' ? 'Continue' : 'தொடர்க' }}</span>
           <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
         </button>
       </form>

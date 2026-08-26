@@ -20,28 +20,28 @@
       <!-- Title Section -->
       <div class="title-section">
         <h2 class="page-title">{{ 'astrology.rasiPalan' | translate }}</h2>
-        <p class="page-subtitle">உங்கள் நட்சத்திரங்களின்<br>வழிகாட்டுதலைக் கண்டறியவும்</p>
+        <p class="page-subtitle">{{ (currentLang === 'en' ? 'Discover guidance from your stars' : 'உங்கள் நட்சத்திரங்களின் வழிகாட்டுதலைக் கண்டறியவும்') }}</p>
       </div>
       <!-- Tabs Section -->
       <div class="period-tabs-grid">
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'daily'" (click)="setTab('daily')">
           <span class="tab-icon"><i class="bi bi-brightness-high-fill"></i></span>
           @if (selectedRasiTab === 'daily') {
-            <div class="tab-badge">இன்று</div>
+            <div class="tab-badge">{{ (currentLang === 'en' ? 'Today' : 'இன்று') }}</div>
           }
-          <span class="tab-label">தினசரி</span>
+          <span class="tab-label">{{ (currentLang === 'en' ? 'Daily' : 'தினசரி') }}</span>
         </div>
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'weekly'" (click)="setTab('weekly')">
           <span class="tab-icon"><i class="bi bi-calendar-event-fill"></i></span>
-          <span class="tab-label">வாராந்திர</span>
+          <span class="tab-label">{{ (currentLang === 'en' ? 'Weekly' : 'வாராந்திர') }}</span>
         </div>
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'monthly'" (click)="setTab('monthly')">
           <span class="tab-icon"><i class="bi bi-calendar-month-fill"></i></span>
-          <span class="tab-label">மாதாந்திர</span>
+          <span class="tab-label">{{ (currentLang === 'en' ? 'Monthly' : 'மாதாந்திர') }}</span>
         </div>
         <div class="period-tab" [class.active-tab]="selectedRasiTab === 'yearly'" (click)="setTab('yearly')">
           <span class="tab-icon"><i class="bi bi-star-fill"></i></span>
-          <span class="tab-label">வருடாந்திர</span>
+          <span class="tab-label">{{ (currentLang === 'en' ? 'Yearly' : 'வருடாந்திர') }}</span>
         </div>
       </div>
       <!-- Zodiac Grid Section -->
@@ -81,8 +81,7 @@
                 <img [src]="selectedRasi.imagePath" style="width: 100%; height: 100%; object-fit: cover;">
               </div>
             }
-            <span class="zodiac-date-range">மார்ச் 21 - ஏப்ரல் 19</span>
-            <h2 class="zodiac-main-title">{{ selectedRasi.name }} ({{ selectedRasi.english }})</h2>
+            <h2 class="zodiac-main-title">{{ currentLang === 'en' ? selectedRasi.english : selectedRasi.name }}</h2>
           </div>
           <div class="hero-actions">
             <button class="action-btn"><i class="bi bi-heart-fill text-danger"></i></button>
@@ -94,14 +93,14 @@
         <div class="info-box">
           <span class="info-icon"><i class="bi bi-calendar-check-fill text-gold"></i></span>
           <div class="info-text">
-            <span>கணிப்பு தேதி</span>
+            <span>{{ (currentLang === 'en' ? 'Prediction Date' : 'கணிப்பு தேதி') }}</span>
             <strong>{{ predictionData?.prediction_date || '-' }}</strong>
           </div>
         </div>
       </div>
       <div class="section-title">
         <div class="title-bar"></div>
-        <h3>இன்றைய கணிப்பு</h3>
+        <h3>{{ (currentLang === 'en' ? 'Today\'s Prediction' : 'இன்றைய கணிப்பு') }}</h3>
       </div>
       @if (isLoading) {
         <div class="section-title">
