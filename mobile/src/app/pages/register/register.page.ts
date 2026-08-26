@@ -49,29 +49,29 @@ export class RegisterPage implements OnInit {
 
   onRegister() {
     if (!this.fullName || !this.mobileNumber || !this.emailAddress || !this.password) {
-      this.errorMessage = 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்';
+      this.errorMessage = 'errors.fillAllFields';
       return;
     }
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(this.emailAddress.trim())) {
-      this.errorMessage = 'தயவுசெய்து சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்! (எ.கா: user@gmail.com)';
+      this.errorMessage = 'errors.enterValidEmail';
       return;
     }
 
     const cleanPhone = this.mobileNumber.replace(/\D/g, '');
     if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      this.errorMessage = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      this.errorMessage = 'errors.enterValidMobile';
       return;
     }
 
     if (this.password.length < 6) {
-      this.errorMessage = 'கடவுச்சொல் குறைந்தது 6 எழுத்துக்கள் இருக்க வேண்டும்';
+      this.errorMessage = 'errors.passwordMinLength';
       return;
     }
 
     if (this.password !== this.confirmPassword) {
-      this.errorMessage = 'கடவுச்சொற்கள் பொருந்தவில்லை (Passwords do not match)';
+      this.errorMessage = 'errors.passwordsDoNotMatch';
       return;
     }
 

@@ -90,7 +90,7 @@
             <th>ID</th>
             <th>{{ 'services.client' | translate }}</th>
             <th>{{ 'services.name' | translate }}</th>
-            <th>பரிகாரம் (Parigaram)</th>
+            <th>{{ 'services.parigaram' | translate }}</th>
             <th>{{ 'services.fee' | translate }}</th>
             <th>{{ 'services.preferredDate' | translate }}</th>
             <th>{{ 'common.status' | translate }}</th>
@@ -126,18 +126,21 @@
             </td>
             <td>
               @if (b.isUploadingParigaram) {
-                <span style="font-size:11px;color:#d97706;"><i class="bi bi-hourglass-split"></i> Uploading...</span>
+              <span style="font-size:11px;color:#d97706;"><i class="bi bi-hourglass-split"></i> Uploading...</span>
               } @else {
-                @if (b.parigaram_document) {
-                  <a [href]="b.parigaram_document" target="_blank" class="btn-sm" style="background:#ecfdf5;color:#059669;padding:4px 8px;border-radius:6px;font-size:11px;text-decoration:none;display:inline-block;margin-bottom:4px;white-space:nowrap;">
-                    <i class="bi bi-file-earmark-pdf-fill"></i> View File
-                  </a>
-                  <br>
-                }
-                <label style="cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:600;display:inline-block;white-space:nowrap;color:#475569;">
-                  <i class="bi bi-upload"></i> {{ b.parigaram_document ? 'Update' : 'Upload' }}
-                  <input type="file" style="display:none;" (change)="uploadQuickParigaram($event, b)" accept=".pdf,image/*,application/pdf">
-                </label>
+              @if (b.parigaram_document) {
+              <a [href]="b.parigaram_document" target="_blank" class="btn-sm"
+                style="background:#ecfdf5;color:#059669;padding:4px 8px;border-radius:6px;font-size:11px;text-decoration:none;display:inline-block;margin-bottom:4px;white-space:nowrap;">
+                <i class="bi bi-file-earmark-pdf-fill"></i> View File
+              </a>
+              <br>
+              }
+              <label
+                style="cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:600;display:inline-block;white-space:nowrap;color:#475569;">
+                <i class="bi bi-upload"></i> {{ b.parigaram_document ? 'Update' : 'Upload' }}
+                <input type="file" style="display:none;" (change)="uploadQuickParigaram($event, b)"
+                  accept=".pdf,image/*,application/pdf">
+              </label>
               }
             </td>
             <td>
@@ -153,7 +156,9 @@
                 @if (b.details?.call_type) {
                 <span
                   style="font-size:10px;font-weight:700;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;padding:1px 5px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;">
-                  <i class="bi" [ngClass]="{'bi-telephone-fill': b.details.call_type === 'Phone', 'bi-camera-video-fill': b.details.call_type === 'Video', 'bi-mic-fill': b.details.call_type === 'Audio'}"></i> {{ b.details.call_type }} Call
+                  <i class="bi"
+                    [ngClass]="{'bi-telephone-fill': b.details.call_type === 'Phone', 'bi-camera-video-fill': b.details.call_type === 'Video', 'bi-mic-fill': b.details.call_type === 'Audio'}"></i>
+                  {{ b.details.call_type }} Call
                 </span>
                 }
               </div>

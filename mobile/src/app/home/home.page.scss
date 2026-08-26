@@ -2387,19 +2387,48 @@ $color-white: #FFFFFF;
 .form-dual-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+
+  .form-input-card {
+    min-width: 0;
+    width: 100%;
+
+    .input-inner-wrap {
+      padding: 0 8px;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+
+      .input-icon {
+        margin-right: 6px;
+      }
+    }
+  }
 }
 
 .custom-native-date,
 .custom-native-time {
   height: 100%;
   width: 100%;
+  min-width: 0;
   border: none;
   outline: none;
   background: transparent;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #2A080C;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    opacity: 0.75;
+  }
 }
 
 .slots-pill-grid {

@@ -118,7 +118,7 @@ export class MatrimonyTab implements OnInit {
 
   saveResultDocument(profileId: number, url: string): void {
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`${environment.apiUrl}/admin/matrimony-profiles/${profileId}`, { result_document: url }, headers).subscribe({
+    this.http.put<any>(`${environment.apiUrl}/admin/matrimony-profiles/${profileId}/status`, { result_document: url }, headers).subscribe({
       next: () => {
         this.toastService.success('Result document uploaded successfully!', 'ஆவணம் பதிவேற்றப்பட்டது');
         this.uploadingProfileId = null;

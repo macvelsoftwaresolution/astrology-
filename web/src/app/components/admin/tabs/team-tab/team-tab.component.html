@@ -27,10 +27,10 @@
         </div>
         <div>
           <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a;">
-            {{ 'team.roleAdmin' | translate }} (Team Administrators)
+            {{ 'team.roleAdmin' | translate }}
           </h3>
           <span style="font-size: 12px; color: #64748b; font-weight: 500;">
-            மொத்த நிர்வாகிகள்: <strong style="color: #1d4ed8;">{{ isLoading ? '...' : teamList.length }}</strong>
+            {{ 'team.totalAdmins' | translate }} <strong style="color: #1d4ed8;">{{ isLoading ? '...' : teamList.length }}</strong>
           </span>
         </div>
       </div>
@@ -100,10 +100,10 @@
         </div>
         <div>
           <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a;">
-            {{ 'services.viewAstrologers' | translate }} (Chief Astrologers)
+            {{ 'services.viewAstrologers' | translate }}
           </h3>
           <span style="font-size: 12px; color: #64748b; font-weight: 500;">
-            பதிவுசெய்த தலைமை ஜோதிடர்கள்: <strong style="color: #b45309;">{{ isAstrologersLoading ? '...' :
+            {{ 'team.registeredAstrologers' | translate }} <strong style="color: #b45309;">{{ isAstrologersLoading ? '...' :
               astrologersList.length }}</strong>
           </span>
         </div>
@@ -344,7 +344,7 @@
         <div class="form-grid-3-lg">
           <div class="field-group-lg" style="margin:0;">
             <label class="field-lbl-lg">
-              <i class="bi bi-tag-fill" style="color:#d97706;"></i> ஜோதிடப் பிரிவு (Category) *
+              <i class="bi bi-tag-fill" style="color:#d97706;"></i> {{ 'team.astrologyCategory' | translate }}
             </label>
             @if (!customCategoryMode) {
             <select [(ngModel)]="selectedAstrologerForManage.category" (change)="onCategorySelectChange($event)"
@@ -352,15 +352,15 @@
               @for (cat of predefinedCategories; track cat) {
               <option [value]="cat">{{ cat }}</option>
               }
-              <option value="__NEW__">+ புதிய பிரிவு சேர்க்க (Add New Category)</option>
+              <option value="__NEW__">{{ 'team.addNewCategory' | translate }}</option>
             </select>
             } @else {
             <div style="display:flex;gap:6px;">
               <input [(ngModel)]="customCategoryInput" class="field-input-lg"
-                placeholder="எ.கா: நாடி ஜோதிடம், பிரசன்னம்..." />
+                [placeholder]="'team.enterNewCategory' | translate" />
               <button type="button" class="btn-secondary"
                 (click)="customCategoryMode = false; selectedAstrologerForManage.category = predefinedCategories[0]"
-                style="padding:0 12px;font-size:11px;border-radius:8px;" title="பட்டியலிலிருந்து தேர்வு செய்க">
+                style="padding:0 12px;font-size:11px;border-radius:8px;" [title]="'common.selectFromList' | translate">
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
@@ -433,7 +433,7 @@
         </div>
 
         <h4 style="margin: 20px 0 10px 0; font-size: 14px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
-          <i class="bi bi-headset" style="color:#d97706; margin-right: 6px;"></i> அழைப்பு விருப்பங்கள் (Call Options)
+          <i class="bi bi-headset" style="color:#d97706; margin-right: 6px;"></i> {{ 'team.callOptions' | translate }}
         </h4>
         <div class="form-grid-3-lg">
           <!-- Phone Call Option -->

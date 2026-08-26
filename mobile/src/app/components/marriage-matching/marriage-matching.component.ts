@@ -2,6 +2,7 @@ import { environment } from '../../../environments/environment';
 import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 
 declare var Razorpay: any;
 
@@ -195,7 +196,8 @@ export class MarriageMatchingComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    public translationService: TranslationService
   ) { }
 
   ngOnInit() {

@@ -142,9 +142,9 @@
             </h3>
             <span style="font-size:12px;color:#64748b;">
               @if (isStudent(selectedUserForProfile)) {
-                மாணவர் சேர்க்கை விவரங்கள் (Student Admission Profile)
+                {{ 'users.studentAdmissionProfile' | translate }}
               } @else {
-                ஜாதகம் மற்றும் பிறப்பு விவரங்கள் (Birth Chart Profile)
+                {{ 'users.birthChartProfile' | translate }}
               }
             </span>
           </div>
@@ -162,53 +162,53 @@
                 </div>
               }
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பாடப் பிரிவு (Course Level):</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.courseLevel' | translate }}</span>
                 <strong style="color:#d97706;">{{ getStudentLevel(selectedUserForProfile) }}</strong>
               </div>
               @if (getParsedDetails(selectedUserForProfile)?.studentNameTamil) {
                 <div>
-                  <span class="muted" style="font-size:11px;display:block;color:#64748b;">மாணவர் பெயர் (தமிழில்):</span>
+                  <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.studentNameTa' | translate }}</span>
                   <strong>{{ getParsedDetails(selectedUserForProfile).studentNameTamil }}</strong>
                 </div>
               }
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பெயர் (ஆங்கிலத்தில்):</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.studentNameEn' | translate }}</span>
                 <strong>{{ selectedUserForProfile.name }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">தந்தை / கணவர் பெயர்:</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.fatherHusbandName' | translate }}</span>
                 <strong>{{ getParsedDetails(selectedUserForProfile)?.fatherName || '-' }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பிறந்த தேதி & வயது:</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.dob || '-' }} ({{ getParsedDetails(selectedUserForProfile)?.age || '-' }} வயது)</strong>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.dobAge' | translate }}</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.dob || '-' }} ({{ getParsedDetails(selectedUserForProfile)?.age || '-' }} {{ 'users.yrs' | translate }})</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பாலினம் (Gender):</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.gender' | translate }}</span>
                 <strong>{{ getParsedDetails(selectedUserForProfile)?.gender || '-' }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">தொழில் (Occupation):</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.occupation' | translate }}</span>
                 <strong>{{ getParsedDetails(selectedUserForProfile)?.occupation || '-' }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">தாய்மொழி (Mother Tongue):</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.motherTongue || 'தமிழ்' }}</strong>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.motherTongue' | translate }}</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.motherTongue || ('users.tamil' | translate) }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">கல்வித் தகுதி (Qualification):</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.qualification' | translate }}</span>
                 <strong>{{ getParsedDetails(selectedUserForProfile)?.qualification || '-' }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பயிற்சி முறை (Training Mode):</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.trainingMode || '1 நாள் பயிலரங்கம்' }}</strong>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.trainingMode' | translate }}</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.trainingMode || ('users.oneDayWorkshop' | translate) }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">பயிற்சி நேரம் (Batch Timing):</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.batchTiming || 'பிரிவு A' }}</strong>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.batchTiming' | translate }}</span>
+                <strong>{{ getParsedDetails(selectedUserForProfile)?.batchTiming || ('users.batchA' | translate) }}</strong>
               </div>
               <div style="grid-column: 1 / -1;">
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">அஞ்சல் முகவரி (Postal Address):</span>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.postalAddress' | translate }}</span>
                 <strong>{{ getParsedDetails(selectedUserForProfile)?.postalAddress || selectedUserForProfile.address || '-' }}</strong>
                 @if (getParsedDetails(selectedUserForProfile)?.pincode) {
                   <span> - {{ getParsedDetails(selectedUserForProfile).pincode }}</span>

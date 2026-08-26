@@ -637,20 +637,19 @@ $color-text-dark: #2A2421;
   background: #FFFFFF;
   border: 1.5px solid rgba($color-gold, 0.35);
   border-radius: 16px;
-  padding: 0.75rem 0.6rem;
+  padding: 0.75rem 1rem;
   box-shadow: 0 4px 14px rgba($color-maroon, 0.05);
 
   .step-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
     cursor: pointer;
-    flex: 1;
+    z-index: 2;
 
     .step-circle {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: #FAF6E8;
       border: 2px solid rgba($color-gold, 0.4);
@@ -663,23 +662,13 @@ $color-text-dark: #2A2421;
       transition: all 0.25s ease;
     }
 
-    .step-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: $color-text-muted;
-      white-space: nowrap;
-    }
-
     &.active {
       .step-circle {
         background: $color-maroon;
         border-color: $color-maroon;
         color: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba($color-maroon, 0.18);
-      }
-      .step-label {
-        color: $color-maroon;
-        font-weight: 800;
+        box-shadow: 0 0 0 4px rgba($color-maroon, 0.18);
+        transform: scale(1.08);
       }
     }
 
@@ -689,22 +678,50 @@ $color-text-dark: #2A2421;
         border-color: #16A34A;
         color: #FFFFFF;
       }
-      .step-label {
-        color: #16A34A;
-      }
     }
   }
 
   .step-line {
-    height: 2px;
+    height: 3px;
     background: rgba($color-gold, 0.3);
-    flex: 0.6;
-    margin-top: -14px;
+    flex: 1;
+    margin: 0 4px;
     transition: background 0.25s ease;
 
     &.completed {
       background: #16A34A;
     }
+  }
+}
+
+.active-step-badge-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAF6E8;
+  border: 1px solid rgba($color-gold, 0.4);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin: 12px 0 16px;
+
+  .step-count-pill {
+    background: $color-maroon;
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba($color-maroon, 0.2);
+  }
+
+  .step-name-txt {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: $color-maroon;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

@@ -1,6 +1,6 @@
 <div class="quiz-overlay">
   <div class="quiz-header">
-    <span class="quiz-title-txt">தேர்வு</span>
+    <span class="quiz-title-txt">{{ 'learn.quizTitle' | translate }}</span>
     <button class="close-quiz-btn" (click)="close.emit()"><i class="bi bi-x-lg"></i></button>
   </div>
 
@@ -8,11 +8,11 @@
     @if (quizQuestions.length > 0) {
       <div class="quiz-content-body">
         <div class="question-tracker-row">
-          <span>கேள்வி {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}</span>
+          <span>{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}</span>
           <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
         </div>
         <div class="question-box">
-          <span class="q-badge">கேள்வி {{ currentQuestionIndex + 1 }}</span>
+          <span class="q-badge">{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }}</span>
           <p class="q-text">{{ quizQuestions[currentQuestionIndex].question }}</p>
         </div>
         <div class="quiz-options-list">
@@ -28,20 +28,20 @@
           }
           @if (quizQuestions[currentQuestionIndex].type === 'fillup') {
             <div style="padding: 10px;">
-              <label style="font-size:14px; color:#475569; margin-bottom:8px; display:block;">விடை (Answer):</label>
-              <input type="text" [(ngModel)]="fillupAnswer" placeholder="உள்ளீடு செய்க..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #cbd5e1; font-size:16px;" />
+              <label style="font-size:14px; color:#475569; margin-bottom:8px; display:block;">Answer:</label>
+              <input type="text" [(ngModel)]="fillupAnswer" placeholder="Enter answer..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #cbd5e1; font-size:16px;" />
             </div>
           }
         </div>
         <button class="submit-quiz-btn" [disabled]="(quizQuestions[currentQuestionIndex].type === 'mcq' && !selectedOption) || (quizQuestions[currentQuestionIndex].type === 'fillup' && !fillupAnswer)" (click)="submitAnswer()">
-          {{ currentQuestionIndex < quizQuestions.length - 1 ? 'அடுத்த கேள்வி' : 'தேர்வைச் சமர்ப்பி' }}
+          {{ currentQuestionIndex < quizQuestions.length - 1 ? ('learn.nextQuestion' | translate) : ('learn.submitQuiz' | translate) }}
         </button>
       </div>
     } @else {
       <div class="quiz-content-body" style="display:flex;justify-content:center;align-items:center;height:100%;">
         <div style="text-align:center;color:#64748b;padding:20px;">
           <i class="bi bi-exclamation-circle" style="font-size:40px;display:block;margin-bottom:10px;"></i>
-          இந்த தேர்வில் எந்த கேள்விகளும் இல்லை.
+          No questions available for this exam.
         </div>
       </div>
     }
@@ -58,21 +58,21 @@
           <i class="bi bi-x-circle-fill text-danger"></i>
         }
       </span>
-      <h3 class="result-title">{{ quizPassed ? 'தேர்வில் வெற்றி பெற்றுள்ளீர்கள்!' : 'மீண்டும் முயற்சிக்கவும்!' }}</h3>
+      <h3 class="result-title">{{ quizPassed ? ('learn.quizPassed' | translate) : ('learn.quizFailed' | translate) }}</h3>
       <p class="result-desc">
-        {{ quizPassed ? 'வாழ்த்துகள்! நீங்கள் இந்த தேர்வை வெற்றிகரமாக கடந்துள்ளீர்கள்.' : 'தேர்ச்சி பெற 100% மதிப்பெண்கள் தேவை.' }}
+        {{ quizPassed ? 'Congratulations! You passed the exam.' : 'Need 100% score to pass.' }}
       </p>
       <div class="score-card-row">
         <div class="score-box">
-          <span>மதிப்பெண்</span>
+          <span>Score</span>
           <strong>{{ quizScore }}%</strong>
         </div>
         <div class="score-box">
-          <span>தேர்ச்சி நிலை</span>
-          <strong [style.color]="quizPassed ? '#2E7D32' : '#c62828'">{{ quizPassed ? 'தேர்ச்சி' : 'தோல்வி' }}</strong>
+          <span>Status</span>
+          <strong [style.color]="quizPassed ? '#2E7D32' : '#c62828'">{{ quizPassed ? 'PASSED' : 'FAILED' }}</strong>
         </div>
       </div>
-      <button class="submit-quiz-btn" (click)="close.emit()">வகுப்பிற்கு திரும்பவும்</button>
+      <button class="submit-quiz-btn" (click)="close.emit()">{{ 'common.close' | translate }}</button>
     </div>
   }
 </div>

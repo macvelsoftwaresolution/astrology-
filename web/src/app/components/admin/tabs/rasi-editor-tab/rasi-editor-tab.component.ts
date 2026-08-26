@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../../../../services/auth.service';
+import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -23,6 +24,22 @@ export class RasiEditorTabComponent implements OnInit {
   selectedRasiIndex: number | null = null;
   isComingSoon: boolean = false;
   private backupPredictions: any[] = [];
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    public translationService: TranslationService,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  getRasiDisplayName(r: any): string {
+    if (!r) return '';
+    if (this.translationService.currentLanguage() === 'en') {
+      return r.englishName || r.name;
+    }
+    return r.name;
+  }
 
   openRasiEditor(index: number): void {
     this.selectedRasiIndex = index;
@@ -165,13 +182,6 @@ export class RasiEditorTabComponent implements OnInit {
   previewVideoUrl = '';
   previewVideoTitle = '';
   previewVideoSafeUrl: SafeResourceUrl | null = null;
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
