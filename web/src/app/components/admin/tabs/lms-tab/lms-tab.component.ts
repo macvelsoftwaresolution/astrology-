@@ -23,8 +23,11 @@ export class LmsTabComponent implements OnInit {
   courseSearchQuery = '';
   selectedCourseLevelFilter = 'all';
 
+  // Sub-tabs State
+  activeSubTab: 'courses' | 'seminars' | 'live-classes' | 'materials' | 'exams' = 'courses';
+
   // Modals & Wizard State
-  activeView: 'dashboard' | 'course-studio' | 'exam-studio' = 'dashboard';
+  activeView: 'dashboard' | 'course-studio' | 'exam-studio' | 'seminar-studio' | 'live-class-studio' | 'material-studio' = 'dashboard';
   wizardStep = 1;
   newCourse: any = { title: '', description: '', price: 999, category: 'Astrology', level: 'Beginner', thumbnail: '' };
   wizardModules: any[] = [];
@@ -317,7 +320,7 @@ export class LmsTabComponent implements OnInit {
       link: '',
       is_active: true
     };
-    this.openLiveClassModal = true;
+    this.activeView = 'live-class-studio';
   }
 
   editLiveClass(liveClass: any): void {
@@ -341,7 +344,7 @@ export class LmsTabComponent implements OnInit {
       date_text: liveClass.date_text || 'திங்கள் - வெள்ளி',
       time_text: liveClass.time_text || 'மாலை 06:00 - 07:30'
     };
-    this.openLiveClassModal = true;
+    this.activeView = 'live-class-studio';
   }
 
   toggleLiveClassDay(key: string): void {
@@ -431,7 +434,7 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
-        this.openLiveClassModal = false;
+        this.activeView = 'dashboard';
         this.loadLiveClasses();
       },
       error: () => alert('Failed to save Live Class.')
@@ -470,12 +473,12 @@ export class LmsTabComponent implements OnInit {
       join_url: '',
       category: this.selectedCategory // Optional if backend supports it
     };
-    this.openSeminarModal = true;
+    this.activeView = 'seminar-studio';
   }
 
   editSeminar(seminar: any): void {
     this.editingSeminar = { ...seminar };
-    this.openSeminarModal = true;
+    this.activeView = 'seminar-studio';
   }
 
   saveSeminar(): void {
@@ -495,7 +498,7 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
-        this.openSeminarModal = false;
+        this.activeView = 'dashboard';
         this.loadSeminars();
       },
       error: () => alert('Failed to save seminar.')
@@ -520,7 +523,7 @@ export class LmsTabComponent implements OnInit {
       pages_text: '20 பக்கங்கள்',
       level: this.selectedCategory
     };
-    this.openMaterialModal = true;
+    this.activeView = 'material-studio';
   }
 
   isUploadingThumbnail = false;
@@ -622,7 +625,7 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
-        this.openMaterialModal = false;
+        this.activeView = 'dashboard';
         this.loadMaterials();
       },
       error: () => alert('Failed to save study material.')

@@ -77,7 +77,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   readNotificationIds: Set<string> = new Set();
   latestAdminAlert: any = null;
   showAdminAlertBanner = false;
+  isHidingAdminBanner = false;
   private notifInterval: any = null;
+  private adminAlertTimer: any = null;
 
   constructor(
     private authService: AuthService,
@@ -135,11 +137,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       clearInterval(this.notifInterval);
       this.notifInterval = null;
     }
+    if (this.adminAlertTimer) {
+      clearTimeout(this.adminAlertTimer);
+      this.adminAlertTimer = null;
+    }
   }
 
   closeAdminAlertBanner(): void {
-    this.showAdminAlertBanner = false;
+    if (this.adminAlertTimer) {
+      clearTimeout(this.adminAlertTimer);
+      this.adminAlertTimer = null;
+    }
+    this.isHidingAdminBanner = true;
     this.cdr.detectChanges();
+    setTimeout(() => {
+      this.showAdminAlertBanner = false;
+      this.isHidingAdminBanner = false;
+      this.cdr.detectChanges();
+    }, 350);
   }
 
   private isFetchingAlerts = false;
@@ -175,8 +190,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         // If new unread activity alert arrived, show top slide-down animated toast banner!
         if (unreadList.length > 0 && (unreadList.length > prevCount || !this.latestAdminAlert)) {
           this.latestAdminAlert = unreadList[0];
-          if (!sessionStorage.getItem('admin_alert_banner_dismissed_' + this.latestAdminAlert.id)) {
+          const dismissKey = 'admin_alert_banner_dismissed_' + this.latestAdminAlert.id;
+          if (!sessionStorage.getItem(dismissKey)) {
             this.showAdminAlertBanner = true;
+            this.isHidingAdminBanner = false;
+            sessionStorage.setItem(dismissKey, 'true');
+
+            if (this.adminAlertTimer) clearTimeout(this.adminAlertTimer);
+            this.adminAlertTimer = setTimeout(() => {
+              this.closeAdminAlertBanner();
+            }, 3000);
           }
         }
 

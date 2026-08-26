@@ -446,3 +446,12 @@
 .les-link:hover {
   text-decoration: underline;
 }
+
+/* Hide scrollbar for sub-tabs */
+.sub-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+.sub-tabs-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

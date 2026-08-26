@@ -1,107 +1,106 @@
-<ion-header class="ion-no-border" style="background: #FDFBF0; border-bottom: 2px solid #ECC876; box-shadow: 0 4px 15px rgba(74, 14, 23, 0.1);">
-  <ion-toolbar style="--background: #FDFBF0; --color: #4A0E17; padding: 6px 12px;">
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 600px; margin: 0 auto;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" (click)="goBack()" style="width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 1.5px solid #ECC876; color: #4A0E17; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 6px rgba(74, 14, 23, 0.15);">
-          <i class="bi bi-arrow-left"></i>
-        </button>
-        <h1 style="font-size: 1.25rem; font-weight: 800; color: #4A0E17; margin: 0; font-family: 'Noto Serif Tamil', serif;">
-          அறிவிப்புகள் (Notifications)
-        </h1>
+<ion-header class="ion-no-border notif-header">
+  <div class="header-container">
+    <div class="header-left">
+      <button type="button" class="back-btn" (click)="goBack()" title="Go Back">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div class="title-wrap">
+        <h1 class="header-title">அறிவிப்புகள்</h1>
+        <span class="header-subtitle">Notifications</span>
       </div>
-      @if (unreadCount > 0) {
-        <button type="button" (click)="markAllRead()" style="background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 20px; cursor: pointer;">
-          அனைத்தும் படித்தவை
-        </button>
-      }
     </div>
-  </ion-toolbar>
+
+    @if (unreadCount > 0) {
+      <button type="button" class="mark-read-btn" (click)="markAllRead()" title="Mark all as read">
+        <i class="bi bi-check2-all"></i>
+        <span>அனைத்தும் படித்தவை</span>
+      </button>
+    }
+  </div>
 </ion-header>
 
-<ion-content [fullscreen]="false" style="--background: #FBF9E7; background-color: #FBF9E7;">
-  <div style="max-width: 600px; margin: 0 auto; padding: 16px; box-sizing: border-box;">
-    
+<ion-content [fullscreen]="false" class="notif-page-content">
+  <div class="notif-page-container">
+
     <!-- Loading state -->
     @if (loading) {
-      <div style="text-align: center; padding: 4rem 1rem;">
+      <div class="state-box loading-box">
         <ion-spinner name="crescent" color="warning"></ion-spinner>
-        <p style="color: #64748b; margin-top: 12px; font-size: 14px; font-weight: 500;">அறிவிப்புகள் ஏற்றப்படுகிறது...</p>
+        <p>அறிவிப்புகள் ஏற்றப்படுகிறது...</p>
       </div>
     }
 
     <!-- Empty state -->
     @if (!loading && notifications.length === 0) {
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 1.5rem;">
-        <div style="width: 80px; height: 80px; border-radius: 50%; background: #fef2f2; color: #991b1b; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 1.25rem; border: 2px dashed #fca5a5;">
+      <div class="state-box empty-box">
+        <div class="empty-icon-ring">
           <i class="bi bi-bell-slash"></i>
         </div>
-        <h2 style="font-size: 1.15rem; font-weight: 800; color: #3B0910; margin: 0 0 0.5rem 0;">புதிய அறிவிப்புகள் ஏதுமில்லை</h2>
-        <p style="font-size: 0.88rem; color: #64748b; margin: 0; max-width: 280px; line-height: 1.4;">தற்போது உங்களுக்கு எந்த புதிய தகவல்களும் இல்லை.</p>
+        <h2>புதிய அறிவிப்புகள் ஏதுமில்லை</h2>
+        <p>தற்போது உங்களுக்கு எந்த புதிய தகவல்களும் இல்லை.</p>
       </div>
     }
 
     <!-- Notification Cards List -->
     @if (!loading && notifications.length > 0) {
-      <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div class="notif-card-list">
         @for (n of notifications; track n.id) {
-          <div (click)="handleNotificationClick(n)"
-               style="display: flex; align-items: flex-start; gap: 14px; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s ease;"
-               [style.background]="n.is_read ? '#ffffff' : '#fffdf5'"
-               [style.border]="n.is_read ? '1.5px solid #e2e8f0' : '1.5px solid #ECC876'"
-               [style.border-left]="n.is_read ? '1.5px solid #e2e8f0' : '5px solid #d97706'">
-            
-            <!-- Icon Circle -->
-            <div style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.35rem; color: #b45309;">
+          <div
+            class="notif-card"
+            [class.unread]="!n.is_read"
+            (click)="handleNotificationClick(n)"
+          >
+            <!-- Left Icon Badge -->
+            <div class="notif-icon-badge" [ngClass]="getNotifCategoryClass(n.type)">
               <i class="bi" [ngClass]="getNotifIcon(n.type)"></i>
             </div>
 
-            <!-- Content -->
-            <div style="flex: 1; min-width: 0;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <h6 style="font-size: 14.5px; font-weight: 800; color: #1e293b; margin: 0;">
-                  {{ n.title }}
-                </h6>
+            <!-- Content Area -->
+            <div class="notif-body">
+              <div class="notif-top">
+                <h3 class="notif-title">{{ n.title }}</h3>
                 @if (!n.is_read) {
-                  <span style="background: #dc2626; color: #ffffff; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">புதியது</span>
+                  <span class="unread-pill">புதியது</span>
                 }
               </div>
-              
-              <p style="font-size: 13.5px; line-height: 1.55; color: #334155; margin: 0 0 8px 0; word-break: break-word; font-weight: 500;">
-                {{ n.body }}
-              </p>
 
-              <!-- Attached Horoscope Chart / Image Preview / Download -->
+              <p class="notif-msg">{{ n.body }}</p>
+
+              <!-- Attached Chart / Image Download -->
               @if (getChartUrl(n)) {
-                <div style="margin: 8px 0 12px 0;">
+                <div class="attachment-box">
                   @if (isImage(getChartUrl(n)!)) {
-                    <div style="border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876; max-height: 220px; margin-bottom: 8px; background: #fafafa;">
+                    <div class="img-preview">
                       <a [href]="getChartUrl(n)" target="_blank" (click)="$event.stopPropagation()">
-                        <img [src]="getChartUrl(n)" alt="Horoscope Chart" style="width: 100%; height: auto; max-height: 220px; object-fit: contain; display: block;" />
+                        <img [src]="getChartUrl(n)" alt="Horoscope Chart" />
                       </a>
                     </div>
                   }
-                  <a [href]="getChartUrl(n)" target="_blank" (click)="$event.stopPropagation()" style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 4px rgba(5,150,105,0.1);">
-                    <i class="bi bi-file-earmark-arrow-down-fill" style="font-size: 14px;"></i> ஜாதகக் கோப்பைப் பார்க்க / பதிவிறக்க (View/Download Chart)
+                  <a [href]="getChartUrl(n)" target="_blank" (click)="$event.stopPropagation()" class="download-link">
+                    <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                    <span>ஜாதகக் கோப்பைப் பார்க்க / பதிவிறக்க</span>
                   </a>
                 </div>
               }
 
               <!-- Attached Video Player / Link -->
               @if (getVideoUrl(n)) {
-                <div style="margin: 8px 0 12px 0;">
-                  <a [href]="getVideoUrl(n)" target="_blank" (click)="$event.stopPropagation()" style="display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; color: #1d4ed8; border: 1.5px solid #93c5fd; padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; text-decoration: none;">
-                    <i class="bi bi-play-circle-fill" style="font-size: 15px; color: #2563eb;"></i> காணொளியைப் பார்க்க (Watch Video)
+                <div class="attachment-box">
+                  <a [href]="getVideoUrl(n)" target="_blank" (click)="$event.stopPropagation()" class="video-link">
+                    <i class="bi bi-play-circle-fill"></i>
+                    <span>காணொளியைப் பார்க்க</span>
                   </a>
                 </div>
               }
 
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #64748b; font-weight: 600;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <i class="bi bi-clock" style="font-size: 12px;"></i>
-                  <span>{{ n.created_at | date:'dd MMM yyyy, hh:mm a' }}</span>
-                </div>
-                <span style="color: #b45309; font-size: 11px; font-weight: 700;">
-                  திறக்க தொடவும் <i class="bi bi-chevron-right"></i>
+              <!-- Footer Details -->
+              <div class="notif-bottom">
+                <span class="time-stamp">
+                  <i class="bi bi-clock"></i>
+                  {{ n.created_at | date:'dd MMM yyyy, hh:mm a' }}
+                </span>
+                <span class="action-hint">
+                  விவரம் <i class="bi bi-chevron-right"></i>
                 </span>
               </div>
             </div>

@@ -2832,6 +2832,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+}
+
+.admin-floating-alert-banner.hiding {
+  animation: adminSlideUpToBell 0.35s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
 }
 
 .admin-floating-alert-banner .banner-icon-box {
@@ -2870,24 +2875,6 @@
   line-height: 1.35;
 }
 
-.admin-floating-alert-banner .banner-action-btn {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #0f172a;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3);
-  transition: transform 0.15s ease;
-}
-
-.admin-floating-alert-banner .banner-action-btn:hover {
-  transform: scale(1.04);
-}
-
 .admin-floating-alert-banner .banner-close-btn {
   background: none;
   border: none;
@@ -2910,5 +2897,16 @@
   to {
     transform: translateY(0) scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes adminSlideUpToBell {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(0.2);
+    opacity: 0;
   }
 }

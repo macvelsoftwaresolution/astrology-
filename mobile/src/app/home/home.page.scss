@@ -2756,6 +2756,11 @@ $color-white: #FFFFFF;
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+
+  &.hiding {
+    animation: slideUpToBell 0.35s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+  }
 
   .banner-icon-box {
     width: 40px;
@@ -2793,19 +2798,6 @@ $color-white: #FFFFFF;
     }
   }
 
-  .banner-action-btn {
-    background: #ECC876;
-    color: #4A0E17;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    cursor: pointer;
-    white-space: nowrap;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-  }
-
   .banner-close-btn {
     background: none;
     border: none;
@@ -2824,6 +2816,17 @@ $color-white: #FFFFFF;
   to {
     transform: translateY(0) scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes slideUpToBell {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(120px, -60px) scale(0.1);
+    opacity: 0;
   }
 }
 

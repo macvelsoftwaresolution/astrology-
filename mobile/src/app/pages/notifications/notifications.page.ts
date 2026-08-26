@@ -148,14 +148,34 @@ export class NotificationsPage implements OnInit {
 
   getNotifIcon(type: string): string {
     const icons: Record<string, string> = {
-      booking_confirmed: 'bi-check-circle-fill text-success',
-      booking_fulfilled: 'bi-patch-check-fill text-primary',
-      rasi_palan: 'bi-stars text-gold',
-      certificate: 'bi-award-fill text-warning',
-      course: 'bi-book-fill text-info',
-      general: 'bi-bell-fill text-maroon'
+      booking: 'bi-calendar-check-fill',
+      booking_confirmed: 'bi-check-circle-fill',
+      booking_fulfilled: 'bi-patch-check-fill',
+      rasi_palan: 'bi-stars',
+      certificate: 'bi-award-fill',
+      course: 'bi-book-fill',
+      jathagam: 'bi-journal-richtext',
+      payment: 'bi-credit-card-fill',
+      marriage_match: 'bi-heart-fill',
+      general: 'bi-bell-fill'
     };
-    return icons[type] || 'bi-bell-fill text-maroon';
+    return icons[type] || 'bi-bell-fill';
+  }
+
+  getNotifCategoryClass(type: string): string {
+    const classes: Record<string, string> = {
+      booking: 'cat-booking',
+      booking_confirmed: 'cat-success',
+      booking_fulfilled: 'cat-success',
+      rasi_palan: 'cat-gold',
+      certificate: 'cat-warning',
+      course: 'cat-info',
+      jathagam: 'cat-purple',
+      payment: 'cat-emerald',
+      marriage_match: 'cat-rose',
+      general: 'cat-maroon'
+    };
+    return classes[type] || 'cat-maroon';
   }
 
   isImage(url: string): boolean {

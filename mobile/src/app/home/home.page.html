@@ -46,7 +46,7 @@
 
 <!-- Floating In-App Animated Notification Banner on App Open -->
 @if (showNotifPopupBanner && latestUnreadNotif) {
-  <div class="floating-notif-banner">
+  <div class="floating-notif-banner" [class.hiding]="isHidingBanner" (click)="openNotifications(); closeNotifBanner()">
     <div class="banner-icon-box">
       <i class="bi bi-bell-fill"></i>
     </div>
@@ -54,10 +54,7 @@
       <h4>{{ latestUnreadNotif.title || 'புதிய அறிவிப்பு' }}</h4>
       <p>{{ latestUnreadNotif.message }}</p>
     </div>
-    <button class="banner-action-btn" (click)="openNotifications(); closeNotifBanner()">
-      பார்வை
-    </button>
-    <button class="banner-close-btn" (click)="closeNotifBanner()">
+    <button class="banner-close-btn" (click)="$event.stopPropagation(); closeNotifBanner()" title="Close">
       <i class="bi bi-x-lg"></i>
     </button>
   </div>
