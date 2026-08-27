@@ -41,7 +41,7 @@
         <div class="lc-img-overlay"></div>
         <img src="assets/images/astro_service_bg.png" alt="Live Class" class="lc-img">
         <div class="lc-info">
-          <div class="live-badge">🔴 LIVE CLASS</div>
+          <div class="live-badge"><i class="bi bi-record-fill text-danger me-1"></i> LIVE CLASS</div>
           <h3>{{ lc.title }}</h3>
           <p>{{ lc.description }}</p>
           <button class="lc-btn" (click)="playLiveClass(lc.link); $event.stopPropagation()">தொடர்ந்து கற்க</button>
@@ -139,7 +139,7 @@
       <div style="background: linear-gradient(135deg, #4A0E17 0%, #2A050B 100%); border-radius: 16px; padding: 18px; color: #fff; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(74,14,23,0.15);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <h3 style="font-family: 'Noto Serif Tamil', serif; font-size: 1.15rem; color: #ECC876; margin: 0;">
-            📅 60 நாட்கள் தினசரி பாடத் திட்டம்
+            <i class="bi bi-calendar3 me-1"></i> 60 நாட்கள் தினசரி பாடத் திட்டம்
           </h3>
           @if (activeBatch) {
             <span style="font-size: 0.75rem; background: rgba(236,200,118,0.2); color: #ECC876; padding: 3px 10px; border-radius: 20px; font-weight: 700;">
@@ -484,7 +484,7 @@
         <div class="payment-methods-box">
           <p>பணம் செலுத்தும் முறை தேர்வு செய்யவும்:</p>
           <div class="pay-method-option active">
-            <span>💳 GPay / PhonePe / Card / NetBanking</span>
+            <span><i class="bi bi-credit-card-2-front-fill me-1"></i> GPay / PhonePe / Card / NetBanking</span>
           </div>
         </div>
         <button class="confirm-pay-btn" (click)="confirmCheckoutPayment()">கட்டணத்தை உறுதி செய்க</button>
@@ -614,7 +614,7 @@
         <!-- Text Lesson Notes -->
         <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
           <h4 style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
-            📖 பாடக் குறிப்புகள் (Lesson Notes)
+            <i class="bi bi-journal-bookmark-fill me-1"></i> பாடக் குறிப்புகள் (Lesson Notes)
           </h4>
           <div style="font-size: 0.88rem; color: #2A2421; line-height: 1.6; white-space: pre-wrap;">
             {{ selectedCurriculumDay.description || 'இன்றைய பாடத்திற்கான உரை விளக்கம் சேர்க்கப்பட்டுள்ளது.' }}
@@ -625,7 +625,7 @@
         @if (selectedCurriculumDay.images_json && selectedCurriculumDay.images_json.length > 0) {
           <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
             <h4 style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 10px 0;">
-              🖼️ ராசி கட்டங்கள் & வரைபடங்கள் (Chart Diagrams)
+              <i class="bi bi-images me-1"></i> ராசி கட்டங்கள் & வரைபடங்கள் (Chart Diagrams)
             </h4>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               @for (imgUrl of selectedCurriculumDay.images_json; track imgUrl) {

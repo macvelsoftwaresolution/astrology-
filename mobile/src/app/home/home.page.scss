@@ -2469,6 +2469,78 @@ $color-white: #FFFFFF;
   }
 }
 
+.date-scroll-strip {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  padding: 4px 2px 12px 2px !important;
+  margin-bottom: 10px !important;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .date-chip {
+    flex: 0 0 auto !important;
+    min-width: 85px !important;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+
+    .chip-label {
+      font-size: 0.85rem !important;
+      font-weight: 800 !important;
+      color: #1e293b !important;
+      white-space: nowrap !important;
+      display: block !important;
+    }
+
+    .chip-day {
+      font-size: 0.7rem !important;
+      font-weight: 600 !important;
+      color: #64748b !important;
+      white-space: nowrap !important;
+      display: block !important;
+    }
+
+    &.active {
+      background: #4A0E17 !important;
+      border-color: #4A0E17 !important;
+      box-shadow: 0 4px 12px rgba(74, 14, 23, 0.25) !important;
+
+      .chip-label {
+        color: #ECC876 !important;
+      }
+      .chip-day {
+        color: #fef08a !important;
+      }
+    }
+
+    &.blocked-chip {
+      opacity: 0.55 !important;
+      background: #fee2e2 !important;
+      border-color: #fca5a5 !important;
+      cursor: not-allowed !important;
+
+      .chip-label, .chip-day {
+        color: #991b1b !important;
+        text-decoration: line-through !important;
+      }
+    }
+  }
+}
+
 .date-pills-grid {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;

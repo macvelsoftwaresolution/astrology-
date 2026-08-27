@@ -191,13 +191,6 @@
       <!-- Simple Vertical Stats List (Icon + Value Only) -->
       <div class="afp-stats-list">
         <div class="afp-stat-row">
-          <div class="stat-icon-badge star-bg"><i class="bi bi-star-fill text-warning"></i></div>
-          <div class="stat-row-content">
-            <strong class="stat-value">{{ astro.rating || 4.9 }} / 5</strong>
-          </div>
-        </div>
-
-        <div class="afp-stat-row">
           <div class="stat-icon-badge exp-bg"><i class="bi bi-trophy-fill" style="color: #b45309;"></i></div>
           <div class="stat-row-content">
             <strong class="stat-value">{{ translationService.currentLanguage() === 'en' ? '15+ Years Exp' :
@@ -326,21 +319,15 @@
       <div class="form-input-card">
         <label>{{ 'astrology.selectDate' | translate }} <span class="required-star">*</span></label>
 
-        <!-- Quick Date Pills Grid -->
-        <div class="slots-pill-grid date-pills-grid">
+        <!-- Horizontal Scrollable Date Chips -->
+        <div class="date-scroll-strip">
           @for (dateItem of availableUpcomingDates; track dateItem.dateStr) {
-          <button type="button" class="slot-pill date-pill-item"
+          <button type="button" class="date-chip"
             [class.active]="astrologerBookingForm.date === dateItem.dateStr && !dateItem.isBlocked"
-            [class.blocked-pill]="dateItem.isBlocked" [disabled]="dateItem.isBlocked"
+            [class.blocked-chip]="dateItem.isBlocked" [disabled]="dateItem.isBlocked"
             (click)="!dateItem.isBlocked && (astrologerBookingForm.date = dateItem.dateStr)">
-            <i class="bi"
-              [ngClass]="dateItem.isBlocked ? 'bi-x-circle-fill text-danger' : (astrologerBookingForm.date === dateItem.dateStr ? 'bi-check-circle-fill' : 'bi-calendar-event')"></i>
-            <div class="date-pill-text">
-              <span class="date-main" [class.text-strike]="dateItem.isBlocked">{{ dateItem.label }}</span>
-              <small class="date-sub" [class.text-danger]="dateItem.isBlocked">{{ dateItem.isBlocked ?
-                (translationService.currentLanguage() === 'en' ? 'Blocked' : 'தடைப்பட்டது') : dateItem.dayName
-                }}</small>
-            </div>
+            <span class="chip-label">{{ dateItem.label }}</span>
+            <small class="chip-day">{{ dateItem.isBlocked ? (translationService.currentLanguage() === 'en' ? 'Blocked' : 'தடைப்பட்டது') : dateItem.dayName }}</small>
           </button>
           }
         </div>
@@ -446,7 +433,7 @@
     @if (serviceStep === 2) {
     <div class="payment-card">
       <div class="pm-header-box">
-        <span class="pm-icon">💳</span>
+        <span class="pm-icon"><i class="bi bi-credit-card-fill text-gold"></i></span>
         <h3>முன்பதிவு கட்டண விவரம்</h3>
         <p>கீழ்க்கண்ட விவரங்களைச் சரிபார்த்து பாதுகாப்பாக கட்டணத்தைச் செலுத்தவும்</p>
       </div>
@@ -507,12 +494,12 @@
         @if (isProcessingPayment) {
         <span>செயலாக்கப்படுகிறது...</span>
         } @else {
-        <span>₹{{ totalAstrologerFee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒</span>
+        <span>₹{{ totalAstrologerFee }} செலுத்தி முன்பதிவை உறுதிசெய்க <i class="bi bi-lock-fill ms-1"></i></span>
         }
       </button>
 
       <div class="footer-safety-badge" style="margin-top: 14px;">
-        <span class="shield-icon">🛡️</span>
+        <span class="shield-icon"><i class="bi bi-shield-check text-gold"></i></span>
         <span class="safety-text">100% பாதுகாப்பான மற்றும் உறுதியான நேரடி ஆலோசனை</span>
       </div>
     </div>
@@ -521,14 +508,14 @@
     <!-- Step 3: Success Screen with Confirmation Notification -->
     @if (serviceStep === 3) {
     <div class="success-box">
-      <span class="success-icon">🎉</span>
+      <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
       <h3>முன்பதிவு வெற்றிகரமாக உறுதியானது!</h3>
       <span class="booking-ref-badge">பதிவு எண்: #{{ bookingRefCode }}</span>
 
       <!-- In-App Confirmation Notification Alert Box -->
       <div class="confirmation-notification-card">
         <div class="cnc-header">
-          <span class="cnc-bell">🔔</span>
+          <span class="cnc-bell"><i class="bi bi-bell-fill text-gold"></i></span>
           <strong>உறுதிப்படுத்தல் அறிவிப்பு (Notification)</strong>
         </div>
         <p class="cnc-msg">

@@ -142,6 +142,10 @@ export class TranslationService {
   public t(key: string, fallback?: string): string {
     return this.translate(key, fallback);
   }
+
+  public instant(key: string, fallback?: string): string {
+    return this.translate(key, fallback);
+  }
 }
 
 function isObject(item: any): boolean {

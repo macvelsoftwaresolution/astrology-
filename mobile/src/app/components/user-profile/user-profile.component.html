@@ -172,7 +172,8 @@
   <!-- 4. Bottom Logout Button -->
   <div class="logout-container">
     <button class="btn-logout-maroon" (click)="logout()">
-      <i class="bi bi-box-arrow-right me-2"></i> {{ 'profile.logout' | translate }}
+      <i class="bi bi-box-arrow-right" style="margin-right: 10px; font-size: 1.2rem; display: inline-block;"></i>
+      <span>{{ 'profile.logout' | translate }}</span>
     </button>
   </div>
 
@@ -257,16 +258,16 @@
       <div class="sheet-drag-handle"></div>
       <div class="modal-header">
         @if (selectedOption === 'payments') {
-        <h3><i class="bi bi-receipt me-2 text-gold"></i>பணம் செலுத்திய வரலாறு</h3>
+        <h3><i class="bi bi-receipt text-gold" style="font-size: 22px; margin-right: 10px; flex-shrink: 0;"></i><span>பணம் செலுத்திய வரலாறு</span></h3>
         }
         @if (selectedOption === 'services') {
-        <h3><i class="bi bi-calendar-check-fill me-2 text-gold"></i>பதிவு செய்யப்பட்ட சேவைகள்</h3>
+        <h3><i class="bi bi-calendar-check-fill text-gold" style="font-size: 22px; margin-right: 10px; flex-shrink: 0;"></i><span>பதிவு செய்யப்பட்ட சேவைகள்</span></h3>
         }
         @if (selectedOption === 'horoscope') {
-        <h3><i class="bi bi-file-earmark-text-fill me-2 text-gold"></i>ஜாதக பரிகாரம்</h3>
+        <h3><i class="bi bi-file-earmark-text-fill text-gold" style="font-size: 22px; margin-right: 10px; flex-shrink: 0;"></i><span>ஜாதக பரிகாரம்</span></h3>
         }
         @if (selectedOption === 'marriage') {
-        <h3><i class="bi bi-heart-fill me-2 text-gold"></i>திருமண கோரிக்கைகள்</h3>
+        <h3><i class="bi bi-heart-fill text-gold" style="font-size: 22px; margin-right: 10px; flex-shrink: 0;"></i><span>திருமண கோரிக்கைகள்</span></h3>
         }
         <button class="btn-modal-close" (click)="closeOptionDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
@@ -330,7 +331,7 @@
             <div class="bpc-header">
               <div>
                 <strong class="bpc-id">#{{ b.id }}</strong>
-                <h4 class="bpc-service-name">{{ b.service }}</h4>
+                <h4 class="bpc-service-name">{{ cleanTitle(b.service) }}</h4>
               </div>
               <span class="bpc-price">₹{{ b.price }}</span>
             </div>
@@ -458,7 +459,7 @@
           @for (m of getMatches(); track m.id) {
           <div class="marriage-match-card">
             <div class="mmc-header">
-              <span class="mmc-icon">❤️</span>
+              <span class="mmc-icon"><i class="bi bi-heart-fill text-danger"></i></span>
               <strong>திருமண பொருத்தம்</strong>
               <span class="mmc-score-badge">{{ m.score || m.match_details?.score || '8' }}/10 பொருத்தம்</span>
             </div>
@@ -569,7 +570,7 @@
       </div>
 
       <div class="modal-footer-box">
-        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()">{{ 'common.close' | translate }}</button>
       </div>
     </div>
   </div>

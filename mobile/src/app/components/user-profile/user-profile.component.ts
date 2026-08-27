@@ -61,6 +61,11 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     this.translationService.toggleLanguage();
   }
 
+  cleanTitle(title: string): string {
+    if (!title) return 'ஜோதிட ஆலோசனை';
+    return title.replace(/\(\(/g, '(').replace(/\)\)/g, ')').trim();
+  }
+
   get token() {
     return this.authService.getToken() || '';
   }

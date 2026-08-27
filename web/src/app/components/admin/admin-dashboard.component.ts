@@ -23,7 +23,6 @@ import { PaymentsTabComponent } from './tabs/payments-tab/payments-tab.component
 import { BroadcastTabComponent } from './tabs/broadcast-tab/broadcast-tab.component';
 import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
 import { LmsSettingsTabComponent } from './tabs/lms-settings-tab/lms-settings-tab';
-import { JathagamWritingTabComponent } from './tabs/jathagam-writing-tab/jathagam-writing-tab';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -44,8 +43,7 @@ import { JathagamWritingTabComponent } from './tabs/jathagam-writing-tab/jathaga
     MatrimonyTab,
     PaymentsTabComponent,
     BroadcastTabComponent,
-    UsersTabComponent,
-    JathagamWritingTabComponent
+    UsersTabComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
@@ -327,7 +325,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'rasi-editor': 'nav.rasi_editor',
       'matches': 'nav.matches',
       'matrimony': 'nav.matrimony',
-      'jathagam-writing': 'ஜாதகம் எழுதுதல்',
       'lms': 'nav.lms',
       'lms-settings': 'nav.lmsSettings',
       'courier': 'nav.courier',
@@ -354,7 +351,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isAstrologyActive(): boolean {
-    return ['team', 'services', 'rasi-editor', 'matches', 'matrimony', 'jathagam-writing'].includes(this.currentTab);
+    return ['team', 'services', 'rasi-editor', 'matches', 'matrimony'].includes(this.currentTab);
   }
 
   isLearnActive(): boolean {

@@ -217,16 +217,24 @@ $color-white: #FFFFFF;
     background-color: $color-maroon;
     color: $color-white;
     border: none;
-    padding: 0.9rem;
+    padding: 0.95rem 1rem;
     border-radius: 14px;
     font-size: 1.05rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     box-shadow: 0 6px 18px rgba($color-maroon, 0.25);
     cursor: pointer;
     transition: background-color 0.3s ease;
+
+    i {
+      margin-right: 10px !important;
+      font-size: 1.2rem;
+      display: inline-block;
+      flex-shrink: 0;
+    }
 
     &:active {
       background-color: #350910;
@@ -292,15 +300,25 @@ body > .modal-overlay,
     padding-bottom: 0.85rem;
     margin-bottom: 1rem;
     flex-shrink: 0;
+    gap: 12px;
 
     h3 {
       font-family: 'Noto Serif Tamil', serif;
       color: $color-maroon;
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-size: 1.12rem;
+      font-weight: 800;
       margin: 0;
       display: flex;
       align-items: center;
+      line-height: 1.35;
+      flex: 1;
+
+      i {
+        margin-right: 10px !important;
+        flex-shrink: 0;
+        font-size: 1.25rem;
+        display: inline-block;
+      }
 
       .text-gold {
         color: $color-gold-bright;
@@ -309,16 +327,17 @@ body > .modal-overlay,
 
     .btn-modal-close {
       background: rgba($color-maroon, 0.08);
-      border: none;
-      width: 32px;
-      height: 32px;
+      border: 1px solid rgba($color-gold, 0.25);
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: $color-maroon;
       cursor: pointer;
+      flex-shrink: 0;
       transition: background-color 0.2s ease;
 
       &:active {
@@ -589,43 +608,56 @@ body > .modal-overlay,
   background: #ffffff;
   border: 1.5px solid rgba($color-gold, 0.3);
   border-radius: 16px;
-  padding: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
   box-shadow: 0 4px 14px rgba(74, 14, 23, 0.06);
 
   .bpc-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 6px;
+    gap: 12px;
+    margin-bottom: 10px;
 
     .bpc-id {
-      font-size: 0.72rem;
+      font-size: 0.74rem;
       font-family: monospace;
       color: #64748b;
       display: block;
+      font-weight: 700;
     }
 
     .bpc-service-name {
       font-size: 0.95rem;
       font-weight: 800;
       color: $color-maroon;
-      margin: 2px 0 0 0;
+      margin: 3px 0 0 0;
+      line-height: 1.4;
+      word-break: break-word;
     }
 
     .bpc-price {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 800;
-      color: #d97706;
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 2px 5px rgba(245, 158, 11, 0.15);
     }
   }
 
   .bpc-astro-info {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: #475569;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 
     strong {
       color: $color-maroon;
+      font-weight: 700;
     }
   }
 
@@ -633,13 +665,13 @@ body > .modal-overlay,
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     color: #1e40af;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
     display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
   /* Live Progress Step Tracker */
@@ -647,33 +679,33 @@ body > .modal-overlay,
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 6px;
+    padding: 12px 10px;
     background: #fdfaf3;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 1px dashed rgba($color-gold, 0.4);
-    margin-bottom: 10px;
+    margin: 12px 0 10px 0;
 
     .progress-step {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
 
       .step-icon {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         background: #e2e8f0;
         color: #94a3b8;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         font-weight: 800;
       }
 
       span {
-        font-size: 0.68rem;
+        font-size: 0.72rem;
         color: #64748b;
         font-weight: 700;
       }

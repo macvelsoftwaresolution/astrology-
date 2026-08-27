@@ -57,7 +57,7 @@ export class TeamTabComponent implements OnInit {
   isUploadingAstrologerAvatar = false;
 
   predefinedCategories: string[] = [
-    'ஜாதகம் எழுதுதல்',
+    'ஜாதகம் பார்க்க',
     'வாஸ்து சாஸ்திரம்',
     'எண்கணிதம் / நியூமராலஜி'
   ];
@@ -181,10 +181,13 @@ export class TeamTabComponent implements OnInit {
   }
 
   onCategorySelectChange(event: any): void {
-    const val = event.target.value;
-    if (val === '__NEW__') {
+    const val = typeof event === 'string' ? event : (event?.target?.value || '');
+    if (val === '__NEW__' || val === '__custom__') {
       this.customCategoryMode = true;
       this.customCategoryInput = '';
+      if (this.selectedAstrologerForManage) {
+        this.selectedAstrologerForManage.category = '';
+      }
     } else {
       this.customCategoryMode = false;
       if (this.selectedAstrologerForManage) {
@@ -200,7 +203,7 @@ export class TeamTabComponent implements OnInit {
     this.selectedAstrologerForManage = {
       id: null,
       name: '',
-      category: 'ஜாதகம் எழுதுதல்',
+      category: 'ஜாதகம் பார்க்க',
       role_title: 'தலைமை வேத ஜோதிடர்',
       experience: '10+ ஆண்டுகள்',
       specialty: 'துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம்',
@@ -240,7 +243,7 @@ export class TeamTabComponent implements OnInit {
     this.customCategoryInput = this.customCategoryMode ? astro.category : '';
     this.selectedAstrologerForManage = {
       ...astro,
-      category: astro.category || 'ஜாதகம் எழுதுதல்',
+      category: astro.category || 'ஜாதகம் பார்க்க',
       available_slots: Array.isArray(astro.available_slots) ? [...astro.available_slots] : [],
       blocked_dates: Array.isArray(astro.blocked_dates) ? [...astro.blocked_dates] : []
     };

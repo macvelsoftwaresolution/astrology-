@@ -216,7 +216,7 @@ export class UsersTabComponent implements OnInit {
 
   getActiveBatchName(): string {
     if (this.selectedBatchFilter === 'all') {
-      return 'அனைத்து Batches';
+      return this.translationService.instant('users.allBatches');
     }
     return this.selectedBatchFilter;
   }

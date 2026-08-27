@@ -88,16 +88,19 @@ class JathagamWritingController extends Controller
         // Notifications
         try {
             if ($userId) {
-                DB::table('notifications')->insert([
-                    'user_id'    => $userId,
-                    'title'      => 'ஜாதகம் எழுதுதல் முன்பதிவு பெறப்பட்டது!',
-                    'body'       => 'உங்கள் ஜாதகம் எழுதுதல் முன்பதிவு #' . $orderId . ' வெற்றிகரமாக பெறப்பட்டது.',
-                    'type'       => 'booking',
-                    'is_read'    => false,
-                    'data'       => json_encode(['booking_id' => $orderId]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                $isUser = DB::table('users')->where('id', $userId)->where('role', 'user')->exists();
+                if ($isUser) {
+                    DB::table('notifications')->insert([
+                        'user_id'    => $userId,
+                        'title'      => 'ஜாதகம் எழுதுதல் முன்பதிவு பெறப்பட்டது!',
+                        'body'       => 'உங்கள் ஜாதகம் எழுதுதல் முன்பதிவு #' . $orderId . ' வெற்றிகரமாக பெறப்பட்டது.',
+                        'type'       => 'booking',
+                        'is_read'    => false,
+                        'data'       => json_encode(['booking_id' => $orderId]),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
 
             // Notify Admins

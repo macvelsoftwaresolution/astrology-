@@ -81,16 +81,21 @@ class CourierManagementController extends Controller
 
         // Real notification for user & admin
         try {
-            DB::table('notifications')->insert([
-                'user_id'    => $studentId,
-                'title'      => 'புத்தக ஆர்டர் பெறப்பட்டது (Book Order Placed)',
-                'body'       => 'உங்கள் ' . $request->book_title . ' புத்தக ஆர்டர் #' . $orderNumber . ' பெறப்பட்டு தயாரிக்கப்படுகிறது.',
-                'type'       => 'book_order',
-                'is_read'    => false,
-                'data'       => json_encode(['order_number' => $orderNumber]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            if ($studentId) {
+                $isUser = DB::table('users')->where('id', $studentId)->where('role', 'user')->exists();
+                if ($isUser) {
+                    DB::table('notifications')->insert([
+                        'user_id'    => $studentId,
+                        'title'      => 'புத்தக ஆர்டர் பெறப்பட்டது (Book Order Placed)',
+                        'body'       => 'உங்கள் ' . $request->book_title . ' புத்தக ஆர்டர் #' . $orderNumber . ' பெறப்பட்டு தயாரிக்கப்படுகிறது.',
+                        'type'       => 'book_order',
+                        'is_read'    => false,
+                        'data'       => json_encode(['order_number' => $orderNumber]),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
 
             $adminIds = DB::table('users')->where('role', 'admin')->pluck('id')->toArray();
             $adminNotifs = [];
@@ -163,17 +168,20 @@ class CourierManagementController extends Controller
         // Real notification to user
         $order = DB::table('book_orders')->where('id', $id)->first();
         if ($order && $order->student_id) {
-            try {
-                DB::table('notifications')->insert([
-                    'user_id'    => $order->student_id,
-                    'title'      => 'புத்தக ஆர்டர் நிலை: ' . $request->status,
-                    'body'       => 'உங்கள் ' . $order->book_title . ' புத்தக ஆர்டர் #' . $order->order_number . ' நிலை: ' . $request->status . ($request->awb_number ? ' (AWB: ' . $request->awb_number . ')' : ''),
-                    'type'       => 'book_order',
-                    'is_read'    => false,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            } catch (\Throwable $e) {}
+            $isUser = DB::table('users')->where('id', $order->student_id)->where('role', 'user')->exists();
+            if ($isUser) {
+                try {
+                    DB::table('notifications')->insert([
+                        'user_id'    => $order->student_id,
+                        'title'      => 'புத்தக ஆர்டர் நிலை: ' . $request->status,
+                        'body'       => 'உங்கள் ' . $order->book_title . ' புத்தக ஆர்டர் #' . $order->order_number . ' நிலை: ' . $request->status . ($request->awb_number ? ' (AWB: ' . $request->awb_number . ')' : ''),
+                        'type'       => 'book_order',
+                        'is_read'    => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } catch (\Throwable $e) {}
+            }
         }
 
         return response()->json([

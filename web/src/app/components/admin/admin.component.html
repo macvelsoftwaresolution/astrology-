@@ -3,26 +3,26 @@
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
-        <span class="login-icon">⚜️</span>
+        <span class="login-icon"><i class="bi bi-shield-lock-fill"></i></span>
         <h2>ஆருத்ரா ஜோதிடம்</h2>
         <p>Super Admin Portal Login</p>
       </div>
       <form (submit)="login(); $event.preventDefault();">
         <div class="form-group">
-          <label for="username">பயனர் பெயர் (Username)</label>
+          <label for="username">பயனர் பெயர்</label>
           <input type="text" id="username" name="username" [(ngModel)]="username" required placeholder="Enter username">
         </div>
         <div class="form-group">
-          <label for="password">கடவுச்சொல் (Password)</label>
+          <label for="password">கடவுச்சொல்</label>
           <input type="password" id="password" name="password" [(ngModel)]="password" required placeholder="Enter password">
         </div>
         @if (loginError) {
           <div class="login-error">{{ loginError }}</div>
         }
-        <button type="submit" class="btn-login">உள்நுழைக (Sign In)</button>
+        <button type="submit" class="btn-login">உள்நுழைக</button>
       </form>
       <div class="login-footer">
-        <a routerLink="/" class="back-link">← இணையதள முகப்பு (Back to Home)</a>
+        <a routerLink="/" class="back-link"><i class="bi bi-arrow-left me-1"></i> இணையதள முகப்பு</a>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
     <!-- Sidebar -->
     <aside class="admin-sidebar">
       <div class="sidebar-brand">
-        <span class="brand-icon">🔱</span>
+        <span class="brand-icon"><i class="bi bi-stars"></i></span>
         <div>
           <h3>ஆருத்ரா ஜோதிடம்</h3>
           <span>Super Admin</span>
@@ -43,20 +43,20 @@
       </div>
       <nav class="sidebar-menu">
         <button [class.active]="activeTab === 'dashboard'" (click)="activeTab = 'dashboard'">
-          <span class="menu-icon">📊</span> கட்டுப்பாட்டு மையம் (Dashboard)
+          <span class="menu-icon"><i class="bi bi-speedometer2"></i></span> கட்டுப்பாட்டு மையம்
         </button>
         <button [class.active]="activeTab === 'bookings'" (click)="activeTab = 'bookings'">
-          <span class="menu-icon">📅</span> முன்பதிவு மேலாண்மை (Bookings)
+          <span class="menu-icon"><i class="bi bi-calendar2-check"></i></span> முன்பதிவு மேலாண்மை
         </button>
         <button [class.active]="activeTab === 'horoscope-editor'" (click)="activeTab = 'horoscope-editor'">
-          <span class="menu-icon">✍️</span> ராசிபலன் & பஞ்சாங்கம் (Editor)
+          <span class="menu-icon"><i class="bi bi-pencil-square"></i></span> ராசிபலன் & பஞ்சாங்கம்
         </button>
         <button [class.active]="activeTab === 'astrologers'" (click)="activeTab = 'astrologers'">
-          <span class="menu-icon">👤</span> ஜோதிடர்கள் அட்டவணை (Schedules)
+          <span class="menu-icon"><i class="bi bi-people-fill"></i></span> ஜோதிடர்கள் அட்டவணை
         </button>
       </nav>
       <div class="sidebar-footer">
-        <button class="btn-logout" (click)="logout()">🚪 வெளியேறு (Logout)</button>
+        <button class="btn-logout" (click)="logout()"><i class="bi bi-box-arrow-right me-1"></i> வெளியேறு</button>
       </div>
     </aside>
 
@@ -66,15 +66,15 @@
       <!-- Top Nav -->
       <header class="admin-header">
         <div class="header-title">
-          <h2>{{ activeTab === 'dashboard' ? 'கட்டுப்பாட்டு மையம் (Dashboard)' : 
-                 activeTab === 'bookings' ? 'முன்பதிவு மேலாண்மை (Bookings)' :
-                 activeTab === 'horoscope-editor' ? 'ராசிபலன் & பஞ்சாங்கம் திருத்தி (Editor)' : 
-                 'ஜோதிடர்கள் கால அட்டவணை (Schedules)' }}</h2>
+          <h2>{{ activeTab === 'dashboard' ? 'கட்டுப்பாட்டு மையம்' : 
+                 activeTab === 'bookings' ? 'முன்பதிவு மேலாண்மை' :
+                 activeTab === 'horoscope-editor' ? 'ராசிபலன் & பஞ்சாங்கம் திருத்தி' : 
+                 'ஜோதிடர்கள் கால அட்டவணை' }}</h2>
         </div>
         <div class="header-user">
-          <span class="user-avatar">⚙️</span>
+          <span class="user-avatar"><i class="bi bi-gear-fill"></i></span>
           <span class="user-name">Welcome, Admin</span>
-          <a routerLink="/" class="view-site-link">View Site 👁️</a>
+          <a routerLink="/" class="view-site-link">View Site <i class="bi bi-eye-fill ms-1"></i></a>
         </div>
       </header>
 
@@ -86,31 +86,31 @@
           <section class="dashboard-tab">
             <div class="metrics-row">
               <div class="metric-box">
-                <div class="metric-icon">💰</div>
+                <div class="metric-icon"><i class="bi bi-currency-rupee"></i></div>
                 <div class="metric-data">
                   <h3>₹{{ totalRevenue | number }}</h3>
-                  <p>மொத்த வருவாய் (Revenue)</p>
+                  <p>மொத்த வருவாய்</p>
                 </div>
               </div>
               <div class="metric-box">
-                <div class="metric-icon">📦</div>
+                <div class="metric-icon"><i class="bi bi-box-seam-fill"></i></div>
                 <div class="metric-data">
                   <h3>{{ totalBookingsCount }}</h3>
-                  <p>முன்பதிவுகள் (Bookings)</p>
+                  <p>முன்பதிவுகள்</p>
                 </div>
               </div>
               <div class="metric-box">
-                <div class="metric-icon">⏳</div>
+                <div class="metric-icon"><i class="bi bi-hourglass-split"></i></div>
                 <div class="metric-data">
                   <h3>{{ pendingHoroscopesCount }}</h3>
-                  <p>ஜாதக கோரிக்கைகள் (Pending)</p>
+                  <p>ஜாதக கோரிக்கைகள்</p>
                 </div>
               </div>
               <div class="metric-box">
-                <div class="metric-icon">👥</div>
+                <div class="metric-icon"><i class="bi bi-people-fill"></i></div>
                 <div class="metric-data">
                   <h3>{{ totalUsers }}</h3>
-                  <p>பயனாளர்கள் (Total Users)</p>
+                  <p>பயனாளர்கள்</p>
                 </div>
               </div>
             </div>
@@ -263,7 +263,7 @@
                     @for (r of rasiPalanList; track r.rasi; let i = $index) {
                       <div class="rasi-editor-item">
                         <div class="rasi-label-row">
-                          <strong>🔮 {{ r.rasi }}</strong>
+                          <strong><i class="bi bi-moon-stars-fill text-purple me-1"></i> {{ r.rasi }}</strong>
                           <span class="star-sub">{{ r.star }}</span>
                         </div>
                         <textarea [(ngModel)]="r.prediction" name="pred-{{i}}" rows="2" class="admin-textarea"></textarea>

@@ -35,7 +35,7 @@
           class="btn-cancel" 
           (click)="loadBroadcastHistory()" 
           style="padding: 7px 12px; font-size: 13px; border-radius: 8px;" 
-          title="புதுப்பி (Refresh)"
+          [title]="'broadcast.refresh' | translate"
         >
           <i class="bi bi-arrow-clockwise"></i>
         </button>
@@ -46,10 +46,10 @@
           class="btn-primary" 
           (click)="showCreateForm = true" 
           style="padding: 7px 16px; font-size: 13px; font-weight: 700; border-radius: 8px; display: flex; align-items: center; gap: 6px;"
-          title="புதிய அறிவிப்பு உருவாக்கு"
+          [title]="'broadcast.newNotif' | translate"
         >
           <i class="bi bi-plus-lg"></i>
-          <span>புதிய அறிவிப்பு</span>
+          <span>{{ 'broadcast.newNotif' | translate }}</span>
         </button>
       </div>
     </div>
@@ -58,24 +58,24 @@
     <div class="card-box">
       <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
         <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-clock-history" style="color:#d97706;"></i> அனுப்பப்பட்ட அறிவிப்புகளின் வரலாறு (Sent Notifications Log)
+          <i class="bi bi-clock-history" style="color:#d97706;"></i> {{ 'broadcast.sentHistory' | translate }}
         </h3>
         <span style="font-size: 12px; color: #64748b; font-weight: 600;">
-          மொத்த அறிவிப்புகள்: {{ broadcastHistory.length }}
+          {{ 'broadcast.totalNotifs' | translate }} {{ broadcastHistory.length }}
         </span>
       </div>
 
       @if (isLoadingHistory) {
         <div style="text-align: center; padding: 32px; color: #64748b;">
           <i class="bi bi-hourglass-split spin" style="font-size: 28px; color: #d97706;"></i>
-          <p style="margin-top: 8px; font-size: 13px;">தரவுகள் பெறப்படுகின்றன...</p>
+          <p style="margin-top: 8px; font-size: 13px;">{{ 'broadcast.fetchingData' | translate }}</p>
         </div>
       } @else if (broadcastHistory.length === 0) {
         <div style="text-align: center; padding: 40px; color: #94a3b8;">
           <i class="bi bi-inbox" style="font-size: 36px; color: #cbd5e1;"></i>
-          <p style="margin-top: 8px; font-size: 13px; font-weight: 600;">இன்னும் அறிவிப்புகள் அனுப்பப்படவில்லை.</p>
+          <p style="margin-top: 8px; font-size: 13px; font-weight: 600;">{{ 'broadcast.noHistoryYet' | translate }}</p>
           <button type="button" class="btn-primary" (click)="showCreateForm = true" style="margin-top: 12px; padding: 8px 18px; font-size: 12px;">
-            <i class="bi bi-plus-lg"></i> முதல் அறிவிப்பை அனுப்புக
+            <i class="bi bi-plus-lg"></i> {{ 'broadcast.sendFirstNotif' | translate }}
           </button>
         </div>
       } @else {
@@ -83,12 +83,12 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>#ID</th>
-                <th>பெறுநர் (Target)</th>
-                <th>தலைப்பு (Title)</th>
-                <th>விவரம் (Message)</th>
-                <th>வகை (Type)</th>
-                <th>அனுப்பப்பட்ட நேரம் (Sent At)</th>
+                <th>{{ 'broadcast.colId' | translate }}</th>
+                <th>{{ 'broadcast.colTarget' | translate }}</th>
+                <th>{{ 'broadcast.colTitle' | translate }}</th>
+                <th>{{ 'broadcast.colMessage' | translate }}</th>
+                <th>{{ 'broadcast.colType' | translate }}</th>
+                <th>{{ 'broadcast.colSentAt' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -125,14 +125,14 @@
       <!-- Form Header with Title and Close (X) Button -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
         <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 17px; color: #0f172a;">
-          <i class="bi bi-broadcast" style="color:#d97706;"></i> புதிய அறிவிப்பை அனுப்பு (Send Broadcast)
+          <i class="bi bi-broadcast" style="color:#d97706;"></i> {{ 'broadcast.sendModalTitle' | translate }}
         </h3>
         <button 
           type="button" 
           class="btn-cancel" 
           (click)="showCreateForm = false" 
           style="padding: 4px 10px; font-size: 14px; font-weight: 800; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" 
-          title="மூடுக (Close & Back to List)"
+          [title]="'broadcast.close' | translate"
         >
           <i class="bi bi-x-lg"></i>
         </button>
@@ -144,7 +144,7 @@
             <label>{{ 'broadcast.targetAudience' | translate }}:</label>
             <select [(ngModel)]="broadcastForm.target" name="b_target" class="ctrl">
               <option value="all">{{ 'broadcast.allUsers' | translate }}</option>
-              <option value="single">Single User (User ID)</option>
+              <option value="single">Single User</option>
             </select>
           </div>
           <div class="form-group" style="margin:0;">
@@ -167,12 +167,12 @@
 
         <div class="form-group">
           <label>{{ 'broadcast.msgTitle' | translate }}</label>
-          <input [(ngModel)]="broadcastForm.title" name="b_title" required class="ctrl" placeholder="அறிவிப்பின் தலைப்பு..."/>
+          <input [(ngModel)]="broadcastForm.title" name="b_title" required class="ctrl"/>
         </div>
 
         <div class="form-group">
           <label>{{ 'broadcast.msgBody' | translate }}</label>
-          <textarea [(ngModel)]="broadcastForm.body" name="b_body" required rows="4" class="ctrl" placeholder="செய்தியின் முழு விவரம்..."></textarea>
+          <textarea [(ngModel)]="broadcastForm.body" name="b_body" required rows="4" class="ctrl"></textarea>
         </div>
 
         @if (broadcastMsg) {
@@ -183,7 +183,7 @@
 
         <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
           <button type="button" class="btn-cancel" (click)="showCreateForm = false" style="padding:10px 20px;">
-            ரத்துசெய் (Cancel)
+            {{ 'common.cancel' | translate }}
           </button>
           <button type="submit" class="btn-primary" style="padding:10px 24px;">
             <i class="bi bi-send-fill"></i> {{ 'broadcast.sendNow' | translate }}

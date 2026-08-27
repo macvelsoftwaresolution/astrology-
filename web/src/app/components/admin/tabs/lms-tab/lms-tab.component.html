@@ -59,7 +59,7 @@
       <!-- SECTION 1: TITLE & SETTINGS -->
       <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
         <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          📌 {{ 'lms.lessonTitleSettings' | translate }}
+          <i class="bi bi-pin-angle-fill me-1" style="color: #d97706;"></i> {{ 'lms.lessonTitleSettings' | translate }}
         </h3>
 
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -79,7 +79,7 @@
       <!-- SECTION 2: TAMIL TEXT NOTES -->
       <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
         <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-          📖 {{ 'lms.lessonTextNotesTitle' | translate }}
+          <i class="bi bi-journal-text me-1" style="color: #d97706;"></i> {{ 'lms.lessonTextNotesTitle' | translate }}
         </h3>
         <textarea [(ngModel)]="editingDayLesson.description" rows="6" [placeholder]="'lms.lessonTextNotesPlaceholder' | translate" style="width: 100%; padding: 14px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 14px; line-height: 1.6; font-family: inherit;"></textarea>
       </div>
@@ -88,7 +88,7 @@
       <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
           <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
-            🎧 {{ 'lms.audioLecturesTitle' | translate }}
+            <i class="bi bi-headphones me-1" style="color: #d97706;"></i> {{ 'lms.audioLecturesTitle' | translate }}
           </h3>
           <button (click)="addAudioItem()" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
             <i class="bi bi-plus-circle-fill"></i> {{ 'lms.addAudioBtn' | translate }}
@@ -128,7 +128,7 @@
       <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
           <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
-            🖼️ {{ 'lms.chartDiagramsTitle' | translate }}
+            <i class="bi bi-image me-1" style="color: #d97706;"></i> {{ 'lms.chartDiagramsTitle' | translate }}
           </h3>
           <label style="background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0;">
             <i class="bi bi-cloud-arrow-up-fill"></i> {{ 'lms.uploadImageBtn' | translate }}
@@ -273,7 +273,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
       <!-- Batch Selector Dropdown -->
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <label style="font-weight: 700; color: #1e293b; font-size: 14px;">🎓 {{ 'lms.batchSelect' | translate }}</label>
+        <label style="font-weight: 700; color: #1e293b; font-size: 14px;"><i class="bi bi-mortarboard-fill me-1" style="color: #d97706;"></i> {{ 'lms.batchSelect' | translate }}</label>
         <select [(ngModel)]="selectedBatchId" (change)="selectBatch(+selectedBatchId!)"
           style="padding: 8px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-weight: 600; font-size: 14px; background: #f8fafc; color: #0f172a; cursor: pointer; min-width: 220px;">
           @if (batches.length === 0) {
@@ -286,7 +286,7 @@
         @if (selectedBatch) {
         <span
           style="font-size: 12px; background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 20px; font-weight: 700;">
-          📅 {{ selectedBatch.start_date || 'Feb 1' }} to {{ selectedBatch.end_date || 'Apr 30' }}
+          <i class="bi bi-calendar-event me-1"></i> {{ selectedBatch.start_date || 'Feb 1' }} to {{ selectedBatch.end_date || 'Apr 30' }}
         </span>
         }
       </div>

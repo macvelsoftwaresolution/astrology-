@@ -32,6 +32,17 @@ export class AuthService {
     return service === 'education' ? 'edu_auth_user' : 'astro_auth_user';
   }
 
+  clearSession(): void {
+    const keys = [
+      'auth_token', 'astro_auth_token', 'edu_auth_token',
+      'auth_user', 'astro_auth_user', 'edu_auth_user'
+    ];
+    keys.forEach(k => {
+      localStorage.removeItem(k);
+      sessionStorage.removeItem(k);
+    });
+  }
+
   register(user: User, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
     const payload = {
       name: user.fullName || user.name,
@@ -43,23 +54,21 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/auth/register`, payload).pipe(
       tap(res => {
         if (res.success && res.token) {
+          this.clearSession();
+
           const tKey = this.getTokenKey(service);
           const uKey = this.getUserKey(service);
 
           localStorage.setItem(tKey, res.token);
           sessionStorage.setItem(tKey, res.token);
-          if (service === 'astrology') {
-            localStorage.setItem('auth_token', res.token);
-            sessionStorage.setItem('auth_token', res.token);
-          }
+          localStorage.setItem('auth_token', res.token);
+          sessionStorage.setItem('auth_token', res.token);
 
           const userToSave = { ...res.user, profileImage: user.profileImage };
           localStorage.setItem(uKey, JSON.stringify(userToSave));
           sessionStorage.setItem(uKey, JSON.stringify(userToSave));
-          if (service === 'astrology') {
-            localStorage.setItem('auth_user', JSON.stringify(userToSave));
-            sessionStorage.setItem('auth_user', JSON.stringify(userToSave));
-          }
+          localStorage.setItem('auth_user', JSON.stringify(userToSave));
+          sessionStorage.setItem('auth_user', JSON.stringify(userToSave));
         }
       })
     );
@@ -75,6 +84,8 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/auth/mobile-login`, payload).pipe(
       tap(res => {
         if (res.success && res.token) {
+          this.clearSession();
+
           const tKey = this.getTokenKey(service);
           const uKey = this.getUserKey(service);
 
@@ -83,30 +94,17 @@ export class AuthService {
           localStorage.setItem(uKey, JSON.stringify(res.user));
           sessionStorage.setItem(uKey, JSON.stringify(res.user));
 
-          if (service === 'astrology') {
-            localStorage.setItem('auth_token', res.token);
-            sessionStorage.setItem('auth_token', res.token);
-            localStorage.setItem('auth_user', JSON.stringify(res.user));
-            sessionStorage.setItem('auth_user', JSON.stringify(res.user));
-          }
+          localStorage.setItem('auth_token', res.token);
+          sessionStorage.setItem('auth_token', res.token);
+          localStorage.setItem('auth_user', JSON.stringify(res.user));
+          sessionStorage.setItem('auth_user', JSON.stringify(res.user));
         }
       })
     );
   }
 
   logout(service: 'astrology' | 'education' = 'astrology'): void {
-    const tKey = this.getTokenKey(service);
-    const uKey = this.getUserKey(service);
-    localStorage.removeItem(tKey);
-    sessionStorage.removeItem(tKey);
-    localStorage.removeItem(uKey);
-    sessionStorage.removeItem(uKey);
-    if (service === 'astrology') {
-      localStorage.removeItem('auth_token');
-      sessionStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
-      sessionStorage.removeItem('auth_user');
-    }
+    this.clearSession();
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {

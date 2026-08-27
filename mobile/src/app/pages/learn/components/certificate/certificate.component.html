@@ -27,7 +27,7 @@
               [style.background]="selectedCert?.id === c.id ? '#ECC876' : 'rgba(255,255,255,0.1)'"
               [style.color]="selectedCert?.id === c.id ? '#4A0E17' : '#FFFFFF'"
               style="border: 1px solid #ECC876; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-              📜 {{ c.course_title }}
+              <i class="bi bi-file-earmark-pdf-fill me-1"></i> {{ c.course_title }}
             </button>
           }
         </div>
