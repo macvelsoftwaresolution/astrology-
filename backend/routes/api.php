@@ -13,6 +13,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MatrimonyProfileController;
 use App\Http\Controllers\SystemSettingsController;
+use App\Http\Controllers\LmsCurriculumController;
 use App\Http\Middleware\CheckRole;
 
 // =====================================================================
@@ -104,6 +105,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // My Book Orders
     Route::get('/user/book-orders',        [CourierManagementController::class, 'getMyBookOrders']);
+
+    // LMS Student 60-Day Curriculum
+    Route::get('/student/curriculum',                          [LmsCurriculumController::class, 'getStudentCurriculum']);
+    Route::post('/student/curriculum/{curriculumId}/complete', [LmsCurriculumController::class, 'markDayComplete']);
 });
 
 // =====================================================================
@@ -120,7 +125,14 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::put('/team/{id}/toggle',  [SuperAdminController::class, 'toggleAdminStatus']);
     Route::delete('/team/{id}',      [SuperAdminController::class, 'deleteAdmin']);
 
-    // LMS Courses CRUD
+    // LMS Courses & 60-Day Daily Learning Curriculum CRUD
+    Route::get('/lms/batches',                      [LmsCurriculumController::class, 'getAdminBatches']);
+    Route::post('/lms/batches',                     [LmsCurriculumController::class, 'createOrUpdateBatch']);
+    Route::get('/lms/curriculum/{batchId}',         [LmsCurriculumController::class, 'getBatchCurriculum']);
+    Route::post('/lms/curriculum',                  [LmsCurriculumController::class, 'saveDayCurriculum']);
+    Route::post('/lms/curriculum/copy',             [LmsCurriculumController::class, 'copyBatchCurriculum']);
+    Route::delete('/lms/curriculum/{id}',           [LmsCurriculumController::class, 'deleteDayCurriculum']);
+
     Route::get('/courses',                          [CourseController::class, 'index']);
     Route::post('/courses',                         [CourseController::class, 'store']);
     Route::put('/courses/{courseId}',               [CourseController::class, 'update']);

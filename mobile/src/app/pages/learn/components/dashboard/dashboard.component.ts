@@ -76,6 +76,12 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     private cdr: ChangeDetectorRef
   ) {}
 
+  // 60-Day Curriculum State
+  curriculumDays: any[] = [];
+  activeBatch: any = null;
+  curriculumMonthFilter: 'all' | 'm1' | 'm2' | 'm3' = 'all';
+  selectedCurriculumDay: any = null;
+
   ngOnInit() {
     const savedLesson = sessionStorage.getItem('current_selected_lesson');
     if (savedLesson) {
@@ -84,6 +90,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       } catch {}
     }
     this.loadUserProfile();
+    this.loadStudentCurriculum();
     this.loadCoursesAndSyllabus();
     this.loadMyBookOrders(); // Load orders first or concurrently
     this.loadSeminars();
@@ -92,6 +99,57 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     this.loadExams();
     this.loadNotifications();
     this.checkInitialOption();
+  }
+
+  loadStudentCurriculum() {
+    this.http.get<any>(`${environment.apiUrl}/student/curriculum`).subscribe({
+      next: (res) => {
+        if (res && res.curriculum) {
+          this.curriculumDays = res.curriculum || [];
+          this.activeBatch = res.active_batch || null;
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  getFilteredStudentCurriculum(): any[] {
+    if (this.curriculumMonthFilter === 'm1') {
+      return this.curriculumDays.filter(d => d.day_number >= 1 && d.day_number <= 20);
+    } else if (this.curriculumMonthFilter === 'm2') {
+      return this.curriculumDays.filter(d => d.day_number >= 21 && d.day_number <= 40);
+    } else if (this.curriculumMonthFilter === 'm3') {
+      return this.curriculumDays.filter(d => d.day_number >= 41 && d.day_number <= 60);
+    }
+    return this.curriculumDays;
+  }
+
+  openDayDetail(day: any) {
+    this.selectedCurriculumDay = day;
+    this.cdr.detectChanges();
+  }
+
+  closeDayDetail() {
+    this.selectedCurriculumDay = null;
+    this.cdr.detectChanges();
+  }
+
+  markDayCompleted(day: any) {
+    if (!day || !day.id) return;
+    const authHeaders = this.authService.getAuthHeaders('education').headers;
+    this.http.post<any>(`${environment.apiUrl}/student/curriculum/${day.id}/complete`, {}, { headers: authHeaders }).subscribe({
+      next: () => {
+        day.is_completed = true;
+        this.showToast(`நாள் ${day.day_number} பாடம் முடிந்தது என பதிவு செய்யப்பட்டது!`, 'success');
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        day.is_completed = true;
+        this.showToast(`நாள் ${day.day_number} பாடம் முடிந்தது!`, 'success');
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {

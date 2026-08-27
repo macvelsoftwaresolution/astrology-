@@ -134,6 +134,64 @@
 
 @if (dashboardTab === 'lessons') {
   <div class="dashboard-tab-content">
+    <!-- 60-DAY CURRICULUM BANNER & MONTH FILTER -->
+    @if (curriculumDays.length > 0) {
+      <div style="background: linear-gradient(135deg, #4A0E17 0%, #2A050B 100%); border-radius: 16px; padding: 18px; color: #fff; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(74,14,23,0.15);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h3 style="font-family: 'Noto Serif Tamil', serif; font-size: 1.15rem; color: #ECC876; margin: 0;">
+            📅 60 நாட்கள் தினசரி பாடத் திட்டம்
+          </h3>
+          @if (activeBatch) {
+            <span style="font-size: 0.75rem; background: rgba(236,200,118,0.2); color: #ECC876; padding: 3px 10px; border-radius: 20px; font-weight: 700;">
+              {{ activeBatch.name }}
+            </span>
+          }
+        </div>
+        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.85); margin: 0 0 12px 0; line-height: 1.4;">
+          வாரத்தில் 5 நாட்கள் (திங்கள்-வெள்ளி). 3 மாதங்களுக்கு மொத்தம் 60 நாட்கள் பாடக்குறிப்புகள், ஆடியோ மற்றும் வரைபடங்கள்.
+        </p>
+
+        <!-- Month Selector Pills -->
+        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
+          <button (click)="curriculumMonthFilter = 'all'" [style.background]="curriculumMonthFilter === 'all' ? '#ECC876' : 'rgba(255,255,255,0.1)'" [style.color]="curriculumMonthFilter === 'all' ? '#4A0E17' : '#fff'" style="border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; white-space: nowrap;">அனைத்தும் (60)</button>
+          <button (click)="curriculumMonthFilter = 'm1'" [style.background]="curriculumMonthFilter === 'm1' ? '#ECC876' : 'rgba(255,255,255,0.1)'" [style.color]="curriculumMonthFilter === 'm1' ? '#4A0E17' : '#fff'" style="border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; white-space: nowrap;">மாதம் 1 (1-20)</button>
+          <button (click)="curriculumMonthFilter = 'm2'" [style.background]="curriculumMonthFilter === 'm2' ? '#ECC876' : 'rgba(255,255,255,0.1)'" [style.color]="curriculumMonthFilter === 'm2' ? '#4A0E17' : '#fff'" style="border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; white-space: nowrap;">மாதம் 2 (21-40)</button>
+          <button (click)="curriculumMonthFilter = 'm3'" [style.background]="curriculumMonthFilter === 'm3' ? '#ECC876' : 'rgba(255,255,255,0.1)'" [style.color]="curriculumMonthFilter === 'm3' ? '#4A0E17' : '#fff'" style="border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; white-space: nowrap;">மாதம் 3 (41-60)</button>
+        </div>
+      </div>
+
+      <!-- 60-DAY DAILY LESSONS LIST -->
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+        @for (day of getFilteredStudentCurriculum(); track day.id) {
+          <div (click)="openDayDetail(day)" style="background: #FFFDF0; border: 1.5px solid rgba(162,123,56,0.3); border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(74,14,23,0.05);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: #4A0E17; color: #ECC876; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;">
+                Day {{ day.day_number }}
+              </div>
+              <div>
+                <strong style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; display: block; margin-bottom: 2px;">
+                  {{ day.title }}
+                </strong>
+                <div style="display: flex; gap: 8px; font-size: 0.75rem; color: #7E716A;">
+                  @if (day.audio_url) { <span style="color: #059669;"><i class="bi bi-mic-fill me-1"></i>ஆடியோ பாடம்</span> }
+                  @if (day.images_json && day.images_json.length > 0) { <span style="color: #2563eb;"><i class="bi bi-image me-1"></i>படங்கள்</span> }
+                  @if (day.pdf_material_url) { <span style="color: #dc2626;"><i class="bi bi-file-earmark-pdf-fill me-1"></i>PDF</span> }
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              @if (day.is_completed) {
+                <span style="color: #059669; font-size: 1.2rem;" title="முடிந்தது"><i class="bi bi-check-circle-fill"></i></span>
+              } @else {
+                <span style="color: #A27B38; font-size: 1.1rem;"><i class="bi bi-chevron-right"></i></span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
     <!-- ================= DETAIL VIEW ================= -->
     @if (currentLessonView === 'detail') {
       <div>
@@ -512,6 +570,105 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- DAILY LESSON PLAYER MODAL OVERLAY -->
+@if (selectedCurriculumDay) {
+  <div class="checkout-modal-overlay">
+    <div class="checkout-modal-card" style="max-width: 500px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="checkout-modal-header" style="background: #4A0E17; color: #FFFDF0; padding: 14px 18px; border-radius: 16px 16px 0 0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="background: #ECC876; color: #4A0E17; font-weight: 800; font-size: 0.8rem; padding: 2px 10px; border-radius: 12px;">
+            Day {{ selectedCurriculumDay.day_number }}
+          </span>
+          <h3 style="font-family: 'Noto Serif Tamil', serif; font-size: 1rem; color: #FFFDF0; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">
+            {{ selectedCurriculumDay.title }}
+          </h3>
+        </div>
+        <button class="close-checkout-btn" (click)="closeDayDetail()" style="color: #FFFDF0;">×</button>
+      </div>
+
+      <div class="checkout-modal-body" style="padding: 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+        <!-- Audio Player Section -->
+        @if (selectedCurriculumDay.audios_json && selectedCurriculumDay.audios_json.length > 0) {
+          @for (audio of selectedCurriculumDay.audios_json; track audio.url) {
+            <div style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
+              <div style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ audio.title || 'ஆடியோ பாடம் (Voice Lecture)' }}
+              </div>
+              <audio [src]="audio.url" controls style="width: 100%; height: 40px;"></audio>
+            </div>
+          }
+        } @else if (selectedCurriculumDay.audio_url) {
+          <div style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
+            <div style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> ஆடியோ பாடம் (Voice Lecture)
+            </div>
+            <audio [src]="selectedCurriculumDay.audio_url" controls style="width: 100%; height: 40px;"></audio>
+          </div>
+        }
+
+        <!-- Text Lesson Notes -->
+        <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
+          <h4 style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
+            📖 பாடக் குறிப்புகள் (Lesson Notes)
+          </h4>
+          <div style="font-size: 0.88rem; color: #2A2421; line-height: 1.6; white-space: pre-wrap;">
+            {{ selectedCurriculumDay.description || 'இன்றைய பாடத்திற்கான உரை விளக்கம் சேர்க்கப்பட்டுள்ளது.' }}
+          </div>
+        </div>
+
+        <!-- Diagrams & Chart Gallery -->
+        @if (selectedCurriculumDay.images_json && selectedCurriculumDay.images_json.length > 0) {
+          <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
+            <h4 style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 10px 0;">
+              🖼️ ராசி கட்டங்கள் & வரைபடங்கள் (Chart Diagrams)
+            </h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              @for (imgUrl of selectedCurriculumDay.images_json; track imgUrl) {
+                <a [href]="imgUrl" target="_blank" style="display: block; width: 100px; height: 100px; border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876;">
+                  <img [src]="imgUrl" style="width: 100%; height: 100%; object-fit: cover;">
+                </a>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- PDF Study Material -->
+        @if (selectedCurriculumDay.pdfs_json && selectedCurriculumDay.pdfs_json.length > 0) {
+          @for (pdf of selectedCurriculumDay.pdfs_json; track pdf.url) {
+            <div (click)="downloadPDF(pdf.title, pdf.url)" style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
+                <div>
+                  <strong style="color: #991B1B; font-size: 0.9rem; display: block;">{{ pdf.title || 'பாடக் குறிப்பு PDF' }}</strong>
+                  <span style="font-size: 0.75rem; color: #7F1D1D;">பதிவிறக்கம் செய்ய கிளிக் செய்க</span>
+                </div>
+              </div>
+              <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
+            </div>
+          }
+        } @else if (selectedCurriculumDay.pdf_material_url) {
+          <div (click)="downloadPDF(selectedCurriculumDay.title + ' Notes', selectedCurriculumDay.pdf_material_url)" style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
+              <div>
+                <strong style="color: #991B1B; font-size: 0.9rem; display: block;">பாடக் குறிப்பு PDF</strong>
+                <span style="font-size: 0.75rem; color: #7F1D1D;">பதிவிறக்கம் செய்ய கிளிக் செய்க</span>
+              </div>
+            </div>
+            <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
+          </div>
+        }
+
+        <!-- Complete Action Button -->
+        <button (click)="markDayCompleted(selectedCurriculumDay)" [disabled]="selectedCurriculumDay.is_completed" style="width: 100%; background: #4A0E17; color: #ECC876; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
+          <i class="bi" [class.bi-check-circle-fill]="selectedCurriculumDay.is_completed" [class.bi-check-circle]="!selectedCurriculumDay.is_completed"></i>
+          {{ selectedCurriculumDay.is_completed ? 'பாடம் முடிந்தது (Completed)' : 'இன்றைய பாடத்தை நிறைவு செய் (Mark Completed)' }}
+        </button>
       </div>
     </div>
   </div>

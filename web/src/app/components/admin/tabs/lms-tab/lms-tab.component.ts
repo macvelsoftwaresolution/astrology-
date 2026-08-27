@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -25,10 +26,27 @@ export class LmsTabComponent implements OnInit {
   selectedCourseLevelFilter = 'all';
 
   // Sub-tabs State
-  activeSubTab: 'courses' | 'seminars' | 'live-classes' | 'materials' | 'exams' = 'courses';
+  activeSubTab: 'curriculum' | 'courses' | 'seminars' | 'live-classes' | 'materials' | 'exams' = 'curriculum';
+
+  // --- 60-DAY DAILY CURRICULUM & BATCHES STATE ---
+  batches: any[] = [];
+  selectedBatchId: number | null = null;
+  selectedBatch: any = null;
+  curriculumDays: any[] = [];
+  selectedYear: number = new Date().getFullYear();
+  curriculumMonthFilter: 'all' | 'm1' | 'm2' | 'm3' = 'all';
+
+  editingDayLesson: any = null;
+  openDayEditorModal = false;
+  copyFromBatchId: number | null = null;
+  openCopyBatchModal = false;
+
+  isUploadingDayAudio = false;
+  isUploadingDayPdf = false;
+  isUploadingDayImage = false;
 
   // Modals & Wizard State
-  activeView: 'dashboard' | 'course-studio' | 'exam-studio' | 'seminar-studio' | 'live-class-studio' | 'material-studio' = 'dashboard';
+  activeView: 'dashboard' | 'day-studio' | 'course-studio' | 'exam-studio' | 'seminar-studio' | 'live-class-studio' | 'material-studio' = 'dashboard';
   wizardStep = 1;
   newCourse: any = { title: '', description: '', price: 999, category: 'Astrology', level: 'Beginner', thumbnail: '' };
   wizardModules: any[] = [];
@@ -58,17 +76,301 @@ export class LmsTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     public translationService: TranslationService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
+      this.loadBatches();
       this.loadCourses();
       this.loadSeminars();
       this.loadLiveClasses();
       this.loadMaterials();
       this.loadExams();
     }
+  }
+
+  // --- 60-DAY DAILY CURRICULUM METHODS ---
+  loadBatches(): void {
+    const headers = this.authService.getAuthHeaders();
+    const level = this.selectedCategory || 'ILANILAI';
+    const year = this.selectedYear;
+
+    // Set immediate client-side default quarterly batches so UI never shows blank loading state
+    if (this.batches.length === 0) {
+      this.batches = [
+        { id: 1, batch_code: `${year}-A-${level}`, name: `Batch A (Feb - Apr ${year})`, quarter: 'Q1', start_date: `${year}-02-01`, end_date: `${year}-04-30` },
+        { id: 2, batch_code: `${year}-B-${level}`, name: `Batch B (May - Jul ${year})`, quarter: 'Q2', start_date: `${year}-05-01`, end_date: `${year}-07-31` },
+        { id: 3, batch_code: `${year}-C-${level}`, name: `Batch C (Aug - Oct ${year})`, quarter: 'Q3', start_date: `${year}-08-01`, end_date: `${year}-10-31` },
+        { id: 4, batch_code: `${year}-D-${level}`, name: `Batch D (Nov - Jan ${year + 1})`, quarter: 'Q4', start_date: `${year}-11-01`, end_date: `${year + 1}-01-31` }
+      ];
+      if (!this.selectedBatchId) {
+        this.selectBatch(this.batches[0].id);
+      }
+    }
+
+    this.http.get<any>(`${environment.apiUrl}/admin/lms/batches?year=${year}&level=${level}`, headers).subscribe({
+      next: (res) => {
+        if (res.batches && res.batches.length > 0) {
+          this.batches = res.batches;
+          const targetBatch = (this.selectedBatchId && this.batches.find(b => b.id === this.selectedBatchId))
+            ? this.selectedBatchId
+            : this.batches[0].id;
+          this.selectBatch(targetBatch);
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => { }
+    });
+  }
+
+  selectBatch(batchId: number): void {
+    this.selectedBatchId = batchId;
+    this.selectedBatch = this.batches.find(b => b.id === batchId) || null;
+    this.loadCurriculum();
+  }
+
+  loadCurriculum(): void {
+    if (!this.selectedBatchId) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/admin/lms/curriculum/${this.selectedBatchId}`, headers).subscribe({
+      next: (res) => {
+        this.curriculumDays = res.curriculum || [];
+        this.cdr.detectChanges();
+      },
+      error: () => { }
+    });
+  }
+
+  getFilteredCurriculumDays(): any[] {
+    const allDays = [];
+    // Ensure all 60 days exist in display grid (Day 1 to 60)
+    for (let i = 1; i <= 60; i++) {
+      const found = this.curriculumDays.find(d => d.day_number === i);
+      allDays.push(found || {
+        batch_id: this.selectedBatchId,
+        day_number: i,
+        title: `நாள் ${i}: பாடத் தலைப்பு அமைக்கப்படவில்லை`,
+        description: '',
+        audio_url: '',
+        images_json: [],
+        pdf_material_url: '',
+        is_published: true
+      });
+    }
+
+    if (this.curriculumMonthFilter === 'm1') {
+      return allDays.filter(d => d.day_number >= 1 && d.day_number <= 20);
+    } else if (this.curriculumMonthFilter === 'm2') {
+      return allDays.filter(d => d.day_number >= 21 && d.day_number <= 40);
+    } else if (this.curriculumMonthFilter === 'm3') {
+      return allDays.filter(d => d.day_number >= 41 && d.day_number <= 60);
+    }
+    return allDays;
+  }
+
+  openEditDay(day: any): void {
+    const audios = Array.isArray(day.audios_json) && day.audios_json.length > 0
+      ? [...day.audios_json]
+      : (day.audio_url ? [{ title: 'குரல் பதிவு 1', url: day.audio_url }] : []);
+
+    const pdfs = Array.isArray(day.pdfs_json) && day.pdfs_json.length > 0
+      ? [...day.pdfs_json]
+      : (day.pdf_material_url ? [{ title: 'பாடக் குறிப்பு PDF 1', url: day.pdf_material_url }] : []);
+
+    this.editingDayLesson = {
+      batch_id: this.selectedBatchId,
+      day_number: day.day_number,
+      title: day.title || `நாள் ${day.day_number}: பாடத் தலைப்பு`,
+      description: day.description || '',
+      audio_url: day.audio_url || '',
+      audios_json: audios,
+      images_json: Array.isArray(day.images_json) ? [...day.images_json] : [],
+      pdf_material_url: day.pdf_material_url || '',
+      pdfs_json: pdfs,
+      is_published: day.is_published ?? true
+    };
+    this.activeView = 'day-studio';
+    this.cdr.detectChanges();
+  }
+
+  cancelDayStudio(): void {
+    this.activeView = 'dashboard';
+    this.cdr.detectChanges();
+  }
+
+  // --- MULTIPLE AUDIOS HELPERS ---
+  addAudioItem(): void {
+    if (!this.editingDayLesson) return;
+    if (!Array.isArray(this.editingDayLesson.audios_json)) {
+      this.editingDayLesson.audios_json = [];
+    }
+    const nextIndex = this.editingDayLesson.audios_json.length + 1;
+    this.editingDayLesson.audios_json.push({
+      title: `குரல் பதிவு ${nextIndex}`,
+      url: ''
+    });
+  }
+
+  removeAudioItem(index: number): void {
+    if (this.editingDayLesson && Array.isArray(this.editingDayLesson.audios_json)) {
+      this.editingDayLesson.audios_json.splice(index, 1);
+    }
+  }
+
+  uploadAudioItem(event: any, index: number): void {
+    const file = event.target?.files?.[0];
+    if (!file || !this.editingDayLesson) return;
+    this.isUploadingDayAudio = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'lms_audio');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.editingDayLesson.audios_json[index]) {
+          this.editingDayLesson.audios_json[index].url = res.url;
+        }
+        this.isUploadingDayAudio = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Audio upload failed.');
+        this.isUploadingDayAudio = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // --- MULTIPLE PDFS HELPERS ---
+  addPdfItem(): void {
+    if (!this.editingDayLesson) return;
+    if (!Array.isArray(this.editingDayLesson.pdfs_json)) {
+      this.editingDayLesson.pdfs_json = [];
+    }
+    const nextIndex = this.editingDayLesson.pdfs_json.length + 1;
+    this.editingDayLesson.pdfs_json.push({
+      title: `பாடக் குறிப்பு PDF ${nextIndex}`,
+      url: ''
+    });
+  }
+
+  removePdfItem(index: number): void {
+    if (this.editingDayLesson && Array.isArray(this.editingDayLesson.pdfs_json)) {
+      this.editingDayLesson.pdfs_json.splice(index, 1);
+    }
+  }
+
+  uploadPdfItem(event: any, index: number): void {
+    const file = event.target?.files?.[0];
+    if (!file || !this.editingDayLesson) return;
+    this.isUploadingDayPdf = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'lms_pdf');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.editingDayLesson.pdfs_json[index]) {
+          this.editingDayLesson.pdfs_json[index].url = res.url;
+        }
+        this.isUploadingDayPdf = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('PDF upload failed.');
+        this.isUploadingDayPdf = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  uploadDayImage(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+    this.isUploadingDayImage = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'lms_images');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url && this.editingDayLesson) {
+          if (!Array.isArray(this.editingDayLesson.images_json)) {
+            this.editingDayLesson.images_json = [];
+          }
+          this.editingDayLesson.images_json.push(res.url);
+        }
+        this.isUploadingDayImage = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('Image upload failed.');
+        this.isUploadingDayImage = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  removeDayImage(index: number): void {
+    if (this.editingDayLesson && Array.isArray(this.editingDayLesson.images_json)) {
+      this.editingDayLesson.images_json.splice(index, 1);
+    }
+  }
+
+  saveDayLesson(): void {
+    if (!this.editingDayLesson.title) {
+      this.toastService.error('பாடத் தலைப்பு அவசியமானது.', 'விவரங்கள் தேவை');
+      return;
+    }
+
+    // Legacy sync
+    if (Array.isArray(this.editingDayLesson.audios_json) && this.editingDayLesson.audios_json.length > 0) {
+      this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url;
+    }
+    if (Array.isArray(this.editingDayLesson.pdfs_json) && this.editingDayLesson.pdfs_json.length > 0) {
+      this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url;
+    }
+
+    const dayNum = this.editingDayLesson.day_number;
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/admin/lms/curriculum`, this.editingDayLesson, headers).subscribe({
+      next: () => {
+        this.toastService.success(
+          `நாள் ${dayNum} பாடம் வெற்றிகரமாக சேமிக்கப்பட்டது!`,
+          'பாடத் திட்டம் சேமிக்கப்பட்டது'
+        );
+        this.activeView = 'dashboard';
+        this.loadCurriculum();
+      },
+      error: () => this.toastService.error('பாடத்தை சேமிப்பதில் பிழை ஏற்பட்டது.', 'பிழை ஏற்பட்டது')
+    });
+  }
+
+  openCopyModal(): void {
+    this.copyFromBatchId = null;
+    this.openCopyBatchModal = true;
+  }
+
+  submitCopyBatch(): void {
+    if (!this.copyFromBatchId || !this.selectedBatchId) {
+      alert('Please select a source batch to copy from.');
+      return;
+    }
+    if (!confirm('This will copy/overwrite curriculum lessons in the current batch. Continue?')) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/admin/lms/curriculum/copy`, {
+      from_batch_id: this.copyFromBatchId,
+      to_batch_id: this.selectedBatchId
+    }, headers).subscribe({
+      next: (res) => {
+        alert(res.message || 'Curriculum copied successfully!');
+        this.openCopyBatchModal = false;
+        this.loadCurriculum();
+      },
+      error: (err) => alert(err.error?.message || 'Failed to copy batch curriculum.')
+    });
   }
 
   // --- EXAMS & QUIZZES STATE ---
@@ -237,6 +539,10 @@ export class LmsTabComponent implements OnInit {
     this.courseSearchQuery = '';
     this.selectedCourseLevelFilter = 'all';
     this.activeView = 'dashboard';
+    this.selectedBatchId = null;
+    this.selectedBatch = null;
+    this.batches = [];
+    this.loadBatches();
     this.loadExams();
     this.cdr.detectChanges();
   }
