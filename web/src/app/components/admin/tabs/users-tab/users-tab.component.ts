@@ -23,7 +23,7 @@ export class UsersTabComponent implements OnInit {
 
   batches: any[] = [];
   selectedBatchFilter: string = 'all'; // 'all', or batch.id or batch.name
-  
+
   // Modals for batch
   openCreateBatchModal = false;
   openShiftBatchModal = false;
@@ -84,7 +84,7 @@ export class UsersTabComponent implements OnInit {
         try { this.cdr.markForCheck(); } catch { }
         try { this.cdr.detectChanges(); } catch { }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -214,11 +214,37 @@ export class UsersTabComponent implements OnInit {
     this.isBatchDropdownOpen = false;
   }
 
+  formatBatchName(name: string): string {
+    if (!name) return '';
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    if (isTa) {
+      return name.replace(/Batch\s*A/gi, 'பிரிவு A')
+        .replace(/Batch\s*B/gi, 'பிரிவு B')
+        .replace(/Batch\s*C/gi, 'பிரிவு C')
+        .replace(/Batch\s*D/gi, 'பிரிவு D')
+        .replace(/Batch\s*(\d+)/gi, 'பிரிவு $1')
+        .replace(/Feb\s*-\s*Apr/gi, 'பிப் - ஏப்')
+        .replace(/May\s*-\s*Jul/gi, 'மே - ஜூலை')
+        .replace(/Aug\s*-\s*Oct/gi, 'ஆக - அக்')
+        .replace(/Nov\s*-\s*Jan/gi, 'நவ - ஜன')
+        .replace(/Jul\s*-\s*Sep/gi, 'ஜூலை - செப்')
+        .replace(/Oct\s*-\s*Dec/gi, 'அக் - டிச')
+        .replace(/Jan\s*-\s*Mar/gi, 'ஜன - மார்')
+        .replace(/Apr\s*-\s*Jun/gi, 'ஏப் - ஜூன்');
+    } else {
+      return name.replace(/பிரிவு\s*A/gi, 'Batch A')
+        .replace(/பிரிவு\s*B/gi, 'Batch B')
+        .replace(/பிரிவு\s*C/gi, 'Batch C')
+        .replace(/பிரிவு\s*D/gi, 'Batch D')
+        .replace(/பிரிவு\s*(\d+)/gi, 'Batch $1');
+    }
+  }
+
   getActiveBatchName(): string {
     if (this.selectedBatchFilter === 'all') {
       return this.translationService.instant('users.allBatches');
     }
-    return this.selectedBatchFilter;
+    return this.formatBatchName(this.selectedBatchFilter);
   }
 
   getActiveBatchCount(): number {
@@ -346,7 +372,7 @@ export class UsersTabComponent implements OnInit {
   isStudent(u: any): boolean {
     if (!u) return false;
     const d = this.getParsedDetails(u);
-    return !!(u.student_id || d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.trainingMode || d?.qualification);
+    return !!(u.student_id || d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.qualification);
   }
 
   isAppointmentUser(u: any): boolean {
@@ -361,34 +387,47 @@ export class UsersTabComponent implements OnInit {
   getStudentLevel(u: any): string {
     const d = this.getParsedDetails(u);
     const lvl = d?.courseLevel?.toLowerCase() || 'ilanilai';
-    return (lvl === 'mudhunilai' || lvl === 'muthunilai') ? 'முதுநிலை (Muthunilai)' : 'இளநிலை (Ilanilai)';
+    const isMuthu = (lvl === 'mudhunilai' || lvl === 'muthunilai');
+    if (this.translationService.currentLanguage() === 'ta') {
+      return isMuthu ? 'முதுநிலை' : 'இளநிலை';
+    }
+    return isMuthu ? 'Muthunilai' : 'Ilanilai';
   }
 
   getDateParts(rawDate: any): { date: string; time: string } {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (!rawDate) {
-      return { date: 'இன்று (Today)', time: 'நேரலை' };
+      return {
+        date: isTa ? 'இன்று' : 'Today',
+        time: isTa ? 'நேரலை' : 'Live'
+      };
     }
     try {
       const d = new Date(rawDate);
       if (isNaN(d.getTime())) return { date: String(rawDate), time: '' };
 
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const dayNamesTa = ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
+      const monthNamesTa = ['ஜன', 'பிப்', 'மார்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச'];
 
       const dateNum = d.getDate();
-      const monthStr = monthNames[d.getMonth()];
+      const monthStr = isTa ? monthNamesTa[d.getMonth()] : monthNamesEn[d.getMonth()];
       const yearStr = d.getFullYear();
-      const dayStr = dayNames[d.getDay()];
+      const dayStr = isTa ? dayNamesTa[d.getDay()] : dayNamesEn[d.getDay()];
 
       let hours = d.getHours();
+      const isPm = hours >= 12;
       const minutes = d.getMinutes().toString().padStart(2, '0');
-      const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
       hours = hours ? hours : 12;
 
+      const ampmStr = isTa ? (isPm ? 'பிற்பகல்' : 'முற்பகல்') : (isPm ? 'PM' : 'AM');
+
       return {
         date: `${dateNum} ${monthStr} ${yearStr}`,
-        time: `${hours}:${minutes} ${ampm} (${dayStr})`
+        time: `${hours}:${minutes} ${ampmStr} (${dayStr})`
       };
     } catch {
       return { date: String(rawDate), time: '' };
@@ -398,5 +437,68 @@ export class UsersTabComponent implements OnInit {
   formatDynamicDate(rawDate: any): string {
     const p = this.getDateParts(rawDate);
     return `${p.date} • ${p.time}`;
+  }
+
+  formatQualification(q: string): string {
+    if (!q) return '-';
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const lower = q.toLowerCase();
+    if (lower.includes('postgraduate') || lower.includes('pg') || lower.includes('master')) {
+      return isTa ? 'முதுகலைப்பட்டம்' : 'Postgraduate (PG)';
+    }
+    if (lower.includes('undergraduate') || lower.includes('ug') || lower.includes('bachelor') || lower.includes('degree')) {
+      return isTa ? 'இளங்கலைப்பட்டம்' : 'Undergraduate (UG)';
+    }
+    if (lower.includes('diploma')) {
+      return isTa ? 'பட்டயப்படிப்பு' : 'Diploma';
+    }
+    if (lower.includes('12') || lower.includes('hsc') || lower.includes('+2')) {
+      return isTa ? 'மேல்நிலைக்கல்வி' : 'Higher Secondary (12th)';
+    }
+    if (lower.includes('10') || lower.includes('sslc')) {
+      return isTa ? 'பத்தாம் வகுப்பு' : 'Secondary School (10th)';
+    }
+    if (lower.includes('phd') || lower.includes('doctorate')) {
+      return isTa ? 'முனைவர் பட்டம்' : 'Doctorate (Ph.D)';
+    }
+    return q;
+  }
+
+  formatOccupation(occ: string): string {
+    if (!occ) return '-';
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const lower = occ.toLowerCase();
+    if (lower.includes('kooli') || lower.includes('coolie') || lower.includes('daily')) {
+      return isTa ? 'தினக்கூலி / தொழிலாளி' : 'Daily Wage / Worker';
+    }
+    if (lower.includes('business') || lower.includes('வியாபாரம்')) {
+      return isTa ? 'சுயதொழில் / வியாபாரம்' : 'Business / Self Employed';
+    }
+    if (lower.includes('private') || lower.includes('தனியார்')) {
+      return isTa ? 'தனியார் பணி' : 'Private Sector';
+    }
+    if (lower.includes('govt') || lower.includes('அரசு')) {
+      return isTa ? 'அரசுப் பணி' : 'Government Service';
+    }
+    if (lower.includes('student') || lower.includes('மாணவர்')) {
+      return isTa ? 'மாணவர்' : 'Student';
+    }
+    if (lower.includes('home') || lower.includes('housewife')) {
+      return isTa ? 'இல்லத்தரசி' : 'Home Maker';
+    }
+    if (lower.includes('retired')) {
+      return isTa ? 'ஓய்வு பெற்றவர்' : 'Retired';
+    }
+    return occ;
+  }
+
+  formatGender(g: string): string {
+    if (!g) return '-';
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const lower = g.toLowerCase();
+    if (lower === 'male' || lower === 'ஆண்') return isTa ? 'ஆண்' : 'Male';
+    if (lower === 'female' || lower === 'பெண்') return isTa ? 'பெண்' : 'Female';
+    if (lower === 'other' || lower === 'மற்றவை') return isTa ? 'மற்றவை' : 'Other';
+    return g;
   }
 }

@@ -238,7 +238,7 @@
       style="padding: 10px 20px; border-radius: 8px; font-weight: 600; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; white-space: nowrap;"
       [style.background]="activeSubTab === 'curriculum' ? '#4f46e5' : '#fff'"
       [style.color]="activeSubTab === 'curriculum' ? '#fff' : '#475569'">
-      <i class="bi bi-calendar3-range-fill me-2"></i> 60-Day Daily Curriculum (4 Batches)
+      <i class="bi bi-calendar3-range-fill me-2"></i> {{ 'lms.curriculumSubTab' | translate }}
     </button>
     <button (click)="activeSubTab = 'seminars'"
       style="padding: 10px 20px; border-radius: 8px; font-weight: 600; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; white-space: nowrap;"
@@ -272,21 +272,25 @@
     style="margin-bottom: 24px; padding: 18px 24px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
       <!-- Batch Selector Dropdown -->
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <label style="font-weight: 700; color: #1e293b; font-size: 14px;"><i class="bi bi-mortarboard-fill me-1" style="color: #d97706;"></i> {{ 'lms.batchSelect' | translate }}</label>
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <label style="font-weight: 700; color: #1e293b; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+          <i class="bi bi-mortarboard-fill" style="color: #d97706; font-size: 16px;"></i>
+          <span>{{ 'lms.batchSelect' | translate }}</span>
+        </label>
         <select [(ngModel)]="selectedBatchId" (change)="selectBatch(+selectedBatchId!)"
-          style="padding: 8px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-weight: 600; font-size: 14px; background: #f8fafc; color: #0f172a; cursor: pointer; min-width: 220px;">
+          style="padding: 9px 16px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-weight: 700; font-size: 14px; background: #f8fafc; color: #0f172a; cursor: pointer; min-width: 260px; outline: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
           @if (batches.length === 0) {
-          <option [value]="null" disabled>Batch Loading...</option>
+          <option [value]="null" disabled>{{ 'common.loading' | translate }}</option>
           }
           @for (b of batches; track b.id) {
-          <option [value]="b.id">{{ b.name }} ({{ b.quarter }})</option>
+          <option [value]="b.id">{{ getBatchDisplayName(b) }}</option>
           }
         </select>
-        @if (selectedBatch) {
+        @if (selectedBatch && getBatchDateRange(selectedBatch)) {
         <span
-          style="font-size: 12px; background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 20px; font-weight: 700;">
-          <i class="bi bi-calendar-event me-1"></i> {{ selectedBatch.start_date || 'Feb 1' }} to {{ selectedBatch.end_date || 'Apr 30' }}
+          style="font-size: 12px; background: #e0e7ff; color: #3730a3; padding: 6px 14px; border-radius: 20px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(55,48,163,0.1);">
+          <i class="bi bi-calendar-event-fill" style="color: #4f46e5;"></i>
+          <span>{{ getBatchDateRange(selectedBatch) }}</span>
         </span>
         }
       </div>
@@ -335,8 +339,8 @@
         @for (day of getFilteredCurriculumDays(); track day.day_number) {
           <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='#fff';">
             <td style="padding: 12px 18px;">
-              <span style="font-size: 12px; font-weight: 800; background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 20px; display: inline-block;">
-                Day {{ day.day_number }}
+              <span style="font-size: 12px; font-weight: 800; background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 20px; display: inline-block; white-space: nowrap;">
+                {{ ('lms.day' | translate) }} {{ day.day_number }}
               </span>
             </td>
             <td style="padding: 12px 18px;">

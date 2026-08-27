@@ -1,196 +1,189 @@
 <div class="broadcast-container">
-  
+
   <!-- IF NOT IN CREATE FORM MODE: SHOW SENT NOTIFICATIONS LOG LIST -->
   @if (!showCreateForm) {
-    <!-- Clean Header Banner Card with Action Buttons -->
-    <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-      <div>
-        <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-megaphone-fill" style="color:#d97706;"></i>{{ 'broadcast.title' | translate }}
-        </h1>
-        <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'broadcast.subtitle' | translate }}</p>
-      </div>
-
-      <!-- Action Buttons Bar (Toggle Button -> Refresh Icon -> New Notification Icon Button) -->
-      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <!-- 1. Animated iOS Style Daily Rasi Push Switch (Left of Refresh) -->
-        <div 
-          class="switch-container" 
-          [class.disabled]="dailyNotifLoading"
-          (click)="toggleDailyRasiNotification()" 
-          title="Daily Rasi Push Notification (06:00 AM) - Click to ON/OFF"
-        >
-          <span class="switch-label">
-            <i class="bi" [ngClass]="dailyNotifEnabled ? 'bi-bell-fill' : 'bi-bell-slash'" [style.color]="dailyNotifEnabled ? '#d97706' : '#94a3b8'"></i>
-            Daily Push: <strong [style.color]="dailyNotifEnabled ? '#b45309' : '#64748b'">{{ dailyNotifEnabled ? 'ON' : 'OFF' }}</strong>
-          </span>
-          <div class="toggle-switch-track" [class.on]="dailyNotifEnabled">
-            <div class="toggle-switch-knob"></div>
-          </div>
-        </div>
-
-        <!-- 2. Refresh Icon Button -->
-        <button 
-          type="button" 
-          class="btn-cancel" 
-          (click)="loadBroadcastHistory()" 
-          style="padding: 7px 12px; font-size: 13px; border-radius: 8px;" 
-          [title]="'broadcast.refresh' | translate"
-        >
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
-
-        <!-- 3. New Notification Create Button -->
-        <button 
-          type="button" 
-          class="btn-primary" 
-          (click)="showCreateForm = true" 
-          style="padding: 7px 16px; font-size: 13px; font-weight: 700; border-radius: 8px; display: flex; align-items: center; gap: 6px;"
-          [title]="'broadcast.newNotif' | translate"
-        >
-          <i class="bi bi-plus-lg"></i>
-          <span>{{ 'broadcast.newNotif' | translate }}</span>
-        </button>
-      </div>
+  <!-- Clean Header Banner Card with Action Buttons -->
+  <div class="card-box header-banner-card"
+    style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h1
+        style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-megaphone-fill" style="color:#d97706;"></i>{{ 'broadcast.title' | translate }}
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'broadcast.subtitle' | translate }}
+      </p>
     </div>
 
-    <!-- SENT NOTIFICATIONS HISTORY LOG TABLE -->
-    <div class="card-box">
-      <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-        <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-clock-history" style="color:#d97706;"></i> {{ 'broadcast.sentHistory' | translate }}
-        </h3>
-        <span style="font-size: 12px; color: #64748b; font-weight: 600;">
-          {{ 'broadcast.totalNotifs' | translate }} {{ broadcastHistory.length }}
+    <!-- Action Buttons Bar (Toggle Button -> Refresh Icon -> New Notification Icon Button) -->
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <!-- 1. Animated iOS Style Daily Rasi Push Switch (Left of Refresh) -->
+      <div class="switch-container" [class.disabled]="dailyNotifLoading" (click)="toggleDailyRasiNotification()"
+        [title]="'broadcast.dailyPush' | translate">
+        <span class="switch-label">
+          <i class="bi" [ngClass]="dailyNotifEnabled ? 'bi-bell-fill' : 'bi-bell-slash'"
+            [style.color]="dailyNotifEnabled ? '#d97706' : '#94a3b8'"></i>
+          {{ 'broadcast.dailyPush' | translate }} <strong [style.color]="dailyNotifEnabled ? '#b45309' : '#64748b'">{{
+            dailyNotifEnabled ? ('broadcast.dailyPushOn' | translate) : ('broadcast.dailyPushOff' | translate)
+            }}</strong>
         </span>
+        <div class="toggle-switch-track" [class.on]="dailyNotifEnabled">
+          <div class="toggle-switch-knob"></div>
+        </div>
       </div>
 
-      @if (isLoadingHistory) {
-        <div style="text-align: center; padding: 32px; color: #64748b;">
-          <i class="bi bi-hourglass-split spin" style="font-size: 28px; color: #d97706;"></i>
-          <p style="margin-top: 8px; font-size: 13px;">{{ 'broadcast.fetchingData' | translate }}</p>
-        </div>
-      } @else if (broadcastHistory.length === 0) {
-        <div style="text-align: center; padding: 40px; color: #94a3b8;">
-          <i class="bi bi-inbox" style="font-size: 36px; color: #cbd5e1;"></i>
-          <p style="margin-top: 8px; font-size: 13px; font-weight: 600;">{{ 'broadcast.noHistoryYet' | translate }}</p>
-          <button type="button" class="btn-primary" (click)="showCreateForm = true" style="margin-top: 12px; padding: 8px 18px; font-size: 12px;">
-            <i class="bi bi-plus-lg"></i> {{ 'broadcast.sendFirstNotif' | translate }}
-          </button>
-        </div>
-      } @else {
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>{{ 'broadcast.colId' | translate }}</th>
-                <th>{{ 'broadcast.colTarget' | translate }}</th>
-                <th>{{ 'broadcast.colTitle' | translate }}</th>
-                <th>{{ 'broadcast.colMessage' | translate }}</th>
-                <th>{{ 'broadcast.colType' | translate }}</th>
-                <th>{{ 'broadcast.colSentAt' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of broadcastHistory; track item.id) {
-                <tr>
-                  <td style="font-weight:700;">#{{ item.id }}</td>
-                  <td>
-                    <span class="status-badge" [ngClass]="item.user_id ? 'badge-processing' : 'badge-completed'">
-                      {{ item.target_display }}
-                    </span>
-                  </td>
-                  <td style="font-weight: 700; color: #0f172a;">{{ item.title }}</td>
-                  <td style="max-width: 300px; font-size: 12.5px; color: #475569; line-height: 1.35;">
-                    {{ item.body || item.message }}
-                  </td>
-                  <td>
-                    <span class="status-badge badge-pending">{{ item.type }}</span>
-                  </td>
-                  <td style="font-size: 12px; color: #64748b; white-space: nowrap;">
-                    {{ item.created_at | date:'dd MMM yyyy, hh:mm a' }}
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
+      <!-- 2. Refresh Icon Button -->
+      <button type="button" class="btn-cancel" (click)="loadBroadcastHistory()"
+        style="padding: 7px 12px; font-size: 13px; border-radius: 8px;" [title]="'common.refresh' | translate">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+
+      <!-- 3. New Notification Create Button -->
+      <button type="button" class="btn-primary" (click)="showCreateForm = true"
+        style="padding: 7px 16px; font-size: 13px; font-weight: 700; border-radius: 8px; display: flex; align-items: center; gap: 6px;"
+        [title]="'broadcast.newNotification' | translate">
+        <i class="bi bi-plus-lg"></i>
+        <span>{{ 'broadcast.newNotification' | translate }}</span>
+      </button>
     </div>
+  </div>
+
+  <!-- SENT NOTIFICATIONS HISTORY LOG TABLE -->
+  <div class="card-box">
+    <div
+      style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+      <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-clock-history" style="color:#d97706;"></i> {{ 'broadcast.sentHistory' | translate }}
+      </h3>
+      <span style="font-size: 12px; color: #64748b; font-weight: 600;">
+        {{ 'broadcast.totalNotifications' | translate }} {{ broadcastHistory.length }}
+      </span>
+    </div>
+
+    @if (isLoadingHistory) {
+    <div style="text-align: center; padding: 32px; color: #64748b;">
+      <i class="bi bi-hourglass-split spin" style="font-size: 28px; color: #d97706;"></i>
+      <p style="margin-top: 8px; font-size: 13px;">{{ 'common.loading' | translate }}</p>
+    </div>
+    } @else if (broadcastHistory.length === 0) {
+    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+      <i class="bi bi-inbox" style="font-size: 36px; color: #cbd5e1;"></i>
+      <p style="margin-top: 8px; font-size: 13px; font-weight: 600;">{{ 'common.noRecords' | translate }}</p>
+      <button type="button" class="btn-primary" (click)="showCreateForm = true"
+        style="margin-top: 12px; padding: 8px 18px; font-size: 12px;">
+        <i class="bi bi-plus-lg"></i> {{ 'broadcast.newNotification' | translate }}
+      </button>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'broadcast.colId' | translate }}</th>
+            <th>{{ 'broadcast.colTarget' | translate }}</th>
+            <th>{{ 'broadcast.colTitle' | translate }}</th>
+            <th>{{ 'broadcast.colMessage' | translate }}</th>
+            <th>{{ 'broadcast.colType' | translate }}</th>
+            <th>{{ 'broadcast.colSentAt' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of broadcastHistory; track item.id) {
+          <tr>
+            <td style="font-weight:700;">#{{ item.id }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="item.user_id ? 'badge-processing' : 'badge-completed'">
+                {{ translationService.translateDynamic(item.target_display) }}
+              </span>
+            </td>
+            <td style="font-weight: 700; color: #0f172a;">{{ translationService.translateDynamic(item.title) }}</td>
+            <td style="max-width: 300px; font-size: 12.5px; color: #475569; line-height: 1.35;">
+              {{ translationService.translateDynamic(item.body || item.message) }}
+            </td>
+            <td>
+              <span class="status-badge badge-pending">{{ translationService.translateDynamic(item.type) }}</span>
+            </td>
+            <td style="font-size: 12px; color: #64748b; white-space: nowrap;">
+              {{ formatDate(item.created_at) }}
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
   }
 
   <!-- IF CREATE FORM MODE: SHOW FORM CARD WITH CLOSE (X) BUTTON -->
   @if (showCreateForm) {
-    <div class="card-box" style="width: 100%;">
-      <!-- Form Header with Title and Close (X) Button -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
-        <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 17px; color: #0f172a;">
-          <i class="bi bi-broadcast" style="color:#d97706;"></i> {{ 'broadcast.sendModalTitle' | translate }}
-        </h3>
-        <button 
-          type="button" 
-          class="btn-cancel" 
-          (click)="showCreateForm = false" 
-          style="padding: 4px 10px; font-size: 14px; font-weight: 800; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" 
-          [title]="'broadcast.close' | translate"
-        >
-          <i class="bi bi-x-lg"></i>
-        </button>
+  <div class="card-box" style="width: 100%;">
+    <!-- Form Header with Title and Close (X) Button -->
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 14px;">
+      <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 17px; color: #0f172a;">
+        <i class="bi bi-broadcast" style="color:#d97706;"></i> {{ 'broadcast.sendModalTitle' | translate }}
+      </h3>
+      <button type="button" class="btn-cancel" (click)="showCreateForm = false"
+        style="padding: 4px 10px; font-size: 14px; font-weight: 800; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"
+        [title]="'broadcast.close' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="sendBroadcast()">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div class="form-group" style="margin:0;">
+          <label>{{ 'broadcast.targetAudience' | translate }}:</label>
+          <select [(ngModel)]="broadcastForm.target" name="b_target" class="ctrl">
+            <option value="all">{{ 'broadcast.allUsers' | translate }}</option>
+            <option value="single">Single User</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Type:</label>
+          <select [(ngModel)]="broadcastForm.type" name="b_type" class="ctrl">
+            <option value="general">General Notification</option>
+            <option value="rasi_palan">Rasi Palan Alert</option>
+            <option value="appointment">Appointment Alert</option>
+            <option value="discount">Special Discount</option>
+          </select>
+        </div>
       </div>
 
-      <form (ngSubmit)="sendBroadcast()">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-          <div class="form-group" style="margin:0;">
-            <label>{{ 'broadcast.targetAudience' | translate }}:</label>
-            <select [(ngModel)]="broadcastForm.target" name="b_target" class="ctrl">
-              <option value="all">{{ 'broadcast.allUsers' | translate }}</option>
-              <option value="single">Single User</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin:0;">
-            <label>Type:</label>
-            <select [(ngModel)]="broadcastForm.type" name="b_type" class="ctrl">
-              <option value="general">General Notification</option>
-              <option value="rasi_palan">Rasi Palan Alert</option>
-              <option value="appointment">Appointment Alert</option>
-              <option value="discount">Special Discount</option>
-            </select>
-          </div>
-        </div>
+      @if (broadcastForm.target === 'single') {
+      <div class="form-group">
+        <label>{{ 'users.userId' | translate }}:</label>
+        <input type="number" [(ngModel)]="broadcastForm.user_id" name="b_uid" required class="ctrl"
+          placeholder="e.g. 12" />
+      </div>
+      }
 
-        @if (broadcastForm.target === 'single') {
-          <div class="form-group">
-            <label>{{ 'users.userId' | translate }}:</label>
-            <input type="number" [(ngModel)]="broadcastForm.user_id" name="b_uid" required class="ctrl" placeholder="e.g. 12"/>
-          </div>
-        }
+      <div class="form-group">
+        <label>{{ 'broadcast.msgTitle' | translate }}</label>
+        <input [(ngModel)]="broadcastForm.title" name="b_title" required class="ctrl" />
+      </div>
 
-        <div class="form-group">
-          <label>{{ 'broadcast.msgTitle' | translate }}</label>
-          <input [(ngModel)]="broadcastForm.title" name="b_title" required class="ctrl"/>
-        </div>
+      <div class="form-group">
+        <label>{{ 'broadcast.msgBody' | translate }}</label>
+        <textarea [(ngModel)]="broadcastForm.body" name="b_body" required rows="4" class="ctrl"></textarea>
+      </div>
 
-        <div class="form-group">
-          <label>{{ 'broadcast.msgBody' | translate }}</label>
-          <textarea [(ngModel)]="broadcastForm.body" name="b_body" required rows="4" class="ctrl"></textarea>
-        </div>
+      @if (broadcastMsg) {
+      <div style="margin-bottom:14px;font-size:13px;font-weight:700;color:#059669;">
+        <i class="bi bi-check-circle-fill"></i> {{ broadcastMsg }}
+      </div>
+      }
 
-        @if (broadcastMsg) {
-          <div style="margin-bottom:14px;font-size:13px;font-weight:700;color:#059669;">
-            <i class="bi bi-check-circle-fill"></i> {{ broadcastMsg }}
-          </div>
-        }
-
-        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-          <button type="button" class="btn-cancel" (click)="showCreateForm = false" style="padding:10px 20px;">
-            {{ 'common.cancel' | translate }}
-          </button>
-          <button type="submit" class="btn-primary" style="padding:10px 24px;">
-            <i class="bi bi-send-fill"></i> {{ 'broadcast.sendNow' | translate }}
-          </button>
-        </div>
-      </form>
-    </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-cancel" (click)="showCreateForm = false" style="padding:10px 20px;">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button type="submit" class="btn-primary" style="padding:10px 24px;">
+          <i class="bi bi-send-fill"></i> {{ 'broadcast.sendNow' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
   }
 
 </div>

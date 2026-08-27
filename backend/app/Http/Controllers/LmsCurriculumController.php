@@ -19,65 +19,81 @@ class LmsCurriculumController extends Controller
     {
         $year = (int) $request->input('year', date('Y'));
         $level = $request->input('level', 'ilanilai');
+        $today = now()->format('Y-m-d');
+
+        $defaultBatches = [
+            [
+                'batch_code'   => "{$year}-B1-{$level}",
+                'name'         => "Batch 1 (Jan - Mar {$year})",
+                'course_level' => $level,
+                'year'         => $year,
+                'quarter'      => 'Q1',
+                'start_date'   => "{$year}-01-01",
+                'end_date'     => "{$year}-03-31",
+            ],
+            [
+                'batch_code'   => "{$year}-B2-{$level}",
+                'name'         => "Batch 2 (Apr - Jun {$year})",
+                'course_level' => $level,
+                'year'         => $year,
+                'quarter'      => 'Q2',
+                'start_date'   => "{$year}-04-01",
+                'end_date'     => "{$year}-06-30",
+            ],
+            [
+                'batch_code'   => "{$year}-B3-{$level}",
+                'name'         => "Batch 3 (Jul - Sep {$year})",
+                'course_level' => $level,
+                'year'         => $year,
+                'quarter'      => 'Q3',
+                'start_date'   => "{$year}-07-01",
+                'end_date'     => "{$year}-09-30",
+            ],
+            [
+                'batch_code'   => "{$year}-B4-{$level}",
+                'name'         => "Batch 4 (Oct - Dec {$year})",
+                'course_level' => $level,
+                'year'         => $year,
+                'quarter'      => 'Q4',
+                'start_date'   => "{$year}-10-01",
+                'end_date'     => "{$year}-12-31",
+            ],
+        ];
+
+        foreach ($defaultBatches as $b) {
+            $startDate = $b['start_date'];
+            $endDate   = $b['end_date'];
+            if ($today >= $startDate && $today <= $endDate) {
+                $computedStatus = 'active';
+            } elseif ($today < $startDate) {
+                $computedStatus = 'upcoming';
+            } else {
+                $computedStatus = 'completed';
+            }
+
+            $existing = CourseBatch::where('year', $year)
+                ->where('course_level', $level)
+                ->where('quarter', $b['quarter'])
+                ->first();
+
+            if (!$existing) {
+                CourseBatch::create(array_merge($b, ['status' => $computedStatus]));
+            } else {
+                $existing->update([
+                    'name'         => $b['name'],
+                    'batch_code'   => $b['batch_code'],
+                    'start_date'   => $b['start_date'],
+                    'end_date'     => $b['end_date'],
+                    'status'       => $computedStatus,
+                ]);
+            }
+        }
 
         $batches = CourseBatch::where('year', $year)
             ->where('course_level', $level)
-            ->orderBy('id', 'asc')
+            ->orderByRaw("CASE WHEN status = 'active' THEN 1 WHEN status = 'upcoming' THEN 2 WHEN status = 'completed' THEN 3 ELSE 4 END")
+            ->orderBy('start_date', 'asc')
             ->get();
-
-        if ($batches->isEmpty()) {
-            $defaultBatches = [
-                [
-                    'batch_code'   => "{$year}-A-{$level}",
-                    'name'         => "Batch A (Feb - Apr {$year})",
-                    'course_level' => $level,
-                    'year'         => $year,
-                    'quarter'      => 'Q1',
-                    'start_date'   => "{$year}-02-01",
-                    'end_date'     => "{$year}-04-30",
-                    'status'       => 'active',
-                ],
-                [
-                    'batch_code'   => "{$year}-B-{$level}",
-                    'name'         => "Batch B (May - Jul {$year})",
-                    'course_level' => $level,
-                    'year'         => $year,
-                    'quarter'      => 'Q2',
-                    'start_date'   => "{$year}-05-01",
-                    'end_date'     => "{$year}-07-31",
-                    'status'       => 'upcoming',
-                ],
-                [
-                    'batch_code'   => "{$year}-C-{$level}",
-                    'name'         => "Batch C (Aug - Oct {$year})",
-                    'course_level' => $level,
-                    'year'         => $year,
-                    'quarter'      => 'Q3',
-                    'start_date'   => "{$year}-08-01",
-                    'end_date'     => "{$year}-10-31",
-                    'status'       => 'upcoming',
-                ],
-                [
-                    'batch_code'   => "{$year}-D-{$level}",
-                    'name'         => "Batch D (Nov - Jan " . ($year + 1) . ")",
-                    'course_level' => $level,
-                    'year'         => $year,
-                    'quarter'      => 'Q4',
-                    'start_date'   => "{$year}-11-01",
-                    'end_date'     => ($year + 1) . "-01-31",
-                    'status'       => 'upcoming',
-                ],
-            ];
-
-            foreach ($defaultBatches as $b) {
-                CourseBatch::create($b);
-            }
-
-            $batches = CourseBatch::where('year', $year)
-                ->where('course_level', $level)
-                ->orderBy('id', 'asc')
-                ->get();
-        }
 
         return response()->json([
             'success' => true,

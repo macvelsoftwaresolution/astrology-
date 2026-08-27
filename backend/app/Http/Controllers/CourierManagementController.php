@@ -168,20 +168,25 @@ class CourierManagementController extends Controller
         // Real notification to user
         $order = DB::table('book_orders')->where('id', $id)->first();
         if ($order && $order->student_id) {
-            $isUser = DB::table('users')->where('id', $order->student_id)->where('role', 'user')->exists();
-            if ($isUser) {
-                try {
-                    DB::table('notifications')->insert([
-                        'user_id'    => $order->student_id,
-                        'title'      => 'புத்தக ஆர்டர் நிலை: ' . $request->status,
-                        'body'       => 'உங்கள் ' . $order->book_title . ' புத்தக ஆர்டர் #' . $order->order_number . ' நிலை: ' . $request->status . ($request->awb_number ? ' (AWB: ' . $request->awb_number . ')' : ''),
-                        'type'       => 'book_order',
-                        'is_read'    => false,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                } catch (\Throwable $e) {}
-            }
+            try {
+                $statusMap = [
+                    'Processing' => 'செயலாக்கத்தில் உள்ளது',
+                    'Packed'     => 'பேக் செய்யப்பட்டது',
+                    'Shipped'    => 'அனுப்பி வைக்கப்பட்டது',
+                    'Delivered'  => 'விநியோகிக்கப்பட்டது',
+                ];
+                $statusTa = $statusMap[$request->status] ?? $request->status;
+
+                DB::table('notifications')->insert([
+                    'user_id'    => $order->student_id,
+                    'title'      => 'புத்தக ஆர்டர் நிலை: ' . $statusTa,
+                    'body'       => 'உங்கள் ' . $order->book_title . ' புத்தக ஆர்டர் #' . $order->order_number . ' நிலை: ' . $statusTa . ($request->awb_number ? ' (AWB: ' . $request->awb_number . ')' : ''),
+                    'type'       => 'book_order',
+                    'is_read'    => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
         }
 
         return response()->json([

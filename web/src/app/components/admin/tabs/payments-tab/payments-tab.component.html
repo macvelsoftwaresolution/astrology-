@@ -14,49 +14,75 @@
       <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
     </div>
   } @else {
-    <div class="card-box">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Txn ID</th>
-            <th>{{ 'services.client' | translate }}</th>
-            <th>{{ 'services.serviceType' | translate }}</th>
-            <th>{{ 'payments.amount' | translate }}</th>
-            <th>Razorpay Order ID</th>
-            <th>{{ 'payments.paymentId' | translate }}</th>
-            <th>{{ 'common.status' | translate }}</th>
-            <th>{{ 'payments.date' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (p of paymentTransactions; track p.id) {
+    <div class="card-box" style="padding: 0; overflow: hidden;">
+      <div class="table-responsive">
+        <table class="payments-table">
+          <thead>
             <tr>
-              <td><strong>#{{ p.id }}</strong></td>
-              <td>
-                <div>{{ p.user_name || 'Customer' }}</div>
-                <small class="muted">{{ p.user_phone || '-' }}</small>
-              </td>
-              <td><span class="badge-role">{{ p.payment_type || 'Astrology Service' }}</span></td>
-              <td><strong style="color:#b45309;font-size:14px;">₹{{ p.amount }}</strong></td>
-              <td style="font-family:monospace;font-size:11px;color:#475569;">{{ p.razorpay_order_id || '-' }}</td>
-              <td style="font-family:monospace;font-size:11px;color:#2563eb;">{{ p.razorpay_payment_id || '-' }}</td>
-              <td>
-                <span class="status-pill" [ngClass]="(p.status || 'Paid').toLowerCase()">
-                  <i class="bi bi-check-circle-fill"></i> {{ p.status || 'Paid' }}
-                </span>
-              </td>
-              <td style="font-size:12px;color:#64748b;">{{ p.created_at | date:'dd MMM yyyy, hh:mm a' }}</td>
+              <th style="width: 75px; text-align: center;">TXN ID</th>
+              <th style="min-width: 170px;">{{ 'services.client' | translate }}</th>
+              <th style="min-width: 160px; text-align: center;">{{ 'services.serviceType' | translate }}</th>
+              <th style="min-width: 110px; text-align: center;">{{ 'payments.amount' | translate }}</th>
+              <th style="min-width: 180px; text-align: center;">Razorpay Order ID</th>
+              <th style="min-width: 180px; text-align: center;">{{ 'payments.paymentId' | translate }}</th>
+              <th style="min-width: 130px; text-align: center;">{{ 'common.status' | translate }}</th>
+              <th style="min-width: 180px; text-align: center;">{{ 'payments.date' | translate }}</th>
             </tr>
-          }
-          @if (paymentTransactions.length === 0) {
-            <tr>
-              <td colspan="8" style="text-align:center;padding:24px;color:#64748b;">
-                {{ 'common.noRecords' | translate }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (p of paymentTransactions; track p.id) {
+              <tr>
+                <td style="text-align: center;">
+                  <span class="id-badge">#{{ p.id }}</span>
+                </td>
+                <td>
+                  <div class="customer-cell">
+                    <span class="customer-name">{{ p.user_name || (translationService.currentLanguage() === 'ta' ? 'பயனர்' : 'Customer') }}</span>
+                    @if (p.user_phone) {
+                      <span class="customer-phone">
+                        <i class="bi bi-telephone-fill" style="font-size: 10px; color: #94a3b8;"></i> {{ p.user_phone }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td style="text-align: center;">
+                  <span class="badge-service-type" [ngClass]="(p.payment_type || 'astrology').toLowerCase().includes('course') ? 'course' : ((p.payment_type || '').toLowerCase().includes('book') ? 'book' : 'astrology')">
+                    <i class="bi" [ngClass]="(p.payment_type || '').toLowerCase().includes('course') ? 'bi-mortarboard-fill' : ((p.payment_type || '').toLowerCase().includes('book') ? 'bi-book-half' : 'bi-stars')"></i>
+                    {{ formatPaymentType(p.payment_type) }}
+                  </span>
+                </td>
+                <td style="text-align: center;">
+                  <span class="amount-text">₹{{ p.amount }}</span>
+                </td>
+                <td style="text-align: center;">
+                  <span class="gateway-id-code order-id">{{ p.razorpay_order_id || '-' }}</span>
+                </td>
+                <td style="text-align: center;">
+                  <span class="gateway-id-code payment-id">{{ p.razorpay_payment_id || '-' }}</span>
+                </td>
+                <td style="text-align: center;">
+                  <span class="status-pill-paid">
+                    <i class="bi bi-check-circle-fill"></i> {{ formatStatus(p.status) }}
+                  </span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="date-time-cell" style="justify-content: center;">
+                    <i class="bi bi-calendar2-check" style="color: #d97706; font-size: 11px;"></i>
+                    <span>{{ formatDate(p.created_at) }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (paymentTransactions.length === 0) {
+              <tr>
+                <td colspan="8" style="text-align:center;padding:32px;color:#64748b;font-weight:500;">
+                  <i class="bi bi-info-circle me-1"></i> {{ 'common.noRecords' | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 </div>

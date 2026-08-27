@@ -327,8 +327,6 @@ class AuthController extends Controller
             'qualification'    => $request->input('qualification', ''),
             'courseLevel'      => $courseLevel,
             'trainingPurpose'  => $request->input('trainingPurpose', 'தொழிலாக கொள்ள'),
-            'trainingMode'     => $request->input('trainingMode', '1_day'),
-            'batchTiming'      => $request->input('batchTiming', 'A'),
             'batch_id'         => $batchId,
             'batch_name'       => $batchName,
             'prevCertificate'  => $request->input('prevCertificate', ''),

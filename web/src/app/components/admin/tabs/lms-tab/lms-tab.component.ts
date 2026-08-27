@@ -91,28 +91,32 @@ export class LmsTabComponent implements OnInit {
     }
   }
 
+  private static cachedBatchesMap: Map<string, any[]> = new Map();
+
   // --- 60-DAY DAILY CURRICULUM METHODS ---
   loadBatches(): void {
     const headers = this.authService.getAuthHeaders();
     const level = this.selectedCategory || 'ILANILAI';
     const year = this.selectedYear;
+    const cacheKey = `${year}-${level}`;
 
-    // Set immediate client-side default quarterly batches so UI never shows blank loading state
-    if (this.batches.length === 0) {
-      this.batches = [
-        { id: 1, batch_code: `${year}-A-${level}`, name: `Batch A (Feb - Apr ${year})`, quarter: 'Q1', start_date: `${year}-02-01`, end_date: `${year}-04-30` },
-        { id: 2, batch_code: `${year}-B-${level}`, name: `Batch B (May - Jul ${year})`, quarter: 'Q2', start_date: `${year}-05-01`, end_date: `${year}-07-31` },
-        { id: 3, batch_code: `${year}-C-${level}`, name: `Batch C (Aug - Oct ${year})`, quarter: 'Q3', start_date: `${year}-08-01`, end_date: `${year}-10-31` },
-        { id: 4, batch_code: `${year}-D-${level}`, name: `Batch D (Nov - Jan ${year + 1})`, quarter: 'Q4', start_date: `${year}-11-01`, end_date: `${year + 1}-01-31` }
-      ];
-      if (!this.selectedBatchId) {
-        this.selectBatch(this.batches[0].id);
+    // 1. Instant 0ms memory cache restore
+    if (LmsTabComponent.cachedBatchesMap.has(cacheKey)) {
+      const cached = LmsTabComponent.cachedBatchesMap.get(cacheKey)!;
+      if (cached && cached.length > 0) {
+        this.batches = cached;
+        const targetBatch = (this.selectedBatchId && this.batches.find(b => b.id === this.selectedBatchId))
+          ? this.selectedBatchId
+          : this.batches[0].id;
+        this.selectBatch(targetBatch);
       }
     }
 
+    // 2. Fetch fresh DB batches from backend API
     this.http.get<any>(`${environment.apiUrl}/admin/lms/batches?year=${year}&level=${level}`, headers).subscribe({
       next: (res) => {
         if (res.batches && res.batches.length > 0) {
+          LmsTabComponent.cachedBatchesMap.set(cacheKey, res.batches);
           this.batches = res.batches;
           const targetBatch = (this.selectedBatchId && this.batches.find(b => b.id === this.selectedBatchId))
             ? this.selectedBatchId
@@ -131,6 +135,26 @@ export class LmsTabComponent implements OnInit {
     this.loadCurriculum();
   }
 
+  getBatchDateRange(b: any): string {
+    if (!b) return '';
+    if (b.start_date && b.end_date) {
+      try {
+        const d1 = new Date(b.start_date);
+        const d2 = new Date(b.end_date);
+        if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return `${b.start_date} - ${b.end_date}`;
+        const isTa = this.translationService.currentLanguage() === 'ta';
+        const monthsTa = ['ஜன', 'பிப்', 'மார்', 'ஏப்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக', 'செப்', 'அக்', 'நவ', 'டிச'];
+        const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const m1 = isTa ? monthsTa[d1.getMonth()] : monthsEn[d1.getMonth()];
+        const m2 = isTa ? monthsTa[d2.getMonth()] : monthsEn[d2.getMonth()];
+        return `${d1.getDate()} ${m1} ${d1.getFullYear()} - ${d2.getDate()} ${m2} ${d2.getFullYear()}`;
+      } catch {
+        return `${b.start_date} - ${b.end_date}`;
+      }
+    }
+    return '';
+  }
+
   loadCurriculum(): void {
     if (!this.selectedBatchId) return;
     const headers = this.authService.getAuthHeaders();
@@ -143,15 +167,46 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
+  getBatchDisplayName(b: any): string {
+    if (!b) return '';
+    if (this.translationService.currentLanguage() === 'ta') {
+      let name = b.name || '';
+      name = name.replace(/Batch\s*1/gi, 'பிரிவு 1')
+                 .replace(/Batch\s*2/gi, 'பிரிவு 2')
+                 .replace(/Batch\s*3/gi, 'பிரிவு 3')
+                 .replace(/Batch\s*4/gi, 'பிரிவு 4')
+                 .replace(/Batch\s*A/gi, 'பிரிவு A')
+                 .replace(/Batch\s*B/gi, 'பிரிவு B')
+                 .replace(/Batch\s*C/gi, 'பிரிவு C')
+                 .replace(/Batch\s*D/gi, 'பிரிவு D')
+                 .replace(/Jan\s*-\s*Mar/gi, 'ஜன - மார்')
+                 .replace(/Apr\s*-\s*Jun/gi, 'ஏப் - ஜூன்')
+                 .replace(/Jul\s*-\s*Sep/gi, 'ஜூலை - செப்')
+                 .replace(/Oct\s*-\s*Dec/gi, 'அக் - டிச')
+                 .replace(/Feb\s*-\s*Apr/gi, 'பிப் - ஏப்')
+                 .replace(/May\s*-\s*Jul/gi, 'மே - ஜூலை')
+                 .replace(/Aug\s*-\s*Oct/gi, 'ஆக - அக்')
+                 .replace(/Nov\s*-\s*Jan/gi, 'நவ - ஜன');
+      return `${name} (${b.quarter || ''})`;
+    }
+    return `${b.name} (${b.quarter || ''})`;
+  }
+
   getFilteredCurriculumDays(): any[] {
     const allDays = [];
+    const isTa = this.translationService.currentLanguage() === 'ta';
+
     // Ensure all 60 days exist in display grid (Day 1 to 60)
     for (let i = 1; i <= 60; i++) {
       const found = this.curriculumDays.find(d => d.day_number === i);
+      const defaultTitle = isTa
+        ? `நாள் ${i}: பாடத் தலைப்பு அமைக்கப்படவில்லை`
+        : `Day ${i}: Lesson Title Not Set`;
+
       allDays.push(found || {
         batch_id: this.selectedBatchId,
         day_number: i,
-        title: `நாள் ${i}: பாடத் தலைப்பு அமைக்கப்படவில்லை`,
+        title: defaultTitle,
         description: '',
         audio_url: '',
         images_json: [],
