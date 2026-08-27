@@ -151,6 +151,17 @@ class UserProfileController extends Controller
             ->get()
             ->map(function ($u) {
                 $u->jathagam_details = $u->jathagam_details ? json_decode($u->jathagam_details) : null;
+                
+                $bookingCount = DB::table('bookings')
+                    ->where(function($q) use ($u) {
+                        $q->where('user_id', $u->id);
+                        if (!empty($u->phone)) {
+                            $q->orWhere('user_phone', $u->phone);
+                        }
+                    })
+                    ->count();
+
+                $u->bookings_count = $bookingCount;
                 return $u;
             });
 

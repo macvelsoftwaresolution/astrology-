@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -20,6 +20,11 @@ export class UsersTabComponent implements OnInit {
   isLoading = false;
   userSearchQuery = '';
   selectedUserForProfile: any = null;
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.isFilterDropdownOpen = false;
+  }
 
   constructor(
     private http: HttpClient,
@@ -53,8 +58,73 @@ export class UsersTabComponent implements OnInit {
     });
   }
 
+  selectedCategoryFilter: 'all' | 'students' | 'appointments' | 'both' | 'members' = 'all';
+  isFilterDropdownOpen = false;
+
+  toggleFilterDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+  }
+
+  closeFilterDropdown(): void {
+    this.isFilterDropdownOpen = false;
+  }
+
+  selectFilter(filter: 'all' | 'students' | 'appointments' | 'both' | 'members', event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.selectedCategoryFilter = filter;
+    this.isFilterDropdownOpen = false;
+  }
+
+  getActiveFilterIcon(): string {
+    switch (this.selectedCategoryFilter) {
+      case 'students': return 'bi bi-mortarboard-fill';
+      case 'appointments': return 'bi bi-calendar2-check-fill';
+      case 'both': return 'bi bi-stars';
+      case 'members': return 'bi bi-person-badge-fill';
+      default: return 'bi bi-people-fill';
+    }
+  }
+
+  getActiveFilterKey(): string {
+    switch (this.selectedCategoryFilter) {
+      case 'students': return 'users.studentsOnly';
+      case 'appointments': return 'users.appointmentsOnly';
+      case 'both': return 'users.bothStudentsAndAppointments';
+      case 'members': return 'users.generalMembers';
+      default: return 'users.allUsers';
+    }
+  }
+
+  getActiveFilterCount(): number {
+    switch (this.selectedCategoryFilter) {
+      case 'students': return this.studentsCount;
+      case 'appointments': return this.appointmentsCount;
+      case 'both': return this.bothCount;
+      case 'members': return this.membersCount;
+      default: return this.nonAdminUsers.length;
+    }
+  }
+
   getFilteredUsers(): any[] {
     let list = this.users.filter(u => u.role !== 'admin');
+
+    // 1. Category Filter
+    if (this.selectedCategoryFilter === 'students') {
+      list = list.filter(u => this.isStudent(u));
+    } else if (this.selectedCategoryFilter === 'appointments') {
+      list = list.filter(u => this.isAppointmentUser(u));
+    } else if (this.selectedCategoryFilter === 'both') {
+      list = list.filter(u => this.isBothStudentAndAppointment(u));
+    } else if (this.selectedCategoryFilter === 'members') {
+      list = list.filter(u => !this.isStudent(u) && !this.isAppointmentUser(u));
+    }
+
+    // 2. Search Query Filter
     if (this.userSearchQuery && this.userSearchQuery.trim()) {
       const q = this.userSearchQuery.toLowerCase().trim();
       list = list.filter(u =>
@@ -66,6 +136,26 @@ export class UsersTabComponent implements OnInit {
       );
     }
     return list;
+  }
+
+  get nonAdminUsers(): any[] {
+    return this.users.filter(u => u.role !== 'admin');
+  }
+
+  get studentsCount(): number {
+    return this.nonAdminUsers.filter(u => this.isStudent(u)).length;
+  }
+
+  get appointmentsCount(): number {
+    return this.nonAdminUsers.filter(u => this.isAppointmentUser(u)).length;
+  }
+
+  get bothCount(): number {
+    return this.nonAdminUsers.filter(u => this.isBothStudentAndAppointment(u)).length;
+  }
+
+  get membersCount(): number {
+    return this.nonAdminUsers.filter(u => !this.isStudent(u) && !this.isAppointmentUser(u)).length;
   }
 
   deleteUser(id: number): void {
@@ -96,6 +186,15 @@ export class UsersTabComponent implements OnInit {
     if (!u) return false;
     const d = this.getParsedDetails(u);
     return !!(u.student_id || d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.trainingMode || d?.qualification);
+  }
+
+  isAppointmentUser(u: any): boolean {
+    if (!u) return false;
+    return !!(u.bookings_count && u.bookings_count > 0);
+  }
+
+  isBothStudentAndAppointment(u: any): boolean {
+    return this.isStudent(u) && this.isAppointmentUser(u);
   }
 
   getStudentLevel(u: any): string {

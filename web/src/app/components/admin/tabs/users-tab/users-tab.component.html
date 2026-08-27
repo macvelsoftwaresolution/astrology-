@@ -9,17 +9,125 @@
     </div>
   </div>
 
-  <!-- SEARCH CONTROLS -->
-  <div class="card-box" style="margin-bottom: 20px; padding: 12px 18px;">
-    <div style="position:relative;">
-      <i class="bi bi-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;"></i>
+  <!-- SEARCH & CATEGORY SELECT FILTER CONTROLS -->
+  <div class="card-box search-filter-box" style="margin-bottom: 20px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; overflow: visible; position: relative; z-index: 10;">
+    <!-- Search Input -->
+    <div style="position: relative; flex: 1; min-width: 260px;">
+      <i class="bi bi-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
       <input 
         type="text" 
         [(ngModel)]="userSearchQuery" 
         [placeholder]="'users.searchUser' | translate" 
-        class="ctrl"
-        style="padding-left:38px; width: 100%; border-radius: 8px;"
+        class="ctrl search-input-ctrl"
+        style="padding-left: 38px; width: 100%; border-radius: 8px; height: 42px; box-sizing: border-box;"
       />
+    </div>
+
+    <!-- Professional Category Select Dropdown with Embedded Icons & Dynamic Language -->
+    <div class="user-custom-dropdown-wrap" (click)="$event.stopPropagation()">
+      <label class="dropdown-field-label">
+        <i class="bi bi-filter-square-fill" style="color: #b45309; font-size: 15px;"></i>
+        <span>{{ 'users.filterType' | translate }}</span>
+      </label>
+
+      <div class="custom-select-container">
+        <button 
+          type="button" 
+          class="custom-select-trigger-btn" 
+          [class.active]="isFilterDropdownOpen"
+          (click)="toggleFilterDropdown($event)">
+          <div class="trigger-left-content">
+            <i [class]="getActiveFilterIcon()" class="trigger-icon-colored"></i>
+            <span class="trigger-label-text">{{ getActiveFilterKey() | translate }}</span>
+            <span class="trigger-count-pill">{{ getActiveFilterCount() }}</span>
+          </div>
+          <i class="bi bi-chevron-down trigger-arrow-icon" [class.rotated]="isFilterDropdownOpen"></i>
+        </button>
+
+        @if (isFilterDropdownOpen) {
+          <div class="custom-select-menu-panel">
+            <div 
+              class="dropdown-menu-option-item" 
+              [class.selected]="selectedCategoryFilter === 'all'"
+              (click)="selectFilter('all', $event)">
+              <div class="opt-left">
+                <i class="bi bi-people-fill opt-icon opt-icon-all"></i>
+                <span class="opt-name">{{ 'users.allUsers' | translate }}</span>
+              </div>
+              <div class="opt-right">
+                <span class="opt-count-tag">{{ nonAdminUsers.length }}</span>
+                @if (selectedCategoryFilter === 'all') {
+                  <i class="bi bi-check2 opt-check"></i>
+                }
+              </div>
+            </div>
+
+            <div 
+              class="dropdown-menu-option-item" 
+              [class.selected]="selectedCategoryFilter === 'students'"
+              (click)="selectFilter('students', $event)">
+              <div class="opt-left">
+                <i class="bi bi-mortarboard-fill opt-icon opt-icon-students"></i>
+                <span class="opt-name">{{ 'users.studentsOnly' | translate }}</span>
+              </div>
+              <div class="opt-right">
+                <span class="opt-count-tag">{{ studentsCount }}</span>
+                @if (selectedCategoryFilter === 'students') {
+                  <i class="bi bi-check2 opt-check"></i>
+                }
+              </div>
+            </div>
+
+            <div 
+              class="dropdown-menu-option-item" 
+              [class.selected]="selectedCategoryFilter === 'appointments'"
+              (click)="selectFilter('appointments', $event)">
+              <div class="opt-left">
+                <i class="bi bi-calendar2-check-fill opt-icon opt-icon-appointments"></i>
+                <span class="opt-name">{{ 'users.appointmentsOnly' | translate }}</span>
+              </div>
+              <div class="opt-right">
+                <span class="opt-count-tag">{{ appointmentsCount }}</span>
+                @if (selectedCategoryFilter === 'appointments') {
+                  <i class="bi bi-check2 opt-check"></i>
+                }
+              </div>
+            </div>
+
+            <div 
+              class="dropdown-menu-option-item" 
+              [class.selected]="selectedCategoryFilter === 'both'"
+              (click)="selectFilter('both', $event)">
+              <div class="opt-left">
+                <i class="bi bi-stars opt-icon opt-icon-both"></i>
+                <span class="opt-name">{{ 'users.bothStudentsAndAppointments' | translate }}</span>
+              </div>
+              <div class="opt-right">
+                <span class="opt-count-tag">{{ bothCount }}</span>
+                @if (selectedCategoryFilter === 'both') {
+                  <i class="bi bi-check2 opt-check"></i>
+                }
+              </div>
+            </div>
+
+            <div 
+              class="dropdown-menu-option-item" 
+              [class.selected]="selectedCategoryFilter === 'members'"
+              (click)="selectFilter('members', $event)">
+              <div class="opt-left">
+                <i class="bi bi-person-badge-fill opt-icon opt-icon-members"></i>
+                <span class="opt-name">{{ 'users.generalMembers' | translate }}</span>
+              </div>
+              <div class="opt-right">
+                <span class="opt-count-tag">{{ membersCount }}</span>
+                @if (selectedCategoryFilter === 'members') {
+                  <i class="bi bi-check2 opt-check"></i>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </div>
 
@@ -37,7 +145,7 @@
               <th>{{ 'users.name' | translate }}</th>
               <th>{{ 'user.email' | translate }}</th>
               <th>{{ 'user.phone' | translate }}</th>
-              <th>சுயவிவரம் / ஜாதகம்</th>
+              <th>சுயவிவரம் / வகை</th>
               <th style="min-width: 170px;">{{ 'users.registeredOn' | translate }}</th>
               <th style="min-width: 160px;">{{ 'common.actions' | translate }}</th>
             </tr>
@@ -77,9 +185,38 @@
                   }
                 </td>
                 <td>
-                  @if (isStudent(u)) {
+                  <!-- 1. When Filter is explicitly 'students' -> show only Student badge -->
+                  @if (selectedCategoryFilter === 'students') {
                     <span class="profile-tag-lms">
-                      <i class="bi bi-mortarboard"></i> {{ getStudentLevel(u) }}
+                      <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+                    </span>
+                  }
+                  <!-- 2. When Filter is explicitly 'appointments' -> show only Appointment badge -->
+                  @else if (selectedCategoryFilter === 'appointments') {
+                    <span class="profile-tag-booking">
+                      <i class="bi bi-calendar2-check-fill"></i> முன்பதிவு ({{ u.bookings_count }})
+                    </span>
+                  }
+                  <!-- 3. When 'Both' or 'All' is selected and user has both roles -> show dual badge -->
+                  @else if (isBothStudentAndAppointment(u)) {
+                    <div class="dual-tag-wrap">
+                      <span class="profile-tag-lms">
+                        <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+                      </span>
+                      <span class="tag-separator">/</span>
+                      <span class="profile-tag-booking">
+                        <i class="bi bi-calendar2-check-fill"></i> முன்பதிவு ({{ u.bookings_count }})
+                      </span>
+                    </div>
+                  }
+                  <!-- 4. Default Fallbacks -->
+                  @else if (isStudent(u)) {
+                    <span class="profile-tag-lms">
+                      <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+                    </span>
+                  } @else if (isAppointmentUser(u)) {
+                    <span class="profile-tag-booking">
+                      <i class="bi bi-calendar2-check-fill"></i> முன்பதிவு ({{ u.bookings_count }})
                     </span>
                   } @else if (getParsedDetails(u)?.rasi || u.jathagam_profile?.rasi) {
                     <span class="profile-tag-horoscope">
@@ -87,7 +224,7 @@
                     </span>
                   } @else {
                     <span class="profile-tag-member">
-                      <i class="bi bi-person"></i> உறுப்பினர்
+                      <i class="bi bi-person-badge-fill"></i> உறுப்பினர்
                     </span>
                   }
                 </td>
