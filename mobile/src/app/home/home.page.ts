@@ -155,6 +155,10 @@ export class HomePage implements OnInit {
     return this.authService.getCurrentUser()?.name || 'பயனர்';
   }
 
+  goToJathagamWriting() {
+    this.router.navigate(['/jathagam-writing']);
+  }
+
   customBackHandler = () => {
     return this.goBackStep();
   };

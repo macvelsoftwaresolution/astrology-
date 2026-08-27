@@ -298,6 +298,22 @@ export const MOBILE_TA_TRANSLATIONS: Record<string, any> = {
     loginRequired: "தயவுசெய்து உள்நுழைவு செய்யவும்.",
     saveError: "சேமிப்பில் பிழை ஏற்பட்டது.",
     nameDobRasiRequired: "பெயர், பிறந்த தேதி மற்றும் ராசி கட்டாயம்."
+  },
+  jathagamWriting: {
+    title: "ஜாதகம் எழுதுதல்",
+    name: "பெயர்",
+    phone: "அலைபேசி எண்",
+    dob: "பிறந்த தேதி",
+    tob: "பிறந்த நேரம்",
+    pob: "பிறந்த ஊர்",
+    gender: "பாலினம்",
+    male: "ஆண்",
+    female: "பெண்",
+    notes: "குறிப்புகள்",
+    submitBtn: "செலுத்தி முன்பதிவு செய்க",
+    processing: "செயலாக்கப்படுகிறது...",
+    successTitle: "முன்பதிவு வெற்றிகரமாக உறுதியானது!",
+    successDesc: "உங்கள் ஜாதகம் எழுதுதல் முன்பதிவு வெற்றிகரமாக பெறப்பட்டது. எமது அலுவலகத்திலிருந்து விரைவில் உங்களை தொடர்புகொள்வோம்."
   }
 };
 
@@ -597,6 +613,22 @@ export const MOBILE_EN_TRANSLATIONS: Record<string, any> = {
     loginRequired: "Please sign in.",
     saveError: "Error occurred while saving.",
     nameDobRasiRequired: "Name, date of birth and Rasi are required."
+  },
+  jathagamWriting: {
+    title: "Jathagam Writing",
+    name: "Name",
+    phone: "Phone Number",
+    dob: "Date of Birth (DOB)",
+    tob: "Time of Birth (TOB)",
+    pob: "Place of Birth (POB)",
+    gender: "Gender",
+    male: "Male",
+    female: "Female",
+    notes: "Notes",
+    submitBtn: "Pay & Book",
+    processing: "Processing...",
+    successTitle: "Booking Confirmed Successfully!",
+    successDesc: "Your Jathagam Writing booking has been received. Our office will contact you soon."
   }
 };
 

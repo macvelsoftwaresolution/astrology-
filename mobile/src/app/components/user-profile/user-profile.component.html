@@ -334,6 +334,7 @@
                   <span class="bpc-price">₹{{ b.price }}</span>
                 </div>
 
+                @if (!b.service.includes('Jathagam') && !b.service.includes('ஜாதகம்')) {
                 <div class="bpc-astro-info">
                   <i class="bi bi-person-badge-fill text-gold me-1"></i>
                   <span>ஜோதிடர்: <strong>{{ b.astrologer_name }}</strong></span>
@@ -343,6 +344,7 @@
                   <span><i class="bi bi-calendar-event me-1"></i> {{ b.date }}</span>
                   <span><i class="bi bi-clock me-1"></i> {{ b.slot }}</span>
                 </div>
+                }
 
                 <!-- 3-Step Live Progress Tracker -->
                 <div class="bpc-progress-tracker">

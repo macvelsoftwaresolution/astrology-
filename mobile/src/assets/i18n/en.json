@@ -294,5 +294,21 @@
     "loginRequired": "Please log in to continue.",
     "saveError": "Error saving data. Please try again.",
     "nameDobRasiRequired": "Name, Date of birth, and Rasi are required."
+  },
+  "jathagamWriting": {
+    "title": "Jathagam Writing",
+    "name": "Name",
+    "phone": "Phone Number",
+    "dob": "Date of Birth (DOB)",
+    "tob": "Time of Birth (TOB)",
+    "pob": "Place of Birth (POB)",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "notes": "Notes",
+    "submitBtn": "Pay & Book",
+    "processing": "Processing...",
+    "successTitle": "Booking Confirmed Successfully!",
+    "successDesc": "Your Jathagam Writing booking has been received. Our office will contact you soon."
   }
 }

@@ -111,7 +111,7 @@
         <strong>{{ 'home.matrimonyMatch' | translate }}</strong>
         <span>{{ 'home.horoscopeMatch' | translate }}</span>
       </div>
-      <div class="quick-service-box" (click)="selectTab('services'); selectServiceCategory(displayCategories[0])">
+      <div class="quick-service-box" (click)="goToJathagamWriting()">
         <div class="box-icon-wrapper"><span class="box-icon"><i
               class="bi bi-journal-bookmark-fill text-primary"></i></span></div>
         <strong>{{ 'home.writeHoroscope' | translate }}</strong>
@@ -150,7 +150,6 @@
             @if (hasBookedService(cat.title)) {
               <span style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">முன்பதிவு செய்யப்பட்டது (Booked)</span>
             }
-            <span class="cmc-arrow"><i class="bi bi-chevron-right"></i></span>
           </div>
         </div>
       </div>
