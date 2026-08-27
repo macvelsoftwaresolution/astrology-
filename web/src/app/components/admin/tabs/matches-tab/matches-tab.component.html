@@ -1,95 +1,394 @@
 <div class="matches-container">
-  <!-- Header Banner in a clean Div Card -->
-  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-    <div>
-      <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-heart-fill" style="color:#e11d48;"></i>{{ 'matches.title' | translate }}
-      </h1>
-      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'matches.subtitle' | translate }}</p>
+  @if (activeView === 'list') {
+    <!-- Header Banner in a clean Div Card -->
+    <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-heart-fill" style="color:#e11d48;"></i>{{ 'matches.title' | translate }}
+        </h1>
+        <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'matches.subtitle' | translate }}</p>
+      </div>
     </div>
-  </div>
 
-  @if (isLoading) {
-    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
-    </div>
-  } @else {
-    <div class="card-box">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>{{ 'matches.boyDetails' | translate }}</th>
-            <th>{{ 'matches.girlDetails' | translate }}</th>
-            <th>{{ 'common.status' | translate }}</th>
-            <th>{{ 'services.bookingDate' | translate }}</th>
-            <th>{{ 'common.actions' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (m of marriageMatches; track m.id) {
+    @if (isLoading) {
+      <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+        <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
+      </div>
+    } @else {
+      <div class="card-box" style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td><strong>#{{ m.id }}</strong></td>
-              <td>
-                <div style="font-weight:600;color:#0f172a;">{{ m.boy_name }}</div>
-                <small class="muted">{{ m.boy_rasi }} &bull; {{ m.boy_nakshatra }}</small>
-                @if (m.user_phone) {
-                  <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:4px;">
-                    <a [href]="'tel:' + m.user_phone" class="btn-tel-call">
-                      <i class="bi bi-telephone-fill"></i> {{ m.user_phone }}
-                    </a>
-                    <a [href]="'https://wa.me/91' + m.user_phone" target="_blank" class="btn-wa-link">
-                      <i class="bi bi-whatsapp"></i> WA
-                    </a>
-                  </div>
-                }
-              </td>
-              <td>
-                <div style="font-weight:600;color:#0f172a;">{{ m.girl_name }}</div>
-                <small class="muted">{{ m.girl_rasi }} &bull; {{ m.girl_nakshatra }}</small>
-              </td>
-              <td>
-                <span class="status-pill" [ngClass]="(m.admin_status || m.consultation_status || 'Pending').toLowerCase()">
-                  {{ m.admin_status || m.consultation_status || 'Pending' }}
-                </span>
-                @if (m.admin_notes) {
-                  <div class="notes-preview-snippet" [title]="m.admin_notes">
-                    <i class="bi bi-card-text"></i> {{ m.admin_notes }}
-                  </div>
-                }
-              </td>
-              <td style="font-size:12px;color:#64748b;">{{ m.created_at | date:'dd MMM yyyy' }}</td>
-              <td>
-                <div style="display:flex;gap:6px;">
-                  <button class="btn-sm" (click)="selectedMatch = m">
-                    <i class="bi bi-eye-fill"></i> {{ 'matches.viewDetails' | translate }}
-                  </button>
-                  <button class="btn-sm" (click)="openEditMatchStatus(m)">
-                    <i class="bi bi-pencil"></i> {{ 'common.status' | translate }}
-                  </button>
-                  <button class="btn-sm" (click)="triggerUpload(m.id)" style="color: #2563eb; border-color: #2563eb; background: #eff6ff;">
-                    <i class="bi bi-upload"></i> {{ 'matches.uploadReport' | translate }}
-                  </button>
-                  <button class="btn-sm" (click)="deleteMatch(m.id)" style="color: #e11d48; border-color: #fecdd3; background: #fff1f2;">
-                    <i class="bi bi-trash-fill"></i> {{ 'common.delete' | translate }}
-                  </button>
-                </div>
-              </td>
+              <th>ID</th>
+              <th>{{ 'matches.boyDetails' | translate }}</th>
+              <th>{{ 'matches.girlDetails' | translate }}</th>
+              <th>{{ 'common.status' | translate }}</th>
+              <th>அறிக்கை (Report)</th>
+              <th>{{ 'services.bookingDate' | translate }}</th>
+              <th>{{ 'common.actions' | translate }}</th>
             </tr>
-          }
-          @if (marriageMatches.length === 0) {
-            <tr>
-              <td colspan="8" style="text-align:center;padding:24px;color:#64748b;">
-                {{ 'common.noRecords' | translate }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (m of marriageMatches; track m.id) {
+              <tr>
+                <td><strong>#{{ m.id }}</strong></td>
+                <td>
+                  <div style="font-weight:600;color:#0f172a;">{{ m.boy_name }}</div>
+                  <small class="muted">{{ m.boy_rasi }} &bull; {{ m.boy_nakshatra }}</small>
+                  @if (m.user_phone) {
+                    <div class="phone-contact-row" style="margin-top:4px;display:flex;gap:4px;">
+                      <a [href]="'tel:' + m.user_phone" class="btn-tel-call">
+                        <i class="bi bi-telephone-fill"></i> {{ m.user_phone }}
+                      </a>
+                      <a [href]="'https://wa.me/91' + m.user_phone" target="_blank" class="btn-wa-link">
+                        <i class="bi bi-whatsapp"></i> WA
+                      </a>
+                    </div>
+                  }
+                </td>
+                <td>
+                  <div style="font-weight:600;color:#0f172a;">{{ m.girl_name }}</div>
+                  <small class="muted">{{ m.girl_rasi }} &bull; {{ m.girl_nakshatra }}</small>
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="(m.admin_status || m.consultation_status || 'Pending').toLowerCase()">
+                    {{ m.admin_status || m.consultation_status || 'Pending' }}
+                  </span>
+                </td>
+                <td>
+                  @if (m.report_data) {
+                    <span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">
+                      <i class="bi bi-check-circle-fill"></i> அறிக்கை உள்ளது
+                    </span>
+                  } @else {
+                    <span style="background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;">
+                      நிரப்பப்படவில்லை
+                    </span>
+                  }
+                </td>
+                <td style="font-size:12px;color:#64748b;">{{ m.created_at | date:'dd MMM yyyy' }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <!-- Main Action: Fill Report Form -->
+                    <button class="btn-sm" (click)="openReportForm(m)" style="color: #047857; border-color: #6ee7b7; background: #ecfdf5; font-weight:700;">
+                      <i class="bi bi-file-earmark-text-fill"></i> {{ 'marriageReport.title' | translate }}
+                    </button>
+
+                    <button class="btn-sm" (click)="selectedMatch = m">
+                      <i class="bi bi-eye-fill"></i> {{ 'matches.viewDetails' | translate }}
+                    </button>
+                    <button class="btn-sm" (click)="openEditMatchStatus(m)">
+                      <i class="bi bi-pencil"></i> {{ 'common.status' | translate }}
+                    </button>
+                    <button class="btn-sm" (click)="triggerUpload(m.id)" style="color: #2563eb; border-color: #2563eb; background: #eff6ff;" title="Upload PDF File">
+                      <i class="bi bi-upload"></i> PDF
+                    </button>
+                    <button class="btn-sm" (click)="deleteMatch(m.id)" style="color: #e11d48; border-color: #fecdd3; background: #fff1f2;">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (marriageMatches.length === 0) {
+              <tr>
+                <td colspan="8" style="text-align:center;padding:24px;color:#64748b;">
+                  {{ 'common.noRecords' | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   }
 
-  <!-- End Table -->
+  <!-- MAIN LAYOUT: CLEAN, NEAT & RESPONSIVE MARRIAGE MATCH REPORT FORM -->
+  @if (activeView === 'report-form' && reportingMatch) {
+    <div class="card-box" style="padding: 24px; margin-bottom: 30px; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 16px;">
+      
+      <!-- TOP NAVIGATION BAR -->
+      <div style="margin-bottom: 20px;">
+        <button type="button" class="btn-cancel" (click)="closeReportForm()" style="display:inline-flex;align-items:center;gap:6px; background:#f1f5f9; border-color:#cbd5e1; color:#334155; font-weight:600; padding: 8px 16px; border-radius: 8px;">
+          <i class="bi bi-arrow-left"></i> {{ 'marriageReport.back' | translate }}
+        </button>
+      </div>
+
+      <!-- FORM CONTENT: 100% RESPONSIVE FOR MOBILE & DESKTOP -->
+      <form (ngSubmit)="saveReportForm()">
+        
+        <!-- SECTION 1: CENTER & ASTROLOGER DETAILS -->
+        <div style="background: #fafafa; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #334155; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+            <i class="bi bi-building" style="color: #d97706;"></i> {{ 'marriageReport.astrologerDetails' | translate }}
+          </h3>
+          <div class="grid-mobile-1col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+            <div>
+              <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">{{ 'marriageReport.centerTitle' | translate }}</label>
+              <input type="text" [(ngModel)]="reportForm.astrologer_title" name="ast_title" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px;" />
+            </div>
+            <div>
+              <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">{{ 'marriageReport.astrologerName' | translate }}</label>
+              <input type="text" [(ngModel)]="reportForm.astrologer_name" name="ast_name" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px;" />
+            </div>
+            <div>
+              <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">{{ 'marriageReport.contactPhone' | translate }}</label>
+              <input type="text" [(ngModel)]="reportForm.astrologer_phone" name="ast_phone" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px;" />
+            </div>
+            <div>
+              <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">{{ 'marriageReport.address' | translate }}</label>
+              <input type="text" [(ngModel)]="reportForm.astrologer_address" name="ast_address" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: BASIC COUPLE DETAILS (SIDE BY SIDE / RESPONSIVE 1COL) -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+          <h3 style="margin: 0 0 14px 0; font-size: 15px; color: #0f172a; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+            <i class="bi bi-people-fill" style="color: #2563eb;"></i> {{ 'marriageReport.coupleDetails' | translate }}
+          </h3>
+
+          <div class="grid-mobile-1col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <!-- FEMALE / GIRL -->
+            <div style="background: #fff5f5; border: 1.5px solid #fecdd3; border-radius: 12px; padding: 16px;">
+              <h4 style="margin: 0 0 12px 0; color: #e11d48; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-gender-female"></i> {{ 'marriageReport.girlDetails' | translate }}
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                  <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.name' | translate }}</label>
+                  <input type="text" [(ngModel)]="reportForm.girl_name" name="rf_gname" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                </div>
+                <div class="grid-sub-2col">
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.star' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_star" name="rf_gstar" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.rasi' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_rasi" name="rf_grasi" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div class="grid-sub-3col">
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.age' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_age" name="rf_gage" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.animal' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_mirugam" name="rf_gmirugam" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.bird' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_patshi" name="rf_gpatshi" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div class="grid-sub-3col">
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.tree' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_maram" name="rf_gmaram" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.ganam' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_ganam" name="rf_gganam" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.nadi' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_nadi" name="rf_gnadi" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MALE / BOY -->
+            <div style="background: #f0f7ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 16px;">
+              <h4 style="margin: 0 0 12px 0; color: #2563eb; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-gender-male"></i> {{ 'marriageReport.boyDetails' | translate }}
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                  <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.name' | translate }}</label>
+                  <input type="text" [(ngModel)]="reportForm.boy_name" name="rf_bname" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                </div>
+                <div class="grid-sub-2col">
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.star' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_star" name="rf_bstar" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.rasi' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_rasi" name="rf_brasi" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div class="grid-sub-3col">
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.age' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_age" name="rf_bage" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.animal' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_mirugam" name="rf_bmirugam" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.bird' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_patshi" name="rf_bpatshi" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div class="grid-sub-3col">
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.tree' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_maram" name="rf_bmaram" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.ganam' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_ganam" name="rf_bganam" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11.5px; font-weight: 600; color: #475569;">{{ 'marriageReport.nadi' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_nadi" name="rf_bnadi" class="ctrl" style="border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: 11 PORUTHANGAL GRID -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+          <h3 style="margin: 0 0 14px 0; font-size: 15px; color: #0f172a; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+            <i class="bi bi-list-check" style="color: #d97706;"></i> {{ 'marriageReport.poruthamList' | translate }}
+          </h3>
+
+          <div class="grid-mobile-1col" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+            @for (item of reportForm.poruthangal; track $index; let i = $index) {
+              <div class="porutham-item-responsive">
+                <span class="porutham-label-text">{{ item.name }}</span>
+                <input type="text" [(ngModel)]="item.status" [name]="'porutham_st_' + i" class="ctrl" />
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- SECTION 4: HOROSCOPE HOUSES & PLANETARY CHECKS -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+          <h3 style="margin: 0 0 14px 0; font-size: 15px; color: #0f172a; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+            <i class="bi bi-shield-check" style="color: #9333ea;"></i> {{ 'marriageReport.houseAnalysis' | translate }}
+          </h3>
+
+          <div class="grid-mobile-1col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <!-- GIRL HOUSES -->
+            <div style="background: #fff; border: 1px solid #fecdd3; border-radius: 12px; padding: 14px;">
+              <h4 style="margin: 0 0 12px 0; color: #e11d48; font-size: 13.5px; font-weight: 800;">{{ 'marriageReport.girlDetails' | translate }}</h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="grid-sub-3col">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.house2' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_house_2" name="rf_g2" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.house5' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_house_5" name="rf_g5" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.house7' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_house_7" name="rf_g7" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div class="grid-sub-2col">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.guruBalam' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_guru_balam" name="rf_gguru" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.dosham' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.girl_dosham" name="rf_gdosham" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.dhasaSandhi' | translate }}</label>
+                  <input type="text" [(ngModel)]="reportForm.girl_dhasa_sandhi" name="rf_gdhasa" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.astrologerAnalysis' | translate }}</label>
+                  <textarea [(ngModel)]="reportForm.girl_analysis" name="rf_ganal" rows="2" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOY HOUSES -->
+            <div style="background: #fff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px;">
+              <h4 style="margin: 0 0 12px 0; color: #2563eb; font-size: 13.5px; font-weight: 800;">{{ 'marriageReport.boyDetails' | translate }}</h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="grid-sub-3col">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.house2' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_house_2" name="rf_b2" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.house5' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_house_5" name="rf_b5" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.house7' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_house_7" name="rf_b7" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div class="grid-sub-2col">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.guruBalam' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_guru_balam" name="rf_bguru" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.dosham' | translate }}</label>
+                    <input type="text" [(ngModel)]="reportForm.boy_dosham" name="rf_bdosham" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.dhasaSandhi' | translate }}</label>
+                  <input type="text" [(ngModel)]="reportForm.boy_dhasa_sandhi" name="rf_bdhasa" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 600; color: #475569;">{{ 'marriageReport.astrologerAnalysis' | translate }}</label>
+                  <textarea [(ngModel)]="reportForm.boy_analysis" name="rf_banal" rows="2" class="ctrl" style="border: 1px solid #cbd5e1; border-radius: 8px;"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: OVERALL SUMMARY & ASTROLOGER OPINION -->
+        <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+          <h3 style="margin: 0 0 14px 0; font-size: 15px; color: #166534; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+            <i class="bi bi-award-fill"></i> {{ 'marriageReport.verdictSummary' | translate }}
+          </h3>
+
+          <div class="grid-mobile-1col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 700; color: #14532d; display: block; margin-bottom: 4px;">{{ 'marriageReport.totalPorutham' | translate }}</label>
+              <input type="text" [(ngModel)]="reportForm.total_porutham" name="rf_totp" class="ctrl" style="font-weight: 800; font-size: 14px; color: #15803d; border: 1px solid #86efac; background: #fff; border-radius: 8px;" />
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 700; color: #14532d; display: block; margin-bottom: 4px;">{{ 'marriageReport.keyMatchStatus' | translate }}</label>
+              <input type="text" [(ngModel)]="reportForm.important_porutham" name="rf_impp" class="ctrl" style="font-weight: 800; font-size: 14px; color: #15803d; border: 1px solid #86efac; background: #fff; border-radius: 8px;" />
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #14532d; display: block; margin-bottom: 4px;">{{ 'marriageReport.astrologerRemarks' | translate }}</label>
+            <textarea [(ngModel)]="reportForm.astrologer_opinion" name="rf_astop" rows="3" class="ctrl" style="font-size: 13.5px; font-weight: 600; border: 1px solid #86efac; background: #fff; border-radius: 8px;"></textarea>
+          </div>
+        </div>
+
+        <!-- BOTTOM ACTION BUTTONS -->
+        <div class="form-actions-responsive" style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1.5px solid #e2e8f0; padding-top: 18px;">
+          <button type="button" class="btn-cancel" (click)="closeReportForm()" style="padding: 10px 24px; font-weight: 600;">{{ 'marriageReport.cancel' | translate }}</button>
+          <button type="submit" class="btn-primary" [disabled]="isSavingReport" style="background: linear-gradient(135deg, #059669, #047857); padding: 10px 30px; font-size: 14.5px; font-weight: 800; border-radius: 8px;">
+            <i class="bi bi-send-fill" style="margin-right: 8px;"></i> {{ isSavingReport ? ('marriageReport.saving' | translate) : ('marriageReport.saveAndSend' | translate) }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
 
   <!-- MODAL: VIEW FULL DETAILS -->
   @if (selectedMatch) {

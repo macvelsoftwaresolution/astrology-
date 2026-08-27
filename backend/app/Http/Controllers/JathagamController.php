@@ -412,6 +412,9 @@ class JathagamController extends Controller
             ->get()
             ->map(function ($m) {
                 $m->match_details = json_decode($m->match_details);
+                if (isset($m->report_data) && is_string($m->report_data)) {
+                    $m->report_data = json_decode($m->report_data);
+                }
                 $m->admin_status = $m->admin_status ?: 'Pending';
                 $m->consultation_status = $m->admin_status;
                 $m->contact_phone = $m->requester_phone ?: ($m->user_account_phone ?: '');

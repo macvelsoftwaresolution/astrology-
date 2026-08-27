@@ -651,10 +651,6 @@ export class LmsTabComponent implements OnInit {
       list = list.filter(c => c.level === this.selectedCategory);
     }
 
-    if (this.selectedCourseLevelFilter !== 'all') {
-      list = list.filter(c => c.level === this.selectedCourseLevelFilter); // Note: This filter might be redundant now, but kept for future.
-    }
-
     if (this.courseSearchQuery && this.courseSearchQuery.trim()) {
       const q = this.courseSearchQuery.toLowerCase().trim();
       list = list.filter(c =>

@@ -43,11 +43,6 @@
           <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'lms.subtitle' | translate }}</p>
         </div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <button class="btn-primary" (click)="openNewCourseWizard()">
-          <i class="bi bi-stars"></i> {{ 'lms.launchWizard' | translate }}
-        </button>
-      </div>
     </div>
 
     <!-- SUB TABS NAVIGATION -->
@@ -97,15 +92,9 @@
         />
       </div>
 
-      <div style="display:flex;gap:8px;align-items:center;">
-        <span style="font-size:12px;color:#475569;font-weight:600;">{{ 'lms.level' | translate }}</span>
-        <div class="rasi-type-bar" style="display:flex;gap:6px;">
-          <button [class.active]="selectedCourseLevelFilter === 'all'" (click)="selectedCourseLevelFilter = 'all'">{{ 'lms.levelAll' | translate }}</button>
-          <button [class.active]="selectedCourseLevelFilter === 'Beginner'" (click)="selectedCourseLevelFilter = 'Beginner'">{{ 'lms.levelBeg' | translate }}</button>
-          <button [class.active]="selectedCourseLevelFilter === 'Intermediate'" (click)="selectedCourseLevelFilter = 'Intermediate'">{{ 'lms.levelInter' | translate }}</button>
-          <button [class.active]="selectedCourseLevelFilter === 'Advanced'" (click)="selectedCourseLevelFilter = 'Advanced'">{{ 'lms.levelAdv' | translate }}</button>
-        </div>
-      </div>
+      <button class="btn-primary" (click)="openNewCourseWizard()">
+        <i class="bi bi-stars"></i> {{ 'lms.launchWizard' | translate }}
+      </button>
     </div>
   </div>
 
