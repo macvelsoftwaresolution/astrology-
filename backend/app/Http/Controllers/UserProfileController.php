@@ -142,16 +142,54 @@ class UserProfileController extends Controller
     /**
      * Admin: Get all users list with profile details (Excluding Admin accounts)
      */
-    public function adminGetUsers()
+    public function adminGetUsers(Request $request)
     {
-        $users = DB::table('users')
-            ->where('role', '!=', 'admin')
-            ->select('id', 'name', 'email', 'phone', 'role', 'status', 'student_id', 'address', 'jathagam_details', 'created_at')
-            ->orderBy('id', 'desc')
+        $batchIdFilter = $request->query('batch_id');
+
+        $query = DB::table('users')
+            ->leftJoin('batches', 'users.batch_id', '=', 'batches.id')
+            ->where('users.role', '!=', 'admin')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.phone',
+                'users.role',
+                'users.status',
+                'users.student_id',
+                'users.batch_id',
+                'users.address',
+                'users.jathagam_details',
+                'users.created_at',
+                'batches.name as batch_name',
+                'batches.batch_code as batch_code',
+                'batches.status as batch_status'
+            );
+
+        if ($batchIdFilter && $batchIdFilter !== 'all') {
+            $query->where('users.batch_id', $batchIdFilter);
+        }
+
+        $users = $query->orderBy('users.id', 'desc')
             ->get()
             ->map(function ($u) {
                 $u->jathagam_details = $u->jathagam_details ? json_decode($u->jathagam_details) : null;
                 
+                // Fallback batch name from registration date or jathagam_details if not directly joined
+                if (empty($u->batch_name)) {
+                    if (isset($u->jathagam_details->batch_name) && !empty($u->jathagam_details->batch_name)) {
+                        $u->batch_name = $u->jathagam_details->batch_name;
+                    } elseif (!empty($u->created_at)) {
+                        $dt = \Carbon\Carbon::parse($u->created_at);
+                        $year = $dt->year;
+                        $m = $dt->month;
+                        $q = ($m <= 3) ? 'Batch 1 (Jan - Mar)' : (($m <= 6) ? 'Batch 2 (Apr - Jun)' : (($m <= 9) ? 'Batch 3 (Jul - Sep)' : 'Batch 4 (Oct - Dec)'));
+                        $u->batch_name = "{$year} - {$q}";
+                    } else {
+                        $u->batch_name = 'General Batch';
+                    }
+                }
+
                 $bookingCount = DB::table('bookings')
                     ->where(function($q) use ($u) {
                         $q->where('user_id', $u->id);
