@@ -187,4 +187,8 @@ export class AuthService {
   fetchStudentDetails(query: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/auth/fetch-student-details`, { query });
   }
+
+  getPublicBatches(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/public/batches`);
+  }
 }

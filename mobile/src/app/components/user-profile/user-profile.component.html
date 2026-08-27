@@ -99,26 +99,26 @@
     <div class="options-list">
 
       <!-- Option: Language Toggle -->
-      <div class="option-item-card" style="background: linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%); border: 1px solid #ECC876;">
+      <div class="option-item-card"
+        style="background: linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%); border: 1px solid #ECC876;">
         <div class="option-left">
           <div class="option-icon-box box-gold">
             <i class="bi bi-translate"></i>
           </div>
           <div class="option-text">
-            <h4 class="simple-title" style="color: #4A0E17; font-weight: 800;">{{ 'profile.languageSetting' | translate }}</h4>
+            <h4 class="simple-title" style="color: #4A0E17; font-weight: 800;">{{ 'profile.languageSetting' | translate
+              }}</h4>
             <p style="font-size: 11px; color: #78350F; margin: 0;">{{ currentLang === 'ta' ? 'தமிழ்' : 'English' }}</p>
           </div>
         </div>
         <div style="display: flex; gap: 4px;" (click)="$event.stopPropagation()">
-          <button type="button" 
-            (click)="setLanguage('ta')" 
+          <button type="button" (click)="setLanguage('ta')"
             [style.background]="currentLang === 'ta' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
             [style.color]="currentLang === 'ta' ? '#FFD700' : '#4A0E17'"
             style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer;">
             தமிழ்
           </button>
-          <button type="button" 
-            (click)="setLanguage('en')" 
+          <button type="button" (click)="setLanguage('en')"
             [style.background]="currentLang === 'en' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
             [style.color]="currentLang === 'en' ? '#FFD700' : '#4A0E17'"
             style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer;">
@@ -276,216 +276,223 @@
           <i class="bi bi-person-fill text-gold me-2"></i>
           <strong>{{ personDetails.name }}</strong>
           @if (personDetails.rasi || personDetails.star) {
-          <span style="color: #b45309; font-weight: 700; margin-left: 4px;">({{ personDetails.rasi || '-' }} - {{ personDetails.star || '-' }})</span>
+          <span style="color: #b45309; font-weight: 700; margin-left: 4px;">({{ personDetails.rasi || '-' }} - {{
+            personDetails.star || '-' }})</span>
           }
           <div class="sub-contact">{{ personDetails.phone }} | {{ personDetails.email }}</div>
         </div>
 
         <!-- 1. PAYMENTS VIEW -->
         @if (selectedOption === 'payments') {
-            @if (getPayments().length > 0) {
-            <div class="activity-cards-list">
-              @for (p of getPayments(); track p.id) {
-              <div class="receipt-proof-card">
-                <div class="rpc-top">
-                  <div>
-                    <strong class="rpc-service-title">{{ p.description || 'ஜோதிட ஆலோசனை முன்பதிவு' }}</strong>
-                    <span class="rpc-ref">பதிவு எண்: #{{ p.booking_id || p.id }}</span>
-                  </div>
-                  <span class="rpc-amount">₹{{ p.amount }}</span>
-                </div>
-
-                <div class="rpc-gateway-box">
-                  <div class="rpc-row">
-                    <span>Razorpay ID:</span>
-                    <strong class="text-mono">{{ p.razorpay_payment_id || 'pay_' + p.id }}</strong>
-                  </div>
-                  <div class="rpc-row">
-                    <span>தேதி:</span>
-                    <span>{{ p.date }}</span>
-                  </div>
-                </div>
-
-                <div class="rpc-status-tag">
-                  <i class="bi bi-shield-fill-check"></i> கட்டணம் வெற்றிகரமாகச் செலுத்தப்பட்டது (Paid)
-                </div>
+        @if (getPayments().length > 0) {
+        <div class="activity-cards-list">
+          @for (p of getPayments(); track p.id) {
+          <div class="receipt-proof-card">
+            <div class="rpc-top">
+              <div>
+                <strong class="rpc-service-title">{{ p.description || 'ஜோதிட ஆலோசனை முன்பதிவு' }}</strong>
+                <span class="rpc-ref">பதிவு எண்: #{{ p.booking_id || p.id }}</span>
               </div>
-              }
+              <span class="rpc-amount">₹{{ p.amount }}</span>
             </div>
-            } @else {
-            <div class="empty-activity-state">
-              <i class="bi bi-credit-card-2-front text-muted" style="font-size:2.5rem;"></i>
-              <p>பரிவர்த்தனை விவரங்கள் ஏதுமில்லை</p>
-            </div>
-            }
-            }
 
-            <!-- 2. BOOKED SERVICES VIEW WITH LIVE PROGRESS TRACKER -->
-            @if (selectedOption === 'services') {
-            @if (getServices().length > 0) {
-            <div class="activity-cards-list">
-              @for (b of getServices(); track b.id) {
-              <div class="booking-progress-card">
-                <div class="bpc-header">
-                  <div>
-                    <strong class="bpc-id">#{{ b.id }}</strong>
-                    <h4 class="bpc-service-name">{{ b.service }}</h4>
-                  </div>
-                  <span class="bpc-price">₹{{ b.price }}</span>
-                </div>
-
-                @if (!b.service.includes('Jathagam') && !b.service.includes('ஜாதகம்')) {
-                <div class="bpc-astro-info">
-                  <i class="bi bi-person-badge-fill text-gold me-1"></i>
-                  <span>ஜோதிடர்: <strong>{{ b.astrologer_name }}</strong></span>
-                </div>
-
-                <div class="bpc-schedule-pill">
-                  <span><i class="bi bi-calendar-event me-1"></i> {{ b.date }}</span>
-                  <span><i class="bi bi-clock me-1"></i> {{ b.slot }}</span>
-                </div>
-                }
-
-                <!-- 3-Step Live Progress Tracker -->
-                <div class="bpc-progress-tracker">
-                  <div class="progress-step done">
-                    <div class="step-icon"><i class="bi bi-check-lg"></i></div>
-                    <span>முன்பதிவு</span>
-                  </div>
-                  <div class="step-connector" [class.active]="b.status === 'In-Progress' || b.status === 'Completed'">
-                  </div>
-                  <div class="progress-step" [class.done]="b.status === 'In-Progress' || b.status === 'Completed'"
-                    [class.current]="b.status === 'Pending'">
-                    <div class="step-icon"><i class="bi"
-                        [ngClass]="b.status === 'Completed' ? 'bi-check-lg' : 'bi-hourglass-split'"></i></div>
-                    <span>செயலாக்கம்</span>
-                  </div>
-                  <div class="step-connector" [class.active]="b.status === 'Completed'"></div>
-                  <div class="progress-step" [class.done]="b.status === 'Completed'">
-                    <div class="step-icon"><i class="bi bi-stars"></i></div>
-                    <span>நிறைவு</span>
-                  </div>
-                </div>
-
-                <!-- Razorpay Payment Badge -->
-                @if (b.razorpay_payment_id) {
-                <div class="bpc-payment-badge">
-                  <i class="bi bi-shield-check"></i> கட்டணம்: {{ b.razorpay_payment_id }}
-                </div>
-                }
-
-                <!-- Download Completed Chart if available -->
-                @if (b.chart_url) {
-                <a [href]="b.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
-                  <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
-                </a>
-                }
-
-                <!-- Download Parigaram Document if available -->
-                @if (b.parigaram_document) {
-                <a [href]="b.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
-                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
-                </a>
-                }
-
-                <!-- Parigaram (Remedies) if available -->
-                @if (b.parigaram) {
-                <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:12px; margin-top:12px;">
-                  <h4 style="color:#b45309; font-size:13px; margin:0 0 6px 0; font-weight:700;"><i class="bi bi-brightness-high-fill me-1"></i> பரிகாரம் (Remedies)</h4>
-                  <p style="color:#78350f; font-size:13px; line-height:1.5; margin:0; white-space:pre-wrap;">{{ b.parigaram }}</p>
-                </div>
-                }
+            <div class="rpc-gateway-box">
+              <div class="rpc-row">
+                <span>Razorpay ID:</span>
+                <strong class="text-mono">{{ p.razorpay_payment_id || 'pay_' + p.id }}</strong>
               </div>
-              }
+              <div class="rpc-row">
+                <span>தேதி:</span>
+                <span>{{ p.date }}</span>
+              </div>
             </div>
-            } @else {
-            <div class="empty-activity-state">
-              <i class="bi bi-calendar2-x text-muted" style="font-size:2.5rem;"></i>
-              <p>பதிவு செய்யப்பட்ட சேவைகள் ஏதுமில்லை</p>
+
+            <div class="rpc-status-tag">
+              <i class="bi bi-shield-fill-check"></i> கட்டணம் வெற்றிகரமாகச் செலுத்தப்பட்டது (Paid)
             </div>
-            }
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="empty-activity-state">
+          <i class="bi bi-credit-card-2-front text-muted" style="font-size:2.5rem;"></i>
+          <p>பரிவர்த்தனை விவரங்கள் ஏதுமில்லை</p>
+        </div>
+        }
+        }
+
+        <!-- 2. BOOKED SERVICES VIEW WITH LIVE PROGRESS TRACKER -->
+        @if (selectedOption === 'services') {
+        @if (getServices().length > 0) {
+        <div class="activity-cards-list">
+          @for (b of getServices(); track b.id) {
+          <div class="booking-progress-card">
+            <div class="bpc-header">
+              <div>
+                <strong class="bpc-id">#{{ b.id }}</strong>
+                <h4 class="bpc-service-name">{{ b.service }}</h4>
+              </div>
+              <span class="bpc-price">₹{{ b.price }}</span>
+            </div>
+
+            @if (!b.service.includes('Jathagam') && !b.service.includes('ஜாதகம்')) {
+            <div class="bpc-astro-info">
+              <i class="bi bi-person-badge-fill text-gold me-1"></i>
+              <span>ஜோதிடர்: <strong>{{ b.astrologer_name }}</strong></span>
+            </div>
+
+            <div class="bpc-schedule-pill">
+              <span><i class="bi bi-calendar-event me-1"></i> {{ b.date }}</span>
+              <span><i class="bi bi-clock me-1"></i> {{ b.slot }}</span>
+            </div>
             }
 
-            <!-- 3. HOROSCOPE REQUESTS VIEW -->
-            @if (selectedOption === 'horoscope') {
-            @if (getHoroscopes().length > 0) {
-            <div class="activity-cards-list">
-              @for (h of getHoroscopes(); track h.id) {
-              <div class="booking-progress-card">
-                <div class="bpc-header">
-                  <div>
-                    <strong class="bpc-id">#{{ h.id }}</strong>
-                    <h4 class="bpc-service-name">{{ h.service }}</h4>
-                  </div>
-                  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-                    <span class="status-pill-mini" [ngClass]="(h.status || 'pending').toLowerCase()">{{ h.status }}</span>
-                    @if (h.parigaram_document) {
-                    <a [href]="h.parigaram_document" target="_blank" title="பரிகார ஆவணம் பதிவிறக்கம்" style="background:#f59e0b; color:#ffffff; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; text-decoration:none; box-shadow:0 2px 5px rgba(245,158,11,0.3);">
-                      <i class="bi bi-download" style="font-size:16px;"></i>
-                    </a>
-                    }
-                  </div>
-                </div>
-                <div class="bpc-astro-info">
-                  <i class="bi bi-calendar-check me-1 text-gold"></i>
-                  <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
-                </div>
-                @if (h.chart_url) {
-                <a [href]="h.chart_url" target="_blank" class="btn-download-chart" style="margin-top: 8px;">
-                  <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
+            <!-- 3-Step Live Progress Tracker -->
+            <div class="bpc-progress-tracker">
+              <div class="progress-step done">
+                <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+                <span>முன்பதிவு</span>
+              </div>
+              <div class="step-connector" [class.active]="b.status === 'In-Progress' || b.status === 'Completed'">
+              </div>
+              <div class="progress-step" [class.done]="b.status === 'In-Progress' || b.status === 'Completed'"
+                [class.current]="b.status === 'Pending'">
+                <div class="step-icon"><i class="bi"
+                    [ngClass]="b.status === 'Completed' ? 'bi-check-lg' : 'bi-hourglass-split'"></i></div>
+                <span>செயலாக்கம்</span>
+              </div>
+              <div class="step-connector" [class.active]="b.status === 'Completed'"></div>
+              <div class="progress-step" [class.done]="b.status === 'Completed'">
+                <div class="step-icon"><i class="bi bi-stars"></i></div>
+                <span>நிறைவு</span>
+              </div>
+            </div>
+
+            <!-- Razorpay Payment Badge -->
+            @if (b.razorpay_payment_id) {
+            <div class="bpc-payment-badge">
+              <i class="bi bi-shield-check"></i> கட்டணம்: {{ b.razorpay_payment_id }}
+            </div>
+            }
+
+            <!-- Download Completed Chart if available -->
+            @if (b.chart_url) {
+            <a [href]="b.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
+              <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
+            </a>
+            }
+
+            <!-- Download Parigaram Document if available -->
+            @if (b.parigaram_document) {
+            <a [href]="b.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
+              <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
+            </a>
+            }
+
+            <!-- Parigaram (Remedies) if available -->
+            @if (b.parigaram) {
+            <div
+              style="background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:12px; margin-top:12px;">
+              <h4 style="color:#b45309; font-size:13px; margin:0 0 6px 0; font-weight:700;"><i
+                  class="bi bi-brightness-high-fill me-1"></i> பரிகாரம் (Remedies)</h4>
+              <p style="color:#78350f; font-size:13px; line-height:1.5; margin:0; white-space:pre-wrap;">{{ b.parigaram
+                }}</p>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="empty-activity-state">
+          <i class="bi bi-calendar2-x text-muted" style="font-size:2.5rem;"></i>
+          <p>பதிவு செய்யப்பட்ட சேவைகள் ஏதுமில்லை</p>
+        </div>
+        }
+        }
+
+        <!-- 3. HOROSCOPE REQUESTS VIEW -->
+        @if (selectedOption === 'horoscope') {
+        @if (getHoroscopes().length > 0) {
+        <div class="activity-cards-list">
+          @for (h of getHoroscopes(); track h.id) {
+          <div class="booking-progress-card">
+            <div class="bpc-header">
+              <div>
+                <strong class="bpc-id">#{{ h.id }}</strong>
+                <h4 class="bpc-service-name">{{ h.service }}</h4>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                <span class="status-pill-mini" [ngClass]="(h.status || 'pending').toLowerCase()">{{ h.status }}</span>
+                @if (h.parigaram_document) {
+                <a [href]="h.parigaram_document" target="_blank" title="பரிகார ஆவணம் பதிவிறக்கம்"
+                  style="background:#f59e0b; color:#ffffff; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; text-decoration:none; box-shadow:0 2px 5px rgba(245,158,11,0.3);">
+                  <i class="bi bi-download" style="font-size:16px;"></i>
                 </a>
                 }
               </div>
-              }
             </div>
-            } @else {
-            <div class="empty-activity-state">
-              <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem;"></i>
-              <p>ஜாதக பரிகாரம் ஏதுமில்லை</p>
+            <div class="bpc-astro-info">
+              <i class="bi bi-calendar-check me-1 text-gold"></i>
+              <span>தேதி: {{ h.date }} | {{ h.slot }}</span>
             </div>
+            @if (h.chart_url) {
+            <a [href]="h.chart_url" target="_blank" class="btn-download-chart" style="margin-top: 8px;">
+              <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதக கணிப்பு PDF பதிவிறக்கம்
+            </a>
             }
-            }
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="empty-activity-state">
+          <i class="bi bi-file-earmark-text text-muted" style="font-size:2.5rem;"></i>
+          <p>ஜாதக பரிகாரம் ஏதுமில்லை</p>
+        </div>
+        }
+        }
 
-            <!-- 4. MARRIAGE MATCHING REQUESTS VIEW -->
-            @if (selectedOption === 'marriage') {
-            @if (getMatches().length > 0) {
-            <div class="activity-cards-list">
-              @for (m of getMatches(); track m.id) {
-              <div class="marriage-match-card">
-                <div class="mmc-header">
-                  <span class="mmc-icon">❤️</span>
-                  <strong>திருமண பொருத்தம்</strong>
-                  <span class="mmc-score-badge">{{ m.score || m.match_details?.score || '8' }}/10 பொருத்தம்</span>
-                </div>
-                <div class="mmc-couple-grid">
-                  <div class="mmc-person">
-                    <span class="gender-lbl">ஆண்:</span>
-                    <strong>{{ m.boy_name || 'வரன்' }}</strong>
-                    <small>{{ m.boy_rasi }} - {{ m.boy_star }}</small>
-                  </div>
-                  <div class="mmc-person">
-                    <span class="gender-lbl">பெண்:</span>
-                    <strong>{{ m.girl_name || 'வரன்' }}</strong>
-                    <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
-                  </div>
-                </div>
-                @if (m.result_document) {
-                <div class="mmc-footer-actions" style="margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 12px; text-align: center;">
-                  <a [href]="m.result_document" target="_blank" class="btn-download-chart" style="display: inline-block; width: 100%;">
-                    <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பொருத்தம் அறிக்கை பதிவிறக்கம் (Download)
-                  </a>
-                </div>
-                }
+        <!-- 4. MARRIAGE MATCHING REQUESTS VIEW -->
+        @if (selectedOption === 'marriage') {
+        @if (getMatches().length > 0) {
+        <div class="activity-cards-list">
+          @for (m of getMatches(); track m.id) {
+          <div class="marriage-match-card">
+            <div class="mmc-header">
+              <span class="mmc-icon">❤️</span>
+              <strong>திருமண பொருத்தம்</strong>
+              <span class="mmc-score-badge">{{ m.score || m.match_details?.score || '8' }}/10 பொருத்தம்</span>
+            </div>
+            <div class="mmc-couple-grid">
+              <div class="mmc-person">
+                <span class="gender-lbl">ஆண்:</span>
+                <strong>{{ m.boy_name || 'வரன்' }}</strong>
+                <small>{{ m.boy_rasi }} - {{ m.boy_star }}</small>
               </div>
-              }
+              <div class="mmc-person">
+                <span class="gender-lbl">பெண்:</span>
+                <strong>{{ m.girl_name || 'வரன்' }}</strong>
+                <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
+              </div>
             </div>
-            } @else {
-            <div class="empty-activity-state">
-              <i class="bi bi-heartbreak text-muted" style="font-size:2.5rem;"></i>
-              <p>திருமணப் பொருத்த கோரிக்கைகள் ஏதுமில்லை</p>
+            @if (m.result_document) {
+            <div class="mmc-footer-actions"
+              style="margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 12px; text-align: center;">
+              <a [href]="m.result_document" target="_blank" class="btn-download-chart"
+                style="display: inline-block; width: 100%;">
+                <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பொருத்தம் அறிக்கை பதிவிறக்கம் (Download)
+              </a>
             </div>
             }
-            }
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="empty-activity-state">
+          <i class="bi bi-heartbreak text-muted" style="font-size:2.5rem;"></i>
+          <p>திருமணப் பொருத்த கோரிக்கைகள் ஏதுமில்லை</p>
+        </div>
+        }
+        }
 
       </div>
 
@@ -516,33 +523,32 @@
 
       <div class="modal-body">
         @if (selectedOption === 'settings') {
-          <!-- Prominent Language Selector Box in Settings Modal -->
-          <div style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); padding: 16px; border-radius: 14px; border: 1px solid #ECC876; margin-bottom: 18px; color: #fff; box-shadow: 0 4px 12px rgba(74, 14, 23, 0.2);">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-              <div>
-                <strong style="color: #FFD700; font-size: 15px; display: block; margin-bottom: 2px;">
-                  <i class="bi bi-translate me-1"></i> {{ 'profile.languageSetting' | translate }}
-                </strong>
-                <span style="font-size: 11px; color: #E2E8F0;">மொழியைத் தேர்வு செய்க / Choose Language</span>
-              </div>
-              <div style="display: flex; gap: 6px;">
-                <button type="button" 
-                  (click)="setLanguage('ta')" 
-                  [style.background]="currentLang === 'ta' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.15)'"
-                  [style.color]="currentLang === 'ta' ? '#000' : '#fff'"
-                  style="border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                  தமிழ்
-                </button>
-                <button type="button" 
-                  (click)="setLanguage('en')" 
-                  [style.background]="currentLang === 'en' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.15)'"
-                  [style.color]="currentLang === 'en' ? '#000' : '#fff'"
-                  style="border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                  English
-                </button>
-              </div>
+        <!-- Prominent Language Selector Box in Settings Modal -->
+        <div
+          style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); padding: 16px; border-radius: 14px; border: 1px solid #ECC876; margin-bottom: 18px; color: #fff; box-shadow: 0 4px 12px rgba(74, 14, 23, 0.2);">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <div>
+              <strong style="color: #FFD700; font-size: 15px; display: block; margin-bottom: 2px;">
+                <i class="bi bi-translate me-1"></i> {{ 'profile.languageSetting' | translate }}
+              </strong>
+              <span style="font-size: 11px; color: #E2E8F0;">மொழியைத் தேர்வு செய்க / Choose Language</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" (click)="setLanguage('ta')"
+                [style.background]="currentLang === 'ta' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.15)'"
+                [style.color]="currentLang === 'ta' ? '#000' : '#fff'"
+                style="border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                தமிழ்
+              </button>
+              <button type="button" (click)="setLanguage('en')"
+                [style.background]="currentLang === 'en' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.15)'"
+                [style.color]="currentLang === 'en' ? '#000' : '#fff'"
+                style="border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                English
+              </button>
             </div>
           </div>
+        </div>
         }
 
         <p class="text-muted fs-sm">
@@ -569,4 +575,4 @@
   </div>
   }
 
-    </div>
+</div>

@@ -17,6 +17,8 @@ export class LearnEnrollComponent implements OnInit {
   isFetchingIlanilai: boolean = false;
   fetchSuccessMsg: string = '';
   fetchErrorMsg: string = '';
+  availableBatches: any[] = [];
+  activeBatchName: string = '';
 
   localForm = {
     // Basic & Tamil/English Names
@@ -42,6 +44,8 @@ export class LearnEnrollComponent implements OnInit {
     trainingPurpose: 'தொழிலாக கொள்ள',
     trainingMode: '1_day', // 1_day (9 hours) or 5_day (2 hours)
     batchTiming: 'A', // A: திங்கள், B: புதன், C: வெள்ளி, D: மாலை
+    batch_id: null as number | null,
+    batch_name: '',
     studentPhoto: '',
     
     // Mudhunilai specific fields
@@ -66,6 +70,25 @@ export class LearnEnrollComponent implements OnInit {
         this.ilanilaiSearchQuery = this.localForm.prevUserId;
       }
     }
+    this.loadBatches();
+  }
+
+  loadBatches() {
+    this.authService.getPublicBatches().subscribe({
+      next: (res: any) => {
+        if (res && res.success && res.batches && res.batches.length > 0) {
+          this.availableBatches = res.batches;
+          // Auto select first active batch or default quarter batch
+          const active = res.batches.find((b: any) => b.status === 'active') || res.batches[0];
+          if (active && !this.localForm.batch_id) {
+            this.localForm.batch_id = active.id;
+            this.localForm.batch_name = active.name;
+            this.activeBatchName = active.name;
+          }
+        }
+      },
+      error: () => {}
+    });
   }
 
   setCourseLevel(level: 'ilanilai' | 'mudhunilai') {
@@ -77,7 +100,7 @@ export class LearnEnrollComponent implements OnInit {
   fetchIlanilaiDetails() {
     const query = (this.ilanilaiSearchQuery || this.localForm.prevUserId || '').trim();
     if (!query) {
-      this.fetchErrorMsg = 'தயவுசெய்து உங்கள் இளநிலை பயனர் ஐடி / பதிவு எண் அல்லது அலைபேசி எண்ணை உள்ளிடவும்.';
+      this.fetchErrorMsg = 'தயவுசெய்து உங்கள் இளநிலை மாணவர் ஐடியை (Student ID e.g. 26AR01) உள்ளிடவும்.';
       this.fetchSuccessMsg = '';
       return;
     }

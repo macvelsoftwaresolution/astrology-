@@ -15,9 +15,9 @@
       @if (!canShowBackButton()) {
       <div class="top-nav-brand-icon" style="overflow: hidden;">
         @if (userProfileImage) {
-          <img [src]="userProfileImage" style="width: 100%; height: 100%; object-fit: cover;" alt="Profile">
+        <img [src]="userProfileImage" style="width: 100%; height: 100%; object-fit: cover;" alt="Profile">
         } @else {
-          <span>{{ userInitial }}</span>
+        <span>{{ userInitial }}</span>
         }
       </div>
       }
@@ -33,10 +33,11 @@
 
     <!-- Right Section: Notification & User Profile Badge -->
     <div class="top-nav-right">
-      <div class="top-nav-action-btn bell-btn" [class.has-unread]="unreadNotificationsCount > 0" (click)="openNotifications()" title="Notifications">
+      <div class="top-nav-action-btn bell-btn" [class.has-unread]="unreadNotificationsCount > 0"
+        (click)="openNotifications()" title="Notifications">
         <i class="bi bi-bell-fill"></i>
         @if (unreadNotificationsCount > 0) {
-          <span class="notif-badge-count">{{ unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount }}</span>
+        <span class="notif-badge-count">{{ unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount }}</span>
         }
       </div>
     </div>
@@ -46,18 +47,18 @@
 
 <!-- Floating In-App Animated Notification Banner on App Open -->
 @if (showNotifPopupBanner && latestUnreadNotif) {
-  <div class="floating-notif-banner" [class.hiding]="isHidingBanner" (click)="openNotifications(); closeNotifBanner()">
-    <div class="banner-icon-box">
-      <i class="bi bi-bell-fill"></i>
-    </div>
-    <div class="banner-content">
-      <h4>{{ latestUnreadNotif.title || 'புதிய அறிவிப்பு' }}</h4>
-      <p>{{ latestUnreadNotif.message }}</p>
-    </div>
-    <button class="banner-close-btn" (click)="$event.stopPropagation(); closeNotifBanner()" title="Close">
-      <i class="bi bi-x-lg"></i>
-    </button>
+<div class="floating-notif-banner" [class.hiding]="isHidingBanner" (click)="openNotifications(); closeNotifBanner()">
+  <div class="banner-icon-box">
+    <i class="bi bi-bell-fill"></i>
   </div>
+  <div class="banner-content">
+    <h4>{{ latestUnreadNotif.title || 'புதிய அறிவிப்பு' }}</h4>
+    <p>{{ latestUnreadNotif.message }}</p>
+  </div>
+  <button class="banner-close-btn" (click)="$event.stopPropagation(); closeNotifBanner()" title="Close">
+    <i class="bi bi-x-lg"></i>
+  </button>
+</div>
 }
 
 <ion-content [fullscreen]="true" class="astrology-app-content">
@@ -97,7 +98,8 @@
 
     <!-- Quick Services Grid -->
     <div class="section-title-row">
-      <h3><span class="title-icon"><i class="bi bi-star-fill text-gold me-1"></i></span> {{ 'home.keyServices' | translate }}</h3>
+      <h3><span class="title-icon"><i class="bi bi-star-fill text-gold me-1"></i></span> {{ 'home.keyServices' |
+        translate }}</h3>
     </div>
     <div class="quick-services-grid">
       <div class="quick-service-box" (click)="startServiceFlow('rasi-palan')">
@@ -148,8 +150,11 @@
           </div>
           <div class="cmc-footer">
             @if (hasBookedService(cat.title)) {
-              <span style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">முன்பதிவு செய்யப்பட்டது (Booked)</span>
+            <span
+              style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">முன்பதிவு
+              செய்யப்பட்டது (Booked)</span>
             }
+            <span class="cmc-arrow"><i class="bi bi-chevron-right"></i></span>
           </div>
         </div>
       </div>
@@ -174,7 +179,8 @@
         </div>
         <div class="afp-title-box">
           <span class="afp-status-badge" [class.on-leave]="astro.status !== 'Available'">
-            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? ('home.expertConsultation' | translate) :
+            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? ('home.expertConsultation' |
+            translate) :
             (translationService.currentLanguage() === 'en' ? 'On Leave' : 'தற்காலிக விடுமுறை') }}
           </span>
           <h2>{{ astro.name }}</h2>
@@ -194,14 +200,16 @@
         <div class="afp-stat-row">
           <div class="stat-icon-badge exp-bg"><i class="bi bi-trophy-fill" style="color: #b45309;"></i></div>
           <div class="stat-row-content">
-            <strong class="stat-value">{{ translationService.currentLanguage() === 'en' ? '15+ Years Exp' : (astro.experience || '15+ ஆண்டுகள்') }}</strong>
+            <strong class="stat-value">{{ translationService.currentLanguage() === 'en' ? '15+ Years Exp' :
+              (astro.experience || '15+ ஆண்டுகள்') }}</strong>
           </div>
         </div>
 
         <div class="afp-stat-row">
           <div class="stat-icon-badge consult-bg"><i class="bi bi-people-fill text-primary"></i></div>
           <div class="stat-row-content">
-            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ {{ translationService.currentLanguage() === 'en' ? 'Clients' : 'நபர்கள்' }}</strong>
+            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ {{ translationService.currentLanguage()
+              === 'en' ? 'Clients' : 'நபர்கள்' }}</strong>
           </div>
         </div>
       </div>
@@ -251,274 +259,291 @@
 
     <!-- Step 1: Consultation Details Form -->
     @if (serviceStep === 1) {
-      <!-- Main Spacious Form Container -->
-      <form ngNoForm (submit)="$event.preventDefault(); nextStep()" class="booking-form-box">
-        <!-- Name -->
+    <!-- Main Spacious Form Container -->
+    <form ngNoForm (submit)="$event.preventDefault(); nextStep()" class="booking-form-box">
+      <!-- Name -->
+      <div class="form-input-card">
+        <label>{{ 'astrology.name' | translate }} <span class="required-star">*</span></label>
+        <div class="input-inner-wrap">
+          <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+          <input type="text" name="bookingName" [(ngModel)]="astrologerBookingForm.name"
+            [placeholder]="'register.namePlaceholder' | translate">
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-input-card">
+        <label>{{ 'profile.phone' | translate }} <span class="required-star">*</span></label>
+        <div class="input-inner-wrap">
+          <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
+          <input type="tel" name="bookingPhone" [(ngModel)]="astrologerBookingForm.phone" placeholder="+91 98765 43210">
+        </div>
+      </div>
+
+      <!-- Vastu or Horoscope Specific Details -->
+      @if (selectedCategory?.id === 'vasthu') {
+      <div class="form-input-card">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Site / Building Address' : 'மனை / கட்டிடத்தின்
+          முகவரி' }}</label>
+        <div class="input-inner-wrap textarea-wrap">
+          <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+          <textarea name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
+            [placeholder]="translationService.currentLanguage() === 'en' ? 'Address & City for Vastu Site Visit...' : 'வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்...'"
+            rows="2"></textarea>
+        </div>
+      </div>
+      } @else {
+      <!-- DOB & TOB Grid -->
+      <div class="form-dual-grid">
         <div class="form-input-card">
-          <label>{{ 'astrology.name' | translate }} <span class="required-star">*</span></label>
+          <label>{{ 'astrology.dob' | translate }}</label>
           <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-person-fill"></i></span>
-            <input type="text" name="bookingName" [(ngModel)]="astrologerBookingForm.name" [placeholder]="'register.namePlaceholder' | translate">
+            <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
+            <input type="date" name="bookingDob" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
           </div>
         </div>
-
-        <!-- Phone -->
         <div class="form-input-card">
-          <label>{{ 'profile.phone' | translate }} <span class="required-star">*</span></label>
+          <label>{{ 'astrology.tob' | translate }}</label>
           <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
-            <input type="tel" name="bookingPhone" [(ngModel)]="astrologerBookingForm.phone" placeholder="+91 98765 43210">
+            <span class="input-icon"><i class="bi bi-clock"></i></span>
+            <input type="time" name="bookingTob" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
           </div>
         </div>
+      </div>
 
-        <!-- Vastu or Horoscope Specific Details -->
-        @if (selectedCategory?.id === 'vasthu') {
-        <div class="form-input-card">
-          <label>{{ translationService.currentLanguage() === 'en' ? 'Site / Building Address' : 'மனை / கட்டிடத்தின் முகவரி' }}</label>
-          <div class="input-inner-wrap textarea-wrap">
-            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <textarea name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
-              [placeholder]="translationService.currentLanguage() === 'en' ? 'Address & City for Vastu Site Visit...' : 'வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்...'" rows="2"></textarea>
-          </div>
+      <!-- POB -->
+      <div class="form-input-card">
+        <label>{{ 'astrology.pob' | translate }}</label>
+        <div class="input-inner-wrap">
+          <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+          <input type="text" name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
+            [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Chennai, Madurai, Coimbatore' : 'எ.கா: சென்னை, மதுரை, கோவை'">
         </div>
-        } @else {
-        <!-- DOB & TOB Grid -->
-        <div class="form-dual-grid">
-          <div class="form-input-card">
-            <label>{{ 'astrology.dob' | translate }}</label>
-            <div class="input-inner-wrap">
-              <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
-              <input type="date" name="bookingDob" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
+      </div>
+      }
+
+      <!-- Consultation Date -->
+      <div class="form-input-card">
+        <label>{{ 'astrology.selectDate' | translate }} <span class="required-star">*</span></label>
+
+        <!-- Quick Date Pills Grid -->
+        <div class="slots-pill-grid date-pills-grid">
+          @for (dateItem of availableUpcomingDates; track dateItem.dateStr) {
+          <button type="button" class="slot-pill date-pill-item"
+            [class.active]="astrologerBookingForm.date === dateItem.dateStr && !dateItem.isBlocked"
+            [class.blocked-pill]="dateItem.isBlocked" [disabled]="dateItem.isBlocked"
+            (click)="!dateItem.isBlocked && (astrologerBookingForm.date = dateItem.dateStr)">
+            <i class="bi"
+              [ngClass]="dateItem.isBlocked ? 'bi-x-circle-fill text-danger' : (astrologerBookingForm.date === dateItem.dateStr ? 'bi-check-circle-fill' : 'bi-calendar-event')"></i>
+            <div class="date-pill-text">
+              <span class="date-main" [class.text-strike]="dateItem.isBlocked">{{ dateItem.label }}</span>
+              <small class="date-sub" [class.text-danger]="dateItem.isBlocked">{{ dateItem.isBlocked ?
+                (translationService.currentLanguage() === 'en' ? 'Blocked' : 'தடைப்பட்டது') : dateItem.dayName
+                }}</small>
             </div>
-          </div>
-          <div class="form-input-card">
-            <label>{{ 'astrology.tob' | translate }}</label>
-            <div class="input-inner-wrap">
-              <span class="input-icon"><i class="bi bi-clock"></i></span>
-              <input type="time" name="bookingTob" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
-            </div>
-          </div>
-        </div>
-
-        <!-- POB -->
-        <div class="form-input-card">
-          <label>{{ 'astrology.pob' | translate }}</label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <input type="text" name="bookingPob" [(ngModel)]="astrologerBookingForm.pob" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Chennai, Madurai, Coimbatore' : 'எ.கா: சென்னை, மதுரை, கோவை'">
-          </div>
-        </div>
-        }
-
-        <!-- Consultation Date -->
-        <div class="form-input-card">
-          <label>{{ 'astrology.selectDate' | translate }} <span class="required-star">*</span></label>
-
-          <!-- Quick Date Pills Grid -->
-          <div class="slots-pill-grid date-pills-grid">
-            @for (dateItem of availableUpcomingDates; track dateItem.dateStr) {
-            <button type="button" class="slot-pill date-pill-item"
-              [class.active]="astrologerBookingForm.date === dateItem.dateStr && !dateItem.isBlocked"
-              [class.blocked-pill]="dateItem.isBlocked"
-              [disabled]="dateItem.isBlocked"
-              (click)="!dateItem.isBlocked && (astrologerBookingForm.date = dateItem.dateStr)">
-              <i class="bi" [ngClass]="dateItem.isBlocked ? 'bi-x-circle-fill text-danger' : (astrologerBookingForm.date === dateItem.dateStr ? 'bi-check-circle-fill' : 'bi-calendar-event')"></i>
-              <div class="date-pill-text">
-                <span class="date-main" [class.text-strike]="dateItem.isBlocked">{{ dateItem.label }}</span>
-                <small class="date-sub" [class.text-danger]="dateItem.isBlocked">{{ dateItem.isBlocked ? (translationService.currentLanguage() === 'en' ? 'Blocked' : 'தடைப்பட்டது') : dateItem.dayName }}</small>
-              </div>
-            </button>
-            }
-          </div>
-
-          <!-- Custom Native Date Picker -->
-          <div class="custom-date-select-bar">
-            <span class="custom-date-label">{{ translationService.currentLanguage() === 'en' ? 'Select Other Date:' : 'வேறு தேதிக்கு:' }}</span>
-            <div class="input-inner-wrap compact-date-input" [class.input-error-border]="isCurrentDateBlocked">
-              <span class="input-icon"><i class="bi" [ngClass]="isCurrentDateBlocked ? 'bi-exclamation-circle-fill text-danger' : 'bi-calendar-range-fill'"></i></span>
-              <input type="date" name="bookingCustomDate" [(ngModel)]="astrologerBookingForm.date" [min]="todayDateStr" class="custom-native-date">
-            </div>
-          </div>
-
-          <!-- Blocked Date Warning Alert Box -->
-          @if (isCurrentDateBlocked) {
-            <div class="blocked-date-alert-banner">
-              <i class="bi bi-exclamation-triangle-fill"></i>
-              <span>{{ translationService.currentLanguage() === 'en' ? ('Astrologer unavailable on selected date (' + astrologerBookingForm.date + ')! Please pick another date.') : ('தேர்ந்தெடுத்த நாளில் (' + astrologerBookingForm.date + ') ஜோதிடர் கிடைக்கவில்லை! வேறு தேதியைத் தேர்ந்தெடுக்கவும்.') }}</span>
-            </div>
+          </button>
           }
         </div>
 
-        <!-- Time Slot Selection -->
-        <div class="form-input-card">
-          <label>{{ 'astrology.selectSlot' | translate }} <span class="required-star">*</span></label>
-          <div class="slots-pill-grid">
-            @for (slot of selectedAstrologer.available_slots || ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM - 04:30 PM', '05:00 PM - 06:00 PM']; track slot) {
-            <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.slot === slot"
-              (click)="astrologerBookingForm.slot = slot">
-              <i class="bi"
-                [ngClass]="astrologerBookingForm.slot === slot ? 'bi-check-circle-fill' : 'bi-clock'"></i>
-              <span>{{ slot }}</span>
-            </button>
-            }
+        <!-- Custom Native Date Picker -->
+        <div class="custom-date-select-bar">
+          <span class="custom-date-label">{{ translationService.currentLanguage() === 'en' ? 'Select Other Date:' :
+            'வேறு தேதிக்கு:' }}</span>
+          <div class="input-inner-wrap compact-date-input" [class.input-error-border]="isCurrentDateBlocked">
+            <span class="input-icon"><i class="bi"
+                [ngClass]="isCurrentDateBlocked ? 'bi-exclamation-circle-fill text-danger' : 'bi-calendar-range-fill'"></i></span>
+            <input type="date" name="bookingCustomDate" [(ngModel)]="astrologerBookingForm.date" [min]="todayDateStr"
+              class="custom-native-date">
           </div>
         </div>
 
-        <!-- Call Option Selection -->
-        <div class="form-input-card">
-          <label>{{ translationService.currentLanguage() === 'en' ? 'Call Type *' : 'அழைப்பு முறை (Call Type) *' }} <span class="required-star">*</span></label>
-          <div class="slots-pill-grid">
-            @if (selectedAstrologer.is_phone_call_available) {
-              <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Phone'"
-                (click)="astrologerBookingForm.call_type = 'Phone'">
-                <i class="bi" [ngClass]="astrologerBookingForm.call_type === 'Phone' ? 'bi-check-circle-fill' : 'bi-telephone-inbound-fill'"></i>
-                <span>Phone (₹{{ selectedAstrologer.phone_call_fee }})</span>
-              </button>
-            }
-            @if (selectedAstrologer.is_video_call_available) {
-              <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Video'"
-                (click)="astrologerBookingForm.call_type = 'Video'">
-                <i class="bi" [ngClass]="astrologerBookingForm.call_type === 'Video' ? 'bi-check-circle-fill' : 'bi-camera-video-fill'"></i>
-                <span>Video (₹{{ selectedAstrologer.video_call_fee }})</span>
-              </button>
-            }
-            @if (selectedAstrologer.is_audio_call_available) {
-              <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Audio'"
-                (click)="astrologerBookingForm.call_type = 'Audio'">
-                <i class="bi" [ngClass]="astrologerBookingForm.call_type === 'Audio' ? 'bi-check-circle-fill' : 'bi-mic-fill'"></i>
-                <span>Audio (₹{{ selectedAstrologer.audio_call_fee }})</span>
-              </button>
-            }
-          </div>
+        <!-- Blocked Date Warning Alert Box -->
+        @if (isCurrentDateBlocked) {
+        <div class="blocked-date-alert-banner">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>{{ translationService.currentLanguage() === 'en' ? ('Astrologer unavailable on selected date (' +
+            astrologerBookingForm.date + ')! Please pick another date.') : ('தேர்ந்தெடுத்த நாளில் (' +
+            astrologerBookingForm.date + ') ஜோதிடர் கிடைக்கவில்லை! வேறு தேதியைத் தேர்ந்தெடுக்கவும்.') }}</span>
         </div>
-
-        <!-- Optional Questions / Notes -->
-        <div class="form-input-card">
-          <label>{{ 'astrology.question' | translate }}</label>
-          <div class="input-inner-wrap textarea-wrap">
-            <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
-            <textarea [(ngModel)]="astrologerBookingForm.notes" rows="2"
-              [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Career growth, Marriage matching...' : 'எ.கா: தொழில் முன்னேற்றம், திருமண யோகம்...'"></textarea>
-          </div>
-        </div>
-
-        <!-- Booking Validation Error Alert -->
-        @if (bookingValidationError) {
-          <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>{{ bookingValidationError }}</span>
-          </div>
         }
+      </div>
 
-        <!-- Continue Button -->
-        <button type="submit" class="btn-form-continue">
-          <span>{{ translationService.currentLanguage() === 'en' ? 'Continue' : 'தொடர்க' }}</span>
-          <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
-        </button>
-      </form>
+      <!-- Time Slot Selection -->
+      <div class="form-input-card">
+        <label>{{ 'astrology.selectSlot' | translate }} <span class="required-star">*</span></label>
+        <div class="slots-pill-grid">
+          @for (slot of selectedAstrologer.available_slots || ['10:00 AM - 11:00 AM', '11:30 AM - 12:30 PM', '03:30 PM -
+          04:30 PM', '05:00 PM - 06:00 PM']; track slot) {
+          <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.slot === slot"
+            (click)="astrologerBookingForm.slot = slot">
+            <i class="bi" [ngClass]="astrologerBookingForm.slot === slot ? 'bi-check-circle-fill' : 'bi-clock'"></i>
+            <span>{{ slot }}</span>
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Call Option Selection -->
+      <div class="form-input-card">
+        <label>{{ translationService.currentLanguage() === 'en' ? 'Call Type *' : 'அழைப்பு முறை (Call Type) *' }} <span
+            class="required-star">*</span></label>
+        <div class="slots-pill-grid">
+          @if (selectedAstrologer.is_phone_call_available) {
+          <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Phone'"
+            (click)="astrologerBookingForm.call_type = 'Phone'">
+            <i class="bi"
+              [ngClass]="astrologerBookingForm.call_type === 'Phone' ? 'bi-check-circle-fill' : 'bi-telephone-inbound-fill'"></i>
+            <span>Phone (₹{{ selectedAstrologer.phone_call_fee }})</span>
+          </button>
+          }
+          @if (selectedAstrologer.is_video_call_available) {
+          <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Video'"
+            (click)="astrologerBookingForm.call_type = 'Video'">
+            <i class="bi"
+              [ngClass]="astrologerBookingForm.call_type === 'Video' ? 'bi-check-circle-fill' : 'bi-camera-video-fill'"></i>
+            <span>Video (₹{{ selectedAstrologer.video_call_fee }})</span>
+          </button>
+          }
+          @if (selectedAstrologer.is_audio_call_available) {
+          <button type="button" class="slot-pill" [class.active]="astrologerBookingForm.call_type === 'Audio'"
+            (click)="astrologerBookingForm.call_type = 'Audio'">
+            <i class="bi"
+              [ngClass]="astrologerBookingForm.call_type === 'Audio' ? 'bi-check-circle-fill' : 'bi-mic-fill'"></i>
+            <span>Audio (₹{{ selectedAstrologer.audio_call_fee }})</span>
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Optional Questions / Notes -->
+      <div class="form-input-card">
+        <label>{{ 'astrology.question' | translate }}</label>
+        <div class="input-inner-wrap textarea-wrap">
+          <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
+          <textarea [(ngModel)]="astrologerBookingForm.notes" rows="2"
+            [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Career growth, Marriage matching...' : 'எ.கா: தொழில் முன்னேற்றம், திருமண யோகம்...'"></textarea>
+        </div>
+      </div>
+
+      <!-- Booking Validation Error Alert -->
+      @if (bookingValidationError) {
+      <div class="blocked-date-alert-banner"
+        style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ bookingValidationError }}</span>
+      </div>
+      }
+
+      <!-- Continue Button -->
+      <button type="submit" class="btn-form-continue">
+        <span>{{ translationService.currentLanguage() === 'en' ? 'Continue' : 'தொடர்க' }}</span>
+        <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
+      </button>
+    </form>
     }
 
     <!-- Step 2: Payment Confirmation & Order Breakdown -->
     @if (serviceStep === 2) {
-      <div class="payment-card">
-        <div class="pm-header-box">
-          <span class="pm-icon">💳</span>
-          <h3>முன்பதிவு கட்டண விவரம்</h3>
-          <p>கீழ்க்கண்ட விவரங்களைச் சரிபார்த்து பாதுகாப்பாக கட்டணத்தைச் செலுத்தவும்</p>
+    <div class="payment-card">
+      <div class="pm-header-box">
+        <span class="pm-icon">💳</span>
+        <h3>முன்பதிவு கட்டண விவரம்</h3>
+        <p>கீழ்க்கண்ட விவரங்களைச் சரிபார்த்து பாதுகாப்பாக கட்டணத்தைச் செலுத்தவும்</p>
+      </div>
+
+      <div class="pm-details-list">
+        <div class="pm-row">
+          <span>தலைமை ஜோதிடர்:</span>
+          <strong>{{ selectedAstrologer.name }}</strong>
         </div>
-
-        <div class="pm-details-list">
-          <div class="pm-row">
-            <span>தலைமை ஜோதிடர்:</span>
-            <strong>{{ selectedAstrologer.name }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>சேவைப் பிரிவு:</span>
-            <strong>{{ selectedAstrologer.role_title }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>பதிவு செய்தவர்:</span>
-            <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>தொடர்பு எண்:</span>
-            <strong>{{ astrologerBookingForm.phone }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>முன்பதிவு தேதி:</span>
-            <strong>{{ astrologerBookingForm.date }}</strong>
-          </div>
-          <div class="pm-row">
-            <span>ஆலோசனை நேரம்:</span>
-            <strong>{{ astrologerBookingForm.slot }}</strong>
-          </div>
-          <div class="pm-row sub-row">
-            <span>ஆலோசனை முறை:</span>
-            <span>{{ astrologerBookingForm.call_type }}</span>
-          </div>
-          <div class="pm-row sub-row">
-            <span>ஆலோசனை கட்டணம்:</span>
-            <span>₹{{ totalAstrologerFee }}</span>
-          </div>
-          <div class="pm-row sub-row">
-            <span>தளம் & சேவைக் கட்டணம்:</span>
-            <span style="color:#16a34a;font-weight:700;">₹0 (இலவசம்)</span>
-          </div>
-          <div class="pm-row total-highlight">
-            <span>செலுத்த வேண்டிய மொத்தத் தொகை:</span>
-            <strong class="total-fee">₹{{ totalAstrologerFee }}</strong>
-          </div>
+        <div class="pm-row">
+          <span>சேவைப் பிரிவு:</span>
+          <strong>{{ selectedAstrologer.role_title }}</strong>
         </div>
-
-        <!-- Booking Validation Error Alert -->
-        @if (bookingValidationError) {
-          <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>{{ bookingValidationError }}</span>
-          </div>
-        }
-
-        <button class="btn-app-gold btn-pay-now" [disabled]="isProcessingPayment" (click)="payAndFulfillAstrologer()">
-          @if (isProcessingPayment) {
-            <span>செயலாக்கப்படுகிறது...</span>
-          } @else {
-            <span>₹{{ totalAstrologerFee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒</span>
-          }
-        </button>
-
-        <div class="footer-safety-badge" style="margin-top: 14px;">
-          <span class="shield-icon">🛡️</span>
-          <span class="safety-text">100% பாதுகாப்பான மற்றும் உறுதியான நேரடி ஆலோசனை</span>
+        <div class="pm-row">
+          <span>பதிவு செய்தவர்:</span>
+          <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong>
+        </div>
+        <div class="pm-row">
+          <span>தொடர்பு எண்:</span>
+          <strong>{{ astrologerBookingForm.phone }}</strong>
+        </div>
+        <div class="pm-row">
+          <span>முன்பதிவு தேதி:</span>
+          <strong>{{ astrologerBookingForm.date }}</strong>
+        </div>
+        <div class="pm-row">
+          <span>ஆலோசனை நேரம்:</span>
+          <strong>{{ astrologerBookingForm.slot }}</strong>
+        </div>
+        <div class="pm-row sub-row">
+          <span>ஆலோசனை முறை:</span>
+          <span>{{ astrologerBookingForm.call_type }}</span>
+        </div>
+        <div class="pm-row sub-row">
+          <span>ஆலோசனை கட்டணம்:</span>
+          <span>₹{{ totalAstrologerFee }}</span>
+        </div>
+        <div class="pm-row sub-row">
+          <span>தளம் & சேவைக் கட்டணம்:</span>
+          <span style="color:#16a34a;font-weight:700;">₹0 (இலவசம்)</span>
+        </div>
+        <div class="pm-row total-highlight">
+          <span>செலுத்த வேண்டிய மொத்தத் தொகை:</span>
+          <strong class="total-fee">₹{{ totalAstrologerFee }}</strong>
         </div>
       </div>
+
+      <!-- Booking Validation Error Alert -->
+      @if (bookingValidationError) {
+      <div class="blocked-date-alert-banner"
+        style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ bookingValidationError }}</span>
+      </div>
+      }
+
+      <button class="btn-app-gold btn-pay-now" [disabled]="isProcessingPayment" (click)="payAndFulfillAstrologer()">
+        @if (isProcessingPayment) {
+        <span>செயலாக்கப்படுகிறது...</span>
+        } @else {
+        <span>₹{{ totalAstrologerFee }} செலுத்தி முன்பதிவை உறுதிசெய்க 🔒</span>
+        }
+      </button>
+
+      <div class="footer-safety-badge" style="margin-top: 14px;">
+        <span class="shield-icon">🛡️</span>
+        <span class="safety-text">100% பாதுகாப்பான மற்றும் உறுதியான நேரடி ஆலோசனை</span>
+      </div>
+    </div>
     }
 
     <!-- Step 3: Success Screen with Confirmation Notification -->
     @if (serviceStep === 3) {
-      <div class="success-box">
-        <span class="success-icon">🎉</span>
-        <h3>முன்பதிவு வெற்றிகரமாக உறுதியானது!</h3>
-        <span class="booking-ref-badge">பதிவு எண்: #{{ bookingRefCode }}</span>
+    <div class="success-box">
+      <span class="success-icon">🎉</span>
+      <h3>முன்பதிவு வெற்றிகரமாக உறுதியானது!</h3>
+      <span class="booking-ref-badge">பதிவு எண்: #{{ bookingRefCode }}</span>
 
-        <!-- In-App Confirmation Notification Alert Box -->
-        <div class="confirmation-notification-card">
-          <div class="cnc-header">
-            <span class="cnc-bell">🔔</span>
-            <strong>உறுதிப்படுத்தல் அறிவிப்பு (Notification)</strong>
-          </div>
-          <p class="cnc-msg">
-            வணக்கம் <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong> வெற்றிகரமாக பதிவு செய்யப்பட்டது. தலைமை
-            ஜோதிடர் <strong>{{ selectedAstrologer.name }}</strong> அவர்கள்
-            குறித்த நேரத்தில் உங்களை தொலைபேசியில் தொடர்பு கொள்வார்.
-          </p>
-          <div class="cnc-schedule-pill">
-            <span><i class="bi bi-calendar-check-fill me-1"></i> {{ astrologerBookingForm.date }}</span>
-            <span><i class="bi bi-clock-fill me-1"></i> {{ astrologerBookingForm.slot }}</span>
-          </div>
+      <!-- In-App Confirmation Notification Alert Box -->
+      <div class="confirmation-notification-card">
+        <div class="cnc-header">
+          <span class="cnc-bell">🔔</span>
+          <strong>உறுதிப்படுத்தல் அறிவிப்பு (Notification)</strong>
         </div>
-
-        <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்குச் செல்க</button>
+        <p class="cnc-msg">
+          வணக்கம் <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong> வெற்றிகரமாக பதிவு செய்யப்பட்டது. தலைமை
+          ஜோதிடர் <strong>{{ selectedAstrologer.name }}</strong> அவர்கள்
+          குறித்த நேரத்தில் உங்களை தொலைபேசியில் தொடர்பு கொள்வார்.
+        </p>
+        <div class="cnc-schedule-pill">
+          <span><i class="bi bi-calendar-check-fill me-1"></i> {{ astrologerBookingForm.date }}</span>
+          <span><i class="bi bi-clock-fill me-1"></i> {{ astrologerBookingForm.slot }}</span>
+        </div>
       </div>
+
+      <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்குச் செல்க</button>
+    </div>
     }
 
   </div>

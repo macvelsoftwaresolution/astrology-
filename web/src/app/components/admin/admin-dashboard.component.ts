@@ -96,7 +96,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   setLanguage(lang: LanguageCode): void {
     this.translationService.setLanguage(lang);
@@ -111,7 +111,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.toastData = data;
       this.cdr.detectChanges();
     });
-    
+
     // Load read notifications from sessionStorage
     if (typeof window !== 'undefined') {
       try {
@@ -199,7 +199,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           ...a,
           is_read: this.readNotificationIds.has(a.id)
         }));
-        
+
         const unreadList = this.notifications.filter(n => !n.is_read);
         const prevCount = this.unreadNotificationsCount;
         this.unreadNotificationsCount = unreadList.length;
@@ -253,7 +253,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
-      } catch {}
+      } catch { }
     }
     this.unreadNotificationsCount = this.notifications.filter(item => !item.is_read).length;
 
@@ -275,7 +275,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
-      } catch {}
+      } catch { }
     }
     this.unreadNotificationsCount = 0;
     this.cdr.detectChanges();
@@ -364,7 +364,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selectTab(tabName: string): void {
     this.currentTab = tabName;
     this.mobileMenuOpen = false;
-    
+
     if (this.isAstrologyActive()) {
       this.astrologyCategoryOpen = true;
       this.learnCategoryOpen = false;
@@ -381,7 +381,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       queryParams: { tab: tabName },
       queryParamsHandling: 'merge'
     });
-    
+
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

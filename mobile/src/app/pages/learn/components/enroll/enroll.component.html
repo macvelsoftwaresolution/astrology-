@@ -72,21 +72,29 @@
       </div>
     </div>
 
-    <!-- Mudhunilai Simple Auto-Fill -->
+    <!-- Mudhunilai Simple Auto-Fill (Strictly Student ID) -->
     @if (localForm.courseLevel === 'mudhunilai') {
     <div class="simple-fetch-box">
-      <label class="simple-label">இளநிலை ஐடி / மொபைல் எண்</label>
+      <label class="simple-label">இளநிலை மாணவர் ஐடி (Student ID) <span class="req">*</span></label>
       <div class="fetch-input-row">
-        <input type="text" [(ngModel)]="ilanilaiSearchQuery" placeholder="ஐடி / மொபைல் எண்"
+        <input type="text" [(ngModel)]="ilanilaiSearchQuery" placeholder="உதா: 26AR01"
           (keyup.enter)="fetchIlanilaiDetails()">
         <button type="button" class="btn-simple-fetch" (click)="fetchIlanilaiDetails()" [disabled]="isFetchingIlanilai">
-          @if (isFetchingIlanilai) { {{ 'common.loading' | translate }} } @else { விவரம் எடு }
+          @if (isFetchingIlanilai) { {{ 'common.loading' | translate }} } @else { விவரம் சரிபார் }
         </button>
       </div>
       @if (fetchSuccessMsg) { <div class="simple-msg success"><i class="bi bi-check-circle-fill me-1"></i> {{
         fetchSuccessMsg }}</div> }
       @if (fetchErrorMsg) { <div class="simple-msg error"><i class="bi bi-exclamation-circle-fill me-1"></i> {{
         fetchErrorMsg }}</div> }
+    </div>
+    }
+
+    <!-- Batch Allocation Badge -->
+    @if (localForm.batch_name || activeBatchName) {
+    <div class="batch-alloc-badge mb-3">
+      <i class="bi bi-calendar2-week-fill me-2"></i>
+      <span>சேர்க்கை பிரிவு (Batch): <strong>{{ localForm.batch_name || activeBatchName }}</strong></span>
     </div>
     }
 
