@@ -178,7 +178,7 @@ class AstrologyController extends Controller
             if ($userId) {
                 DB::table('notifications')->insert([
                     'user_id'    => $userId,
-                    'title'      => 'முன்பதிவு பெறப்பட்டது! (Booking Received)',
+                    'title'      => 'முன்பதிவு பெறப்பட்டது!',
                     'body'       => 'உங்கள் ' . ($request->service_type ?: 'ஜோதிட ஆலோசனை') . ' முன்பதிவு #' . $orderId . ' பெறப்பட்டது.',
                     'type'       => 'booking',
                     'is_read'    => false,
@@ -769,7 +769,7 @@ class AstrologyController extends Controller
         if (!empty($booking->user_id)) {
             DB::table('notifications')->insert([
                 'user_id'    => $booking->user_id,
-                'title'      => 'ஜோதிட கணிப்பு நிறைவுற்றது! (Booking Completed)',
+                'title'      => 'ஜோதிட கணிப்பு நிறைவுற்றது!',
                 'body'       => "உங்கள் முன்பதிவு (#{$id} - {$booking->service_type}) ஜோதிடரால் ஆய்வு செய்யப்பட்டு முடிவுற்றது. உங்கள் ஜாதகக் கோப்பு கீழே இணைக்கப்பட்டுள்ளது.",
                 'type'       => 'booking_fulfilled',
                 'data'       => json_encode(['booking_id' => $id, 'chart_url' => $chartUrl], JSON_UNESCAPED_SLASHES),
@@ -793,7 +793,7 @@ class AstrologyController extends Controller
         DB::table('bookings')->where('id', $id)->delete();
         return response()->json([
             'success' => true,
-            'message' => "முன்பதிவு (#{$id}) வெற்றிகரமாக நீக்கப்பட்டது (Booking Deleted successfully)."
+            'message' => "முன்பதிவு (#{$id}) வெற்றிகரமாக நீக்கப்பட்டது."
         ]);
     }
 

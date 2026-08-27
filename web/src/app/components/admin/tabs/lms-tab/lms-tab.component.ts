@@ -143,15 +143,46 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
+  getBatchDisplayName(b: any): string {
+    if (!b) return '';
+    if (this.translationService.currentLanguage() === 'ta') {
+      let name = b.name || '';
+      name = name.replace(/Batch\s*1/gi, 'பிரிவு 1')
+                 .replace(/Batch\s*2/gi, 'பிரிவு 2')
+                 .replace(/Batch\s*3/gi, 'பிரிவு 3')
+                 .replace(/Batch\s*4/gi, 'பிரிவு 4')
+                 .replace(/Batch\s*A/gi, 'பிரிவு A')
+                 .replace(/Batch\s*B/gi, 'பிரிவு B')
+                 .replace(/Batch\s*C/gi, 'பிரிவு C')
+                 .replace(/Batch\s*D/gi, 'பிரிவு D')
+                 .replace(/Jan\s*-\s*Mar/gi, 'ஜன - மார்')
+                 .replace(/Apr\s*-\s*Jun/gi, 'ஏப் - ஜூன்')
+                 .replace(/Jul\s*-\s*Sep/gi, 'ஜூலை - செப்')
+                 .replace(/Oct\s*-\s*Dec/gi, 'அக் - டிச')
+                 .replace(/Feb\s*-\s*Apr/gi, 'பிப் - ஏப்')
+                 .replace(/May\s*-\s*Jul/gi, 'மே - ஜூலை')
+                 .replace(/Aug\s*-\s*Oct/gi, 'ஆக - அக்')
+                 .replace(/Nov\s*-\s*Jan/gi, 'நவ - ஜன');
+      return `${name} (${b.quarter || ''})`;
+    }
+    return `${b.name} (${b.quarter || ''})`;
+  }
+
   getFilteredCurriculumDays(): any[] {
     const allDays = [];
+    const isTa = this.translationService.currentLanguage() === 'ta';
+
     // Ensure all 60 days exist in display grid (Day 1 to 60)
     for (let i = 1; i <= 60; i++) {
       const found = this.curriculumDays.find(d => d.day_number === i);
+      const defaultTitle = isTa
+        ? `நாள் ${i}: பாடத் தலைப்பு அமைக்கப்படவில்லை`
+        : `Day ${i}: Lesson Title Not Set`;
+
       allDays.push(found || {
         batch_id: this.selectedBatchId,
         day_number: i,
-        title: `நாள் ${i}: பாடத் தலைப்பு அமைக்கப்படவில்லை`,
+        title: defaultTitle,
         description: '',
         audio_url: '',
         images_json: [],

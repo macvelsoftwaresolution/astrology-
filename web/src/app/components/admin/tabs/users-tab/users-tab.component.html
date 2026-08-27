@@ -134,7 +134,7 @@
     <div class="user-custom-dropdown-wrap" (click)="$event.stopPropagation()">
       <label class="dropdown-field-label">
         <i class="bi bi-calendar2-range-fill" style="color: #d97706; font-size: 15px;"></i>
-        <span>Batch வடிகட்டி</span>
+        <span>{{ 'users.batchFilter' | translate }}</span>
       </label>
 
       <div class="custom-select-container">
@@ -160,7 +160,7 @@
               (click)="selectBatch('all', $event)">
               <div class="opt-left">
                 <i class="bi bi-collection-fill opt-icon" style="color: #d97706;"></i>
-                <span class="opt-name">அனைத்து Batches</span>
+                <span class="opt-name">{{ 'users.allBatches' | translate }}</span>
               </div>
               <div class="opt-right">
                 <span class="opt-count-tag">{{ studentsCount }}</span>
@@ -178,7 +178,7 @@
                 (click)="selectBatch(b.name, $event)">
                 <div class="opt-left">
                   <i class="bi bi-calendar-check opt-icon" style="color: #d97706;"></i>
-                  <span class="opt-name">{{ b.name }}</span>
+                  <span class="opt-name">{{ formatBatchName(b.name) }}</span>
                 </div>
                 <div class="opt-right">
                   <span class="opt-count-tag">{{ getBatchStudentCount(b) }}</span>
@@ -208,7 +208,7 @@
               <th>{{ 'users.name' | translate }}</th>
               <th>{{ 'user.email' | translate }}</th>
               <th>{{ 'user.phone' | translate }}</th>
-              <th>சுயவிவரம் / பிரிவு (Batch)</th>
+              <th>{{ 'users.profileBatchCol' | translate }}</th>
               <th style="min-width: 170px;">{{ 'users.registeredOn' | translate }}</th>
               <th style="min-width: 180px;">{{ 'common.actions' | translate }}</th>
             </tr>
@@ -256,7 +256,7 @@
                       </span>
                       @if (u.batch_name) {
                         <span class="profile-tag-batch">
-                          <i class="bi bi-calendar2-week"></i> {{ u.batch_name }}
+                          <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
                         </span>
                       }
                     </div>
@@ -264,7 +264,7 @@
                   <!-- 2. When Filter is explicitly 'appointments' -> show only Appointment badge -->
                   @else if (selectedCategoryFilter === 'appointments') {
                     <span class="profile-tag-booking">
-                      <i class="bi bi-calendar2-check-fill"></i> முன்பதிவு ({{ u.bookings_count }})
+                      <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
                     </span>
                   }
                   <!-- 3. When 'Both' or 'All' is selected and user has both roles -> show dual badge -->
@@ -276,12 +276,12 @@
                         </span>
                         <span class="tag-separator">/</span>
                         <span class="profile-tag-booking">
-                          <i class="bi bi-calendar2-check-fill"></i> முன்பதிவு ({{ u.bookings_count }})
+                          <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
                         </span>
                       </div>
                       @if (u.batch_name) {
                         <span class="profile-tag-batch">
-                          <i class="bi bi-calendar2-week"></i> {{ u.batch_name }}
+                          <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
                         </span>
                       }
                     </div>
@@ -294,13 +294,13 @@
                       </span>
                       @if (u.batch_name) {
                         <span class="profile-tag-batch">
-                          <i class="bi bi-calendar2-week"></i> {{ u.batch_name }}
+                          <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
                         </span>
                       }
                     </div>
                   } @else if (isAppointmentUser(u)) {
                     <span class="profile-tag-booking">
-                      <i class="bi bi-calendar2-check-fill"></i> முன்பதிவு ({{ u.bookings_count }})
+                      <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
                     </span>
                   } @else if (getParsedDetails(u)?.rasi || u.jathagam_profile?.rasi) {
                     <span class="profile-tag-horoscope">
@@ -308,7 +308,7 @@
                     </span>
                   } @else {
                     <span class="profile-tag-member">
-                      <i class="bi bi-person-badge-fill"></i> உறுப்பினர்
+                      <i class="bi bi-person-badge-fill"></i> {{ 'users.memberBadge' | translate }}
                     </span>
                   }
                 </td>
@@ -327,8 +327,8 @@
                 <td>
                   <div class="action-btns-wrap">
                     @if (isStudent(u)) {
-                      <button class="btn-shift-batch-action" (click)="openShiftModal(u)" title="Batch மாற்று">
-                        <i class="bi bi-arrow-left-right"></i> Batch
+                      <button class="btn-shift-batch-action" (click)="openShiftModal(u)" [title]="translationService.currentLanguage() === 'ta' ? 'பிரிவு மாற்று' : 'Shift Batch'">
+                        <i class="bi bi-arrow-left-right"></i> {{ translationService.currentLanguage() === 'ta' ? 'பிரிவு' : 'Batch' }}
                       </button>
                     }
                     @if (getParsedDetails(u)) {
@@ -383,7 +383,7 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
               @if (selectedUserForProfile.student_id) {
                 <div>
-                  <span class="muted" style="font-size:11px;display:block;color:#64748b;">Student Login ID:</span>
+                  <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மாணவர் உள்நுழைவு ID:' : 'Student Login ID:' }}</span>
                   <strong style="color:#2563eb;font-size:14px;">{{ selectedUserForProfile.student_id }}</strong>
                 </div>
               }
@@ -392,8 +392,8 @@
                 <strong style="color:#d97706;">{{ getStudentLevel(selectedUserForProfile) }}</strong>
               </div>
               <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">சேர்க்கை பிரிவு (Batch):</span>
-                <strong style="color:#b45309;font-weight:700;"><i class="bi bi-calendar2-week me-1"></i>{{ selectedUserForProfile.batch_name || getParsedDetails(selectedUserForProfile)?.batch_name || '-' }}</strong>
+                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.batchFilter' | translate }}</span>
+                <strong style="color:#b45309;font-weight:700;"><i class="bi bi-calendar2-week me-1"></i>{{ formatBatchName(selectedUserForProfile.batch_name || getParsedDetails(selectedUserForProfile)?.batch_name || '-') }}</strong>
               </div>
               @if (getParsedDetails(selectedUserForProfile)?.studentNameTamil) {
                 <div>
@@ -415,11 +415,11 @@
               </div>
               <div>
                 <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.gender' | translate }}</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.gender || '-' }}</strong>
+                <strong>{{ formatGender(getParsedDetails(selectedUserForProfile)?.gender) }}</strong>
               </div>
               <div>
                 <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.occupation' | translate }}</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.occupation || '-' }}</strong>
+                <strong>{{ formatOccupation(getParsedDetails(selectedUserForProfile)?.occupation) }}</strong>
               </div>
               <div>
                 <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.motherTongue' | translate }}</span>
@@ -427,15 +427,7 @@
               </div>
               <div>
                 <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.qualification' | translate }}</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.qualification || '-' }}</strong>
-              </div>
-              <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.trainingMode' | translate }}</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.trainingMode === '5_day' ? '5 நாட்கள் (2 மணி நேரம்)' : '1 நாள் (9 மணி நேரம்)' }}</strong>
-              </div>
-              <div>
-                <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.batchTiming' | translate }}</span>
-                <strong>{{ getParsedDetails(selectedUserForProfile)?.batchTiming ? 'பிரிவு ' + getParsedDetails(selectedUserForProfile).batchTiming : '-' }}</strong>
+                <strong>{{ formatQualification(getParsedDetails(selectedUserForProfile)?.qualification) }}</strong>
               </div>
               <div style="grid-column: 1 / -1;">
                 <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.postalAddress' | translate }}</span>
@@ -493,21 +485,21 @@
       <div class="modal-box batch-modal-box" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:16px;">
-            <i class="bi bi-arrow-left-right text-amber-600"></i> மாணவர் Batch மாற்றுதல்
+            <i class="bi bi-arrow-left-right text-amber-600"></i> {{ translationService.currentLanguage() === 'ta' ? 'மாணவர் பிரிவு மாற்றுதல்' : 'Shift Student Batch' }}
           </h3>
           <button type="button" class="btn-close-modal" (click)="openShiftBatchModal = false">✕</button>
         </div>
         <div class="modal-body" style="padding:16px 0;">
           <div class="student-shift-preview mb-3" style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
             <div style="font-weight:700;color:#0f172a;">{{ selectedUserForBatchShift.name }}</div>
-            <div style="font-size:12px;color:#64748b;">ID: {{ selectedUserForBatchShift.student_id || selectedUserForBatchShift.id }} | தற்போதைய Batch: <span class="badge-curr" style="color:#d97706;font-weight:600;">{{ selectedUserForBatchShift.batch_name || 'Unassigned' }}</span></div>
+            <div style="font-size:12px;color:#64748b;">ID: {{ selectedUserForBatchShift.student_id || selectedUserForBatchShift.id }} | {{ translationService.currentLanguage() === 'ta' ? 'தற்போதைய பிரிவு:' : 'Current Batch:' }} <span class="badge-curr" style="color:#d97706;font-weight:600;">{{ formatBatchName(selectedUserForBatchShift.batch_name || 'Unassigned') }}</span></div>
           </div>
           <div class="form-group mb-3">
-            <label class="modal-label">புதிய Batch தேர்வு செய்க <span class="text-danger">*</span></label>
+            <label class="modal-label">{{ translationService.currentLanguage() === 'ta' ? 'புதிய பிரிவு தேர்வு செய்க' : 'Select New Batch' }} <span class="text-danger">*</span></label>
             <select [(ngModel)]="shiftTargetBatchId" class="ctrl modal-input">
               @for (b of batches; track b.id) {
                 <option [value]="b.id">
-                  {{ b.name }} ({{ b.status === 'active' ? 'Active / நடப்பு' : (b.status === 'upcoming' ? 'Upcoming / வரவிருப்பது' : 'Completed / முடிந்தது') }})
+                  {{ formatBatchName(b.name) }} ({{ b.status === 'active' ? (translationService.currentLanguage() === 'ta' ? 'நடப்பு பிரிவு' : 'Active') : (b.status === 'upcoming' ? (translationService.currentLanguage() === 'ta' ? 'வரவிருப்பது' : 'Upcoming') : (translationService.currentLanguage() === 'ta' ? 'முடிந்தது' : 'Completed')) }})
                 </option>
               }
             </select>
@@ -518,7 +510,7 @@
             {{ 'common.cancel' | translate }}
           </button>
           <button type="button" class="btn-primary-action" (click)="submitShiftBatch()" [disabled]="isBatchSubmitting">
-            <i class="bi bi-check-lg me-1"></i> {{ isBatchSubmitting ? ('common.loading' | translate) : 'Batch மாற்று' }}
+            <i class="bi bi-check-lg me-1"></i> {{ isBatchSubmitting ? ('common.loading' | translate) : (translationService.currentLanguage() === 'ta' ? 'பிரிவு மாற்று' : 'Shift Batch') }}
           </button>
         </div>
       </div>

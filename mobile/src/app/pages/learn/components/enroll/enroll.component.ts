@@ -42,8 +42,6 @@ export class LearnEnrollComponent implements OnInit {
     qualification: '',
     courseLevel: 'ilanilai',
     trainingPurpose: 'தொழிலாக கொள்ள',
-    trainingMode: '1_day', // 1_day (9 hours) or 5_day (2 hours)
-    batchTiming: 'A', // A: திங்கள், B: புதன், C: வெள்ளி, D: மாலை
     batch_id: null as number | null,
     batch_name: '',
     studentPhoto: '',
