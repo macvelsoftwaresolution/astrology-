@@ -17,14 +17,9 @@ export class LearnIntroComponent implements OnInit {
   @Output() next = new EventEmitter<void>();
   @Output() login = new EventEmitter<void>();
 
-  vilakauraiText: string = 'இந்தப் பாடநெறி பழமையான வேத ஜோதிடத்தின் ரகசியங்களை நவீன முறைப்படி கற்றுக்கொள்ள வடிவமமைக்கப்பட்டுள்ளது. கிரகங்களின் இயக்கங்கள் நமது வாழ்வை எவ்வாறு பாதிக்கின்றன என்பதை ஆழமாகப் புரிந்துகொள்ளும் இது ஒரு தெய்வீகத் தொடக்கம்.';
+  vilakauraiText: string = '';
   
-  topics: Topic[] = [
-    { title: 'ராசி மண்டலம்', desc: '12 ராசிகள் மற்றும் அவற்றின் குணாதிசயங்கள் பற்றிய தெளிவான புரிதல்.' },
-    { title: 'நவக்கிரகங்கள்', desc: '9 கிரகங்களின் தன்மைகள் மற்றும் அவை ஏற்படுத்தும் தாக்கங்கள்.' },
-    { title: 'ஜாதக கணிப்பு', desc: 'அடிப்படை ஜாதக கட்டங்களை அமைக்கும் முறை மற்றும் வாசிக்கும் திறன்.' },
-    { title: 'பரிகாரங்கள்', desc: 'கிரக தோஷங்களுக்கான எளிய மற்றும் நடைமுறை தீர்வுகள்.' }
-  ];
+  topics: Topic[] = [];
 
   icons = ['bi-stars', 'bi-sun-fill', 'bi-journal-bookmark-fill', 'bi-shield-fill-check', 'bi-flower1', 'bi-moon-stars-fill'];
   colors = ['box-gold', 'box-peach', 'box-ivory', 'box-red', 'box-muted', 'box-peach'];

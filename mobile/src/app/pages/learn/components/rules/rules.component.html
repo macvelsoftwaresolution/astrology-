@@ -1,11 +1,11 @@
-﻿<div class="wizard-container">
+<div class="wizard-container">
   <div class="rules-header">
     <div class="rules-shield-icon"><i class="bi bi-shield-check"></i></div>
     <h2 class="rules-heading">விதிமுறைகள்</h2>
     <p class="rules-subheading">தெய்வீக அகாடமியின் புனிதமான வீதிகள் மற்றும் விதிமுறைகள். கல்வியின் சிறப்பிற்காக இவற்றை கடைபிடிக்கவும்.</p>
   </div>
 
-  <div class="rules-list">
+  <div class="rules-list" *ngIf="rules && rules.length > 0">
     <div class="rule-item" *ngFor="let rule of rules; let i = index">
       <div class="rule-icon" [ngClass]="getColorClass(i)"><i class="bi" [ngClass]="getIcon(i)"></i></div>
       <div>

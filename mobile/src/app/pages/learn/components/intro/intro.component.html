@@ -6,12 +6,12 @@
     <h2 class="banner-title">வேத ஜோதிட அடிப்படைகள்</h2>
   </div>
 
-  <div class="section-block">
+  <div class="section-block" *ngIf="vilakauraiText">
     <h3 class="section-title">விளக்கவுரை (Vilakkavurai)</h3>
     <p class="section-desc" style="white-space: pre-wrap;">{{ vilakauraiText }}</p>
   </div>
 
-  <div class="section-block">
+  <div class="section-block" *ngIf="topics && topics.length > 0">
     <h3 class="section-title"><i class="bi bi-lightbulb-fill text-gold me-2"></i>நீங்கள் கற்கவிருப்பது</h3>
     <div class="topics-grid">
       <div class="topic-item" *ngFor="let topic of topics; let i = index">
