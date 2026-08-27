@@ -68,7 +68,8 @@ export class AuthService {
   login(input: string, password?: string, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
     const payload = {
       email: input,
-      password: password || ''
+      password: password || '',
+      service: service
     };
 
     return this.http.post<any>(`${this.apiUrl}/auth/mobile-login`, payload).pipe(

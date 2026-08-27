@@ -435,7 +435,7 @@ export class LearnPage implements OnInit {
 
   loginToCourse() {
     if (!this.loginIdInput || !this.loginPasswordInput) {
-      this.loginErrorMessage = 'தயவுசெய்து அனைத்து விவரங்களையும் உள்ளிடவும்.';
+      this.loginErrorMessage = 'தயவுசெய்து உங்கள் மாணவர் ஐடி (Student ID) மற்றும் கடவுச்சொல்லை உள்ளிடவும்.';
       return;
     }
 

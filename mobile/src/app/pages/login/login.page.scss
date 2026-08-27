@@ -159,6 +159,12 @@ $color-text-muted: #7E716A;
       font-size: 1.1rem;
       color: $color-maroon;
       pointer-events: none;
+
+      &.toggle-pwd-btn {
+        pointer-events: auto;
+        cursor: pointer;
+        padding: 4px;
+      }
     }
   }
 }

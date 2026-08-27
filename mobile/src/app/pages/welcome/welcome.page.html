@@ -45,4 +45,25 @@
       </div>
     </div>
   </div>
+
+  <!-- Startup / Header Language Select Modal Overlay -->
+  @if (showLanguageModal) {
+  <div class="lang-modal-overlay">
+    <div class="lang-modal-card">
+      <h3 class="lang-modal-title">Select Language</h3>
+
+      <div class="lang-options-row">
+        <button type="button" class="simple-lang-btn" [class.active]="translationService.currentLanguage() === 'ta'"
+          (click)="selectLanguage('ta')">
+          தமிழ்
+        </button>
+
+        <button type="button" class="simple-lang-btn" [class.active]="translationService.currentLanguage() === 'en'"
+          (click)="selectLanguage('en')">
+          English
+        </button>
+      </div>
+    </div>
+  </div>
+  }
 </ion-content>

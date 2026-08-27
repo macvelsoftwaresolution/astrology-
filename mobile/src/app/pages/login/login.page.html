@@ -36,8 +36,10 @@
       <div class="input-group">
         <label>{{ 'login.passwordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="password" name="password" [(ngModel)]="password" required minlength="6" [placeholder]="'login.passwordPlaceholder' | translate">
-          <span class="input-icon"><i class="bi bi-key"></i></span>
+          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" [placeholder]="'login.passwordPlaceholder' | translate">
+          <span class="input-icon toggle-pwd-btn" (click)="toggleShowPassword()" style="cursor: pointer; pointer-events: auto;">
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+          </span>
         </div>
       </div>
 

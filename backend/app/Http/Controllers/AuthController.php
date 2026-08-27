@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Student;
 use App\Mail\StudentCredentialsMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -32,12 +34,12 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Web portal restriction check for student/user
-        if ($user->role === 'user') {
+        // Web portal restriction check: ONLY admin role is permitted
+        if ($user->role !== 'admin') {
             return response()->json([
-                'success' => false,
-                'is_student' => true,
-                'message' => 'Student accounts are restricted to the Mobile App. Please log in using the Mobile Application.'
+                'success'    => false,
+                'is_student' => ($user->role === 'user'),
+                'message'    => 'நிர்வாகி கணக்குகள் மட்டுமே இந்த போர்ட்டலில் உள்நுழைய முடியும். (Only Admin accounts can log in to the Web Portal.)'
             ], 403);
         }
 
@@ -64,23 +66,66 @@ class AuthController extends Controller
     }
 
     /**
-     * Mobile App Login (Restricted to role=user only)
+     * Mobile App Login (Separated between Astrology Username/Email & Learn Student ID)
      */
     public function mobileLogin(Request $request)
     {
         $request->validate([
             'email'    => 'required|string',
             'password' => 'required|string',
+            'service'  => 'nullable|string',
         ]);
 
-        $input = trim($request->input('email'));
+        $input   = trim($request->input('email'));
+        $service = $request->input('service', 'astrology');
+
+        // =====================================================================
+        // 1. LEARN / EDUCATION SECTION LOGIN (Student ID + Password ONLY)
+        // =====================================================================
+        if ($service === 'education') {
+            // Find student by Student ID (e.g. 26AR01)
+            $student = Student::where('student_id', $input)->first();
+
+            if (!$student || !Hash::check($request->password, $student->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'தவறான மாணவர் ஐடி (Student ID) அல்லது கடவுச்சொல்.'
+                ], 401);
+            }
+
+            if ($student->status !== 'active') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'உங்கள் மாணவர் கணக்கு செயலற்றது. நிர்வாகியை தொடர்புகொள்ளவும்.'
+                ], 403);
+            }
+
+            $token = $student->createToken('mobile_app_token', ['user'])->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'token'   => $token,
+                'user'    => [
+                    'id'         => $student->id,
+                    'name'       => $student->name,
+                    'email'      => $student->email,
+                    'phone'      => $student->phone,
+                    'student_id' => $student->student_id,
+                    'role'       => 'user',
+                    'avatar_url' => $student->avatar_url,
+                ]
+            ]);
+        }
+
+        // =====================================================================
+        // 2. ASTROLOGY SECTION LOGIN (Username / Email + Password ONLY)
+        // =====================================================================
         $user = User::where('email', $input)
-            ->orWhere('phone', $input)
-            ->orWhere('student_id', $input)
+            ->orWhere('name', $input)
             ->first();
 
         // Support demo login seamlessly
-        if (!$user && $input === '9876543210' && in_array($request->password, ['123456', 'test123'])) {
+        if (!$user && $input === 'user@gmail.com' && in_array($request->password, ['123456', 'test123'])) {
             $user = User::create([
                 'name'     => 'Karthik',
                 'email'    => 'user@gmail.com',
@@ -94,11 +139,11 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்.'
+                'message' => 'தவறான மின்னஞ்சல்/பயனர் பெயர் அல்லது கடவுச்சொல்.'
             ], 401);
         }
 
-        // Mobile is for students/users only
+        // Mobile is for regular users only
         if ($user->role === 'admin') {
             return response()->json([
                 'success'  => false,
@@ -131,7 +176,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Register new user (Mobile App)
+     * Register new user (Mobile App - Astrology)
      */
     public function register(Request $request)
     {
@@ -223,7 +268,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Learn Student Registration with Mail Integration
+     * Learn Student Registration with Mail Integration (Saves to dedicated 'students' table)
      */
     public function studentRegister(Request $request)
     {
@@ -246,15 +291,11 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $userQuery = User::where('email', $email);
-        if (!empty($phone)) {
-            $userQuery->orWhere('phone', $phone);
-        }
-        $user = $userQuery->first();
+        $student = Student::where('email', $email)->first();
 
         // User ID format: 2-digit Year + AR + 2-digit sequential number (e.g. 26AR01, 26AR02, 27AR01)
         $twoDigitYear = date('y');
-        $studentCount = User::where('role', 'user')->count() + 1;
+        $studentCount = Student::count() + 1;
         $loginId      = $twoDigitYear . 'AR' . sprintf('%02d', $studentCount);
 
         // Unique secure 6-character random password (e.g. K8N9P2)
@@ -283,28 +324,25 @@ class AuthController extends Controller
             'prevUserId'       => $request->input('prevUserId', ''),
         ];
 
-        if ($user) {
-            // Update password & student_id for existing student
-            $loginId = $user->student_id ?: $loginId;
-            $user->update([
+        if ($student) {
+            // Update password & student_id for existing student in students table
+            $loginId = $student->student_id ?: $loginId;
+            $student->update([
                 'name'             => $fullName,
                 'student_id'       => $loginId,
                 'password'         => Hash::make($password),
                 'status'           => 'active',
-                'address'          => $request->input('postalAddress', $user->address),
+                'address'          => $request->input('postalAddress', $student->address),
                 'jathagam_details' => json_encode($details),
+                'phone'            => $phone ?: $student->phone,
             ]);
-            if ($phone) {
-                $user->update(['phone' => $phone]);
-            }
         } else {
-            $user = User::create([
+            $student = Student::create([
                 'name'             => $fullName,
                 'email'            => $email,
                 'student_id'       => $loginId,
-                'phone'            => $phone ?: $loginId,
+                'phone'            => $phone,
                 'password'         => Hash::make($password),
-                'role'             => 'user',
                 'status'           => 'active',
                 'address'          => $request->input('postalAddress', ''),
                 'jathagam_details' => json_encode($details),
@@ -326,17 +364,18 @@ class AuthController extends Controller
             'password'  => $password,
             'email'     => $email,
             'user'      => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'role'  => $user->role,
+                'id'         => $student->id,
+                'name'       => $student->name,
+                'email'      => $student->email,
+                'phone'      => $student->phone,
+                'student_id' => $student->student_id,
+                'role'       => 'user',
             ]
         ], 201);
     }
 
     /**
-     * Fetch existing student details by Student ID, Phone, or Email for Mudhunilai enrollment
+     * Fetch existing student details by Student ID for Mudhunilai enrollment
      */
     public function fetchStudentDetails(Request $request)
     {
@@ -344,41 +383,38 @@ class AuthController extends Controller
             'query' => 'required|string',
         ]);
 
-        $query = trim($request->input('query'));
-        $user = User::where('student_id', $query)
-            ->orWhere('phone', $query)
-            ->orWhere('email', $query)
-            ->first();
+        $query   = trim($request->input('query'));
+        $student = Student::where('student_id', $query)->first();
 
-        if (!$user) {
+        if (!$student) {
             return response()->json([
                 'success' => false,
                 'message' => 'மாணவர் விவரங்கள் கிடைக்கவில்லை (Student Record Not Found).'
             ], 404);
         }
 
-        $jathagam = $user->jathagam_details
-            ? (is_string($user->jathagam_details) ? json_decode($user->jathagam_details, true) : (array)$user->jathagam_details)
+        $jathagam = $student->jathagam_details
+            ? (is_string($student->jathagam_details) ? json_decode($student->jathagam_details, true) : (array)$student->jathagam_details)
             : [];
 
         return response()->json([
             'success' => true,
             'message' => 'இளநிலை மாணவர் விவரங்கள் வெற்றிகரமாக மீட்டெடுக்கப்பட்டன!',
             'student' => [
-                'prevUserId'        => $user->student_id,
-                'studentNameTamil'  => $jathagam['studentNameTamil'] ?? $user->name,
-                'fullName'          => $user->name,
+                'prevUserId'        => $student->student_id,
+                'studentNameTamil'  => $jathagam['studentNameTamil'] ?? $student->name,
+                'fullName'          => $student->name,
                 'fatherName'        => $jathagam['fatherName'] ?? '',
                 'dob'               => $jathagam['dob'] ?? '',
                 'gender'            => $jathagam['gender'] ?? 'ஆண்',
                 'age'               => $jathagam['age'] ?? '',
                 'occupation'        => $jathagam['occupation'] ?? '',
                 'motherTongue'      => $jathagam['motherTongue'] ?? 'தமிழ்',
-                'postalAddress'     => $user->address ?: ($jathagam['postalAddress'] ?? ''),
+                'postalAddress'     => $student->address ?: ($jathagam['postalAddress'] ?? ''),
                 'pincode'           => $jathagam['pincode'] ?? '',
-                'mobileNumber'      => $user->phone,
+                'mobileNumber'      => $student->phone,
                 'altMobileNumber'   => $jathagam['altMobileNumber'] ?? '',
-                'emailAddress'      => $user->email,
+                'emailAddress'      => $student->email,
                 'qualification'     => $jathagam['qualification'] ?? '',
                 'completionYear'    => $jathagam['completionYear'] ?? date('Y'),
                 'prevMarks'         => $jathagam['prevMarks'] ?? '',
@@ -387,3 +423,4 @@ class AuthController extends Controller
         ]);
     }
 }
+
