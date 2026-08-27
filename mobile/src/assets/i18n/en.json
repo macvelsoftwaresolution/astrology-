@@ -51,7 +51,7 @@
   "login": {
     "title": "Arudra",
     "subtitle": "Sign In",
-    "usernamePlaceholder": "Mobile Number / User ID",
+    "usernamePlaceholder": "Email / Username",
     "passwordPlaceholder": "Password",
     "submitBtn": "Sign In to Continue",
     "needAccount": "Need a new account?",
@@ -202,8 +202,8 @@
     "buyBookBtn": "Buy Book",
     "boughtTag": "Purchased",
     "studentLogin": "Student Login",
-    "studentLoginDesc": "Enter your User ID / Phone / Email and Password to access your course.",
-    "userIdLabel": "User ID / Phone / Email *",
+    "studentLoginDesc": "Enter your Student ID and Password to access your course.",
+    "userIdLabel": "Student ID *",
     "passwordLabel": "Password *",
     "loginBtn": "Sign In ➔",
     "backToIntro": "← Back to Admission Form",
@@ -295,6 +295,7 @@
     "saveError": "Error saving data. Please try again.",
     "nameDobRasiRequired": "Name, Date of birth, and Rasi are required."
   },
+<<<<<<< HEAD
   "jathagamWriting": {
     "title": "Jathagam Writing",
     "name": "Name",
@@ -310,5 +311,44 @@
     "processing": "Processing...",
     "successTitle": "Booking Confirmed Successfully!",
     "successDesc": "Your Jathagam Writing booking has been received. Our office will contact you soon."
+=======
+  "marriageReport": {
+    "title": "Marriage Match Report",
+    "subtitle": "Fill horoscope matching details and evaluation report",
+    "astrologerDetails": "Astrologer & Center Details",
+    "centerTitle": "Center Name",
+    "astrologerName": "Chief Astrologer Name",
+    "contactPhone": "Contact Numbers",
+    "address": "Address",
+    "coupleDetails": "Couple Basic Details",
+    "girlDetails": "Bride Details",
+    "boyDetails": "Groom Details",
+    "name": "Name",
+    "star": "Star",
+    "rasi": "Rasi",
+    "age": "Age",
+    "animal": "Animal",
+    "bird": "Bird",
+    "tree": "Tree",
+    "ganam": "Ganam",
+    "nadi": "Nadi",
+    "poruthamList": "11 Porutham Evaluation",
+    "houseAnalysis": "House & Planetary Analysis",
+    "house2": "2nd House (Family)",
+    "house5": "5th House (Children)",
+    "house7": "7th House (Spouse)",
+    "guruBalam": "Guru Balam",
+    "dosham": "Dosha Details",
+    "dhasaSandhi": "Dhasa Sandhi",
+    "astrologerAnalysis": "Astrologer Remarks",
+    "verdictSummary": "Overall Summary & Verdict",
+    "totalPorutham": "Total Score",
+    "keyMatchStatus": "Key Status",
+    "astrologerRemarks": "Astrologer Remarks",
+    "saveAndSend": "Save & Send Report",
+    "saving": "Saving...",
+    "back": "Back",
+    "cancel": "Cancel"
+>>>>>>> a6942e2eca12fbc65bb6bfbf265afa6de37a56d3
   }
 }

@@ -12,6 +12,7 @@ import { ToastController, NavController } from '@ionic/angular';
 export class LoginPage implements OnInit {
   mobileNumber: string = '';
   password: string = '';
+  showPassword: boolean = false;
   serviceType: 'astrology' | 'education' = 'astrology';
   errorMessage: string = '';
 
@@ -21,6 +22,10 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private navCtrl: NavController
   ) { }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
+  }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -32,7 +37,7 @@ export class LoginPage implements OnInit {
 
   onLogin() {
     if (!this.mobileNumber || !this.password) {
-      this.errorMessage = 'errors.enterPhoneAndPassword';
+      this.errorMessage = 'தயவுசெய்து பயனர் பெயர் / மின்னஞ்சல் மற்றும் கடவுச்சொல்லை உள்ளிடவும்.';
       return;
     }
 
@@ -47,7 +52,7 @@ export class LoginPage implements OnInit {
         }
       },
       error: (err) => {
-        let msg = 'தவறான அலைபேசி எண் அல்லது கடவுச்சொல்';
+        let msg = 'தவறான பயனர் பெயர்/மின்னஞ்சல் அல்லது கடவுச்சொல்';
         if (err.status === 0) {
           msg = 'சர்வர் தொடர்புகொள்ள முடியவில்லை (Network Error). உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.';
         } else if (err.error?.message) {
