@@ -1211,6 +1211,28 @@ $color-text-dark: #2A2421;
   }
 }
 
+/* ================= BATCH ALLOCATION BADGE ================= */
+.batch-alloc-badge {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba($color-gold, 0.15) 0%, rgba($color-maroon, 0.08) 100%);
+  border: 1px dashed $color-gold;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.82rem;
+  color: $color-maroon;
+
+  i {
+    color: $color-gold;
+    font-size: 1rem;
+  }
+
+  strong {
+    color: $color-maroon-dark;
+    font-weight: 700;
+  }
+}
+
 /* ================= MOBILE BREAKPOINTS ================= */
 @media (max-width: 380px) {
   .wizard-container {

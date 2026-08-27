@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('status')->default('active');
             $table->text('address')->nullable();
+            $table->foreignId('batch_id')->nullable();
             $table->json('jathagam_details')->nullable();
             $table->string('avatar_url')->nullable();
             $table->timestamps();

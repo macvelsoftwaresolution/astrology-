@@ -146,6 +146,10 @@
               <i class="bi bi-person-lines-fill nav-icon"></i>
               <span>{{ 'nav.matrimony' | translate }}</span>
             </button>
+            <button [class.active]="currentTab === 'jathagam-writing'" (click)="selectTab('jathagam-writing')">
+              <i class="bi bi-journal-bookmark-fill nav-icon"></i>
+              <span>ஜாதகம் எழுதுதல்</span>
+            </button>
           </div>
         }
       </div>
@@ -281,6 +285,10 @@
 
     @if (currentTab === 'users') {
       <app-users-tab></app-users-tab>
+    }
+
+    @if (currentTab === 'jathagam-writing') {
+      <app-jathagam-writing-tab></app-jathagam-writing-tab>
     }
   </main>
 

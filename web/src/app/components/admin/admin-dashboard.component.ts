@@ -23,6 +23,7 @@ import { PaymentsTabComponent } from './tabs/payments-tab/payments-tab.component
 import { BroadcastTabComponent } from './tabs/broadcast-tab/broadcast-tab.component';
 import { UsersTabComponent } from './tabs/users-tab/users-tab.component';
 import { LmsSettingsTabComponent } from './tabs/lms-settings-tab/lms-settings-tab';
+import { JathagamWritingTabComponent } from './tabs/jathagam-writing-tab/jathagam-writing-tab';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -43,7 +44,8 @@ import { LmsSettingsTabComponent } from './tabs/lms-settings-tab/lms-settings-ta
     MatrimonyTab,
     PaymentsTabComponent,
     BroadcastTabComponent,
-    UsersTabComponent
+    UsersTabComponent,
+    JathagamWritingTabComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
@@ -94,7 +96,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   setLanguage(lang: LanguageCode): void {
     this.translationService.setLanguage(lang);
@@ -109,7 +111,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.toastData = data;
       this.cdr.detectChanges();
     });
-    
+
     // Load read notifications from sessionStorage
     if (typeof window !== 'undefined') {
       try {
@@ -197,7 +199,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           ...a,
           is_read: this.readNotificationIds.has(a.id)
         }));
-        
+
         const unreadList = this.notifications.filter(n => !n.is_read);
         const prevCount = this.unreadNotificationsCount;
         this.unreadNotificationsCount = unreadList.length;
@@ -251,7 +253,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
-      } catch {}
+      } catch { }
     }
     this.unreadNotificationsCount = this.notifications.filter(item => !item.is_read).length;
 
@@ -273,7 +275,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.setItem('admin_read_notifications', JSON.stringify(Array.from(this.readNotificationIds)));
-      } catch {}
+      } catch { }
     }
     this.unreadNotificationsCount = 0;
     this.cdr.detectChanges();
@@ -325,6 +327,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'rasi-editor': 'nav.rasi_editor',
       'matches': 'nav.matches',
       'matrimony': 'nav.matrimony',
+      'jathagam-writing': 'ஜாதகம் எழுதுதல்',
       'lms': 'nav.lms',
       'lms-settings': 'nav.lmsSettings',
       'courier': 'nav.courier',
@@ -351,7 +354,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isAstrologyActive(): boolean {
-    return ['team', 'services', 'rasi-editor', 'matches', 'matrimony'].includes(this.currentTab);
+    return ['team', 'services', 'rasi-editor', 'matches', 'matrimony', 'jathagam-writing'].includes(this.currentTab);
   }
 
   isLearnActive(): boolean {
@@ -361,7 +364,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selectTab(tabName: string): void {
     this.currentTab = tabName;
     this.mobileMenuOpen = false;
-    
+
     if (this.isAstrologyActive()) {
       this.astrologyCategoryOpen = true;
       this.learnCategoryOpen = false;
@@ -378,7 +381,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       queryParams: { tab: tabName },
       queryParamsHandling: 'merge'
     });
-    
+
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

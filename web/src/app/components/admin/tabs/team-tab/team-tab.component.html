@@ -143,7 +143,7 @@
         </div>
 
         <div class="astro-badges-clean">
-          <span class="badge-fee"><i class="bi bi-currency-rupee"></i>{{ astro.fee }}</span>
+
           <span class="badge-slots"><i class="bi bi-clock-fill"></i> {{ (astro.available_slots || []).length }}</span>
           <span class="badge-leave"><i class="bi bi-calendar-x-fill"></i> {{ (astro.blocked_dates || []).length
             }}</span>
@@ -230,9 +230,7 @@
           <div class="studio-sub-meta">
             <span style="font-weight:700;color:#0f172a;">{{ selectedAstrologerForManage.role_title || 'Chief Astrologer'
               }}</span>
-            <span>&bull;</span>
-            <span style="color:#b45309;font-weight:800;">{{ 'services.fee' | translate }}: ₹{{
-              selectedAstrologerForManage.fee }}</span>
+
             <span>&bull;</span>
             <span>{{ 'services.experience' | translate }}: {{ selectedAstrologerForManage.experience || '10+ Years'
               }}</span>
@@ -241,10 +239,7 @@
       </div>
 
       <div class="studio-pills-bar">
-        <span class="chip-stat gold">
-          <i class="bi bi-star-fill" style="color:#f59e0b;margin-right:6px;"></i>{{ selectedAstrologerForManage.rating
-          || 4.90 }} {{ 'services.rating' | translate }}
-        </span>
+
         <span class="chip-stat">
           <i class="bi bi-patch-check-fill" style="color:#2563eb;margin-right:6px;"></i>{{
           selectedAstrologerForManage.consultation_count || 0 }}+ {{ 'services.consultations' | translate }}
@@ -385,12 +380,7 @@
         </div>
 
         <div class="form-grid-3-lg">
-          <div class="field-group-lg" style="margin:0;">
-            <label class="field-lbl-lg">
-              <i class="bi bi-cash" style="color:#d97706;"></i> {{ 'services.fee' | translate }} *
-            </label>
-            <input type="number" [(ngModel)]="selectedAstrologerForManage.fee" class="field-input-lg" />
-          </div>
+
           <div class="field-group-lg" style="margin:0;">
             <label class="field-lbl-lg">
               <i class="bi bi-hourglass" style="color:#d97706;"></i> {{ 'services.experience' | translate }}
@@ -417,13 +407,7 @@
             </label>
             <input [(ngModel)]="selectedAstrologerForManage.phone" class="field-input-lg" placeholder="9876543210" />
           </div>
-          <div class="field-group-lg" style="margin:0;">
-            <label class="field-lbl-lg">
-              <i class="bi bi-star-fill" style="color:#d97706;"></i> {{ 'services.rating' | translate }}
-            </label>
-            <input type="number" step="0.01" max="5.0" [(ngModel)]="selectedAstrologerForManage.rating"
-              class="field-input-lg" />
-          </div>
+
           <div class="field-group-lg" style="margin:0;">
             <label class="field-lbl-lg">
               <i class="bi bi-people-fill" style="color:#d97706;"></i> {{ 'services.consultations' | translate }}

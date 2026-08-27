@@ -301,6 +301,17 @@ class AuthController extends Controller
         // Unique secure 6-character random password (e.g. K8N9P2)
         $password = strtoupper(Str::random(6));
 
+        // Batch Assignment (Auto or Explicit)
+        $batchId = $request->input('batch_id');
+        $batchName = $request->input('batch_name');
+        if (!$batchId) {
+            $autoBatch = BatchController::getAutoBatchForDate(now(), $courseLevel);
+            if ($autoBatch) {
+                $batchId = $autoBatch->id;
+                $batchName = $autoBatch->name;
+            }
+        }
+
         $details = [
             'studentNameTamil' => $request->input('studentNameTamil', ''),
             'fullName'         => $fullName,
@@ -318,6 +329,8 @@ class AuthController extends Controller
             'trainingPurpose'  => $request->input('trainingPurpose', 'தொழிலாக கொள்ள'),
             'trainingMode'     => $request->input('trainingMode', '1_day'),
             'batchTiming'      => $request->input('batchTiming', 'A'),
+            'batch_id'         => $batchId,
+            'batch_name'       => $batchName,
             'prevCertificate'  => $request->input('prevCertificate', ''),
             'completionYear'   => $request->input('completionYear', ''),
             'prevMarks'        => $request->input('prevMarks', ''),
@@ -330,6 +343,7 @@ class AuthController extends Controller
             $student->update([
                 'name'             => $fullName,
                 'student_id'       => $loginId,
+                'batch_id'         => $batchId ?: $student->batch_id,
                 'password'         => Hash::make($password),
                 'status'           => 'active',
                 'address'          => $request->input('postalAddress', $student->address),
@@ -341,8 +355,38 @@ class AuthController extends Controller
                 'name'             => $fullName,
                 'email'            => $email,
                 'student_id'       => $loginId,
+                'batch_id'         => $batchId,
                 'phone'            => $phone,
                 'password'         => Hash::make($password),
+                'status'           => 'active',
+                'address'          => $request->input('postalAddress', ''),
+                'jathagam_details' => json_encode($details),
+            ]);
+        }
+
+        // Also synchronize with users table for web admin portal visibility
+        $userRecord = User::where('email', $email)->orWhere('student_id', $loginId)->first();
+        if ($userRecord) {
+            $userRecord->update([
+                'name'             => $fullName,
+                'student_id'       => $loginId,
+                'batch_id'         => $batchId ?: $userRecord->batch_id,
+                'password'         => Hash::make($password),
+                'role'             => 'user',
+                'status'           => 'active',
+                'address'          => $request->input('postalAddress', $userRecord->address),
+                'jathagam_details' => json_encode($details),
+                'phone'            => $phone ?: $userRecord->phone,
+            ]);
+        } else {
+            User::create([
+                'name'             => $fullName,
+                'email'            => $email,
+                'student_id'       => $loginId,
+                'batch_id'         => $batchId,
+                'phone'            => $phone ?: $loginId,
+                'password'         => Hash::make($password),
+                'role'             => 'user',
                 'status'           => 'active',
                 'address'          => $request->input('postalAddress', ''),
                 'jathagam_details' => json_encode($details),
@@ -358,11 +402,12 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'success'   => true,
-            'message'   => 'மாணவர் பதிவு வெற்றிகரமாக முடிந்தது! உள்நுழைவு விவரங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது.',
-            'login_id'  => $loginId,
-            'password'  => $password,
-            'email'     => $email,
+            'success'    => true,
+            'message'    => 'மாணவர் பதிவு வெற்றிகரமாக முடிந்தது! உள்நுழைவு விவரங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது.',
+            'login_id'   => $loginId,
+            'password'   => $password,
+            'email'      => $email,
+            'batch_name' => $batchName,
             'user'      => [
                 'id'         => $student->id,
                 'name'       => $student->name,
@@ -370,6 +415,7 @@ class AuthController extends Controller
                 'phone'      => $student->phone,
                 'student_id' => $student->student_id,
                 'role'       => 'user',
+                'batch_id' => $student->batch_id,
             ]
         ], 201);
     }

@@ -1,0 +1,135 @@
+<ion-header class="app-top-navbar ion-no-border">
+  <div class="top-navbar-content">
+    <div class="top-nav-left">
+      <button type="button" class="top-nav-back-btn" (click)="goBack()" title="Go Back">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div class="top-nav-title-box">
+        <h1 class="top-nav-title">{{ 'jathagamWriting.title' | translate }}</h1>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="astrology-app-content">
+  <div class="tab-content consultation-booking-content">
+    
+    @if (!isSuccess) {
+      <form ngNoForm (submit)="$event.preventDefault(); payAndSubmit()" class="booking-form-box">
+        
+        <div class="form-input-card">
+          <label>{{ 'jathagamWriting.name' | translate }} <span class="required-star">*</span></label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+            <input type="text" name="jwName" [(ngModel)]="form.name" placeholder="Full Name">
+          </div>
+        </div>
+
+        <div class="form-input-card">
+          <label>{{ 'jathagamWriting.phone' | translate }} <span class="required-star">*</span></label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
+            <input type="tel" name="jwPhone" [(ngModel)]="form.phone" placeholder="9876543210">
+          </div>
+        </div>
+
+        <div class="form-dual-grid">
+          <div class="form-input-card">
+            <label>{{ 'jathagamWriting.dob' | translate }} <span class="required-star">*</span></label>
+            <div class="input-inner-wrap">
+              <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
+              <input type="date" name="jwDob" [(ngModel)]="form.dob" class="custom-native-date">
+            </div>
+          </div>
+          <div class="form-input-card">
+            <label>{{ 'jathagamWriting.tob' | translate }} <span class="required-star">*</span></label>
+            <div class="input-inner-wrap">
+              <span class="input-icon"><i class="bi bi-clock"></i></span>
+              <input type="time" name="jwTob" [(ngModel)]="form.tob" class="custom-native-time">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-input-card">
+          <label>{{ 'jathagamWriting.pob' | translate }} <span class="required-star">*</span></label>
+          <div class="input-inner-wrap">
+            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+            <input type="text" name="jwPob" [(ngModel)]="form.pob" placeholder="e.g. Chennai">
+          </div>
+        </div>
+
+        <div class="form-input-card">
+          <label>{{ 'jathagamWriting.gender' | translate }} <span class="required-star">*</span></label>
+          <div class="slots-pill-grid">
+            <button type="button" class="slot-pill" [class.active]="form.gender === 'Male'" (click)="form.gender = 'Male'">
+              <i class="bi" [ngClass]="form.gender === 'Male' ? 'bi-check-circle-fill' : 'bi-gender-male'"></i>
+              <span>{{ 'jathagamWriting.male' | translate }}</span>
+            </button>
+            <button type="button" class="slot-pill" [class.active]="form.gender === 'Female'" (click)="form.gender = 'Female'">
+              <i class="bi" [ngClass]="form.gender === 'Female' ? 'bi-check-circle-fill' : 'bi-gender-female'"></i>
+              <span>{{ 'jathagamWriting.female' | translate }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-input-card">
+          <label>{{ 'jathagamWriting.notes' | translate }}</label>
+          <div class="input-inner-wrap textarea-wrap">
+            <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
+            <textarea [(ngModel)]="form.notes" rows="2" placeholder="Any specific details..."></textarea>
+          </div>
+        </div>
+
+        @if (validationError) {
+          <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ validationError }}</span>
+          </div>
+        }
+
+        <button type="submit" class="btn-app-gold" style="margin-top:20px; width:100%; border-radius:12px;" [disabled]="isProcessingPayment">
+          @if (isProcessingPayment) {
+            <span>{{ 'jathagamWriting.processing' | translate }}</span>
+          } @else {
+            <span>₹{{ price }} {{ 'jathagamWriting.submitBtn' | translate }} 🔒</span>
+          }
+        </button>
+      </form>
+    } @else {
+      <div class="success-box" style="margin-top: 40px; text-align: center; padding: 20px;">
+        <span class="success-icon" style="font-size: 48px; display: block; margin-bottom: 20px;">🎉</span>
+        <h3 style="color: #059669; margin-bottom: 10px;">{{ 'jathagamWriting.successTitle' | translate }}</h3>
+        <span class="booking-ref-badge" style="background: #ecfdf5; color: #065f46; padding: 5px 10px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px;">பதிவு எண்: #{{ bookingRefCode }}</span>
+        
+        <p style="color: #475569; line-height: 1.5; margin-bottom: 30px;">
+          {{ 'jathagamWriting.successDesc' | translate }}
+        </p>
+
+        <button class="btn-app-gold" (click)="goBack()" style="border-radius: 20px; padding: 10px 30px;">{{ 'common.back' | translate }}</button>
+      </div>
+    }
+
+  </div>
+</ion-content>
+
+<!-- ================= BOTTOM NAVIGATION TABS ================= -->
+<ion-footer class="app-footer-tabs">
+  <div class="tabs-row">
+    <div class="tab-button" (click)="goToTab('home')">
+      <span class="tab-icon"><i class="bi bi-house-door-fill"></i></span>
+      <span class="tab-label">{{ 'nav.home' | translate }}</span>
+    </div>
+    <div class="tab-button active" (click)="goToTab('services')">
+      <span class="tab-icon"><i class="bi bi-moon-stars-fill"></i></span>
+      <span class="tab-label">{{ 'nav.astrology' | translate }}</span>
+    </div>
+    <div class="tab-button" (click)="goToTab('matching')">
+      <span class="tab-icon"><i class="bi bi-heart-fill"></i></span>
+      <span class="tab-label">{{ 'nav.matching' | translate }}</span>
+    </div>
+    <div class="tab-button" (click)="goToTab('profile')">
+      <span class="tab-icon"><i class="bi bi-person-fill"></i></span>
+      <span class="tab-label">{{ 'nav.profile' | translate }}</span>
+    </div>
+  </div>
+</ion-footer>

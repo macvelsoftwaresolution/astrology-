@@ -67,6 +67,10 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'jathagam-writing',
+    loadChildren: () => import('./pages/jathagam-writing/jathagam-writing.module').then(m => m.JathagamWritingPageModule)
+  },
+  {
     path: '**',
     redirectTo: 'home'
   }

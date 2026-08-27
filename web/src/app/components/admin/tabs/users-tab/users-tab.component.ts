@@ -21,10 +21,25 @@ export class UsersTabComponent implements OnInit {
   userSearchQuery = '';
   selectedUserForProfile: any = null;
 
-  @HostListener('document:click')
-  onDocumentClick(): void {
-    this.isFilterDropdownOpen = false;
-  }
+  batches: any[] = [];
+  selectedBatchFilter: string = 'all'; // 'all', or batch.id or batch.name
+  
+  // Modals for batch
+  openCreateBatchModal = false;
+  openShiftBatchModal = false;
+  selectedUserForBatchShift: any = null;
+  shiftTargetBatchId: number | null = null;
+  isBatchSubmitting = false;
+
+  newBatch = {
+    name: '',
+    batch_code: '',
+    course_level: 'all',
+    start_date: '',
+    end_date: '',
+    status: 'active',
+    description: ''
+  };
 
   constructor(
     private http: HttpClient,
@@ -37,6 +52,7 @@ export class UsersTabComponent implements OnInit {
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       this.loadUsers();
+      this.loadBatches();
     }
   }
 
@@ -58,14 +74,112 @@ export class UsersTabComponent implements OnInit {
     });
   }
 
+  loadBatches(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/admin/batches`, headers).subscribe({
+      next: (res) => {
+        if (res && res.batches) {
+          this.batches = res.batches;
+        }
+        try { this.cdr.markForCheck(); } catch { }
+        try { this.cdr.detectChanges(); } catch { }
+      },
+      error: () => {}
+    });
+  }
+
+  selectBatchFilter(filter: string): void {
+    this.selectedBatchFilter = filter;
+  }
+
+  getBatchStudentCount(batch: any): number {
+    return this.nonAdminUsers.filter(u => {
+      if (!this.isStudent(u)) return false;
+      if (u.batch_id && String(u.batch_id) === String(batch.id)) return true;
+      if (u.batch_name && (u.batch_name.includes(batch.name) || batch.name.includes(u.batch_name))) return true;
+      return false;
+    }).length;
+  }
+
+  openCreateBatch(): void {
+    this.newBatch = {
+      name: '',
+      batch_code: '',
+      course_level: 'all',
+      start_date: '',
+      end_date: '',
+      status: 'active',
+      description: ''
+    };
+    this.openCreateBatchModal = true;
+  }
+
+  submitCreateBatch(): void {
+    if (!this.newBatch.name.trim()) {
+      this.toastService.error('Please enter a batch name.', 'பேட்ச் பெயர் அவசியம்');
+      return;
+    }
+    this.isBatchSubmitting = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/admin/batches`, this.newBatch, headers).subscribe({
+      next: (res) => {
+        this.isBatchSubmitting = false;
+        this.openCreateBatchModal = false;
+        this.toastService.success('Batch created successfully.', 'பேட்ச் உருவாக்கப்பட்டது');
+        this.loadBatches();
+      },
+      error: (err) => {
+        this.isBatchSubmitting = false;
+        this.toastService.error(err?.error?.message || 'Failed to create batch.', 'பிழை ஏற்பட்டது');
+      }
+    });
+  }
+
+  openShiftModal(user: any): void {
+    this.selectedUserForBatchShift = user;
+    this.shiftTargetBatchId = user.batch_id || (this.batches.length > 0 ? this.batches[0].id : null);
+    this.openShiftBatchModal = true;
+  }
+
+  submitShiftBatch(): void {
+    if (!this.selectedUserForBatchShift) return;
+    this.isBatchSubmitting = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.put<any>(
+      `${environment.apiUrl}/admin/students/${this.selectedUserForBatchShift.id}/shift-batch`,
+      { batch_id: this.shiftTargetBatchId },
+      headers
+    ).subscribe({
+      next: (res) => {
+        this.isBatchSubmitting = false;
+        this.openShiftBatchModal = false;
+        this.toastService.success('Student moved to new batch successfully.', 'மாணவர் பேட்ச் மாற்றப்பட்டது');
+        this.loadUsers();
+        this.loadBatches();
+      },
+      error: (err) => {
+        this.isBatchSubmitting = false;
+        this.toastService.error(err?.error?.message || 'Failed to shift student batch.', 'பிழை ஏற்பட்டது');
+      }
+    });
+  }
+
   selectedCategoryFilter: 'all' | 'students' | 'appointments' | 'both' | 'members' = 'all';
   isFilterDropdownOpen = false;
+  isBatchDropdownOpen = false;
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.isFilterDropdownOpen = false;
+    this.isBatchDropdownOpen = false;
+  }
 
   toggleFilterDropdown(event?: Event): void {
     if (event) {
       event.stopPropagation();
     }
     this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+    this.isBatchDropdownOpen = false;
   }
 
   closeFilterDropdown(): void {
@@ -78,6 +192,41 @@ export class UsersTabComponent implements OnInit {
     }
     this.selectedCategoryFilter = filter;
     this.isFilterDropdownOpen = false;
+  }
+
+  toggleBatchDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isBatchDropdownOpen = !this.isBatchDropdownOpen;
+    this.isFilterDropdownOpen = false;
+  }
+
+  closeBatchDropdown(): void {
+    this.isBatchDropdownOpen = false;
+  }
+
+  selectBatch(batchNameOrAll: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.selectedBatchFilter = batchNameOrAll;
+    this.isBatchDropdownOpen = false;
+  }
+
+  getActiveBatchName(): string {
+    if (this.selectedBatchFilter === 'all') {
+      return 'அனைத்து Batches';
+    }
+    return this.selectedBatchFilter;
+  }
+
+  getActiveBatchCount(): number {
+    if (this.selectedBatchFilter === 'all') {
+      return this.studentsCount;
+    }
+    const found = this.batches.find(b => b.name === this.selectedBatchFilter || String(b.id) === String(this.selectedBatchFilter));
+    return found ? this.getBatchStudentCount(found) : 0;
   }
 
   getActiveFilterIcon(): string {
@@ -124,13 +273,25 @@ export class UsersTabComponent implements OnInit {
       list = list.filter(u => !this.isStudent(u) && !this.isAppointmentUser(u));
     }
 
-    // 2. Search Query Filter
+    // 2. Batch Filter (Active when looking at students or all)
+    if (this.selectedBatchFilter !== 'all') {
+      list = list.filter(u => {
+        if (!this.isStudent(u)) return false;
+        if (u.batch_id && String(u.batch_id) === String(this.selectedBatchFilter)) return true;
+        if (u.batch_name && (u.batch_name.includes(this.selectedBatchFilter) || this.selectedBatchFilter.includes(u.batch_name))) return true;
+        return false;
+      });
+    }
+
+    // 3. Search Query Filter
     if (this.userSearchQuery && this.userSearchQuery.trim()) {
       const q = this.userSearchQuery.toLowerCase().trim();
       list = list.filter(u =>
         (u.name && u.name.toLowerCase().includes(q)) ||
         (u.email && u.email.toLowerCase().includes(q)) ||
         (u.phone && u.phone.toLowerCase().includes(q)) ||
+        (u.student_id && u.student_id.toLowerCase().includes(q)) ||
+        (u.batch_name && u.batch_name.toLowerCase().includes(q)) ||
         ((u.jathagam_details?.rasi || u.jathagam_profile?.rasi) && (u.jathagam_details?.rasi || u.jathagam_profile?.rasi).toLowerCase().includes(q)) ||
         ((u.jathagam_details?.star || u.jathagam_details?.nakshatra || u.jathagam_profile?.nakshatra) && (u.jathagam_details?.star || u.jathagam_details?.nakshatra || u.jathagam_profile?.nakshatra).toLowerCase().includes(q))
       );

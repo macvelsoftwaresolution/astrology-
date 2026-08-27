@@ -14,6 +14,7 @@ use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MatrimonyProfileController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\LmsCurriculumController;
+use App\Http\Controllers\BatchController;
 use App\Http\Middleware\CheckRole;
 
 // =====================================================================
@@ -37,6 +38,7 @@ Route::get('/rasi-palan',           [JathagamController::class, 'getRasiPalan'])
 Route::get('/availability',         [AstrologyController::class, 'getAvailability']);
 Route::get('/public/astrologers',   [AstrologyController::class, 'getAstrologers']);
 Route::get('/public/courses',       [CourseController::class, 'index']);
+Route::get('/public/batches',       [BatchController::class, 'getPublicBatches']);
 Route::get('/public/books',         [CourierManagementController::class, 'getPublicBooks']);
 Route::get('/public/banners',       [SuperAdminController::class, 'getPublicBanners']);
 Route::get('/public/seminars/{level?}',      [SuperAdminController::class, 'getPublicSeminars']);
@@ -61,6 +63,10 @@ Route::post('/payments/verify',        [AstrologyController::class, 'verifyPayme
 // Book Orders & Submissions (supports guest or authenticated user)
 Route::post('/user/book-orders',       [CourierManagementController::class, 'createBookOrder']);
 Route::post('/user/submissions',       [GradingController::class, 'submitExam']);
+
+    // Jathagam Writing
+    Route::post('/jathagam-writing/order', [\App\Http\Controllers\Api\JathagamWritingController::class, 'createOrder']);
+
 
 // =====================================================================
 // AUTHENTICATED USER ROUTES (Mobile — role:user)
@@ -196,9 +202,14 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/matrimony-profiles',               [MatrimonyProfileController::class, 'adminIndex']);
     Route::put('/matrimony-profiles/{id}/status',   [MatrimonyProfileController::class, 'adminUpdateStatus']);
 
-    // User Profiles
+    // User Profiles & Batches
     Route::get('/users',                            [UserProfileController::class, 'adminGetUsers']);
     Route::delete('/users/{id}',                    [UserProfileController::class, 'deleteUser']);
+    Route::get('/batches',                          [BatchController::class, 'adminGetBatches']);
+    Route::post('/batches',                         [BatchController::class, 'store']);
+    Route::put('/batches/{id}',                     [BatchController::class, 'update']);
+    Route::delete('/batches/{id}',                  [BatchController::class, 'destroy']);
+    Route::put('/students/{id}/shift-batch',        [BatchController::class, 'shiftStudentBatch']);
 
     // Payment Transactions Ledger
     Route::get('/payment-transactions',             [UserProfileController::class, 'adminGetPayments']);
@@ -232,4 +243,8 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/materials',                                  [SuperAdminController::class, 'saveMaterial']);
     Route::put('/materials/{id}',                              [SuperAdminController::class, 'saveMaterial']);
     Route::delete('/materials/{id}',                           [SuperAdminController::class, 'deleteMaterial']);
+
+    
+        // Jathagam Writing Orders
+        Route::get('/jathagam-writing-orders', [\App\Http\Controllers\Api\JathagamWritingController::class, 'getAdminOrders']);
 });
