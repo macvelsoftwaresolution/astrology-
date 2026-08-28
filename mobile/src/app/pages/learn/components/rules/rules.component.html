@@ -6,12 +6,10 @@
   </div>
 
   <div class="rules-list" *ngIf="rules && rules.length > 0">
-    <div class="rule-item" *ngFor="let rule of rules; let i = index">
-      <div class="rule-icon" [ngClass]="getColorClass(i)"><i class="bi" [ngClass]="getIcon(i)"></i></div>
-      <div>
-        <strong>{{ rule.title }}</strong>
-        <p>{{ rule.desc }}</p>
-      </div>
+    <div class="vilakkavurai-card" *ngFor="let rule of rules">
+      <div class="card-bg-icon"><i class="bi bi-shield-check"></i></div>
+      <strong>{{ rule.title }}</strong>
+      <p class="vilakkavurai-text">{{ rule.desc }}</p>
     </div>
   </div>
 

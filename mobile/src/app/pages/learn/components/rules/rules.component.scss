@@ -77,60 +77,57 @@ $color-purple-dark: #200438;
   gap: 1.1rem;
 }
 
-.rule-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background-color: #FAF0D6;
+/* --- Vilakkavurai Card Styles (Used for Rules) --- */
+.vilakkavurai-card {
+  position: relative;
+  background: linear-gradient(145deg, #FFFFFF, #FFFBF0);
+  border: 1px solid rgba(#ECC876, 0.5);
   border-radius: 16px;
-  padding: 1rem;
-  border: 1px solid rgba(#A27B38, 0.22);
-  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+  overflow: hidden;
+  margin-top: 0.25rem;
 
-  .rule-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, #A27B38, #ECC876);
+    border-radius: 16px 0 0 16px;
   }
 
-  .box-gold {
-    background-color: #F3E4C2;
-    color: #8B5E14;
-  }
-  .box-peach {
-    background-color: #F8E3D2;
-    color: #A85A20;
-  }
-  .box-ivory {
-    background-color: #F1E5CB;
-    color: #6E531D;
-  }
-  .box-red {
-    background-color: #F8D9D9;
-    color: #8B1A1A;
-  }
-  .box-muted {
-    background-color: #EFE4D2;
-    color: $color-maroon;
+  .card-bg-icon {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 5rem;
+    color: rgba(#ECC876, 0.15);
+    z-index: 0;
+    line-height: 1;
   }
 
   strong {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: $color-maroon;
     display: block;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.5rem;
     font-weight: 700;
+    position: relative;
+    z-index: 1;
   }
+}
 
-  p {
-    font-size: 0.78rem;
-    color: $color-text-muted;
-    margin: 0;
-    line-height: 1.4;
-  }
+.vilakkavurai-text {
+  position: relative;
+  z-index: 1;
+  font-size: 1.05rem;
+  color: #334155;
+  margin: 0;
+  line-height: 1.7;
+  white-space: pre-line;
+  font-family: 'Noto Serif Tamil', serif;
+  text-align: justify;
 }

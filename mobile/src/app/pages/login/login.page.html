@@ -28,7 +28,7 @@
       <div class="input-group">
         <label>{{ 'login.usernamePlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required [placeholder]="'login.usernamePlaceholder' | translate">
+          <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required>
           <span class="input-icon"><i class="bi bi-person"></i></span>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <div class="input-group">
         <label>{{ 'login.passwordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
-          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" [placeholder]="'login.passwordPlaceholder' | translate">
+          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
           <span class="input-icon toggle-pwd-btn" (click)="toggleShowPassword()" style="cursor: pointer; pointer-events: auto;">
             <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
           </span>

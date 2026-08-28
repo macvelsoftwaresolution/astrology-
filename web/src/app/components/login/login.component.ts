@@ -13,27 +13,11 @@ import { AuthService } from '../../services/auth.service';
       <div class="login-card">
         <div class="header">
           <div class="logo">
-            <span class="icon">✨</span>
-            <h1>AstroPortal</h1>
+            <h1>Admin Portal</h1>
           </div>
-          <p class="subtitle">Administrator Web Portal</p>
-          <div class="badge">Admin Access Only</div>
         </div>
 
         <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-          <!-- Quick Credentials Test Chips -->
-          <div class="quick-credentials">
-            <span class="chip-title">Quick Demo Login:</span>
-            <div class="chips">
-              <button type="button" class="chip admin" (click)="fillDemo('admin@gmail.com', 'admin123')">
-                🛡️ Admin Account
-              </button>
-              <button type="button" class="chip student" (click)="fillDemo('karthik@gmail.com', 'test123')">
-                📱 Student (Blocked Test)
-              </button>
-            </div>
-          </div>
-
           <!-- Error / Warning Alert -->
           @if (errorMessage) {
             <div [class]="isStudentError ? 'alert warning' : 'alert error'">
@@ -285,7 +269,7 @@ export class LoginComponent {
   errorMessage = '';
   isStudentError = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   fillDemo(email: string, pass: string) {
     this.email = email;

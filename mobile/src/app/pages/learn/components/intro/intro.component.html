@@ -7,8 +7,11 @@
   </div>
 
   <div class="section-block" *ngIf="vilakauraiText">
-    <h3 class="section-title">{{ 'learn.vilakkavuraiTitle' | translate }}</h3>
-    <p class="section-desc" style="white-space: pre-wrap;">{{ vilakauraiText }}</p>
+    <h3 class="section-title"><i class="bi bi-info-circle-fill text-gold me-2"></i>{{ 'learn.vilakkavuraiTitle' | translate }}</h3>
+    <div class="vilakkavurai-card">
+      <div class="card-bg-icon"><i class="bi bi-quote"></i></div>
+      <p class="vilakkavurai-text">{{ vilakauraiText }}</p>
+    </div>
   </div>
 
   <div class="section-block" *ngIf="topics && topics.length > 0">
