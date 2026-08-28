@@ -75,7 +75,8 @@ Route::post('/user/submissions',       [GradingController::class, 'submitExam'])
 Route::middleware('auth:sanctum')->group(function () {
 
     // Auth Info
-    Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::get('/auth/me',     [AuthController::class, 'me']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     // User Profile CRUD
     Route::get('/user/profile',  [UserProfileController::class, 'getProfile']);

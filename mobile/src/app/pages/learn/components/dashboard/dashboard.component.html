@@ -391,8 +391,13 @@
         </div>
       </div>
       <div class="mp-info">
-        <h3>{{ enrollForm?.fullName || 'குமார்' }}</h3>
-        <span class="mp-badge-premium"><span class="badge-dot">●</span> Premium Member</span>
+        <h3>{{ studentName }}</h3>
+        <div class="mp-badges-row">
+          @if (enrollForm?.studentId) {
+            <span class="mp-badge-id"><i class="bi bi-person-badge"></i> {{ enrollForm.studentId }}</span>
+          }
+          <span class="mp-badge-premium"><span class="badge-dot">●</span> Premium Member</span>
+        </div>
       </div>
       <button class="mp-upgrade-btn">மேம்படுத்தவும்</button>
     </div>

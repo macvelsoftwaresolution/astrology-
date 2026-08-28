@@ -381,14 +381,13 @@ export class LearnPage implements OnInit {
             alert('Razorpay popup பிழை: ' + (e?.message || e));
           }
         } else {
-          // Direct fallback if order creation returns fallback
-          this.handlePaymentSuccess();
+          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
         }
       },
       error: (err) => {
+        this.isProcessingPayment = false;
         console.error('Razorpay order creation error:', err);
-        // Fallback for offline/demo environment
-        this.handlePaymentSuccess();
+        alert(err.error?.message || 'கட்டண சேவைக்கான ஆர்டரை உருவாக்க முடியவில்லை.');
       }
     });
   }
@@ -396,35 +395,31 @@ export class LearnPage implements OnInit {
   handlePaymentSuccess(razorpayOrderId?: string, razorpayPaymentId?: string, razorpaySignature?: string) {
     this.isProcessingPayment = true;
 
-    this.authService.studentRegister(this.enrollForm).subscribe({
+    const payload = {
+      ...this.enrollForm,
+      razorpay_order_id: razorpayOrderId,
+      razorpay_payment_id: razorpayPaymentId,
+      razorpay_signature: razorpaySignature
+    };
+
+    this.authService.studentRegister(payload).subscribe({
       next: (res) => {
         this.isProcessingPayment = false;
         if (res && res.success) {
           this.generatedLoginId = res.login_id || res.email;
           this.generatedPassword = res.password;
+          this.loginIdInput = '';
+          this.loginPasswordInput = '';
+          this.loginErrorMessage = '';
+          this.currentScreen = 'post-payment-login';
         } else {
-          const twoDigitYear = new Date().getFullYear().toString().slice(-2);
-          const randomId = Math.floor(10 + Math.random() * 90);
-          this.generatedLoginId = `${twoDigitYear}AR${randomId}`;
-          this.generatedPassword = '654321';
+          alert(res?.message || 'மாணவர் பதிவு செய்வதில் பிழை ஏற்பட்டது.');
         }
-        // User manually enters credentials sent to their email
-        this.loginIdInput = '';
-        this.loginPasswordInput = '';
-        this.loginErrorMessage = '';
-        this.currentScreen = 'post-payment-login';
       },
       error: (err) => {
         this.isProcessingPayment = false;
         console.error('Student registration API error:', err);
-        const twoDigitYear = new Date().getFullYear().toString().slice(-2);
-        const randomId = Math.floor(10 + Math.random() * 90);
-        this.generatedLoginId = `${twoDigitYear}AR${randomId}`;
-        this.generatedPassword = '654321';
-        this.loginIdInput = '';
-        this.loginPasswordInput = '';
-        this.loginErrorMessage = '';
-        this.currentScreen = 'post-payment-login';
+        alert(err.error?.message || 'மாணவர் பதிவு செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
       }
     });
   }

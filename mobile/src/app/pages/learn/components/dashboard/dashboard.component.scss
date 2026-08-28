@@ -1409,6 +1409,28 @@ $color-orange: #F49320;
       font-family: 'Noto Serif Tamil', serif;
     }
 
+    .mp-badges-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
+    .mp-badge-id {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
     .mp-badge-premium {
       background-color: rgba($color-gold-bright, 0.2);
       color: $color-gold-bright;

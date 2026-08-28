@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface User {
@@ -9,6 +9,8 @@ export interface User {
   email: string;
   role: 'admin' | 'user' | 'astrologer' | 'super_admin' | string;
   phone?: string;
+  avatar_url?: string;
+  status?: string;
 }
 
 export interface AuthResponse {
@@ -24,37 +26,77 @@ export interface AuthResponse {
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+  private currentUser: User | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    if (typeof window !== 'undefined' && this.getToken()) {
+      this.getProfileFromDb().subscribe();
+    }
+  }
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/web-login`, credentials).pipe(
       tap(res => {
         if (res.success && res.token) {
-          sessionStorage.setItem('auth_token', res.token);
-          sessionStorage.setItem('user_data', JSON.stringify(res.user));
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('auth_token', res.token);
+            localStorage.setItem('auth_token', res.token);
+          }
+          this.currentUser = res.user;
         }
       })
     );
   }
 
   logout(): void {
-    sessionStorage.removeItem('auth_token');
-    sessionStorage.removeItem('user_data');
+    const token = this.getToken();
+    if (token) {
+      this.http.post(`${this.apiUrl}/auth/logout`, {}, this.getAuthHeaders()).pipe(
+        catchError(() => of(null))
+      ).subscribe();
+    }
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem('user_data');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+    }
+    this.currentUser = null;
+  }
+
+  getProfileFromDb(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/auth/me`, this.getAuthHeaders()).pipe(
+      tap(res => {
+        if (res && res.user) {
+          this.currentUser = res.user;
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('user_data', JSON.stringify(res.user));
+          }
+        }
+      }),
+      catchError(err => {
+        if (err && err.status === 401) {
+          this.logout();
+        }
+        return of(null);
+      })
+    );
   }
 
   getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return sessionStorage.getItem('auth_token');
+    return sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token');
   }
 
   getUser(): User | null {
+    if (this.currentUser) return this.currentUser;
     if (typeof window === 'undefined') return null;
-    const data = sessionStorage.getItem('user_data');
+    const data = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
     return data ? JSON.parse(data) : null;
   }
 
   setUser(user: User): void {
+    this.currentUser = user;
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('user_data', JSON.stringify(user));
     }
@@ -74,8 +116,11 @@ export class AuthService {
     return {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
       }
     };
   }
 }
+

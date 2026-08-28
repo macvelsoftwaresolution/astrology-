@@ -122,6 +122,7 @@ class AuthController extends Controller
         // =====================================================================
         $user = User::where('email', $input)
             ->orWhere('name', $input)
+            ->orWhere('phone', $input)
             ->first();
 
         // Support demo login seamlessly
@@ -227,13 +228,31 @@ class AuthController extends Controller
     }
 
     /**
-     * Get Current User Profile
+     * Get Current Authenticated User Profile
      */
     public function me(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+        }
+
         return response()->json([
             'success' => true,
-            'user' => $request->user()
+            'user' => [
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'phone'      => $user->phone,
+                'role'       => $user->role,
+                'status'     => $user->status,
+                'avatar_url' => $user->avatar_url ?? null,
+                'student_id' => $user->student_id ?? null,
+                'batch_id'   => $user->batch_id ?? null,
+                'jathagam_details' => $user->jathagam_details
+                    ? (is_string($user->jathagam_details) ? json_decode($user->jathagam_details, true) : (array)$user->jathagam_details)
+                    : null
+            ]
         ]);
     }
 
@@ -464,6 +483,21 @@ class AuthController extends Controller
                 'prevMarks'         => $jathagam['prevMarks'] ?? '',
                 'prevCertificate'   => $jathagam['prevCertificate'] ?? '',
             ]
+        ]);
+    }
+
+    /**
+     * Logout and revoke current token
+     */
+    public function logout(Request $request)
+    {
+        if ($request->user() && $request->user()->currentAccessToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'வெற்றிகரமாக வெளியேறியது (Successfully logged out).'
         ]);
     }
 }

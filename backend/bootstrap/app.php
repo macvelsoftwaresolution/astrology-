@@ -12,7 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'api/auth/*',
+            'api/auth/register',
+            'api/auth/mobile-login',
+            'api/auth/web-login'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {

@@ -296,7 +296,8 @@ export class UsersTabComponent implements OnInit {
     } else if (this.selectedCategoryFilter === 'both') {
       list = list.filter(u => this.isBothStudentAndAppointment(u));
     } else if (this.selectedCategoryFilter === 'members') {
-      list = list.filter(u => !this.isStudent(u) && !this.isAppointmentUser(u));
+      // In Members view: show all registered non-admin members
+      list = list;
     }
 
     // 2. Batch Filter (Active when looking at students or all)
@@ -342,7 +343,7 @@ export class UsersTabComponent implements OnInit {
   }
 
   get membersCount(): number {
-    return this.nonAdminUsers.filter(u => !this.isStudent(u) && !this.isAppointmentUser(u)).length;
+    return this.nonAdminUsers.length;
   }
 
   deleteUser(id: number): void {

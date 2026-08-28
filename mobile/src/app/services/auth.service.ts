@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface User {
@@ -14,6 +14,11 @@ export interface User {
   password?: string;
   role?: string;
   profileImage?: string;
+  avatar_url?: string;
+  student_id?: string;
+  batch_id?: number | string;
+  status?: string;
+  jathagam_details?: any;
 }
 
 @Injectable({
@@ -21,15 +26,14 @@ export interface User {
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
-
-  private getTokenKey(service: 'astrology' | 'education'): string {
-    return service === 'education' ? 'edu_auth_token' : 'astro_auth_token';
-  }
-
-  private getUserKey(service: 'astrology' | 'education'): string {
-    return service === 'education' ? 'edu_auth_user' : 'astro_auth_user';
+  constructor(private http: HttpClient) {
+    // Automatically load fresh profile if token exists on startup
+    if (this.getToken()) {
+      this.refreshProfileFromDb().subscribe();
+    }
   }
 
   clearSession(): void {
@@ -38,9 +42,12 @@ export class AuthService {
       'auth_user', 'astro_auth_user', 'edu_auth_user'
     ];
     keys.forEach(k => {
-      localStorage.removeItem(k);
-      sessionStorage.removeItem(k);
+      try {
+        localStorage.removeItem(k);
+        sessionStorage.removeItem(k);
+      } catch (e) {}
     });
+    this.currentUserSubject.next(null);
   }
 
   register(user: User, service: 'astrology' | 'education' = 'astrology'): Observable<any> {
@@ -53,22 +60,12 @@ export class AuthService {
 
     return this.http.post<any>(`${this.apiUrl}/auth/register`, payload).pipe(
       tap(res => {
-        if (res.success && res.token) {
+        if (res && res.success && res.token) {
           this.clearSession();
-
-          const tKey = this.getTokenKey(service);
-          const uKey = this.getUserKey(service);
-
-          localStorage.setItem(tKey, res.token);
-          sessionStorage.setItem(tKey, res.token);
           localStorage.setItem('auth_token', res.token);
-          sessionStorage.setItem('auth_token', res.token);
-
-          const userToSave = { ...res.user, profileImage: user.profileImage };
-          localStorage.setItem(uKey, JSON.stringify(userToSave));
-          sessionStorage.setItem(uKey, JSON.stringify(userToSave));
-          localStorage.setItem('auth_user', JSON.stringify(userToSave));
-          sessionStorage.setItem('auth_user', JSON.stringify(userToSave));
+          if (res.user) {
+            this.currentUserSubject.next(res.user);
+          }
         }
       })
     );
@@ -83,81 +80,85 @@ export class AuthService {
 
     return this.http.post<any>(`${this.apiUrl}/auth/mobile-login`, payload).pipe(
       tap(res => {
-        if (res.success && res.token) {
+        if (res && res.success && res.token) {
           this.clearSession();
-
-          const tKey = this.getTokenKey(service);
-          const uKey = this.getUserKey(service);
-
-          localStorage.setItem(tKey, res.token);
-          sessionStorage.setItem(tKey, res.token);
-          localStorage.setItem(uKey, JSON.stringify(res.user));
-          sessionStorage.setItem(uKey, JSON.stringify(res.user));
-
           localStorage.setItem('auth_token', res.token);
-          sessionStorage.setItem('auth_token', res.token);
-          localStorage.setItem('auth_user', JSON.stringify(res.user));
-          sessionStorage.setItem('auth_user', JSON.stringify(res.user));
+          if (res.user) {
+            this.currentUserSubject.next(res.user);
+          }
         }
       })
     );
   }
 
-  logout(service: 'astrology' | 'education' = 'astrology'): void {
+  logout(service: 'astrology' | 'education' = 'astrology'): Observable<any> {
+    const token = this.getToken();
+    if (token) {
+      this.http.post(`${this.apiUrl}/auth/logout`, {}, this.getAuthHeaders()).pipe(
+        catchError(() => of(null))
+      ).subscribe();
+    }
     this.clearSession();
+    return of({ success: true });
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
-    if (service) {
-      const key = this.getTokenKey(service);
-      return !!(localStorage.getItem(key) || sessionStorage.getItem(key));
+    return !!this.getToken();
+  }
+
+  refreshProfileFromDb(): Observable<any> {
+    if (!this.getToken()) {
+      return of(null);
     }
-    return !!(
-      sessionStorage.getItem('edu_auth_token') ||
-      sessionStorage.getItem('astro_auth_token') ||
-      sessionStorage.getItem('auth_token') ||
-      localStorage.getItem('edu_auth_token') ||
-      localStorage.getItem('astro_auth_token') ||
-      localStorage.getItem('auth_token')
+    return this.http.get<any>(`${this.apiUrl}/user/profile?_t=${Date.now()}`, this.getAuthHeaders()).pipe(
+      tap(res => {
+        if (res) {
+          const userObj: User = res.user ? res.user : res;
+          this.currentUserSubject.next(userObj);
+        }
+      }),
+      catchError(err => {
+        if (err && err.status === 401) {
+          // Stale/expired/wiped token in DB -> clear cleanly
+          this.clearSession();
+        }
+        return of(null);
+      })
     );
   }
 
   getUserProfileFromDb(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user/profile?_t=${Date.now()}`, this.getAuthHeaders());
+    return this.http.get<any>(`${this.apiUrl}/user/profile?_t=${Date.now()}`, this.getAuthHeaders()).pipe(
+      tap(res => {
+        if (res) {
+          const userObj: User = res.user ? res.user : res;
+          this.currentUserSubject.next(userObj);
+        }
+      }),
+      catchError(err => {
+        if (err && err.status === 401) {
+          this.clearSession();
+        }
+        return of(null);
+      })
+    );
   }
 
   getCurrentUser(service?: 'astrology' | 'education'): User | null {
-    if (service) {
-      const data =
-        sessionStorage.getItem(this.getUserKey(service)) ||
-        localStorage.getItem(this.getUserKey(service));
-      if (data) return JSON.parse(data);
-    }
-    const data =
-      sessionStorage.getItem('auth_user') ||
-      sessionStorage.getItem('astro_auth_user') ||
-      sessionStorage.getItem('edu_auth_user') ||
-      localStorage.getItem('auth_user') ||
-      localStorage.getItem('astro_auth_user') ||
-      localStorage.getItem('edu_auth_user');
-    return data ? JSON.parse(data) : null;
+    return this.currentUserSubject.value;
   }
 
   getToken(service?: 'astrology' | 'education'): string | null {
-    if (service) {
-      const t =
-        sessionStorage.getItem(this.getTokenKey(service)) ||
-        localStorage.getItem(this.getTokenKey(service));
-      if (t) return t;
+    try {
+      return (
+        localStorage.getItem('auth_token') ||
+        sessionStorage.getItem('auth_token') ||
+        localStorage.getItem('astro_auth_token') ||
+        localStorage.getItem('edu_auth_token')
+      );
+    } catch (e) {
+      return null;
     }
-    return (
-      sessionStorage.getItem('auth_token') ||
-      sessionStorage.getItem('astro_auth_token') ||
-      sessionStorage.getItem('edu_auth_token') ||
-      localStorage.getItem('auth_token') ||
-      localStorage.getItem('astro_auth_token') ||
-      localStorage.getItem('edu_auth_token')
-    );
   }
 
   getAuthHeaders(service?: 'astrology' | 'education'): { headers: { [header: string]: string } } {
@@ -190,3 +191,4 @@ export class AuthService {
     return this.http.get<any>(`${this.apiUrl}/public/batches`);
   }
 }
+

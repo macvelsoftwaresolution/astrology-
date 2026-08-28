@@ -102,7 +102,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   }
 
   loadStudentCurriculum() {
-    this.http.get<any>(`${environment.apiUrl}/student/curriculum`).subscribe({
+    if (!this.authService.isLoggedIn()) return;
+    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders()).subscribe({
       next: (res) => {
         if (res && res.curriculum) {
           this.curriculumDays = res.curriculum || [];
@@ -177,16 +178,23 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     }
   }
 
+  get studentName(): string {
+    const dbUser = this.authService.getCurrentUser();
+    return this.enrollForm?.fullName || dbUser?.name || (dbUser as any)?.fullName || 'மாணவர்';
+  }
+
   loadUserProfile() {
     if (this.authService.isLoggedIn('education') || this.authService.isLoggedIn()) {
       this.authService.getUserProfileFromDb().subscribe({
         next: (res: any) => {
-          if (res && (res.user || res.data)) {
-            const u = res.user || res.data;
+          if (res) {
+            const u = res.user || res.data || res;
             if (!this.enrollForm) this.enrollForm = {};
-            this.enrollForm.fullName = this.enrollForm.fullName || u.fullName || u.name || u.student_name_tamil || u.student_name || '';
-            this.enrollForm.mobileNumber = this.enrollForm.mobileNumber || u.mobileNumber || u.phone || u.mobile || u.mobile_number || '';
-            this.enrollForm.postalAddress = this.enrollForm.postalAddress || u.postalAddress || u.address || u.postal_address || '';
+            this.enrollForm.fullName = u.name || u.fullName || u.student_name_tamil || u.student_name || '';
+            this.enrollForm.mobileNumber = u.phone || u.mobileNumber || u.mobile || u.mobile_number || '';
+            this.enrollForm.postalAddress = u.address || u.postalAddress || u.postal_address || '';
+            this.enrollForm.studentId = u.student_id || '';
+            this.cdr.detectChanges();
           }
         },
         error: () => {}
@@ -772,14 +780,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       window.open(url, '_blank');
       this.showToast('நேரலை வகுப்பில் இணைகிறது...', 'success');
     } else {
-      this.openMockGoogleMeet();
+      this.showToast('இந்த வகுப்பிற்கான நேரலை இணைப்பு இன்னும் நிர்வாகியால் பகிரப்படவில்லை.', 'warning');
     }
-  }
-
-  openMockGoogleMeet() {
-    const meetUrl = 'https://meet.google.com/abc-defg-hij';
-    window.open(meetUrl, '_blank');
-    this.showToast('நேரலை வகுப்பு கூகுள் மீட் லிங்க் திறக்கப்படுகிறது...', 'success');
   }
 
   async openDiary() {
@@ -791,7 +793,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       window.open(link, '_blank');
       this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success');
     } else {
-      this.openMockGoogleMeet();
+      this.showToast('நேரலை வகுப்பு இணைப்பு இன்னும் கிடைக்கவில்லை.', 'warning');
     }
   }
 

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-learn-quiz',
@@ -22,7 +23,10 @@ export class LearnQuizComponent implements OnInit {
   
   quizQuestions: any[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     if (this.exam && this.exam.questions) {
@@ -62,26 +66,26 @@ export class LearnQuizComponent implements OnInit {
       this.selectedOption = null;
       this.fillupAnswer = '';
     } else {
-      const totalPossibleMarks = this.quizQuestions.reduce((sum, q) => sum + q.marks, 0);
-      this.quizScore = totalPossibleMarks > 0 
-        ? Math.round((this.correctAnswersCount / totalPossibleMarks) * 100) 
-        : 0;
-        
+      // Calculate final score percentage
+      const totalMarks = this.quizQuestions.reduce((acc, q) => acc + (q.marks || 1), 0);
+      this.quizScore = totalMarks > 0 ? Math.round((this.correctAnswersCount / totalMarks) * 100) : 0;
       this.quizSubmitted = true;
       const passMark = this.exam?.pass_mark || 60;
       this.quizPassed = this.quizScore >= passMark;
 
       // Submit to database API
-      const payload = {
-        course_id: this.exam?.course_id || null,
-        exam_id: this.exam?.id || null,
-        submission_type: 'online_quiz',
-        score: this.quizScore
-      };
-      this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload).subscribe({
-        next: () => {},
-        error: () => {}
-      });
+      if (this.authService.isLoggedIn()) {
+        const payload = {
+          course_id: this.exam?.course_id || null,
+          exam_id: this.exam?.id || null,
+          submission_type: 'online_quiz',
+          score: this.quizScore
+        };
+        this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload, this.authService.getAuthHeaders()).subscribe({
+          next: () => {},
+          error: () => {}
+        });
+      }
     }
   }
 }

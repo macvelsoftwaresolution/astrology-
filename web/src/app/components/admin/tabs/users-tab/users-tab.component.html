@@ -232,8 +232,14 @@
             }
           </td>
           <td>
-            <!-- 1. When Filter is explicitly 'students' -> show Student & Batch badge -->
-            @if (selectedCategoryFilter === 'students') {
+            <!-- 1. When Filter is explicitly 'members' -> show ONLY clean Member badge -->
+            @if (selectedCategoryFilter === 'members') {
+            <span class="profile-tag-member">
+              <i class="bi bi-person-fill"></i> {{ 'users.memberBadge' | translate }}
+            </span>
+            }
+            <!-- 2. When Filter is explicitly 'students' -> show Student & Batch badge -->
+            @else if (selectedCategoryFilter === 'students') {
             <div class="profile-tags-stack">
               <span class="profile-tag-lms">
                 <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
@@ -274,9 +280,19 @@
             <!-- 4. Default Fallbacks -->
             @else if (isStudent(u)) {
             <div class="profile-tags-stack">
-              <span class="profile-tag-lms">
-                <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
-              </span>
+              <div class="dual-tag-wrap">
+                <span class="profile-tag-member">
+                  <i class="bi bi-person-fill"></i> {{ 'users.memberBadge' | translate }}
+                </span>
+                <span class="profile-tag-lms">
+                  <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+                </span>
+                @if (isAppointmentUser(u)) {
+                <span class="profile-tag-booking">
+                  <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
+                </span>
+                }
+              </div>
               @if (u.batch_name) {
               <span class="profile-tag-batch">
                 <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
