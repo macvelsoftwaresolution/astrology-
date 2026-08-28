@@ -1,8 +1,8 @@
 <div class="wizard-container">
   <div class="rules-header">
     <div class="rules-shield-icon"><i class="bi bi-shield-check"></i></div>
-    <h2 class="rules-heading">விதிமுறைகள்</h2>
-    <p class="rules-subheading">தெய்வீக அகாடமியின் புனிதமான வீதிகள் மற்றும் விதிமுறைகள். கல்வியின் சிறப்பிற்காக இவற்றை கடைபிடிக்கவும்.</p>
+    <h2 class="rules-heading">{{ 'learn.rulesTitle' | translate }}</h2>
+    <p class="rules-subheading">{{ 'learn.rulesSubheading' | translate }}</p>
   </div>
 
   <div class="rules-list" *ngIf="rules && rules.length > 0">
@@ -16,7 +16,7 @@
   </div>
 
   <button class="action-submit-btn" (click)="next.emit()">
-    <span>நான் ஒப்புக்கொள்கிறேன் & தொடர்கிறேன்</span>
+    <span>{{ 'learn.iAgreeAndContinue' | translate }}</span>
     <i class="bi bi-arrow-right ms-2"></i>
   </button>
 </div>

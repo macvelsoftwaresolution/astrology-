@@ -213,7 +213,16 @@
     "nextQuestion": "Next Question",
     "submitQuiz": "Submit Exam",
     "quizPassed": "Congratulations! You passed!",
-    "quizFailed": "Please try again!"
+    "quizFailed": "Please try again!",
+    "intro": "Introduction",
+    "vedicBasics": "Vedic Astrology Fundamentals",
+    "vilakkavuraiTitle": "Overview & Guidelines",
+    "whatYouWillLearn": "What You Will Learn",
+    "newEnrollment": "New Admission (Enroll Course)",
+    "alreadyRegisteredLogin": "Already Enrolled? Login Here",
+    "rulesTitle": "Rules & Regulations",
+    "rulesSubheading": "Sacred guidelines and rules of the Vedic Astrology Academy. Please follow for course excellence.",
+    "iAgreeAndContinue": "I Agree & Continue"
   },
   "astrology": {
     "title": "Vedic Astrology Services",

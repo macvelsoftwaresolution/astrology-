@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { AuthService } from '../../../../services/auth.service';
+import { TranslationService } from '../../../../services/translation.service';
 
 @Component({
   selector: 'app-learn-enroll',
@@ -12,8 +13,26 @@ export class LearnEnrollComponent implements OnInit {
   @Output() next = new EventEmitter<any>();
 
   private authService = inject(AuthService);
+  public translationService = inject(TranslationService);
 
   ilanilaiSearchQuery: string = '';
+
+  cleanBatchName(name: string): string {
+    if (!name) return '';
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    let str = name;
+    if (isTa) {
+      str = str.replace(/Batch\s*1/gi, 'பிரிவு 1')
+               .replace(/Batch\s*2/gi, 'பிரிவு 2')
+               .replace(/Batch\s*3/gi, 'பிரிவு 3')
+               .replace(/Batch\s*4/gi, 'பிரிவு 4')
+               .replace(/Jan\s*-\s*Mar/gi, 'ஜன - மார்')
+               .replace(/Apr\s*-\s*Jun/gi, 'ஏப் - ஜூன்')
+               .replace(/Jul\s*-\s*Sep/gi, 'ஜூலை - செப்')
+               .replace(/Oct\s*-\s*Dec/gi, 'அக் - டிச');
+    }
+    return str;
+  }
   isFetchingIlanilai: boolean = false;
   fetchSuccessMsg: string = '';
   fetchErrorMsg: string = '';

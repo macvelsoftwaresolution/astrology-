@@ -2,17 +2,17 @@
   <div class="course-intro-banner">
     <div class="banner-overlay"></div>
     <img src="assets/images/spiritual_education_bg.png" alt="Fundamentals" class="banner-img">
-    <div class="banner-badge">அறிமுகம்</div>
-    <h2 class="banner-title">வேத ஜோதிட அடிப்படைகள்</h2>
+    <div class="banner-badge">{{ 'learn.intro' | translate }}</div>
+    <h2 class="banner-title">{{ 'learn.vedicBasics' | translate }}</h2>
   </div>
 
   <div class="section-block" *ngIf="vilakauraiText">
-    <h3 class="section-title">விளக்கவுரை (Vilakkavurai)</h3>
+    <h3 class="section-title">{{ 'learn.vilakkavuraiTitle' | translate }}</h3>
     <p class="section-desc" style="white-space: pre-wrap;">{{ vilakauraiText }}</p>
   </div>
 
   <div class="section-block" *ngIf="topics && topics.length > 0">
-    <h3 class="section-title"><i class="bi bi-lightbulb-fill text-gold me-2"></i>நீங்கள் கற்கவிருப்பது</h3>
+    <h3 class="section-title"><i class="bi bi-lightbulb-fill text-gold me-2"></i>{{ 'learn.whatYouWillLearn' | translate }}</h3>
     <div class="topics-grid">
       <div class="topic-item" *ngFor="let topic of topics; let i = index">
         <div class="topic-icon" [ngClass]="getColorClass(i)"><i class="bi" [ngClass]="getIcon(i)"></i></div>
@@ -26,13 +26,13 @@
 
   <div class="actions-wrapper">
     <button class="action-submit-btn" (click)="next.emit()">
-      <i class="bi bi-mortarboard-fill me-2"></i>
-      <span>புதிய சேர்க்கை (Enroll Course)</span>
-      <i class="bi bi-arrow-right ms-2"></i>
+      <i class="bi bi-mortarboard-fill" style="margin-right: 10px; flex-shrink: 0;"></i>
+      <span>{{ 'learn.newEnrollment' | translate }}</span>
+      <i class="bi bi-arrow-right" style="margin-left: 10px; flex-shrink: 0;"></i>
     </button>
     <button type="button" class="action-login-btn-outline" (click)="login.emit()">
-      <i class="bi bi-box-arrow-in-right me-2"></i>
-      <span>ஏற்கனவே பதிவு செய்தவரா? உள்நுழைக (Login)</span>
+      <i class="bi bi-box-arrow-in-right" style="margin-right: 10px; flex-shrink: 0;"></i>
+      <span>{{ 'learn.alreadyRegisteredLogin' | translate }}</span>
     </button>
   </div>
 </div>

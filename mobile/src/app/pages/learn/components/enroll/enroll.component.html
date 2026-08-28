@@ -57,14 +57,14 @@
     <!-- Clean Course Level Selection -->
     <div class="simple-field-group">
       <label class="simple-label">{{ 'learn.selectCategory' | translate }} <span class="req">*</span></label>
-      <div class="simple-level-selector">
-        <label class="level-radio-btn" [class.active]="localForm.courseLevel === 'ilanilai'"
+      <div class="simple-pill-selector">
+        <label class="pill-btn" [class.active]="localForm.courseLevel === 'ilanilai'"
           (click)="setCourseLevel('ilanilai')">
           <input type="radio" name="courseLevel" value="ilanilai" [(ngModel)]="localForm.courseLevel">
           <span>{{ 'learn.ilanilaiTitle' | translate }}</span>
         </label>
 
-        <label class="level-radio-btn" [class.active]="localForm.courseLevel === 'mudhunilai'"
+        <label class="pill-btn" [class.active]="localForm.courseLevel === 'mudhunilai'"
           (click)="setCourseLevel('mudhunilai')">
           <input type="radio" name="courseLevel" value="mudhunilai" [(ngModel)]="localForm.courseLevel">
           <span>{{ 'learn.muthunilaiTitle' | translate }}</span>
@@ -92,9 +92,14 @@
 
     <!-- Batch Allocation Badge -->
     @if (localForm.batch_name || activeBatchName) {
-    <div class="batch-alloc-badge mb-3">
-      <i class="bi bi-calendar2-week-fill me-2"></i>
-      <span>சேர்க்கை பிரிவு (Batch): <strong>{{ localForm.batch_name || activeBatchName }}</strong></span>
+    <div class="batch-alloc-badge">
+      <div class="batch-icon-box">
+        <i class="bi bi-calendar2-week-fill"></i>
+      </div>
+      <div class="batch-info-content">
+        <div class="batch-label-title">சேர்க்கை பிரிவு (Enrolled Batch)</div>
+        <div class="batch-name-val">{{ cleanBatchName(localForm.batch_name || activeBatchName) }}</div>
+      </div>
     </div>
     }
 
@@ -125,19 +130,30 @@
 
       <div class="simple-field-group">
         <label class="simple-label">{{ 'learn.gender' | translate }} <span class="req">*</span></label>
-        <div class="simple-gender-row">
-          <label class="gender-btn" [class.active]="localForm.gender === 'ஆண்'">
-            <input type="radio" name="gender" value="ஆண்" [(ngModel)]="localForm.gender"> {{ 'learn.male' | translate }}
+        <div class="simple-pill-selector">
+          <label class="pill-btn" [class.active]="localForm.gender === 'ஆண்'">
+            <input type="radio" name="gender" value="ஆண்" [(ngModel)]="localForm.gender">
+            <span>{{ 'learn.male' | translate }}</span>
           </label>
-          <label class="gender-btn" [class.active]="localForm.gender === 'பெண்'">
-            <input type="radio" name="gender" value="பெண்" [(ngModel)]="localForm.gender"> {{ 'learn.female' | translate }}
+          <label class="pill-btn" [class.active]="localForm.gender === 'பெண்'">
+            <input type="radio" name="gender" value="பெண்" [(ngModel)]="localForm.gender">
+            <span>{{ 'learn.female' | translate }}</span>
           </label>
         </div>
       </div>
 
       <div class="simple-field-group">
-        <label class="simple-label">தாய்மொழி</label>
-        <input type="text" [(ngModel)]="localForm.motherTongue" placeholder="தமிழ்">
+        <label class="simple-label">{{ 'lang.select' | translate }} <span class="req">*</span></label>
+        <div class="simple-pill-selector">
+          <label class="pill-btn" [class.active]="localForm.motherTongue === 'தமிழ்'">
+            <input type="radio" name="motherTongue" value="தமிழ்" [(ngModel)]="localForm.motherTongue">
+            <span>தமிழ் (Tamil)</span>
+          </label>
+          <label class="pill-btn" [class.active]="localForm.motherTongue === 'English'">
+            <input type="radio" name="motherTongue" value="English" [(ngModel)]="localForm.motherTongue">
+            <span>English</span>
+          </label>
+        </div>
       </div>
     </div>
 

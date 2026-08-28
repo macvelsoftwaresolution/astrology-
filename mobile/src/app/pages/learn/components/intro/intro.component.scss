@@ -38,6 +38,12 @@ $color-purple-dark: #200438;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+
+  i {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+  }
 
   &:active {
     transform: scale(0.98);
@@ -59,6 +65,12 @@ $color-purple-dark: #200438;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+
+  i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
 
   &:active {
     background: #fdf2f2;
