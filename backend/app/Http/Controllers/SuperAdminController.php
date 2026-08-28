@@ -32,20 +32,41 @@ class SuperAdminController extends Controller
         $recentAdmins = User::whereIn('role', ['admin', 'super_admin'])->get();
 
         // 1. Dynamic calculation of Ilanilai and Mudhunilai applicants
-        $students = User::where('role', 'user')->get(['jathagam_details']);
+        $usersList = User::where('role', 'user')->get();
         $ilanilaiCount = 0;
         $mudhunilaiCount = 0;
-        foreach ($students as $student) {
-            if (empty($student->jathagam_details)) continue;
-            $details = json_decode($student->jathagam_details, true);
-            if (!is_array($details) || empty($details['courseLevel'])) continue;
-            $level = strtolower($details['courseLevel']);
-            if ($level === 'mudhunilai' || $level === 'muthunilai') {
-                $mudhunilaiCount++;
-            } else if ($level === 'ilanilai') {
-                $ilanilaiCount++;
+        $actualStudentCount = 0;
+
+        foreach ($usersList as $u) {
+            $isStud = false;
+            if (!empty($u->student_id)) {
+                $isStud = true;
+            }
+            if (!empty($u->jathagam_details)) {
+                $details = is_string($u->jathagam_details) ? json_decode($u->jathagam_details, true) : (array)$u->jathagam_details;
+                if (is_array($details) && !empty($details['courseLevel'])) {
+                    $level = strtolower($details['courseLevel']);
+                    if ($level === 'mudhunilai' || $level === 'muthunilai') {
+                        $mudhunilaiCount++;
+                        $isStud = true;
+                    } else if ($level === 'ilanilai') {
+                        $ilanilaiCount++;
+                        $isStud = true;
+                    }
+                }
+            }
+            if ($isStud) {
+                $actualStudentCount++;
             }
         }
+
+        // Fallback: check students table if student count is higher
+        $dbStudentCount = (int) DB::table('students')->count();
+        if ($dbStudentCount > $actualStudentCount) {
+            $actualStudentCount = $dbStudentCount;
+        }
+
+        $totalMembers = $usersList->count();
 
         // 2. Course Revenue = Total student enrollments * 2500 + Courses sum
         $courseEnrollmentRevenue = ($ilanilaiCount + $mudhunilaiCount) * 2500;
@@ -55,10 +76,17 @@ class SuperAdminController extends Controller
         $matrimonyRevenue = (float) ($data->matrimony_revenue ?? 0);
         $totalRevenue = $courseEnrollmentRevenue + $serviceRevenue + $bookRevenue + $matchRevenue + $matrimonyRevenue;
 
+        // 3. Recent 5 registered users
+        $recentMembers = User::where('role', 'user')
+            ->orderBy('id', 'desc')
+            ->take(5)
+            ->get();
+
         return response()->json([
             'success' => true,
             'metrics' => [
-                'total_students' => (int) ($data->total_students ?? 0),
+                'total_members' => $totalMembers,
+                'total_students' => $actualStudentCount,
                 'total_admins' => (int) ($data->total_admins ?? 0),
                 'total_courses' => (int) ($data->total_courses ?? 0),
                 'total_bookings' => (int) ($data->total_bookings ?? 0),
@@ -76,7 +104,8 @@ class SuperAdminController extends Controller
                     'books' => $bookRevenue,
                 ]
             ],
-            'recent_admins' => $recentAdmins
+            'recent_admins' => $recentAdmins,
+            'recent_members' => $recentMembers
         ]);
     }
 

@@ -8,6 +8,7 @@ import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 export interface Metrics {
+  total_members?: number;
   total_students: number;
   total_admins: number;
   total_courses: number;
@@ -40,6 +41,7 @@ export class OverviewTabComponent implements OnInit {
   metrics: Metrics | null = null;
   teamList: any[] = [];
   banners: any[] = [];
+  recentMembers: any[] = [];
   isLoading = false;
 
   editingBanner: any = { title: '', image_url: '', target_route: '', is_active: 1, sort_order: 0 };
@@ -71,6 +73,9 @@ export class OverviewTabComponent implements OnInit {
         if (res && res.metrics) {
           this.metrics = res.metrics;
         }
+        if (res && res.recent_members) {
+          this.recentMembers = res.recent_members;
+        }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -101,6 +106,10 @@ export class OverviewTabComponent implements OnInit {
       },
       error: () => {}
     });
+  }
+
+  openUsersDirectory(): void {
+    this.switchTab.emit('users');
   }
 
   openNewBanner(): void {
