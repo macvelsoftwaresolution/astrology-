@@ -6,6 +6,9 @@ import { NavController, Platform } from '@ionic/angular';
 import { BackButtonService } from './services/back-button.service';
 import { ExitModalService } from './services/exit-modal.service';
 
+import { NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { LoadingService } from './services/loading.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -21,9 +24,27 @@ export class AppComponent implements OnInit {
     private navCtrl: NavController,
     private platform: Platform,
     private backButtonService: BackButtonService,
-    public exitModalService: ExitModalService
+    public exitModalService: ExitModalService,
+    private loadingService: LoadingService
   ) {
     this.initializeApp();
+    this.initRouterLoading();
+  }
+
+  initRouterLoading() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.loadingService.show();
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        setTimeout(() => {
+          this.loadingService.hide();
+        }, 150);
+      }
+    });
   }
 
   initializeApp() {

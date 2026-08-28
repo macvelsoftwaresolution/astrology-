@@ -459,13 +459,22 @@ export class HomePage implements OnInit {
   loadPanchangam() {
     this.http.get<any>(`${environment.apiUrl}/panchangam/today`).subscribe({
       next: (res) => {
-        if (res) {
+        if (res && res.panchangam) {
+          const p = res.panchangam;
           this.panchangam = {
-            thithi: res.thithi || res.panchangam?.thithi || '',
-            star: res.star || res.panchangam?.star || '',
-            rahukalam: res.rahukalam || res.panchangam?.rahukalam || '',
-            yamagandam: res.yamagandam || res.panchangam?.yamagandam || '',
-            nalla_neram: res.nalla_neram || res.panchangam?.nalla_neram || ''
+            thithi: p.thithi || '',
+            star: p.star || '',
+            rahukalam: p.rahukalam || '',
+            yamagandam: p.yamagandam || '',
+            nalla_neram: p.nalla_neram || p.nallaNeram || ''
+          };
+        } else {
+          this.panchangam = {
+            thithi: '',
+            star: '',
+            rahukalam: '',
+            yamagandam: '',
+            nalla_neram: ''
           };
         }
       },

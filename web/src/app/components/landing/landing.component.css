@@ -201,17 +201,23 @@ a {
 .logo-text {
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
 }
 
 .logo-text .tamil-title {
   font-size: 1.3rem;
+  font-weight: 700;
   color: var(--color-text-ivory) !important;
-  line-height: 1.1;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
 }
 
 .logo-text .english-subtitle {
   font-size: 0.65rem;
+  font-weight: 600;
   color: var(--color-gold-antique);
+  letter-spacing: 2.5px !important;
+  margin-top: 0.15rem;
 }
 
 .nav-links {
@@ -389,9 +395,12 @@ a {
   border-radius: 50px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   transition: var(--transition-fast);
   box-shadow: 0 6px 20px rgba(212, 168, 79, 0.35);
   font-size: 0.95rem;
+  white-space: nowrap;
+  font-family: inherit;
 }
 
 .btn-cta-gold:hover {
@@ -408,8 +417,11 @@ a {
   border-radius: 50px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   transition: var(--transition-fast);
   font-size: 0.95rem;
+  white-space: nowrap;
+  font-family: inherit;
 }
 
 .btn-cta-outline:hover {
@@ -756,6 +768,26 @@ a {
   font-size: 1.8rem;
 }
 
+.zodiac-custom-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+
+.display-custom-icon-large {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
 .sign-tamil-name {
   font-size: 0.85rem;
   font-weight: 700;
@@ -823,8 +855,13 @@ a {
   font-weight: 600;
   display: inline-flex;
   align-items: center;
+  gap: 0.65rem;
   transition: var(--transition-fast);
   font-size: 0.9rem;
+}
+
+.btn-card-luxury i {
+  margin-left: 0.45rem;
 }
 
 .btn-card-luxury:hover {
@@ -901,30 +938,29 @@ a {
 
 .service-card-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   border-top: 1px solid var(--border-gold-violet);
   padding-top: 1.25rem;
 }
 
-.service-price-tag {
-  font-size: 0.85rem;
-  color: var(--color-text-lavender);
-}
-
-.service-price-tag strong {
-  font-size: 1.1rem;
-  color: var(--color-gold-bright);
-  font-weight: 700;
-}
-
 .btn-service-action {
-  font-size: 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
   color: var(--color-gold-bright);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
   transition: var(--transition-fast);
 }
 
+.btn-service-action i {
+  font-size: 1.25rem;
+  margin-left: 0.45rem;
+}
+
 .service-light-card:hover .btn-service-action {
+  color: var(--color-text-ivory);
   transform: translateX(4px);
 }
 
@@ -1235,6 +1271,14 @@ a {
   font-size: 3.5rem;
   color: var(--color-gold-bright);
   position: relative;
+  overflow: hidden;
+}
+
+.astro-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
 }
 
 .astro-exp-label {
@@ -1642,6 +1686,7 @@ a {
   background-color: var(--bg-footer);
   border-top: 1px solid var(--border-gold-violet);
   padding: 3.5rem 0 2rem 0;
+  text-align: center;
 }
 
 .footer-grid-layout {
@@ -1655,12 +1700,15 @@ a {
 .footer-brand-column {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 1rem;
 }
 
 .footer-brand-title {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.85rem;
 }
 
@@ -1679,29 +1727,35 @@ a {
 .brand-text-stack {
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
 }
 
 .tamil-brand {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-text-ivory);
-  line-height: 1.1;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
 }
 
 .english-brand {
   font-size: 0.65rem;
+  font-weight: 600;
   color: var(--color-gold-bright);
-  letter-spacing: 1.5px !important;
+  letter-spacing: 2.5px !important;
+  margin-top: 0.15rem;
 }
 
 .footer-brand-desc {
   font-size: 0.88rem;
   color: var(--color-text-lavender);
   line-height: 1.6;
+  text-align: center;
 }
 
 .footer-social-row {
   display: flex;
+  justify-content: center;
   gap: 0.85rem;
   margin-top: 0.5rem;
 }
@@ -1727,6 +1781,14 @@ a {
   box-shadow: 0 0 15px rgba(212, 168, 79, 0.4);
 }
 
+.footer-links-column,
+.footer-contact-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .footer-links-column h4,
 .footer-contact-column h4 {
   font-size: 0.9rem;
@@ -1735,11 +1797,13 @@ a {
   margin-bottom: 1.25rem;
   text-transform: uppercase;
   letter-spacing: 1.5px !important;
+  text-align: center;
 }
 
 .footer-links-list {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.7rem;
 }
 
@@ -1749,6 +1813,12 @@ a {
   transition: all 0.25s ease;
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-links-list a i {
+  margin-right: 0.35rem;
+  flex-shrink: 0;
 }
 
 .footer-links-list a:hover {
@@ -1760,6 +1830,12 @@ a {
   font-size: 0.7rem;
 }
 
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .contact-info-list p {
   font-size: 0.88rem;
   color: var(--color-text-lavender);
@@ -1767,21 +1843,33 @@ a {
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.contact-info-list p i {
+  font-size: 1.05rem;
+  margin-right: 0.45rem;
+  flex-shrink: 0;
 }
 
 .footer-bottom-bar {
-  border-top: 1px solid var(--border-gold-violet);
+  border-top: 1px solid rgba(212, 168, 79, 0.15);
   padding-top: 1.75rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  text-align: center;
   gap: 1rem;
 }
 
 .footer-bottom-left {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 0.25rem;
 }
 
@@ -1789,11 +1877,13 @@ a {
   font-size: 0.85rem;
   color: var(--color-text-lavender);
   margin: 0;
+  text-align: center;
 }
 
 .developer-credit {
   font-size: 0.8rem;
   color: var(--color-text-lavender);
+  text-align: center;
 }
 
 .macvel-brand-highlight {
@@ -1805,7 +1895,9 @@ a {
 .footer-legal-links {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.5rem;
 }
 
 .footer-legal-links a {
@@ -1834,7 +1926,9 @@ a {
 
 .academy-courses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 860px;
+  margin: 0 auto;
   gap: 2rem;
 }
 
@@ -2216,7 +2310,7 @@ a {
 
 @media (max-width: 768px) {
   .nav-container {
-    padding: 1rem 2rem;
+    padding: 0.85rem 1.25rem;
   }
 
   .nav-links,
@@ -2229,28 +2323,316 @@ a {
   }
 
   .hero-center-header h1 {
-    font-size: 2.25rem;
+    font-size: 1.85rem;
+    line-height: 1.3;
+  }
+
+  .hero-actions-center {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .btn-cta-gold,
+  .btn-cta-outline {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .showcase-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .showcase-content-left h2 {
+    font-size: 1.5rem;
+    line-height: 1.35;
+    margin-bottom: 1rem;
+  }
+
+  .showcase-desc-para {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-bottom: 1.5rem;
   }
 
   .panchangam-dashboard {
     grid-template-columns: 1fr;
   }
 
+  .panch-left-hero,
+  .panch-right-slots {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .panch-large-date {
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
   .editorial-stats-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
+  }
+
+  .stat-big-num {
+    font-size: 1.6rem;
   }
 
   .zodiac-btns-layout {
     grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .zodiac-luxury-btn {
+    padding: 0.65rem 0.25rem;
+    min-height: 70px;
+  }
+
+  .zodiac-custom-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sign-glyph {
+    font-size: 1.4rem;
+  }
+
+  .sign-tamil-name {
+    font-size: 0.78rem;
+  }
+
+  .zodiac-display-card {
+    padding: 1.5rem 1.15rem;
+  }
+
+  .editorial-services-grid,
+  .academy-courses-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .service-editorial-card {
+    padding: 1.5rem 1.15rem;
+  }
+
+  .editorial-astrologers-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .astro-editorial-card {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.15rem;
+    text-align: center;
   }
 
   .horizontal-steps-timeline {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .trust-badges-center-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem 1.25rem;
+    padding-top: 1.25rem;
+    max-width: 100%;
+  }
+
+  .trust-item {
+    font-size: 0.78rem;
+  }
+
+  .download-editorial-box {
+    padding: 2rem 1.25rem;
+    border-radius: 20px;
+  }
+
+  .download-editorial-box h2 {
+    font-size: 1.45rem;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+
+  .cta-desc-para {
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
   }
 
   .footer-grid-layout {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: 2rem;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.25rem;
+    padding-top: 1.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(212, 168, 79, 0.15);
+  }
+
+  .footer-bottom-left {
+    align-items: center;
+    text-align: center;
+    gap: 0.35rem;
+  }
+
+  .copyright-text,
+  .developer-credit {
+    text-align: center;
+  }
+
+  .footer-legal-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-center-header h1 {
+    font-size: 1.6rem;
+    line-height: 1.3;
+  }
+
+  .hero-actions-center {
+    width: 100%;
+    gap: 0.65rem;
+  }
+
+  .btn-cta-gold,
+  .btn-cta-outline {
+    width: 100%;
+    max-width: 280px;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    border-radius: 50px;
+  }
+
+  .trust-badges-center-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .download-editorial-box {
+    padding: 1.5rem 0.85rem;
+    border-radius: 16px;
+  }
+
+  .download-editorial-box h2 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    margin-bottom: 0.65rem;
+  }
+
+  .cta-desc-para {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    margin-bottom: 1.25rem;
+  }
+
+  .luxury-store-btn {
+    padding: 0.6rem 1rem;
+    width: 100%;
+    max-width: 260px;
+    justify-content: center;
+  }
+
+  .hero-features-highlight-strip {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    padding: 0.85rem;
+  }
+
+  .feature-pill-item {
+    font-size: 0.8rem;
+    justify-content: center;
+  }
+
+  .showcase-content-left h2 {
+    font-size: 1.35rem;
+    line-height: 1.35;
+    margin-bottom: 0.85rem;
+  }
+
+  .showcase-desc-para {
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .phone-frame-wrapper {
+    width: 250px;
+    height: 500px;
+  }
+
+  .zodiac-btns-layout {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+  }
+
+  .zodiac-luxury-btn {
+    padding: 0.55rem 0.15rem;
+    min-height: 65px;
+  }
+
+  .sign-tamil-name {
+    font-size: 0.72rem;
+  }
+
+  .display-custom-icon-large {
+    width: 48px;
+    height: 48px;
+  }
+
+  .porutham-checker-box {
+    padding: 1.35rem 1rem;
+  }
+
+  .porutham-selectors-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .vs-heart-badge {
+    align-self: center;
+    margin: 0;
+  }
+
+  .center-editorial-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .btn-primary-luxury,
+  .btn-card-luxury {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.88rem;
+  }
+
+  .footer-legal-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 0.85rem;
+    width: 100%;
+  }
+
+  .footer-legal-links a {
+    font-size: 0.78rem;
+    white-space: nowrap;
+    text-align: center;
   }
 }

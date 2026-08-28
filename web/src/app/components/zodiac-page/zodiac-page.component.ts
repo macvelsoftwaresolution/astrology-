@@ -6,6 +6,18 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
+export interface ZodiacPageItem {
+  name: string;
+  symbol: string;
+  englishName: string;
+  dates: string;
+  prediction: string;
+  fullPrediction?: string;
+  audioUrl?: string;
+  videoUrl?: string;
+  iconUrl?: string;
+}
+
 @Component({
   selector: 'app-zodiac-page',
   standalone: true,
@@ -30,8 +42,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
             <a routerLink="/faq">FAQ</a>
           </nav>
           <div class="header-actions">
-            <a routerLink="/admin" class="btn-secondary me-2" style="padding: 8px 14px; font-size: 13px; text-decoration: none; border-radius: 8px; border: 1px solid rgba(212,175,55,0.4); color: #ffd700;">Admin Panel</a>
-            <a routerLink="/" class="btn-primary">Get App</a>
+            <a [routerLink]="['/']" fragment="download" class="btn-primary">Get App</a>
           </div>
         </div>
       </header>
@@ -41,19 +52,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
           <div class="section-container">
             <div class="center-editorial-header">
               <span class="section-eyebrow"><i class="bi bi-stars me-1"></i> LIVE COSMIC HOROSCOPE</span>
-              <h2>12 ராசிகளுக்கான {{ getTabTamilTitle() }}</h2>
+              <h2>12 ராசிகளுக்கான தினசரி பலன்</h2>
               <p class="section-desc">SELECT YOUR ZODIAC SIGN &bull; DYNAMIC REAL-TIME PREDICTIONS</p>
-              
-              <!-- Tab Selector -->
-              <div class="zodiac-period-tabs">
-                @for (t of tabs; track t.val) {
-                  <button 
-                    [class.active]="selectedTab === t.val"
-                    (click)="changeTab(t.val)">
-                    {{ t.tamil }} ({{ t.english }})
-                  </button>
-                }
-              </div>
             </div>
 
             <!-- Loading Indicator -->
@@ -70,7 +70,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
                       class="zodiac-luxury-btn"
                       [class.active]="selectedZodiac.name === zodiac.name"
                       (click)="selectZodiac(zodiac)">
-                      <span class="sign-glyph">{{ zodiac.symbol }}</span>
+                      @if (zodiac.iconUrl) {
+                        <img [src]="zodiac.iconUrl" [alt]="zodiac.name" class="zodiac-custom-icon" />
+                      } @else {
+                        <span class="sign-glyph">{{ zodiac.symbol }}</span>
+                      }
                       <span class="sign-tamil-name">{{ zodiac.name }}</span>
                     </button>
                   }
@@ -79,7 +83,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
                 <div class="zodiac-display-card">
                   <div class="card-inner-halo"></div>
                   <div class="zodiac-display-header">
-                    <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
+                    @if (selectedZodiac.iconUrl) {
+                      <img [src]="selectedZodiac.iconUrl" [alt]="selectedZodiac.name" class="display-custom-icon-large" />
+                    } @else {
+                      <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
+                    }
                     <h3>{{ selectedZodiac.name }}</h3>
                     <span class="display-label-sub">{{ selectedZodiac.englishName }} &bull; {{ selectedZodiac.dates }}</span>
                     <span class="live-badge-pill"><span class="pulse-dot"></span> நேரலை கணிப்பு (Live Sync)</span>
@@ -140,8 +148,67 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
       <footer class="app-footer">
         <div class="section-container">
+          <div class="footer-grid-layout">
+            <div class="footer-brand-column">
+              <div class="footer-brand-title">
+                <span class="brand-icon-halo"><i class="bi bi-moon-stars-fill text-gold"></i></span>
+                <div class="brand-text-stack">
+                  <span class="tamil-brand">ஆருத்ரா ஜோதிடம்</span>
+                  <span class="english-brand">ASTRO DIVINE</span>
+                </div>
+              </div>
+              <p class="footer-brand-desc">
+                பாரம்பரிய தென் இந்திய வேத கணித முறைப்படி கணிக்கப்படும் 100% துல்லியமான ஆன்லைன் ஜோதிடச் சேவைத் தளம்.
+              </p>
+              <div class="footer-social-row">
+                <a href="#" (click)="$event.preventDefault()" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                <a href="#" (click)="$event.preventDefault()" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                <a href="#" (click)="$event.preventDefault()" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" (click)="$event.preventDefault()" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              </div>
+            </div>
+
+            <div class="footer-links-column">
+              <h4>எங்களது சேவைகள்</h4>
+              <div class="footer-links-list">
+                <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
+                <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
+                <a routerLink="/astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
+              </div>
+            </div>
+
+            <div class="footer-links-column">
+              <h4>விரைவு இணைப்புகள்</h4>
+              <div class="footer-links-list">
+                <a routerLink="/"><i class="bi bi-chevron-right me-1 fs-xs"></i> முகப்பு</a>
+                <a routerLink="/panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
+                <a routerLink="/zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
+                <a routerLink="/faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
+              </div>
+            </div>
+
+            <div class="footer-contact-column">
+              <h4>தொடர்புகொள்ள</h4>
+              <div class="contact-info-list">
+                <p><i class="bi bi-telephone-fill text-gold me-2"></i> +91 98765 43210</p>
+                <p><i class="bi bi-envelope-fill text-gold me-2"></i> support&#64;astrodivine.com</p>
+                <p><i class="bi bi-geo-alt-fill text-gold me-2"></i> சென்னை, தமிழ்நாடு.</p>
+              </div>
+            </div>
+          </div>
+
           <div class="footer-bottom-bar">
-            <p>&copy; 2026 Astro Divine. All Rights Reserved. Dynamic Zodiac Predictions Platform.</p>
+            <div class="footer-bottom-left">
+              <p class="copyright-text">&copy; 2026 Astro Divine. All Rights Reserved.</p>
+              <span class="developer-credit">
+                Designed & Developed by <strong class="macvel-brand-highlight">Macvel Software Solutions</strong>
+              </span>
+            </div>
+            <div class="footer-legal-links">
+              <a href="#" (click)="$event.preventDefault()">தனியுரிமைக் கொள்கை (Privacy Policy)</a>
+              <a href="#" (click)="$event.preventDefault()">விதிமுறைகள் (Terms)</a>
+              <a href="#" (click)="$event.preventDefault()">உதவி மையம் (Support)</a>
+            </div>
           </div>
         </div>
       </footer>
@@ -195,22 +262,22 @@ export class ZodiacPageComponent implements OnInit {
   selectedTab = 'daily';
   loading = false;
 
-  zodiacSigns = [
-    { name: 'மேஷம்', symbol: '♈', englishName: 'Aries', dates: 'Mar 21 - Apr 19', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'ரிஷபம்', symbol: '♉', englishName: 'Taurus', dates: 'Apr 20 - May 20', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'மிதுனம்', symbol: '♊', englishName: 'Gemini', dates: 'May 21 - Jun 20', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'கடகம்', symbol: '♋', englishName: 'Cancer', dates: 'Jun 21 - Jul 22', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'சிம்மம்', symbol: '♌', englishName: 'Leo', dates: 'Jul 23 - Aug 22', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'கன்னி', symbol: '♍', englishName: 'Virgo', dates: 'Aug 23 - Sep 22', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'துலாம்', symbol: '♎', englishName: 'Libra', dates: 'Sep 23 - Oct 22', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'விருச்சிகம்', symbol: '♏', englishName: 'Scorpio', dates: 'Oct 23 - Nov 21', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'தனுசு', symbol: '♐', englishName: 'Sagittarius', dates: 'Nov 22 - Dec 21', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'மகரம்', symbol: '♑', englishName: 'Capricorn', dates: 'Dec 22 - Jan 19', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'கும்பம்', symbol: '♒', englishName: 'Aquarius', dates: 'Jan 20 - Feb 18', prediction: '', audioUrl: '', videoUrl: '' },
-    { name: 'மீனம்', symbol: '♓', englishName: 'Pisces', dates: 'Feb 19 - Mar 20', prediction: '', audioUrl: '', videoUrl: '' }
+  zodiacSigns: ZodiacPageItem[] = [
+    { name: 'மேஷம்', symbol: '♈', englishName: 'Aries', dates: 'Mar 21 - Apr 19', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'ரிஷபம்', symbol: '♉', englishName: 'Taurus', dates: 'Apr 20 - May 20', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'மிதுனம்', symbol: '♊', englishName: 'Gemini', dates: 'May 21 - Jun 20', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'கடகம்', symbol: '♋', englishName: 'Cancer', dates: 'Jun 21 - Jul 22', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'சிம்மம்', symbol: '♌', englishName: 'Leo', dates: 'Jul 23 - Aug 22', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'கன்னி', symbol: '♍', englishName: 'Virgo', dates: 'Aug 23 - Sep 22', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'துலாம்', symbol: '♎', englishName: 'Libra', dates: 'Sep 23 - Oct 22', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'விருச்சிகம்', symbol: '♏', englishName: 'Scorpio', dates: 'Oct 23 - Nov 21', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'தனுசு', symbol: '♐', englishName: 'Sagittarius', dates: 'Nov 22 - Dec 21', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'மகரம்', symbol: '♑', englishName: 'Capricorn', dates: 'Dec 22 - Jan 19', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'கும்பம்', symbol: '♒', englishName: 'Aquarius', dates: 'Jan 20 - Feb 18', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' },
+    { name: 'மீனம்', symbol: '♓', englishName: 'Pisces', dates: 'Feb 19 - Mar 20', prediction: '', audioUrl: '', videoUrl: '', iconUrl: '' }
   ];
 
-  selectedZodiac = this.zodiacSigns[1];
+  selectedZodiac: ZodiacPageItem = this.zodiacSigns[1];
 
   constructor(
     private http: HttpClient,
@@ -220,6 +287,27 @@ export class ZodiacPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPredictions();
+    this.loadRasiIcons();
+  }
+
+  loadRasiIcons(): void {
+    if (typeof window === 'undefined') return;
+    this.http.get<any>(`${environment.apiUrl}/rasi-icons`).subscribe({
+      next: (res) => {
+        if (res && typeof res === 'object') {
+          this.zodiacSigns = this.zodiacSigns.map(z => ({
+            ...z,
+            iconUrl: res[z.name] || (z as any).iconUrl || ''
+          }));
+          const currentSelected = this.zodiacSigns.find(z => z.name === this.selectedZodiac.name);
+          if (currentSelected) {
+            this.selectedZodiac = currentSelected;
+          }
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {}
+    });
   }
 
   changeTab(tabVal: string): void {
@@ -247,6 +335,15 @@ export class ZodiacPageComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
+  getShortPrediction(text: string): string {
+    if (!text) return '';
+    const cleanText = text.trim();
+    if (cleanText.length <= 75) {
+      return cleanText;
+    }
+    return cleanText.substring(0, 75).trim() + '...';
+  }
+
   loadPredictions(): void {
     if (typeof window === 'undefined') return;
     this.loading = true;
@@ -258,11 +355,15 @@ export class ZodiacPageComponent implements OnInit {
         if (res && Array.isArray(res.predictions) && res.predictions.length > 0) {
           this.zodiacSigns = this.zodiacSigns.map(z => {
             const found = res.predictions.find((p: any) => p.rasi_name === z.name);
+            const rawText = found && found.prediction_text ? found.prediction_text : z.prediction;
+            const displayText = (this.selectedTab === 'daily') ? this.getShortPrediction(rawText) : rawText;
             return {
               ...z,
-              prediction: found && found.prediction_text ? found.prediction_text : z.prediction,
+              fullPrediction: rawText,
+              prediction: displayText,
               audioUrl: found && found.audio_url ? found.audio_url : '',
-              videoUrl: found && found.video_url ? found.video_url : ''
+              videoUrl: found && found.video_url ? found.video_url : '',
+              iconUrl: (z as any).iconUrl || ''
             };
           });
 

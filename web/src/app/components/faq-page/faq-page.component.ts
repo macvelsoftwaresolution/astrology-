@@ -26,7 +26,7 @@ import { RouterModule } from '@angular/router';
             <a routerLink="/faq" routerLinkActive="active">FAQ</a>
           </nav>
           <div class="header-actions">
-            <a routerLink="/" class="btn-primary">Get App</a>
+            <a [routerLink]="['/']" fragment="download" class="btn-primary">Get App</a>
           </div>
         </div>
       </header>
@@ -61,8 +61,67 @@ import { RouterModule } from '@angular/router';
 
       <footer class="app-footer">
         <div class="section-container">
+          <div class="footer-grid-layout">
+            <div class="footer-brand-column">
+              <div class="footer-brand-title">
+                <span class="brand-icon-halo"><i class="bi bi-moon-stars-fill text-gold"></i></span>
+                <div class="brand-text-stack">
+                  <span class="tamil-brand">ஆருத்ரா ஜோதிடம்</span>
+                  <span class="english-brand">ASTRO DIVINE</span>
+                </div>
+              </div>
+              <p class="footer-brand-desc">
+                பாரம்பரிய தென் இந்திய வேத கணித முறைப்படி கணிக்கப்படும் 100% துல்லியமான ஆன்லைன் ஜோதிடச் சேவைத் தளம்.
+              </p>
+              <div class="footer-social-row">
+                <a href="#" (click)="$event.preventDefault()" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                <a href="#" (click)="$event.preventDefault()" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                <a href="#" (click)="$event.preventDefault()" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" (click)="$event.preventDefault()" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              </div>
+            </div>
+
+            <div class="footer-links-column">
+              <h4>எங்களது சேவைகள்</h4>
+              <div class="footer-links-list">
+                <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> ஜாதகக் கணிப்பு</a>
+                <a routerLink="/services"><i class="bi bi-chevron-right me-1 fs-xs"></i> திருமணப் பொருத்தம்</a>
+                <a routerLink="/astrologers"><i class="bi bi-chevron-right me-1 fs-xs"></i> நேரடி ஆலோசனை</a>
+              </div>
+            </div>
+
+            <div class="footer-links-column">
+              <h4>விரைவு இணைப்புகள்</h4>
+              <div class="footer-links-list">
+                <a routerLink="/"><i class="bi bi-chevron-right me-1 fs-xs"></i> முகப்பு</a>
+                <a routerLink="/panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
+                <a routerLink="/zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
+                <a routerLink="/faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
+              </div>
+            </div>
+
+            <div class="footer-contact-column">
+              <h4>தொடர்புகொள்ள</h4>
+              <div class="contact-info-list">
+                <p><i class="bi bi-telephone-fill text-gold me-2"></i> +91 98765 43210</p>
+                <p><i class="bi bi-envelope-fill text-gold me-2"></i> support&#64;astrodivine.com</p>
+                <p><i class="bi bi-geo-alt-fill text-gold me-2"></i> சென்னை, தமிழ்நாடு.</p>
+              </div>
+            </div>
+          </div>
+
           <div class="footer-bottom-bar">
-            <p>&copy; 2026 Astro Divine. All Rights Reserved. Dedicated FAQ Page.</p>
+            <div class="footer-bottom-left">
+              <p class="copyright-text">&copy; 2026 Astro Divine. All Rights Reserved.</p>
+              <span class="developer-credit">
+                Designed & Developed by <strong class="macvel-brand-highlight">Macvel Software Solutions</strong>
+              </span>
+            </div>
+            <div class="footer-legal-links">
+              <a href="#" (click)="$event.preventDefault()">தனியுரிமைக் கொள்கை (Privacy Policy)</a>
+              <a href="#" (click)="$event.preventDefault()">விதிமுறைகள் (Terms)</a>
+              <a href="#" (click)="$event.preventDefault()">உதவி மையம் (Support)</a>
+            </div>
           </div>
         </div>
       </footer>

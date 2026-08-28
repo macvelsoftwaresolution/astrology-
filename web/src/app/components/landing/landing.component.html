@@ -19,7 +19,7 @@
     </nav>
 
     <div class="header-actions">
-      <a routerLink="/services" class="btn-primary">Get App</a>
+      <a href="#download" class="btn-primary">Get App</a>
       <button class="btn-hamburger" (click)="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
         <i [class]="isMobileMenuOpen ? 'bi bi-x-lg' : 'bi bi-list'"></i>
       </button>
@@ -107,26 +107,6 @@
   </div>
 </section>
 
-<!-- Live Astrology Strip (#110B27) -->
-<div class="daily-astrology-strip" data-aos="fade-up" data-aos-duration="300">
-  <div class="strip-container">
-    <span class="strip-eyebrow"><i class="bi bi-broadcast me-1"></i> LIVE ASTRO DATA</span>
-    <div class="strip-items-grid">
-      <div class="strip-item">
-        <span class="strip-label">சந்திர ராசி:</span>
-        <strong class="strip-val">ரிஷபம் (Taurus)</strong>
-      </div>
-      <div class="strip-item">
-        <span class="strip-label">இன்றைய நட்சத்திரம்:</span>
-        <strong class="strip-val">ரோகிணி (Rohini)</strong>
-      </div>
-      <div class="strip-item">
-        <span class="strip-label">சூரிய உதயம்:</span>
-        <strong class="strip-val">06:05 AM</strong>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Almanac Panchangam Section (#110B27) -->
 <section id="panchangam" class="live-panchangam-section">
@@ -140,15 +120,15 @@
     <div class="panchangam-dashboard" data-aos="fade-up" data-aos-duration="400">
       <div class="panch-left-hero">
         <span class="panch-large-label">இன்றைய தேதி</span>
-        <h3 class="panch-large-date">{{ panchangam.date }}</h3>
+        <h3 class="panch-large-date">{{ panchangam.date || '-' }}</h3>
         <div class="panch-sun-grid">
           <div class="sun-item">
             <span class="sun-label"><i class="bi bi-sunrise-fill text-gold me-1"></i> சூரிய உதயம்</span>
-            <strong class="sun-val">{{ panchangam.sunrise }}</strong>
+            <strong class="sun-val">{{ panchangam.sunrise || '-' }}</strong>
           </div>
           <div class="sun-item">
             <span class="sun-label"><i class="bi bi-sunset-fill text-gold me-1"></i> சூரிய அஸ்தமனம்</span>
-            <strong class="sun-val">{{ panchangam.sunset }}</strong>
+            <strong class="sun-val">{{ panchangam.sunset || '-' }}</strong>
           </div>
         </div>
       </div>
@@ -157,27 +137,27 @@
         <div class="panch-slot-row">
           <span class="slot-title">திதி</span>
           <div class="slot-divider"></div>
-          <span class="slot-value">{{ panchangam.thithi }}</span>
+          <span class="slot-value">{{ panchangam.thithi || '-' }}</span>
         </div>
         <div class="panch-slot-row">
           <span class="slot-title">நட்சத்திரம்</span>
           <div class="slot-divider"></div>
-          <span class="slot-value">{{ panchangam.star }}</span>
+          <span class="slot-value">{{ panchangam.star || '-' }}</span>
         </div>
         <div class="panch-slot-row">
           <span class="slot-title">நல்ல நேரம்</span>
           <div class="slot-divider"></div>
-          <span class="slot-value text-green">{{ panchangam.nallaNeram }}</span>
+          <span class="slot-value text-green">{{ panchangam.nallaNeram || '-' }}</span>
         </div>
         <div class="panch-slot-row">
           <span class="slot-title">இராகு காலம்</span>
           <div class="slot-divider"></div>
-          <span class="slot-value text-red">{{ panchangam.rahukalam }}</span>
+          <span class="slot-value text-red">{{ panchangam.rahukalam || '-' }}</span>
         </div>
         <div class="panch-slot-row">
           <span class="slot-title">எமகண்டம்</span>
           <div class="slot-divider"></div>
-          <span class="slot-value text-orange">{{ panchangam.yamagandam }}</span>
+          <span class="slot-value text-orange">{{ panchangam.yamagandam || '-' }}</span>
         </div>
       </div>
     </div>
@@ -223,7 +203,11 @@
         @for (zodiac of zodiacSigns; track zodiac.name; let i = $index) {
         <button class="zodiac-luxury-btn" [class.active]="selectedZodiac.name === zodiac.name"
           (click)="selectZodiac(zodiac)" [attr.aria-label]="zodiac.name">
-          <span class="sign-glyph">{{ zodiac.symbol }}</span>
+          @if (zodiac.iconUrl) {
+            <img [src]="zodiac.iconUrl" [alt]="zodiac.name" class="zodiac-custom-icon" />
+          } @else {
+            <span class="sign-glyph">{{ zodiac.symbol }}</span>
+          }
           <span class="sign-tamil-name">{{ zodiac.name }}</span>
         </button>
         }
@@ -233,14 +217,18 @@
       <div class="zodiac-display-card" data-aos="fade-left" data-aos-duration="400">
         <div class="card-inner-halo"></div>
         <div class="zodiac-display-header">
-          <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
+          @if (selectedZodiac.iconUrl) {
+            <img [src]="selectedZodiac.iconUrl" [alt]="selectedZodiac.name" class="display-custom-icon-large" />
+          } @else {
+            <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
+          }
           <h3>{{ selectedZodiac.name }}</h3>
           <span class="display-label-sub">{{ selectedZodiac.englishName }} &bull; {{ selectedZodiac.dates }}</span>
         </div>
         <p class="zodiac-display-prediction">
           "{{ selectedZodiac.prediction }}"
         </p>
-        <a href="#download" class="btn-card-luxury">முழுமையான ஜாதக பலன்கள் <i class="bi bi-chevron-right ms-2"></i></a>
+        <a href="#download" class="btn-card-luxury">முழுமையான ஜாதக பலன்கள் பெற ஆப்பை நிறுவவும் <i class="bi bi-download ms-2"></i></a>
       </div>
     </div>
   </div>
@@ -257,7 +245,7 @@
 
     <div class="services-cards-grid">
       @for (service of services; track service.title; let i = $index) {
-      <div class="service-light-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50" data-aos-duration="400">
+      <div class="service-light-card" data-aos="fade-up" data-aos-duration="400">
         <div class="service-icon-badge">
           <i [class]="service.iconClass"></i>
         </div>
@@ -265,9 +253,9 @@
         <span class="service-subtitle">{{ service.englishTitle }}</span>
         <p>{{ service.description }}</p>
         <div class="service-card-footer">
-          <span class="service-price-tag">கட்டணம்: <strong>{{ service.price }}</strong></span>
-          <a href="#download" class="btn-service-action" aria-label="Order Service"><i
-              class="bi bi-arrow-right-circle-fill"></i></a>
+          <a href="#download" class="btn-service-action">
+            <span>சேவை பெற</span> <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+          </a>
         </div>
       </div>
       }
@@ -443,17 +431,20 @@
 
     <div class="editorial-astrologers-grid">
       @for (astro of astrologers; track astro.name; let i = $index) {
-      <div class="astro-editorial-card" data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 100"
-        data-aos-duration="400">
+      <div class="astro-editorial-card" data-aos="fade-up" data-aos-duration="400">
         <div class="astro-card-left">
           <div class="astro-portrait-placeholder">
-            <i [class]="astro.iconClass"></i>
+            @if (astro.avatar_url) {
+              <img [src]="astro.avatar_url" [alt]="astro.name" class="astro-portrait-img" />
+            } @else {
+              <i [class]="astro.avatar_icon || astro.iconClass || 'bi bi-person-fill'"></i>
+            }
             <span class="astro-exp-label">{{ astro.experience }}</span>
           </div>
         </div>
         <div class="astro-card-right">
           <h3>{{ astro.name }}</h3>
-          <span class="astro-editorial-role">{{ astro.role }}</span>
+          <span class="astro-editorial-role">{{ astro.role_title || astro.role }}</span>
           <p class="astro-editorial-bio">"{{ astro.bio }}"</p>
           <div class="astro-editorial-tags">
             <strong>நிபுணத்துவம்:</strong>
@@ -541,8 +532,7 @@
 
     <div class="faq-accordion-rows">
       @for (faq of faqs; track faq.question; let idx = $index) {
-      <div class="faq-accordion-row" [class.active]="faq.open" data-aos="fade-up" [attr.data-aos-delay]="(idx + 1) * 50"
-        data-aos-duration="400">
+      <div class="faq-accordion-row" [class.active]="faq.open" data-aos="fade-up" data-aos-duration="400">
         <div class="faq-row-header" (click)="toggleFaq(idx)">
           <h3>{{ faq.question }}</h3>
           <span class="faq-row-toggle"><i [class]="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i></span>
@@ -631,7 +621,6 @@
           <a routerLink="/panchangam"><i class="bi bi-chevron-right me-1 fs-xs"></i> பஞ்சாங்கம்</a>
           <a routerLink="/zodiac"><i class="bi bi-chevron-right me-1 fs-xs"></i> ராசி பலன்</a>
           <a routerLink="/faq"><i class="bi bi-chevron-right me-1 fs-xs"></i> FAQ</a>
-          <a routerLink="/admin"><i class="bi bi-chevron-right me-1 fs-xs"></i> Admin Portal</a>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MatrimonyTab } from './matrimony-tab';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('MatrimonyTab', () => {
   let component: MatrimonyTab;
@@ -8,7 +9,8 @@ describe('MatrimonyTab', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatrimonyTab]
+      imports: [MatrimonyTab],
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     })
     .compileComponents();
 

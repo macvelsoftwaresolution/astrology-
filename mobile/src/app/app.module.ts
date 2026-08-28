@@ -35,6 +35,10 @@ import { MyJathagamComponent } from './pages/jathagam/components/my-jathagam/my-
 import { ParaJathagamComponent } from './pages/jathagam/components/para-jathagam/para-jathagam.component';
 import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha/vastu-kanitha.component';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SpinnerLoaderComponent } from './components/spinner-loader/spinner-loader.component';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
+
 // Profile Module (standalone)
 import { ProfilePage } from './pages/profile/profile.page';
 import { TranslatePipe } from './pipes/translate.pipe';
@@ -42,6 +46,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
 @NgModule({
   declarations: [
     AppComponent,
+    SpinnerLoaderComponent,
     SplashPage,
     WelcomePage,
     LoginPage,
@@ -74,7 +79,10 @@ import { TranslatePipe } from './pipes/translate.pipe';
     VastuKanithaComponent,
     ProfilePage,
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
