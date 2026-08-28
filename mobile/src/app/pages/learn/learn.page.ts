@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { BackButtonService } from '../../services/back-button.service';
 import { ExitModalService } from '../../services/exit-modal.service';
 import { environment } from '../../../environments/environment';
-import { LearnDashboardComponent } from './components/dashboard/dashboard.component';
+import { LearnDashboardComponent } from './components/dashboard/dashboard';
 
 declare var Razorpay: any;
 

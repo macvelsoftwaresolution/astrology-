@@ -16,7 +16,7 @@ interface ListItem {
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './lms-settings-tab.html',
-  styleUrls: ['../../admin-dashboard.component.css', './lms-settings-tab.css']
+  styleUrls: ['../../admin-dashboard.css', './lms-settings-tab.css']
 })
 export class LmsSettingsTabComponent implements OnInit {
   ilanilaiFee: number = 2500;
