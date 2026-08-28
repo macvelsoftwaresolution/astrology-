@@ -1,6 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { Router, RouterOutlet, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
-import { SpinnerLoaderComponent } from './components/spinner-loader/spinner-loader.component';
+import { SpinnerLoaderComponent } from './components/spinner-loader/spinner-loader';
 import { LoadingService } from './services/loading.service';
 
 @Component({

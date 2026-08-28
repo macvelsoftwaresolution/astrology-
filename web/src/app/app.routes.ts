@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './components/landing/landing.component';
-import { LoginComponent } from './components/login/login.component';
-import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
-import { PanchangamPageComponent } from './components/panchangam-page/panchangam-page.component';
-import { ZodiacPageComponent } from './components/zodiac-page/zodiac-page.component';
-import { ServicesPageComponent } from './components/services-page/services-page.component';
-import { AstrologersPageComponent } from './components/astrologers-page/astrologers-page.component';
-import { FaqPageComponent } from './components/faq-page/faq-page.component';
+import { LandingComponent } from './components/landing/landing';
+import { LoginComponent } from './components/login/login';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard';
+import { PanchangamPageComponent } from './components/panchangam-page/panchangam-page';
+import { ZodiacPageComponent } from './components/zodiac-page/zodiac-page';
+import { ServicesPageComponent } from './components/services-page/services-page';
+import { AstrologersPageComponent } from './components/astrologers-page/astrologers-page';
+import { FaqPageComponent } from './components/faq-page/faq-page';
 import { adminGuard } from './guards/role.guard';
 
 export const routes: Routes = [
