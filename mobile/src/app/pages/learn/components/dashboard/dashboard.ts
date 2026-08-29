@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../services/auth.service';
+import { TranslationService } from '../../../../services/translation.service';
 
 @Component({
   selector: 'app-learn-dashboard',
@@ -73,7 +74,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public translationService: TranslationService
   ) {}
 
   // 60-Day Curriculum State

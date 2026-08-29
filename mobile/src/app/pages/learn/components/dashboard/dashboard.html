@@ -6,12 +6,31 @@
   <h1 class="db-brand-title">
     {{ enrollForm?.courseLevel === 'mudhunilai' ? 'முதுநிலை ஆருத்ரா' : 'இளநிலை ஆருத்ரா' }}
   </h1>
-  <button class="db-header-action-btn bell-btn" (click)="openNotificationsModal()" title="அறிவிப்புகள்">
-    <i class="bi bi-bell-fill"></i>
-    @if (unreadCount > 0) {
-      <span class="notif-badge-count">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
-    }
-  </button>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <!-- App Language Selector Toggle -->
+    <div style="display: inline-flex; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(236, 200, 118, 0.4); padding: 2px; border-radius: 20px;">
+      <button type="button" 
+        (click)="translationService.setLanguage('ta')" 
+        [style.background]="translationService.currentLanguage() === 'ta' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'transparent'"
+        [style.color]="translationService.currentLanguage() === 'ta' ? '#000' : '#FFF'"
+        style="border: none; padding: 3px 8px; border-radius: 16px; font-weight: 800; font-size: 10px; cursor: pointer; transition: all 0.2s;">
+        தமிழ்
+      </button>
+      <button type="button" 
+        (click)="translationService.setLanguage('en')" 
+        [style.background]="translationService.currentLanguage() === 'en' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'transparent'"
+        [style.color]="translationService.currentLanguage() === 'en' ? '#000' : '#FFF'"
+        style="border: none; padding: 3px 8px; border-radius: 16px; font-weight: 800; font-size: 10px; cursor: pointer; transition: all 0.2s;">
+        English
+      </button>
+    </div>
+    <button class="db-header-action-btn bell-btn" (click)="openNotificationsModal()" title="அறிவிப்புகள்">
+      <i class="bi bi-bell-fill"></i>
+      @if (unreadCount > 0) {
+        <span class="notif-badge-count">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+      }
+    </button>
+  </div>
 </div>
 
 <!-- ================= PASSING MESSAGE MARQUEE / TICKER ================= -->
@@ -435,6 +454,30 @@
         <span class="tile-icon"><i class="bi bi-journal-bookmark-fill"></i></span>
         <span class="tile-text">ஆன்மீக நாட்குறிப்பு</span>
         <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
+      </div>
+      <!-- App Language Toggle Option -->
+      <div class="modern-option-tile" style="background: linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%); border: 1px solid #ECC876; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="tile-icon" style="background: #4A0E17; color: #FFD700; border-radius: 10px; padding: 6px 10px;"><i class="bi bi-translate"></i></span>
+          <div style="display: flex; flex-direction: column; text-align: left;">
+            <span class="tile-text" style="color: #4A0E17; font-weight: 800; font-size: 0.9rem;">செயலி மொழி (App Language)</span>
+            <small style="color: #78350F; font-size: 11px; font-weight: 600;">{{ translationService.currentLanguage() === 'ta' ? 'தமிழ்' : 'English' }}</small>
+          </div>
+        </div>
+        <div style="display: flex; gap: 4px;" (click)="$event.stopPropagation()">
+          <button type="button" (click)="translationService.setLanguage('ta')"
+            [style.background]="translationService.currentLanguage() === 'ta' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
+            [style.color]="translationService.currentLanguage() === 'ta' ? '#FFD700' : '#4A0E17'"
+            style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;">
+            தமிழ்
+          </button>
+          <button type="button" (click)="translationService.setLanguage('en')"
+            [style.background]="translationService.currentLanguage() === 'en' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
+            [style.color]="translationService.currentLanguage() === 'en' ? '#FFD700' : '#4A0E17'"
+            style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;">
+            English
+          </button>
+        </div>
       </div>
       <div class="modern-option-tile logout-tile" (click)="logout.emit()">
         <span class="tile-icon red"><i class="bi bi-box-arrow-right"></i></span>

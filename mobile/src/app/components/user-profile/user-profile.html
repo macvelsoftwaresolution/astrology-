@@ -98,34 +98,6 @@
 
     <div class="options-list">
 
-      <!-- Option: Language Toggle -->
-      <div class="option-item-card"
-        style="background: linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%); border: 1px solid #ECC876;">
-        <div class="option-left">
-          <div class="option-icon-box box-gold">
-            <i class="bi bi-translate"></i>
-          </div>
-          <div class="option-text">
-            <h4 class="simple-title" style="color: #4A0E17; font-weight: 800;">{{ 'profile.languageSetting' | translate
-              }}</h4>
-            <p style="font-size: 11px; color: #78350F; margin: 0;">{{ currentLang === 'ta' ? 'தமிழ்' : 'English' }}</p>
-          </div>
-        </div>
-        <div style="display: flex; gap: 4px;" (click)="$event.stopPropagation()">
-          <button type="button" (click)="setLanguage('ta')"
-            [style.background]="currentLang === 'ta' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
-            [style.color]="currentLang === 'ta' ? '#FFD700' : '#4A0E17'"
-            style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer;">
-            தமிழ்
-          </button>
-          <button type="button" (click)="setLanguage('en')"
-            [style.background]="currentLang === 'en' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
-            [style.color]="currentLang === 'en' ? '#FFD700' : '#4A0E17'"
-            style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer;">
-            English
-          </button>
-        </div>
-      </div>
 
       <!-- Option 5: Settings -->
       <div class="option-item-card" (click)="openOptionDetail('settings')">
@@ -524,30 +496,31 @@
 
       <div class="modal-body">
         @if (selectedOption === 'settings') {
-        <!-- Prominent Language Selector Box in Settings Modal -->
-        <div
-          style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); padding: 16px; border-radius: 14px; border: 1px solid #ECC876; margin-bottom: 18px; color: #fff; box-shadow: 0 4px 12px rgba(74, 14, 23, 0.2);">
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-            <div>
-              <strong style="color: #FFD700; font-size: 15px; display: block; margin-bottom: 2px;">
-                <i class="bi bi-translate me-1"></i> {{ 'profile.languageSetting' | translate }}
-              </strong>
-              <span style="font-size: 11px; color: #E2E8F0;">மொழியைத் தேர்வு செய்க / Choose Language</span>
+        <!-- App Language Selector Card in Settings Modal -->
+        <div class="option-item-card"
+          style="background: linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%); border: 1px solid #ECC876; margin-bottom: 18px;">
+          <div class="option-left">
+            <div class="option-icon-box box-gold">
+              <i class="bi bi-translate"></i>
             </div>
-            <div style="display: flex; gap: 6px;">
-              <button type="button" (click)="setLanguage('ta')"
-                [style.background]="currentLang === 'ta' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.15)'"
-                [style.color]="currentLang === 'ta' ? '#000' : '#fff'"
-                style="border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                தமிழ்
-              </button>
-              <button type="button" (click)="setLanguage('en')"
-                [style.background]="currentLang === 'en' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'rgba(255,255,255,0.15)'"
-                [style.color]="currentLang === 'en' ? '#000' : '#fff'"
-                style="border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                English
-              </button>
+            <div class="option-text">
+              <h4 class="simple-title" style="color: #4A0E17; font-weight: 800; margin-bottom: 2px;">{{ 'profile.languageSetting' | translate }}</h4>
+              <p style="font-size: 11px; color: #78350F; margin: 0;">{{ currentLang === 'ta' ? 'தமிழ்' : 'English' }}</p>
             </div>
+          </div>
+          <div style="display: flex; gap: 4px;" (click)="$event.stopPropagation()">
+            <button type="button" (click)="setLanguage('ta')"
+              [style.background]="currentLang === 'ta' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
+              [style.color]="currentLang === 'ta' ? '#FFD700' : '#4A0E17'"
+              style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;">
+              தமிழ்
+            </button>
+            <button type="button" (click)="setLanguage('en')"
+              [style.background]="currentLang === 'en' ? '#4A0E17' : 'rgba(74, 14, 23, 0.1)'"
+              [style.color]="currentLang === 'en' ? '#FFD700' : '#4A0E17'"
+              style="border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;">
+              English
+            </button>
           </div>
         </div>
         }

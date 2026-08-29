@@ -455,3 +455,110 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* =========================================================
+   COMPREHENSIVE RESPONSIVE STYLES FOR LMS TAB
+   ========================================================= */
+
+@media (max-width: 992px) {
+  .sub-tabs-container {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 8px !important;
+    width: 100% !important;
+  }
+
+  .sub-tabs-container button {
+    flex-shrink: 0 !important;
+    padding: 8px 14px !important;
+    font-size: 12.5px !important;
+  }
+
+  .courses-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-banner-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 14px 16px !important;
+    gap: 12px !important;
+  }
+
+  .header-banner-card > div {
+    width: 100% !important;
+  }
+
+  .header-banner-card h1 {
+    font-size: 16px !important;
+    flex-wrap: wrap !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Batch & Month Control Bar */
+  .card-box {
+    padding: 14px 14px !important;
+  }
+
+  .card-box > div {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .card-box select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Month Filter Pills */
+  .card-box div[style*="background: #f1f5f9"],
+  .card-box div[style*="background:#f1f5f9"] {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 4px !important;
+    border-radius: 10px !important;
+  }
+
+  .card-box div[style*="background: #f1f5f9"] button,
+  .card-box div[style*="background:#f1f5f9"] button {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .modal-box {
+    width: 94% !important;
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-banner-card h1 {
+    font-size: 15px !important;
+  }
+
+  .sub-tabs-container button {
+    padding: 7px 12px !important;
+    font-size: 12px !important;
+  }
+}
