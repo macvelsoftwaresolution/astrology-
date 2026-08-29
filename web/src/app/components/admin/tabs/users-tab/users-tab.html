@@ -1,0 +1,556 @@
+<div class="users-container">
+  <!-- Header Banner in a clean Div Card -->
+  <div class="card-box header-banner-card"
+    style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h1
+        style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-people-fill" style="color:#d97706;"></i>{{ 'users.title' | translate }}
+      </h1>
+      <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'users.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- SEARCH & CATEGORY SELECT FILTER CONTROLS -->
+  <div class="card-box search-filter-box"
+    style="margin-bottom: 20px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; overflow: visible; position: relative; z-index: 10;">
+    <!-- Search Input -->
+    <div style="position: relative; flex: 1; min-width: 200px; width: 100%;">
+      <i class="bi bi-search"
+        style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
+      <input type="text" [(ngModel)]="userSearchQuery" [placeholder]="'users.searchUser' | translate"
+        class="ctrl search-input-ctrl"
+        style="padding-left: 38px; width: 100%; border-radius: 8px; height: 42px; box-sizing: border-box;" />
+    </div>
+
+    <!-- Professional Category Select Dropdown with Embedded Icons & Dynamic Language -->
+    <div class="user-custom-dropdown-wrap" (click)="$event.stopPropagation()">
+      <label class="dropdown-field-label">
+        <i class="bi bi-filter-square-fill" style="color: #b45309; font-size: 15px;"></i>
+        <span>{{ 'users.filterType' | translate }}</span>
+      </label>
+
+      <div class="custom-select-container">
+        <button type="button" class="custom-select-trigger-btn" [class.active]="isFilterDropdownOpen"
+          (click)="toggleFilterDropdown($event)">
+          <div class="trigger-left-content">
+            <i [class]="getActiveFilterIcon()" class="trigger-icon-colored"></i>
+            <span class="trigger-label-text">{{ getActiveFilterKey() | translate }}</span>
+            <span class="trigger-count-pill">{{ getActiveFilterCount() }}</span>
+          </div>
+          <i class="bi bi-chevron-down trigger-arrow-icon" [class.rotated]="isFilterDropdownOpen"></i>
+        </button>
+
+        @if (isFilterDropdownOpen) {
+        <div class="custom-select-menu-panel">
+          <div class="dropdown-menu-option-item" [class.selected]="selectedCategoryFilter === 'all'"
+            (click)="selectFilter('all', $event)">
+            <div class="opt-left">
+              <i class="bi bi-people-fill opt-icon opt-icon-all"></i>
+              <span class="opt-name">{{ 'users.allUsers' | translate }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ nonAdminUsers.length }}</span>
+              @if (selectedCategoryFilter === 'all') {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+
+          <div class="dropdown-menu-option-item" [class.selected]="selectedCategoryFilter === 'students'"
+            (click)="selectFilter('students', $event)">
+            <div class="opt-left">
+              <i class="bi bi-mortarboard-fill opt-icon opt-icon-students"></i>
+              <span class="opt-name">{{ 'users.studentsOnly' | translate }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ studentsCount }}</span>
+              @if (selectedCategoryFilter === 'students') {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+
+          <div class="dropdown-menu-option-item" [class.selected]="selectedCategoryFilter === 'appointments'"
+            (click)="selectFilter('appointments', $event)">
+            <div class="opt-left">
+              <i class="bi bi-calendar2-check-fill opt-icon opt-icon-appointments"></i>
+              <span class="opt-name">{{ 'users.appointmentsOnly' | translate }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ appointmentsCount }}</span>
+              @if (selectedCategoryFilter === 'appointments') {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+
+          <div class="dropdown-menu-option-item" [class.selected]="selectedCategoryFilter === 'both'"
+            (click)="selectFilter('both', $event)">
+            <div class="opt-left">
+              <i class="bi bi-stars opt-icon opt-icon-both"></i>
+              <span class="opt-name">{{ 'users.bothStudentsAndAppointments' | translate }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ bothCount }}</span>
+              @if (selectedCategoryFilter === 'both') {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+
+          <div class="dropdown-menu-option-item" [class.selected]="selectedCategoryFilter === 'members'"
+            (click)="selectFilter('members', $event)">
+            <div class="opt-left">
+              <i class="bi bi-person-badge-fill opt-icon opt-icon-members"></i>
+              <span class="opt-name">{{ 'users.generalMembers' | translate }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ membersCount }}</span>
+              @if (selectedCategoryFilter === 'members') {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Professional Batch Select Dropdown (Matching Style) -->
+    <div class="user-custom-dropdown-wrap" (click)="$event.stopPropagation()">
+      <label class="dropdown-field-label">
+        <i class="bi bi-calendar2-range-fill" style="color: #d97706; font-size: 15px;"></i>
+        <span>{{ 'users.batchFilter' | translate }}</span>
+      </label>
+
+      <div class="custom-select-container">
+        <button type="button" class="custom-select-trigger-btn" [class.active]="isBatchDropdownOpen"
+          (click)="toggleBatchDropdown($event)">
+          <div class="trigger-left-content">
+            <i class="bi bi-calendar2-week-fill trigger-icon-colored" style="color:#d97706;"></i>
+            <span class="trigger-label-text"
+              style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{
+              getActiveBatchName() }}</span>
+            <span class="trigger-count-pill" style="background:#fef3c7;color:#b45309;">{{ getActiveBatchCount()
+              }}</span>
+          </div>
+          <i class="bi bi-chevron-down trigger-arrow-icon" [class.rotated]="isBatchDropdownOpen"></i>
+        </button>
+
+        @if (isBatchDropdownOpen) {
+        <div class="custom-select-menu-panel" style="min-width: 250px;">
+          <!-- All Batches Option -->
+          <div class="dropdown-menu-option-item" [class.selected]="selectedBatchFilter === 'all'"
+            (click)="selectBatch('all', $event)">
+            <div class="opt-left">
+              <i class="bi bi-collection-fill opt-icon" style="color: #d97706;"></i>
+              <span class="opt-name">{{ 'users.allBatches' | translate }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ studentsCount }}</span>
+              @if (selectedBatchFilter === 'all') {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+
+          <!-- Dynamic Batch Options -->
+          @for (b of batches; track b.id) {
+          <div class="dropdown-menu-option-item"
+            [class.selected]="selectedBatchFilter === b.name || selectedBatchFilter === (b.id + '')"
+            (click)="selectBatch(b.name, $event)">
+            <div class="opt-left">
+              <i class="bi bi-calendar-check opt-icon" style="color: #d97706;"></i>
+              <span class="opt-name">{{ formatBatchName(b.name) }}</span>
+            </div>
+            <div class="opt-right">
+              <span class="opt-count-tag">{{ getBatchStudentCount(b) }}</span>
+              @if (selectedBatchFilter === b.name || selectedBatchFilter === (b.id + '')) {
+              <i class="bi bi-check2 opt-check"></i>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+@if (isLoading) {
+<div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
+  <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
+</div>
+} @else {
+<div class="card-box" style="padding: 0; overflow: hidden;">
+  <div class="table-responsive">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th style="width: 70px;">ID</th>
+          <th>{{ 'users.name' | translate }}</th>
+          <th>{{ 'user.email' | translate }}</th>
+          <th>{{ 'user.phone' | translate }}</th>
+          <th>{{ 'users.profileBatchCol' | translate }}</th>
+          <th style="min-width: 170px;">{{ 'users.registeredOn' | translate }}</th>
+          <th style="min-width: 180px;">{{ 'common.actions' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of getFilteredUsers(); track u.id) {
+        <tr>
+          <td>
+            <span class="id-badge">#{{ u.id }}</span>
+          </td>
+          <td>
+            <div class="user-name-cell">
+              <span class="user-full-name">{{ u.name }}</span>
+              @if (u.student_id) {
+              <span class="student-tag">
+                <i class="bi bi-mortarboard-fill"></i> {{ u.student_id }}
+              </span>
+              }
+              @if (getParsedDetails(u)?.studentNameTamil) {
+              <span class="tamil-sub-name">{{ getParsedDetails(u).studentNameTamil }}</span>
+              }
+            </div>
+          </td>
+          <td style="color: #475569; font-weight: 500;">{{ u.email }}</td>
+          <td>
+            @if (u.phone) {
+            <div class="phone-action-pill">
+              <a [href]="'tel:' + u.phone" class="btn-phone-call" title="Call">
+                <i class="bi bi-telephone-fill"></i> {{ u.phone }}
+              </a>
+              <a [href]="'https://wa.me/91' + u.phone" target="_blank" class="btn-wa-pill" title="WhatsApp">
+                <i class="bi bi-whatsapp"></i> WA
+              </a>
+            </div>
+            } @else {
+            <span class="text-muted">-</span>
+            }
+          </td>
+          <td>
+            <!-- 1. When Filter is explicitly 'members' -> show ONLY clean Member badge -->
+            @if (selectedCategoryFilter === 'members') {
+            <span class="profile-tag-member">
+              <i class="bi bi-person-fill"></i> {{ 'users.memberBadge' | translate }}
+            </span>
+            }
+            <!-- 2. When Filter is explicitly 'students' -> show Student & Batch badge -->
+            @else if (selectedCategoryFilter === 'students') {
+            <div class="profile-tags-stack">
+              <span class="profile-tag-lms">
+                <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+              </span>
+              @if (u.batch_name) {
+              <span class="profile-tag-batch">
+                <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
+              </span>
+              }
+            </div>
+            }
+            <!-- 2. When Filter is explicitly 'appointments' -> show only Appointment badge -->
+            @else if (selectedCategoryFilter === 'appointments') {
+            <span class="profile-tag-booking">
+              <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
+            </span>
+            }
+            <!-- 3. When 'Both' or 'All' is selected and user has both roles -> show dual badge -->
+            @else if (isBothStudentAndAppointment(u)) {
+            <div class="profile-tags-stack">
+              <div class="dual-tag-wrap">
+                <span class="profile-tag-lms">
+                  <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+                </span>
+                <span class="tag-separator">/</span>
+                <span class="profile-tag-booking">
+                  <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count
+                  }})
+                </span>
+              </div>
+              @if (u.batch_name) {
+              <span class="profile-tag-batch">
+                <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
+              </span>
+              }
+            </div>
+            }
+            <!-- 4. Default Fallbacks -->
+            @else if (isStudent(u)) {
+            <div class="profile-tags-stack">
+              <div class="dual-tag-wrap">
+                <span class="profile-tag-member">
+                  <i class="bi bi-person-fill"></i> {{ 'users.memberBadge' | translate }}
+                </span>
+                <span class="profile-tag-lms">
+                  <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
+                </span>
+                @if (isAppointmentUser(u)) {
+                <span class="profile-tag-booking">
+                  <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
+                </span>
+                }
+              </div>
+              @if (u.batch_name) {
+              <span class="profile-tag-batch">
+                <i class="bi bi-calendar2-week"></i> {{ formatBatchName(u.batch_name) }}
+              </span>
+              }
+            </div>
+            } @else if (isAppointmentUser(u)) {
+            <span class="profile-tag-booking">
+              <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
+            </span>
+            } @else if (getParsedDetails(u)?.rasi || u.jathagam_profile?.rasi) {
+            <span class="profile-tag-horoscope">
+              <i class="bi bi-stars"></i> {{ getParsedDetails(u)?.rasi || u.jathagam_profile?.rasi }}
+            </span>
+            } @else {
+            <span class="profile-tag-member">
+              <i class="bi bi-person-badge-fill"></i> {{ 'users.memberBadge' | translate }}
+            </span>
+            }
+          </td>
+          <td>
+            <div class="date-time-box">
+              <div class="date-row">
+                <i class="bi bi-calendar-event" style="color: #d97706; font-size: 11px;"></i>
+                <span>{{ getDateParts(u.created_at).date }}</span>
+              </div>
+              <div class="time-row">
+                <i class="bi bi-clock" style="font-size: 10px;"></i>
+                <span>{{ getDateParts(u.created_at).time }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="action-btns-wrap">
+              @if (isStudent(u)) {
+              <button class="btn-shift-batch-action" (click)="openShiftModal(u)"
+                [title]="translationService.currentLanguage() === 'ta' ? 'பிரிவு மாற்று' : 'Shift Batch'">
+                <i class="bi bi-arrow-left-right"></i> {{ translationService.currentLanguage() === 'ta' ? 'பிரிவு' :
+                'Batch' }}
+              </button>
+              }
+              @if (getParsedDetails(u)) {
+              <button class="btn-details-action" (click)="selectedUserForProfile = u" title="விவரம்">
+                <i class="bi bi-eye-fill"></i>
+              </button>
+              }
+              <button class="btn-delete-action" (click)="deleteUser(u.id)" title="நீக்கு">
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+        @if (getFilteredUsers().length === 0) {
+        <tr>
+          <td colspan="7" style="text-align:center;padding:32px;color:#64748b;font-weight:500;">
+            <i class="bi bi-info-circle me-1"></i> {{ 'common.noRecords' | translate }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+}
+
+<!-- MODAL: VIEW STUDENT ADMISSION / JATHAGAM PROFILE -->
+@if (selectedUserForProfile) {
+<div class="modal-overlay" (click)="selectedUserForProfile = null">
+  <div class="modal-box" style="max-width:580px;max-height:88vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
+          <i class="bi bi-person-badge-fill" style="color:#d97706;"></i>
+          {{ selectedUserForProfile.name }}
+        </h3>
+        <span style="font-size:12px;color:#64748b;">
+          @if (isStudent(selectedUserForProfile)) {
+          {{ 'users.studentAdmissionProfile' | translate }}
+          } @else {
+          {{ 'users.birthChartProfile' | translate }}
+          }
+        </span>
+      </div>
+      <button class="close-btn" (click)="selectedUserForProfile = null"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <!-- IF STUDENT ADMISSION RECORD -->
+    @if (isStudent(selectedUserForProfile)) {
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+        @if (selectedUserForProfile.student_id) {
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{
+            translationService.currentLanguage() === 'ta' ? 'மாணவர் உள்நுழைவு ID:' : 'Student Login ID:' }}</span>
+          <strong style="color:#2563eb;font-size:14px;">{{ selectedUserForProfile.student_id }}</strong>
+        </div>
+        }
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.courseLevel' | translate
+            }}</span>
+          <strong style="color:#d97706;">{{ getStudentLevel(selectedUserForProfile) }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.batchFilter' | translate
+            }}</span>
+          <strong style="color:#b45309;font-weight:700;"><i class="bi bi-calendar2-week me-1"></i>{{
+            formatBatchName(selectedUserForProfile.batch_name || getParsedDetails(selectedUserForProfile)?.batch_name ||
+            '-') }}</strong>
+        </div>
+        @if (getParsedDetails(selectedUserForProfile)?.studentNameTamil) {
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.studentNameTa' | translate
+            }}</span>
+          <strong>{{ getParsedDetails(selectedUserForProfile).studentNameTamil }}</strong>
+        </div>
+        }
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.studentNameEn' | translate
+            }}</span>
+          <strong>{{ selectedUserForProfile.name }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.fatherHusbandName' |
+            translate }}</span>
+          <strong>{{ getParsedDetails(selectedUserForProfile)?.fatherName || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.dobAge' | translate
+            }}</span>
+          <strong>{{ getParsedDetails(selectedUserForProfile)?.dob || '-' }} ({{
+            getParsedDetails(selectedUserForProfile)?.age || '-' }} {{ 'users.yrs' | translate }})</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.gender' | translate
+            }}</span>
+          <strong>{{ formatGender(getParsedDetails(selectedUserForProfile)?.gender) }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.occupation' | translate
+            }}</span>
+          <strong>{{ formatOccupation(getParsedDetails(selectedUserForProfile)?.occupation) }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.motherTongue' | translate
+            }}</span>
+          <strong>{{ getParsedDetails(selectedUserForProfile)?.motherTongue || ('users.tamil' | translate) }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.qualification' | translate
+            }}</span>
+          <strong>{{ formatQualification(getParsedDetails(selectedUserForProfile)?.qualification) }}</strong>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.postalAddress' | translate
+            }}</span>
+          <strong>{{ getParsedDetails(selectedUserForProfile)?.postalAddress || selectedUserForProfile.address || '-'
+            }}</strong>
+          @if (getParsedDetails(selectedUserForProfile)?.pincode) {
+          <span> - {{ getParsedDetails(selectedUserForProfile).pincode }}</span>
+          }
+        </div>
+      </div>
+    </div>
+    } @else {
+    <!-- IF HOROSCOPE RECORD -->
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">Rasi:</span>
+          <strong style="color:#7e22ce;">{{ (getParsedDetails(selectedUserForProfile)?.rasi ||
+            selectedUserForProfile.jathagam_profile?.rasi || '-') }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">Nakshatra:</span>
+          <strong>{{ (getParsedDetails(selectedUserForProfile)?.star ||
+            getParsedDetails(selectedUserForProfile)?.nakshatra || selectedUserForProfile.jathagam_profile?.nakshatra
+            || '-') }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">DOB:</span>
+          <strong>{{ (getParsedDetails(selectedUserForProfile)?.dob || selectedUserForProfile.jathagam_profile?.dob ||
+            '-') }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">TOB:</span>
+          <strong>{{ (getParsedDetails(selectedUserForProfile)?.tob || selectedUserForProfile.jathagam_profile?.tob ||
+            '-') }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">POB:</span>
+          <strong>{{ (getParsedDetails(selectedUserForProfile)?.pob || selectedUserForProfile.jathagam_profile?.pob ||
+            '-') }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">Gender:</span>
+          <strong>{{ (getParsedDetails(selectedUserForProfile)?.gender ||
+            selectedUserForProfile.jathagam_profile?.gender || '-') }}</strong>
+        </div>
+      </div>
+    </div>
+    }
+
+    <div class="modal-btns" style="display:flex;justify-content:flex-end;gap:8px;">
+      <button type="button" class="btn-cancel" style="padding:8px 16px;border-radius:6px;"
+        (click)="selectedUserForProfile = null">
+        {{ 'common.close' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- MODAL: SHIFT STUDENT BATCH -->
+@if (openShiftBatchModal && selectedUserForBatchShift) {
+<div class="modal-overlay" (click)="openShiftBatchModal = false">
+  <div class="modal-box batch-modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:16px;">
+        <i class="bi bi-arrow-left-right text-amber-600"></i> {{ translationService.currentLanguage() === 'ta' ? 'மாணவர்
+        பிரிவு மாற்றுதல்' : 'Shift Student Batch' }}
+      </h3>
+      <button type="button" class="btn-close-modal" (click)="openShiftBatchModal = false">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px 0;">
+      <div class="student-shift-preview mb-3"
+        style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
+        <div style="font-weight:700;color:#0f172a;">{{ selectedUserForBatchShift.name }}</div>
+        <div style="font-size:12px;color:#64748b;">ID: {{ selectedUserForBatchShift.student_id ||
+          selectedUserForBatchShift.id }} | {{ translationService.currentLanguage() === 'ta' ? 'தற்போதைய பிரிவு:' :
+          'Current Batch:' }} <span class="badge-curr" style="color:#d97706;font-weight:600;">{{
+            formatBatchName(selectedUserForBatchShift.batch_name || 'Unassigned') }}</span></div>
+      </div>
+      <div class="form-group mb-3">
+        <label class="modal-label">{{ translationService.currentLanguage() === 'ta' ? 'புதிய பிரிவு தேர்வு செய்க' :
+          'Select New Batch' }} <span class="text-danger">*</span></label>
+        <select [(ngModel)]="shiftTargetBatchId" class="ctrl modal-input">
+          @for (b of batches; track b.id) {
+          <option [value]="b.id">
+            {{ formatBatchName(b.name) }} ({{ b.status === 'active' ? (translationService.currentLanguage() === 'ta' ?
+            'நடப்பு பிரிவு' : 'Active') : (b.status === 'upcoming' ? (translationService.currentLanguage() === 'ta' ?
+            'வரவிருப்பது' : 'Upcoming') : (translationService.currentLanguage() === 'ta' ? 'முடிந்தது' : 'Completed'))
+            }})
+          </option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns" style="display:flex;justify-content:flex-end;gap:10px;">
+      <button type="button" class="btn-cancel" (click)="openShiftBatchModal = false">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button type="button" class="btn-primary-action" (click)="submitShiftBatch()" [disabled]="isBatchSubmitting">
+        <i class="bi bi-check-lg me-1"></i> {{ isBatchSubmitting ? ('common.loading' | translate) :
+        (translationService.currentLanguage() === 'ta' ? 'பிரிவு மாற்று' : 'Shift Batch') }}
+      </button>
+    </div>
+  </div>
+</div>
+}
+</div>

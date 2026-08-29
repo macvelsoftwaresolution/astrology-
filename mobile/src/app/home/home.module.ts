@@ -5,10 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
-import { PanchangamWidgetComponent } from '../components/panchangam-widget/panchangam-widget.component';
-import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
-import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching.component';
-import { UserProfileComponent } from '../components/user-profile/user-profile.component';
+import { PanchangamWidgetComponent } from '../components/panchangam-widget/panchangam-widget';
+import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan';
+import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching';
+import { UserProfileComponent } from '../components/user-profile/user-profile';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
 

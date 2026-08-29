@@ -298,11 +298,22 @@ class LmsCurriculumController extends Controller
 
         $courseLevel = $jathagam['courseLevel'] ?? 'ilanilai';
 
-        // Get active batch for this course level
-        $activeBatch = CourseBatch::where('course_level', $courseLevel)
-            ->where('status', 'active')
-            ->orderBy('id', 'asc')
-            ->first();
+        // 1. Get assigned student batch from database
+        $activeBatch = null;
+        if ($student && $student->batch_id) {
+            $activeBatch = CourseBatch::find($student->batch_id);
+        }
+        if (!$activeBatch && $user && $user->batch_id) {
+            $activeBatch = CourseBatch::find($user->batch_id);
+        }
+
+        // 2. Fallback to active batch for this course level
+        if (!$activeBatch) {
+            $activeBatch = CourseBatch::where('course_level', $courseLevel)
+                ->where('status', 'active')
+                ->orderBy('id', 'asc')
+                ->first();
+        }
 
         if (!$activeBatch) {
             // Fallback to first available batch

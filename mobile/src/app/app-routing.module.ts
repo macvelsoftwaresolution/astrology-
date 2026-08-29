@@ -14,11 +14,11 @@ import { JathagamPage } from './pages/jathagam/jathagam.page';
 import { ProfilePage } from './pages/profile/profile.page';
 
 // Jathagam Sub-Components
-import { RasiPalanComponent } from './pages/jathagam/components/rasi-palan/rasi-palan.component';
-import { MatchingComponent } from './pages/jathagam/components/matching/matching.component';
-import { MyJathagamComponent } from './pages/jathagam/components/my-jathagam/my-jathagam.component';
-import { ParaJathagamComponent } from './pages/jathagam/components/para-jathagam/para-jathagam.component';
-import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha/vastu-kanitha.component';
+import { RasiPalanComponent } from './pages/jathagam/components/rasi-palan/rasi-palan';
+import { MatchingComponent } from './pages/jathagam/components/matching/matching';
+import { MyJathagamComponent } from './pages/jathagam/components/my-jathagam/my-jathagam';
+import { ParaJathagamComponent } from './pages/jathagam/components/para-jathagam/para-jathagam';
+import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha/vastu-kanitha';
 
 const routes: Routes = [
   { path: 'splash', component: SplashPage },

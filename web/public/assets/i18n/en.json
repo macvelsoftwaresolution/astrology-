@@ -139,7 +139,11 @@
     "createBanner": "Create New Banner",
     "bannerTitle": "Banner Title *",
     "bannerSubtitle": "Banner Subtitle",
-    "noBanners": "No banners found."
+    "noBanners": "No banners found.",
+    "totalMembers": "Total App Members",
+    "recentMembers": "Recent Registered Members & Students",
+    "recentMembersDesc": "Latest user and student profiles registered on the application",
+    "viewAllUsers": "View Full Directory →"
   },
   "grading": {
     "title": "Exam Valuation & Certificate Management",

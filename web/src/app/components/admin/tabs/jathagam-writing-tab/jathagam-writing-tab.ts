@@ -9,7 +9,7 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './jathagam-writing-tab.html',
-  styleUrls: ['../../admin-dashboard.component.css', './jathagam-writing-tab.css']
+  styleUrls: ['../../admin-dashboard.css', './jathagam-writing-tab.css']
 })
 export class JathagamWritingTabComponent implements OnInit {
   orders: any[] = [];

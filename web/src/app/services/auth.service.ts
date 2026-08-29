@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -28,7 +29,7 @@ export class AuthService {
   private apiUrl = environment.apiUrl;
   private currentUser: User | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     if (typeof window !== 'undefined' && this.getToken()) {
       this.getProfileFromDb().subscribe();
     }
@@ -48,13 +49,9 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  logout(notifyBackend: boolean = true): void {
     const token = this.getToken();
-    if (token) {
-      this.http.post(`${this.apiUrl}/auth/logout`, {}, this.getAuthHeaders()).pipe(
-        catchError(() => of(null))
-      ).subscribe();
-    }
+
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('auth_token');
       sessionStorage.removeItem('user_data');
@@ -62,6 +59,20 @@ export class AuthService {
       localStorage.removeItem('user_data');
     }
     this.currentUser = null;
+
+    if (token && notifyBackend) {
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+      this.http.post(`${this.apiUrl}/auth/logout`, {}, { headers }).pipe(
+        catchError(() => of(null))
+      ).subscribe();
+    }
+
+    if (typeof window !== 'undefined') {
+      this.router.navigate(['/login']);
+    }
   }
 
   getProfileFromDb(): Observable<any> {
@@ -76,7 +87,7 @@ export class AuthService {
       }),
       catchError(err => {
         if (err && err.status === 401) {
-          this.logout();
+          this.logout(false);
         }
         return of(null);
       })

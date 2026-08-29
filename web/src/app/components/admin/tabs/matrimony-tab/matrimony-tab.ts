@@ -11,7 +11,7 @@ import { ToastService } from '../../../../services/toast.service';
   standalone: true,
   imports: [CommonModule, TranslatePipe],
   templateUrl: './matrimony-tab.html',
-  styleUrls: ['../../admin-dashboard.component.css', './matrimony-tab.css']
+  styleUrls: ['../../admin-dashboard.css', './matrimony-tab.css']
 })
 export class MatrimonyTab implements OnInit {
   profiles: any[] = [];

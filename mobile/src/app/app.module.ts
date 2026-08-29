@@ -7,7 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from './app';
 import { AppRoutingModule } from './app-routing.module';
 
 // Auth / Common Pages
@@ -19,24 +19,24 @@ import { ForgotPasswordPage } from './pages/forgot-password/forgot-password.page
 
 // Learn Module
 import { LearnPage } from './pages/learn/learn.page';
-import { LearnIntroComponent } from './pages/learn/components/intro/intro.component';
-import { LearnRulesComponent } from './pages/learn/components/rules/rules.component';
-import { LearnEnrollComponent } from './pages/learn/components/enroll/enroll.component';
-import { LearnPaymentComponent } from './pages/learn/components/payment/payment.component';
-import { LearnDashboardComponent } from './pages/learn/components/dashboard/dashboard.component';
-import { LearnQuizComponent } from './pages/learn/components/quiz/quiz.component';
-import { LearnCertificateComponent } from './pages/learn/components/certificate/certificate.component';
+import { LearnIntroComponent } from './pages/learn/components/intro/intro';
+import { LearnRulesComponent } from './pages/learn/components/rules/rules';
+import { LearnEnrollComponent } from './pages/learn/components/enroll/enroll';
+import { LearnPaymentComponent } from './pages/learn/components/payment/payment';
+import { LearnDashboardComponent } from './pages/learn/components/dashboard/dashboard';
+import { LearnQuizComponent } from './pages/learn/components/quiz/quiz';
+import { LearnCertificateComponent } from './pages/learn/components/certificate/certificate';
 
 // Jathagam Module (all standalone)
 import { JathagamPage } from './pages/jathagam/jathagam.page';
-import { RasiPalanComponent } from './pages/jathagam/components/rasi-palan/rasi-palan.component';
-import { MatchingComponent } from './pages/jathagam/components/matching/matching.component';
-import { MyJathagamComponent } from './pages/jathagam/components/my-jathagam/my-jathagam.component';
-import { ParaJathagamComponent } from './pages/jathagam/components/para-jathagam/para-jathagam.component';
-import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha/vastu-kanitha.component';
+import { RasiPalanComponent } from './pages/jathagam/components/rasi-palan/rasi-palan';
+import { MatchingComponent } from './pages/jathagam/components/matching/matching';
+import { MyJathagamComponent } from './pages/jathagam/components/my-jathagam/my-jathagam';
+import { ParaJathagamComponent } from './pages/jathagam/components/para-jathagam/para-jathagam';
+import { VastuKanithaComponent } from './pages/jathagam/components/vastu-kanitha/vastu-kanitha';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SpinnerLoaderComponent } from './components/spinner-loader/spinner-loader.component';
+import { SpinnerLoaderComponent } from './components/spinner-loader/spinner-loader';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 
 // Profile Module (standalone)

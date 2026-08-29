@@ -5,8 +5,8 @@ import { AuthService } from '../services/auth.service';
 import { TranslationService } from '../services/translation.service';
 import { App } from '@capacitor/app';
 import { IonContent } from '@ionic/angular';
-import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan.component';
-import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching.component';
+import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan';
+import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching';
 import { environment } from '../../environments/environment';
 
 interface Order {

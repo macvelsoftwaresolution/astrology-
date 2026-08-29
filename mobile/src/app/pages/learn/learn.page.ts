@@ -6,8 +6,9 @@ import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth.service';
 import { BackButtonService } from '../../services/back-button.service';
 import { ExitModalService } from '../../services/exit-modal.service';
+import { TranslationService } from '../../services/translation.service';
 import { environment } from '../../../environments/environment';
-import { LearnDashboardComponent } from './components/dashboard/dashboard.component';
+import { LearnDashboardComponent } from './components/dashboard/dashboard';
 
 declare var Razorpay: any;
 
@@ -105,7 +106,8 @@ export class LearnPage implements OnInit {
     private authService: AuthService,
     private backButtonService: BackButtonService,
     private exitModalService: ExitModalService,
-    private http: HttpClient
+    private http: HttpClient,
+    public translationService: TranslationService
   ) { }
 
   ngOnInit() {
