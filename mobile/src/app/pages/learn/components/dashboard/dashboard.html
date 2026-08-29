@@ -415,6 +415,9 @@
           @if (enrollForm?.studentId) {
             <span class="mp-badge-id"><i class="bi bi-person-badge"></i> {{ enrollForm.studentId }}</span>
           }
+          @if (activeBatch?.name) {
+            <span class="mp-badge-batch"><i class="bi bi-calendar2-week"></i> {{ activeBatch.name }}</span>
+          }
           <span class="mp-badge-premium"><span class="badge-dot">●</span> Premium Member</span>
         </div>
       </div>
