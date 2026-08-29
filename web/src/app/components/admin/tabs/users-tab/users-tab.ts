@@ -502,4 +502,204 @@ export class UsersTabComponent implements OnInit {
     if (lower === 'other' || lower === 'மற்றவை') return isTa ? 'மற்றவை' : 'Other';
     return g;
   }
+
+  exportStudentsCsv(): void {
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const students = this.users.filter(u => u.role !== 'admin' && this.isStudent(u));
+    if (students.length === 0) {
+      this.toastService.error('No students found to export.', 'மாணவர்கள் எவரும் இல்லை');
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const headers = [
+      'Student ID', 'Student Name (English)', 'Student Name (Tamil)', 'Course Level',
+      'Assigned Batch', 'Email Address', 'Phone Number', 'Father / Husband Name',
+      'Date of Birth', 'Age', 'Gender', 'Educational Qualification', 'Occupation',
+      'Postal Address', 'Purpose of Training', 'Registered Date'
+    ];
+
+    const rows = students.map(st => {
+      const d = this.getParsedDetails(st) || {};
+      const cleanPhone = st.phone ? `="${st.phone}"` : '""';
+      const cleanStudentId = st.student_id ? `="${st.student_id}"` : '""';
+      const regDate = st.created_at ? new Date(st.created_at).toISOString().split('T')[0] : '';
+      const tamilName = d.studentNameTamil || d.nameTamil || d.tamilName || '-';
+      const address = d.postalAddress || d.address || st.address || '-';
+
+      return [
+        cleanStudentId, escapeCsv(st.name), escapeCsv(tamilName), escapeCsv(this.getStudentLevel(st)),
+        escapeCsv(st.batch_name || d.batch_name || '-'), escapeCsv(st.email || ''), cleanPhone,
+        escapeCsv(d.fatherName || '-'), escapeCsv(d.dob || '-'), escapeCsv(d.age || '-'),
+        escapeCsv(this.formatGender(d.gender)), escapeCsv(d.qualification || '-'),
+        escapeCsv(this.formatOccupation(d.occupation)), escapeCsv(address),
+        escapeCsv(d.trainingPurpose || '-'), escapeCsv(regDate)
+      ];
+    });
+
+    this.triggerDownloadCsv(headers, rows, `students_admission_report_${todayStr}.csv`, 'மாணவர் அறிக்கை (Students CSV) பதிவிறக்கப்பட்டது');
+  }
+
+  exportMembersCsv(): void {
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    // All registered non-admin members / app users
+    const members = this.users.filter(u => u.role !== 'admin' && !this.isStudent(u));
+    // If no non-student members, take all registered users
+    const targetList = members.length > 0 ? members : this.users.filter(u => u.role !== 'admin');
+
+    if (targetList.length === 0) {
+      this.toastService.error('No members found to export.', 'உறுப்பினர்கள் எவரும் இல்லை');
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const headers = [
+      'User ID', 'Name', 'Email Address', 'Phone Number', 'User Type',
+      'Rasi (Zodiac)', 'Nakshatra (Star)', 'Consultation Bookings', 'Registered Date'
+    ];
+
+    const rows = targetList.map(u => {
+      const d = this.getParsedDetails(u) || {};
+      const cleanPhone = u.phone ? `="${u.phone}"` : '""';
+      const cleanUserId = `="#${u.id}"`;
+      const regDate = u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : '';
+      const userType = this.isStudent(u) ? 'Student + Member' : (this.isAppointmentUser(u) ? 'Consultation Client' : 'General Member');
+
+      return [
+        cleanUserId, escapeCsv(u.name), escapeCsv(u.email || ''), cleanPhone, escapeCsv(userType),
+        escapeCsv(d.rasi || u.jathagam_profile?.rasi || '-'),
+        escapeCsv(d.star || d.nakshatra || u.jathagam_profile?.nakshatra || '-'),
+        escapeCsv(u.bookings_count || 0), escapeCsv(regDate)
+      ];
+    });
+
+    this.triggerDownloadCsv(headers, rows, `registered_members_directory_${todayStr}.csv`, 'உறுப்பினர் பட்டியல் (Members CSV) பதிவிறக்கப்பட்டது');
+  }
+
+  private triggerDownloadCsv(headers: string[], rows: string[][], filename: string, successMsg: string): void {
+    const csvContent = '\uFEFF' + [headers.map(h => `"${h}"`).join(','), ...rows.map(e => e.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.toastService.success(successMsg, 'Export CSV Success');
+  }
+
+  printStudentProfile(user: any): void {
+    if (!user) return;
+    const d = this.getParsedDetails(user) || {};
+    const win = window.open('', '_blank');
+    if (!win) return;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Student Admission Form - ${user.name}</title>
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; color: #1e293b; line-height: 1.6; }
+          .header { text-align: center; border-bottom: 2px solid #b45309; padding-bottom: 15px; margin-bottom: 20px; }
+          .header h1 { margin: 0; color: #78350f; font-size: 22px; }
+          .header p { margin: 5px 0 0 0; color: #64748b; font-size: 13px; }
+          .badge { display: inline-block; background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 1px solid #fde68a; margin-top: 8px; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+          .item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; }
+          .label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 3px; }
+          .val { font-size: 13.5px; font-weight: 600; color: #0f172a; }
+          .full-width { grid-column: span 2; }
+          .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+          @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>ஸ்ரீ ஆஸ்ட்ரோ டிவைன் ஜோதிடக் கல்விக்கூடம்</h1>
+          <p>மாணவர் சேர்க்கை விண்ணப்ப அறிக்கை (Student Admission Report)</p>
+          <div class="badge">Student ID: ${user.student_id || '-'}</div>
+        </div>
+
+        <div class="grid">
+          <div class="item">
+            <span class="label">மாணவர் பெயர் (Name)</span>
+            <span class="val">${user.name} ${d.studentNameTamil ? '(' + d.studentNameTamil + ')' : ''}</span>
+          </div>
+          <div class="item">
+            <span class="label">பாடநெறி (Course Level)</span>
+            <span class="val">${this.getStudentLevel(user)}</span>
+          </div>
+          <div class="item">
+            <span class="label">தொகுதி (Batch)</span>
+            <span class="val">${user.batch_name || d.batch_name || '-'}</span>
+          </div>
+          <div class="item">
+            <span class="label">தந்தை / கணவர் பெயர்</span>
+            <span class="val">${d.fatherName || '-'}</span>
+          </div>
+          <div class="item">
+            <span class="label">பிறந்த தேதி & வயது</span>
+            <span class="val">${d.dob || '-'} (${d.age || '-'} வயது)</span>
+          </div>
+          <div class="item">
+            <span class="label">பாலினம் (Gender)</span>
+            <span class="val">${this.formatGender(d.gender)}</span>
+          </div>
+          <div class="item">
+            <span class="label">தொலைபேசி எண் (Phone)</span>
+            <span class="val">${user.phone || '-'}</span>
+          </div>
+          <div class="item">
+            <span class="label">மின்னஞ்சல் (Email)</span>
+            <span class="val">${user.email || '-'}</span>
+          </div>
+          <div class="item">
+            <span class="label">கல்வித்தகுதி (Qualification)</span>
+            <span class="val">${d.qualification || '-'}</span>
+          </div>
+          <div class="item">
+            <span class="label">தொழில் (Occupation)</span>
+            <span class="val">${this.formatOccupation(d.occupation)}</span>
+          </div>
+          <div class="item full-width">
+            <span class="label">அஞ்சல் முகவரி (Postal Address)</span>
+            <span class="val">${d.postalAddress || d.address || user.address || '-'}</span>
+          </div>
+          <div class="item full-width">
+            <span class="label">பயில்வதன் நோக்கம் (Training Purpose)</span>
+            <span class="val">${d.trainingPurpose || '-'}</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          அறிக்கை எடுக்கப்பட்ட தேதி: ${new Date().toLocaleString()} | ஸ்ரீ ஆஸ்ட்ரோ டிவைன்
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    win.document.write(html);
+    win.document.close();
+  }
 }

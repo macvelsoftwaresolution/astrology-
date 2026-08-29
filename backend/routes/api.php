@@ -160,6 +160,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/submissions/{id}/evaluate',       [GradingController::class, 'evaluateSubmission']);
     Route::get('/certificates',                     [GradingController::class, 'adminGetCertificates']);
     Route::post('/certificates',                    [GradingController::class, 'adminUploadCertificate']);
+    Route::post('/marksheets',                      [GradingController::class, 'adminUploadMarksheet']);
     Route::delete('/certificates/{id}',             [GradingController::class, 'adminDeleteCertificate']);
 
     // Book Orders & Courier
@@ -246,6 +247,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::delete('/materials/{id}',                           [SuperAdminController::class, 'deleteMaterial']);
 
     
-        // Jathagam Writing Orders
+        // Jathagam Writing Orders & Courier Dispatch
         Route::get('/jathagam-writing-orders', [\App\Http\Controllers\Api\JathagamWritingController::class, 'getAdminOrders']);
+        Route::put('/bookings/{id}/courier', [\App\Http\Controllers\Api\JathagamWritingController::class, 'updateCourierStatus']);
 });

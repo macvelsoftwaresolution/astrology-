@@ -9,6 +9,19 @@
       </h1>
       <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'users.subtitle' | translate }}</p>
     </div>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <!-- Button 1: Students CSV -->
+      <button class="btn-export-csv" (click)="exportStudentsCsv()"
+        style="background: #15803d; color: #fff; border: 1px solid #166534; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <i class="bi bi-mortarboard-fill"></i> {{ 'users.exportStudentsReport' | translate }}
+      </button>
+
+      <!-- Button 2: Members CSV -->
+      <button class="btn-export-csv" (click)="exportMembersCsv()"
+        style="background: #0284c7; color: #fff; border: 1px solid #0369a1; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <i class="bi bi-person-badge-fill"></i> {{ 'users.exportMembersReport' | translate }}
+      </button>
+    </div>
   </div>
 
   <!-- SEARCH & CATEGORY SELECT FILTER CONTROLS -->
@@ -377,7 +390,15 @@
           }
         </span>
       </div>
-      <button class="close-btn" (click)="selectedUserForProfile = null"><i class="bi bi-x-lg"></i></button>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        @if (isStudent(selectedUserForProfile)) {
+        <button class="btn-print" (click)="printStudentProfile(selectedUserForProfile)"
+          style="background: #2563eb; color: #fff; border: 1px solid #1d4ed8; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <i class="bi bi-printer-fill"></i> {{ 'users.printAdmissionForm' | translate }}
+        </button>
+        }
+        <button class="close-btn" (click)="selectedUserForProfile = null"><i class="bi bi-x-lg"></i></button>
+      </div>
     </div>
 
     <!-- IF STUDENT ADMISSION RECORD -->
