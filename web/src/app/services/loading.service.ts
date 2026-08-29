@@ -5,7 +5,6 @@ import { Injectable, signal } from '@angular/core';
 })
 export class LoadingService {
   private activeRequests = 0;
-  private debounceTimer: any = null;
   private maxTimeoutTimer: any = null;
   readonly isLoading = signal<boolean>(false);
 
@@ -13,25 +12,25 @@ export class LoadingService {
     if (typeof window === 'undefined') return;
     this.activeRequests++;
 
-    if (!this.debounceTimer && !this.isLoading()) {
-      this.debounceTimer = setTimeout(() => {
-        if (this.activeRequests > 0) {
-          this.isLoading.set(true);
-        }
-      }, 150);
+    if (!this.isLoading()) {
+      this.isLoading.set(true);
     }
 
+    // Safety timeout (15s) only in case a request hangs indefinitely
     clearTimeout(this.maxTimeoutTimer);
     this.maxTimeoutTimer = setTimeout(() => {
       this.forceHide();
-    }, 1500);
+    }, 15000);
   }
 
   hide(): void {
     if (typeof window === 'undefined') return;
     this.activeRequests = Math.max(0, this.activeRequests - 1);
     if (this.activeRequests === 0) {
-      this.clearTimers();
+      if (this.maxTimeoutTimer) {
+        clearTimeout(this.maxTimeoutTimer);
+        this.maxTimeoutTimer = null;
+      }
       setTimeout(() => {
         if (this.activeRequests === 0) {
           this.isLoading.set(false);
@@ -42,20 +41,12 @@ export class LoadingService {
 
   forceHide(): void {
     this.activeRequests = 0;
-    this.clearTimers();
-    setTimeout(() => {
-      this.isLoading.set(false);
-    }, 0);
-  }
-
-  private clearTimers(): void {
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-      this.debounceTimer = null;
-    }
     if (this.maxTimeoutTimer) {
       clearTimeout(this.maxTimeoutTimer);
       this.maxTimeoutTimer = null;
     }
+    setTimeout(() => {
+      this.isLoading.set(false);
+    }, 0);
   }
 }

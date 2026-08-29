@@ -20,6 +20,7 @@ export class JathagamWritingPage implements OnInit {
     tob: '',
     pob: '',
     gender: 'Male',
+    address: '',
     notes: ''
   };
 
@@ -40,6 +41,7 @@ export class JathagamWritingPage implements OnInit {
     if (user) {
       this.form.name = user.name || '';
       this.form.phone = user.phone || '';
+      this.form.address = user.address || '';
     }
   }
 
@@ -57,16 +59,20 @@ export class JathagamWritingPage implements OnInit {
     this.validationError = '';
 
     if (!this.form.name || this.form.name.trim().length < 2) {
-      this.validationError = 'தயவுசெய்து உங்கள் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.validationError = 'errors.enterValidName';
       return;
     }
     const cleanPhone = (this.form.phone || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10) {
-      this.validationError = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்!';
+      this.validationError = 'errors.enterPhone';
       return;
     }
     if (!this.form.dob || !this.form.tob || !this.form.pob) {
-      this.validationError = 'பிறந்த தேதி, நேரம் மற்றும் ஊர் விவரங்களை முழுமையாக நிரப்பவும்!';
+      this.validationError = 'errors.enterDob';
+      return;
+    }
+    if (!this.form.address || this.form.address.trim().length < 5) {
+      this.validationError = 'ஜாதகம் கூரியரில் அனுப்ப உங்கள் முழு முகவரியை (Door No, Street, Pincode) உள்ளிடவும்!';
       return;
     }
 
@@ -132,12 +138,14 @@ export class JathagamWritingPage implements OnInit {
     const payload = {
       user_name: this.form.name,
       user_phone: this.form.phone,
+      shipping_address: this.form.address,
       price: this.price,
       details: {
         dob: this.form.dob,
         tob: this.form.tob,
         pob: this.form.pob,
         gender: this.form.gender,
+        address: this.form.address,
         notes: this.form.notes,
         razorpay_order_id: razorpayOrderId,
         razorpay_payment_id: razorpayPaymentId

@@ -6,49 +6,40 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class LoadingService {
   private activeRequests = 0;
-  private debounceTimer: any = null;
   private maxTimeoutTimer: any = null;
   public isLoading$ = new BehaviorSubject<boolean>(false);
 
   show(): void {
     this.activeRequests++;
 
-    if (!this.debounceTimer && !this.isLoading$.value) {
-      this.debounceTimer = setTimeout(() => {
-        if (this.activeRequests > 0) {
-          this.isLoading$.next(true);
-        }
-      }, 150);
+    if (!this.isLoading$.value) {
+      this.isLoading$.next(true);
     }
 
+    // Safety timeout (15s) only in case a request hangs indefinitely
     clearTimeout(this.maxTimeoutTimer);
     this.maxTimeoutTimer = setTimeout(() => {
       this.forceHide();
-    }, 800);
+    }, 15000);
   }
 
   hide(): void {
     this.activeRequests = Math.max(0, this.activeRequests - 1);
     if (this.activeRequests === 0) {
-      this.clearTimers();
+      if (this.maxTimeoutTimer) {
+        clearTimeout(this.maxTimeoutTimer);
+        this.maxTimeoutTimer = null;
+      }
       this.isLoading$.next(false);
     }
   }
 
   forceHide(): void {
     this.activeRequests = 0;
-    this.clearTimers();
-    this.isLoading$.next(false);
-  }
-
-  private clearTimers(): void {
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-      this.debounceTimer = null;
-    }
     if (this.maxTimeoutTimer) {
       clearTimeout(this.maxTimeoutTimer);
       this.maxTimeoutTimer = null;
     }
+    this.isLoading$.next(false);
   }
 }

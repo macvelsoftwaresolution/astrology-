@@ -1,132 +1,217 @@
 <div class="courier-container">
   <!-- Header Banner in a clean Div Card -->
-  <div class="card-box header-banner-card" style="margin-bottom: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+  <div class="card-box header-banner-card" style="margin-bottom: 20px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
     <div>
       <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
         <i class="bi bi-box-seam-fill" style="color:#d97706;"></i>{{ 'courier.title' | translate }}
       </h1>
       <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'courier.subtitle' | translate }}</p>
     </div>
-  </div>
 
-  <!-- BOOKS INVENTORY SECTION -->
-  <div class="card-box" style="margin-bottom: 24px;">
-    <div style="display:flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e2e8f0;">
-      <h2 style="margin: 0; font-size: 16px; color: #0f172a;">{{ 'courier.booksInventory' | translate }}</h2>
-      <button class="btn-primary" (click)="openAddBookModal()">
-        <i class="bi bi-plus-lg"></i> {{ 'courier.addBook' | translate }}
+    <!-- Logistics Sub-Tab Selector -->
+    <div style="display:flex; gap:8px; background:#f1f5f9; padding:4px; border-radius:10px;">
+      <button type="button" (click)="setLogisticsTab('books')" [style.background]="activeLogisticsTab === 'books' ? '#d97706' : 'transparent'" [style.color]="activeLogisticsTab === 'books' ? '#fff' : '#475569'" style="border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; transition:all 0.2s;">
+        <i class="bi bi-book-half me-1"></i> {{ 'courier.booksTab' | translate }}
+      </button>
+      <button type="button" (click)="setLogisticsTab('jathagam')" [style.background]="activeLogisticsTab === 'jathagam' ? '#0284c7' : 'transparent'" [style.color]="activeLogisticsTab === 'jathagam' ? '#fff' : '#475569'" style="border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; transition:all 0.2s;">
+        <i class="bi bi-journal-bookmark-fill me-1"></i> {{ 'courier.jathagamTab' | translate }}
       </button>
     </div>
-    
-    @if (isBooksLoading) {
-      <div style="text-align:center;padding:20px;color:#b45309;font-size:14px;font-weight:600;">
+  </div>
+
+  @if (activeLogisticsTab === 'books') {
+    <!-- BOOKS INVENTORY SECTION -->
+    <div class="card-box" style="margin-bottom: 24px;">
+      <div style="display:flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e2e8f0;">
+        <h2 style="margin: 0; font-size: 16px; color: #0f172a;">{{ 'courier.booksInventory' | translate }}</h2>
+        <button class="btn-primary" (click)="openAddBookModal()">
+          <i class="bi bi-plus-lg"></i> {{ 'courier.addBook' | translate }}
+        </button>
+      </div>
+      
+      @if (isBooksLoading) {
+        <div style="text-align:center;padding:20px;color:#b45309;font-size:14px;font-weight:600;">
+          <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
+        </div>
+      } @else {
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>{{ 'courier.bookTitle' | translate }}</th>
+              <th>{{ 'courier.author' | translate }}</th>
+              <th>{{ 'courier.price' | translate }}</th>
+              <th>{{ 'courier.addedOn' | translate }}</th>
+              <th>{{ 'common.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (book of books; track book.id) {
+              <tr>
+                <td><strong>{{ book.title }}</strong></td>
+                <td>{{ book.author || '-' }}</td>
+                <td>₹{{ book.price }}</td>
+                <td>{{ book.created_at | date:'mediumDate' }}</td>
+                <td>
+                  <div style="display:flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn-sm" (click)="viewBuyers(book)" [title]="'courier.buyers' | translate">
+                      <i class="bi bi-people-fill"></i> {{ 'courier.buyers' | translate }}
+                    </button>
+                    <button class="btn-sm" style="background:#0284c7; color:#fff;" (click)="openEditBookModal(book)" [title]="'common.edit' | translate">
+                      <i class="bi bi-pencil-square"></i> {{ 'common.edit' | translate }}
+                    </button>
+                    <button class="btn-sm" style="background:#dc2626; color:#fff;" (click)="deleteBook(book)" [title]="'common.delete' | translate">
+                      <i class="bi bi-trash-fill"></i> {{ 'common.delete' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (books.length === 0) {
+              <tr>
+                <td colspan="5" style="text-align:center;padding:24px;color:#64748b;">
+                  {{ 'courier.noBooks' | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <!-- BOOK ORDERS SECTION -->
+    <h2 style="margin: 0 0 16px 0; font-size: 16px; color: #0f172a;">{{ 'courier.recentOrders' | translate }}</h2>
+    @if (isLoading) {
+      <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
         <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
       </div>
     } @else {
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'courier.bookTitle' | translate }}</th>
-            <th>{{ 'courier.author' | translate }}</th>
-            <th>{{ 'courier.price' | translate }}</th>
-            <th>{{ 'courier.addedOn' | translate }}</th>
-            <th>{{ 'common.actions' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (book of books; track book.id) {
+      <div class="card-box">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td><strong>{{ book.title }}</strong></td>
-              <td>{{ book.author || '-' }}</td>
-              <td>₹{{ book.price }}</td>
-              <td>{{ book.created_at | date:'mediumDate' }}</td>
-              <td>
-                <div style="display:flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                  <button class="btn-sm" (click)="viewBuyers(book)" [title]="'courier.buyers' | translate">
-                    <i class="bi bi-people-fill"></i> {{ 'courier.buyers' | translate }}
-                  </button>
-                  <button class="btn-sm" style="background:#0284c7; color:#fff;" (click)="openEditBookModal(book)" [title]="'common.edit' | translate">
-                    <i class="bi bi-pencil-square"></i> {{ 'common.edit' | translate }}
-                  </button>
-                  <button class="btn-sm" style="background:#dc2626; color:#fff;" (click)="deleteBook(book)" [title]="'common.delete' | translate">
-                    <i class="bi bi-trash-fill"></i> {{ 'common.delete' | translate }}
-                  </button>
-                </div>
-              </td>
+              <th>{{ 'courier.orderId' | translate }}</th>
+              <th>{{ 'courier.client' | translate }}</th>
+              <th>{{ 'courier.items' | translate }}</th>
+              <th>{{ 'user.address' | translate }}</th>
+              <th>{{ 'courier.courierPartner' | translate }}</th>
+              <th>{{ 'common.status' | translate }}</th>
+              <th>{{ 'common.actions' | translate }}</th>
             </tr>
-          }
-          @if (books.length === 0) {
-            <tr>
-              <td colspan="5" style="text-align:center;padding:24px;color:#64748b;">
-                {{ 'courier.noBooks' | translate }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (order of bookOrders; track order.id) {
+              <tr>
+                <td><strong>{{ order.order_number }}</strong></td>
+                <td>
+                  <div>{{ order.user_name }}</div>
+                  <small class="muted">{{ order.user_phone }}</small>
+                </td>
+                <td>{{ order.book_title }}</td>
+                <td class="address-col">{{ order.shipping_address }}</td>
+                <td>
+                  @if (order.awb_number) {
+                    <div><strong>{{ order.courier_partner }}</strong></div>
+                    <small style="color:#2563eb;font-weight:700;">AWB: {{ order.awb_number }}</small>
+                  } @else {
+                    <span class="muted">-</span>
+                  }
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="(order.status || 'Processing').toLowerCase()">
+                    {{ order.status }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-sm" (click)="openCourierModal(order, 'book')">
+                    <i class="bi bi-truck"></i> {{ 'courier.updateCourier' | translate }}
+                  </button>
+                </td>
+              </tr>
+            }
+            @if (bookOrders.length === 0) {
+              <tr>
+                <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
+                  {{ 'common.noRecords' | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
-  </div>
+  }
 
-  <!-- ORDERS SECTION -->
-  <h2 style="margin: 0 0 16px 0; font-size: 16px; color: #0f172a;">{{ 'courier.recentOrders' | translate }}</h2>
-  @if (isLoading) {
-    <div style="text-align:center;padding:40px;color:#b45309;font-size:14px;font-weight:600;">
-      <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
-    </div>
-  } @else {
-    <div class="card-box">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'courier.orderId' | translate }}</th>
-            <th>{{ 'courier.client' | translate }}</th>
-            <th>{{ 'courier.items' | translate }}</th>
-            <th>{{ 'user.address' | translate }}</th>
-            <th>{{ 'courier.courierPartner' | translate }}</th>
-            <th>{{ 'common.status' | translate }}</th>
-            <th>{{ 'common.actions' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (order of bookOrders; track order.id) {
+  @if (activeLogisticsTab === 'jathagam') {
+    <!-- JATHAGAM WRITING DISPATCHES SECTION -->
+    <h2 style="margin: 0 0 16px 0; font-size: 16px; color: #0f172a;">{{ 'courier.jathagamSectionTitle' | translate }}</h2>
+    @if (isJathagamLoading) {
+      <div style="text-align:center;padding:40px;color:#0284c7;font-size:14px;font-weight:600;">
+        <i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}
+      </div>
+    } @else {
+      <div class="card-box">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td><strong>{{ order.order_number }}</strong></td>
-              <td>
-                <div>{{ order.user_name }}</div>
-                <small class="muted">{{ order.user_phone }}</small>
-              </td>
-              <td>{{ order.book_title }}</td>
-              <td class="address-col">{{ order.shipping_address }}</td>
-              <td>
-                @if (order.awb_number) {
-                  <div><strong>{{ order.courier_partner }}</strong></div>
-                  <small style="color:#2563eb;font-weight:700;">AWB: {{ order.awb_number }}</small>
-                } @else {
-                  <span class="muted">-</span>
-                }
-              </td>
-              <td>
-                <span class="status-pill" [ngClass]="(order.status || 'Processing').toLowerCase()">
-                  {{ order.status }}
-                </span>
-              </td>
-              <td>
-                <button class="btn-sm" (click)="openCourierModal(order)">
-                  <i class="bi bi-truck"></i> {{ 'courier.updateCourier' | translate }}
-                </button>
-              </td>
+              <th>{{ 'courier.orderId' | translate }} / {{ 'matches.date' | translate }}</th>
+              <th>{{ 'courier.client' | translate }}</th>
+              <th>{{ 'courier.birthDetails' | translate }}</th>
+              <th>{{ 'courier.deliveryAddress' | translate }}</th>
+              <th>{{ 'courier.courierPartner' | translate }}</th>
+              <th>{{ 'common.status' | translate }}</th>
+              <th>{{ 'common.actions' | translate }}</th>
             </tr>
-          }
-          @if (bookOrders.length === 0) {
-            <tr>
-              <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
-                {{ 'common.noRecords' | translate }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (order of jathagamOrders; track order.id) {
+              <tr>
+                <td>
+                  <strong>#{{ order.id }}</strong>
+                  <br>
+                  <small class="muted">{{ order.created_at | date:'shortDate' }}</small>
+                </td>
+                <td>
+                  <div>{{ order.user_name }}</div>
+                  <small class="muted">{{ order.user_phone }}</small>
+                </td>
+                <td style="font-size: 12px;">
+                  <div><strong>DOB:</strong> {{ parseDetails(order.details)?.dob || 'N/A' }}</div>
+                  <div><strong>POB:</strong> {{ parseDetails(order.details)?.pob || 'N/A' }}</div>
+                </td>
+                <td class="address-col">
+                  {{ order.shipping_address || parseDetails(order.details)?.address || ('courier.noAddress' | translate) }}
+                </td>
+                <td>
+                  @if (order.awb_number) {
+                    <div><strong>{{ order.courier_partner || 'Courier' }}</strong></div>
+                    <small style="color:#2563eb;font-weight:700;">AWB: {{ order.awb_number }}</small>
+                  } @else {
+                    <span class="muted">{{ 'courier.notDispatched' | translate }}</span>
+                  }
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="(order.status || 'Pending').toLowerCase()">
+                    {{ order.status || 'Pending' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-sm" style="background:#0284c7; color:#fff;" (click)="openCourierModal(order, 'jathagam')">
+                    <i class="bi bi-truck"></i> {{ 'courier.updateCourier' | translate }}
+                  </button>
+                </td>
+              </tr>
+            }
+            @if (jathagamOrders.length === 0) {
+              <tr>
+                <td colspan="7" style="text-align:center;padding:24px;color:#64748b;">
+                  {{ 'courier.noJathagamOrders' | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   }
 
   <!-- MODAL: ADD BOOK -->
@@ -139,32 +224,32 @@
         </div>
         <form (ngSubmit)="saveBook()">
           <div class="form-group">
-            <label>Title *</label>
+            <label>{{ 'courier.bookTitle' | translate }} *</label>
             <input [(ngModel)]="newBookForm.title" name="btitle" required class="ctrl" placeholder="e.g. Astrology for Beginners"/>
           </div>
           <div class="form-group">
-            <label>Author</label>
+            <label>{{ 'courier.author' | translate }}</label>
             <input [(ngModel)]="newBookForm.author" name="bauthor" class="ctrl" placeholder="e.g. Astro Team"/>
           </div>
           <div class="form-group">
-            <label>Price (₹) *</label>
+            <label>{{ 'courier.price' | translate }} *</label>
             <input type="number" [(ngModel)]="newBookForm.price" name="bprice" required class="ctrl" placeholder="e.g. 500"/>
           </div>
           <div class="form-group">
-            <label>Cover Image (Single)</label>
+            <label>Cover Image</label>
             <input type="file" (change)="onFileSelected($event)" accept="image/*" class="ctrl" />
           </div>
           <div class="form-group">
-            <label>Book Images (Multiple)</label>
+            <label>Book Gallery Images</label>
             <input type="file" (change)="onBookImagesSelected($event)" accept="image/*" multiple class="ctrl" />
           </div>
           <div class="form-group">
-            <label>Description</label>
+            <label>{{ 'common.details' | translate }}</label>
             <textarea [(ngModel)]="newBookForm.description" name="bdesc" class="ctrl" rows="3" placeholder="Brief description..."></textarea>
           </div>
           <div class="modal-btns">
             <button type="button" (click)="showAddBookModal = false" class="btn-cancel">{{ 'common.cancel' | translate }}</button>
-            <button type="submit" class="btn-primary">Save Book</button>
+            <button type="submit" class="btn-primary">{{ 'common.save' | translate }}</button>
           </div>
         </form>
       </div>
@@ -181,17 +266,17 @@
         </div>
         @if (isLoadingBuyers) {
           <div style="text-align:center;padding:20px;color:#2563eb;">
-            <i class="bi bi-arrow-repeat spin"></i> Loading buyers...
+            <i class="bi bi-arrow-repeat spin"></i> {{ 'common.loading' | translate }}
           </div>
         } @else {
           <div style="max-height: 400px; overflow-y: auto;">
             <table class="data-table" style="margin-bottom: 0;">
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Order #</th>
-                  <th>Status</th>
-                  <th>Date</th>
+                  <th>{{ 'team.user' | translate }}</th>
+                  <th>{{ 'courier.orderId' | translate }}</th>
+                  <th>{{ 'common.status' | translate }}</th>
+                  <th>{{ 'matches.date' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -213,7 +298,7 @@
                 @if (buyersList.length === 0) {
                   <tr>
                     <td colspan="4" style="text-align:center;padding:24px;color:#64748b;">
-                      No buyers yet for this book.
+                      {{ 'courier.noBooks' | translate }}
                     </td>
                   </tr>
                 }
@@ -233,25 +318,35 @@
           <h3><i class="bi bi-truck" style="color:#d97706;margin-right:6px;"></i>{{ 'courier.modalTitle' | translate }}</h3>
           <button class="close-btn" (click)="selectedOrderForCourier = null"><i class="bi bi-x-lg"></i></button>
         </div>
-        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">{{ 'courier.orderId' | translate }}: <strong style="color:#0f172a;">{{ selectedOrderForCourier.order_number }}</strong></p>
+        <p style="margin:0 0 12px 0;font-size:13px;color:#64748b;">
+          {{ 'courier.orderId' | translate }}: <strong style="color:#0f172a;">{{ selectedOrderForCourier.order_number || selectedOrderForCourier.id }}</strong>
+        </p>
         <form (ngSubmit)="saveCourierStatus()">
           <div class="form-group">
             <label>{{ 'common.status' | translate }}</label>
             <select [(ngModel)]="courierForm.status" name="cstatus" class="ctrl">
+              <option value="Pending">Pending</option>
               <option value="Processing">Processing</option>
               <option value="Packed">Packed</option>
               <option value="Shipped">Shipped</option>
               <option value="Delivered">Delivered</option>
+              <option value="Completed">Completed</option>
             </select>
           </div>
           <div class="form-group">
             <label>{{ 'courier.partner' | translate }}</label>
-            <input [(ngModel)]="courierForm.courier_partner" name="cpartner" placeholder="Blue Dart / DTDC / India Post" class="ctrl"/>
+            <input [(ngModel)]="courierForm.courier_partner" name="cpartner" placeholder="ST Courier / Blue Dart / DTDC / India Post" class="ctrl"/>
           </div>
           <div class="form-group">
             <label>{{ 'courier.trackingNo' | translate }}</label>
             <input [(ngModel)]="courierForm.awb_number" name="cawb" placeholder="AWB-991823" class="ctrl"/>
           </div>
+          @if (selectedOrderType === 'jathagam') {
+            <div class="form-group">
+              <label>{{ 'courier.deliveryAddress' | translate }}</label>
+              <textarea [(ngModel)]="courierForm.shipping_address" name="caddr" rows="2" class="ctrl" placeholder="Door No, Street, City, Pincode"></textarea>
+            </div>
+          }
           <div class="modal-btns">
             <button type="button" (click)="selectedOrderForCourier = null" class="btn-cancel">{{ 'common.cancel' | translate }}</button>
             <button type="submit" class="btn-primary">{{ 'courier.saveDispatch' | translate }}</button>

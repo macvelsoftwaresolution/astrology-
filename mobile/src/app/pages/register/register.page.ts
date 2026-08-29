@@ -102,7 +102,7 @@ export class RegisterPage implements OnInit {
           const firstKey = Object.keys(err.error.errors)[0];
           const errorDetail = err.error.errors[firstKey][0];
           if (firstKey === 'email' && errorDetail.includes('taken')) {
-            msg = 'இந்த மின்னஞ்சல் முகவரி ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது. தயவுசெய்து உள்நுழையவும்.';
+            msg = 'errors.emailRegistered';
           } else {
             msg = errorDetail;
           }

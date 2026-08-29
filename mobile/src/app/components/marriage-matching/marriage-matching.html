@@ -1,119 +1,137 @@
 <!-- Step 0: Options Screen -->
 @if (serviceStep === 0) {
-  <div class="options-container">
-    
-    <p class="section-sub-heading"><i class="bi bi-hand-index-thumb-fill me-1 text-gold"></i> {{ 'matching.selectNeed' | translate }}</p>
+<div class="options-container">
 
-    <div class="options-grid">
-      <!-- Card 1: Registration -->
-      <div class="option-card premium-card" (click)="selectOption('register')">
-        <div class="option-card-header">
-          <div class="option-icon-box box-gold-glow">
-            <i class="bi bi-file-earmark-person-fill"></i>
-          </div>
-          <span class="card-badge badge-gold"><i class="bi bi-award-fill me-1"></i> {{ 'matching.varanRegBadge' | translate }}</span>
-        </div>
-        <h3 class="card-title">{{ 'matching.varanRegTitle' | translate }}</h3>
-        <p class="card-desc">{{ 'matching.varanRegDesc' | translate }}</p>
-        <button class="btn-app-gold-elevated">
-          <span><i class="bi bi-person-plus-fill me-1"></i> {{ 'matching.registerBtn' | translate }}</span>
-          <i class="bi bi-arrow-right fs-5"></i>
-        </button>
-      </div>
+  <p class="section-sub-heading"><i class="bi bi-hand-index-thumb-fill me-1 text-gold"></i> {{ 'matching.selectNeed' |
+    translate }}</p>
 
-      <!-- Card 2: Matching -->
-      <div class="option-card premium-card" (click)="selectOption('match')">
-        <div class="option-card-header">
-          <div class="option-icon-box box-rose-glow">
-            <i class="bi bi-heart-pulse-fill"></i>
-          </div>
-          <span class="card-badge badge-rose"><i class="bi bi-stars me-1"></i> {{ 'matching.porutham10Badge' | translate }}</span>
+  <div class="options-grid">
+    <!-- Card 1: Registration -->
+    <div class="option-card premium-card" (click)="selectOption('register')">
+      <div class="option-card-header">
+        <div class="option-icon-box box-gold-glow">
+          <i class="bi bi-file-earmark-person-fill"></i>
         </div>
-        <h3 class="card-title">{{ 'matching.porutham10Title' | translate }}</h3>
-        <p class="card-desc">{{ 'matching.porutham10Desc' | translate }}</p>
-        <button class="btn-app-gold-elevated">
-          <span><i class="bi bi-suit-heart-fill me-1"></i> {{ 'matching.checkPoruthamBtn' | translate }}</span>
-          <i class="bi bi-arrow-right fs-5"></i>
-        </button>
+        <span class="card-badge badge-gold"><i class="bi bi-award-fill me-1"></i> {{ 'matching.varanRegBadge' |
+          translate }}</span>
       </div>
+      <h3 class="card-title">{{ 'matching.varanRegTitle' | translate }}</h3>
+      <p class="card-desc">{{ 'matching.varanRegDesc' | translate }}</p>
+      <button class="btn-app-gold-elevated">
+        <span><i class="bi bi-person-plus-fill me-1"></i> {{ 'matching.registerBtn' | translate }}</span>
+        <i class="bi bi-arrow-right fs-5"></i>
+      </button>
     </div>
 
-    @if ((myMatches && myMatches.length > 0) || (myProfiles && myProfiles.length > 0)) {
-    <div class="option-card premium-card" style="margin-top:24px; padding: 14px; cursor: pointer; text-align: center; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05);" (click)="showHistory = !showHistory">
-      <strong style="color:#0f172a; font-size:14px; display: flex; justify-content: center; align-items: center;">
-        <i class="bi bi-clock-history text-gold me-2"></i> {{ 'matching.historyToggle' | translate }}
-        <i class="bi ms-2" [class.bi-chevron-down]="!showHistory" [class.bi-chevron-up]="showHistory"></i>
-      </strong>
+    <!-- Card 2: Matching -->
+    <div class="option-card premium-card" (click)="selectOption('match')">
+      <div class="option-card-header">
+        <div class="option-icon-box box-rose-glow">
+          <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <span class="card-badge badge-rose"><i class="bi bi-stars me-1"></i> {{ 'matching.porutham10Badge' | translate
+          }}</span>
+      </div>
+      <h3 class="card-title">{{ 'matching.porutham10Title' | translate }}</h3>
+      <p class="card-desc">{{ 'matching.porutham10Desc' | translate }}</p>
+      <button class="btn-app-gold-elevated">
+        <span><i class="bi bi-suit-heart-fill me-1"></i> {{ 'matching.checkPoruthamBtn' | translate }}</span>
+        <i class="bi bi-arrow-right fs-5"></i>
+      </button>
     </div>
-    }
-
-    @if (showHistory) {
-      @if (myMatches && myMatches.length > 0) {
-      <div style="margin-top:24px;">
-        <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-suit-heart-fill me-1 text-rose"></i> {{ 'matching.matchRecords' | translate }}</p>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          @for (m of myMatches; track m.id) {
-            <div style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <strong style="color:#0f172a; font-size:13px;">
-                    <i class="bi bi-suit-heart-fill" style="color:#e11d48; margin-right:4px;"></i> {{ 'matching.porutham10Title' | translate }}
-                </strong>
-                <span style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{ m.admin_status || m.consultation_status || 'Pending' }}</span>
-              </div>
-              
-              <div style="font-size:12px; color:#475569; display:flex; align-items:center; gap:8px;">
-                <span>👦 {{ m.boy_name }}</span>
-                <i class="bi bi-arrow-left-right text-muted" style="font-size:10px;"></i>
-                <span>👧 {{ m.girl_name }}</span>
-              </div>
-              
-              <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
-                <span>{{ m.created_at | date:'dd MMM yyyy' }}</span>
-                @if (m.result_document) {
-                  <a [href]="m.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      }
-
-      @if (myProfiles && myProfiles.length > 0) {
-      <div style="margin-top:24px;">
-        <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-file-earmark-person-fill me-1 text-gold"></i> {{ 'matching.regRecords' | translate }}</p>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          @for (p of myProfiles; track p.id) {
-            <div style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <strong style="color:#0f172a; font-size:13px;">
-                    <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> {{ 'matching.varanRegBadge' | translate }}
-                </strong>
-                <span style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{ p.status || 'Pending' }}</span>
-              </div>
-              
-              <div style="font-size:12px; color:#475569; display:flex; flex-direction:column; gap:4px;">
-                <span style="font-weight:600; color:#1e293b;">{{ p.name }} <small class="text-muted">({{ p.gender }})</small></span>
-                <span><i class="bi bi-telephone-fill me-1" style="font-size:10px;"></i> {{ p.phone_number }}</span>
-                @if(p.rasi || p.nakshatra) {
-                  <span><i class="bi bi-stars me-1" style="font-size:10px;"></i> {{ p.rasi }} - {{ p.nakshatra }}</span>
-                }
-              </div>
-              
-              <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
-                <span>{{ p.created_at | date:'dd MMM yyyy' }}</span>
-                @if (p.result_document) {
-                  <a [href]="p.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      }
-    }
-
   </div>
+
+  @if ((myMatches && myMatches.length > 0) || (myProfiles && myProfiles.length > 0)) {
+  <div class="option-card premium-card"
+    style="margin-top:24px; padding: 14px; cursor: pointer; text-align: center; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"
+    (click)="showHistory = !showHistory">
+    <strong style="color:#0f172a; font-size:14px; display: flex; justify-content: center; align-items: center;">
+      <i class="bi bi-clock-history text-gold me-2"></i> {{ 'matching.historyToggle' | translate }}
+      <i class="bi ms-2" [class.bi-chevron-down]="!showHistory" [class.bi-chevron-up]="showHistory"></i>
+    </strong>
+  </div>
+  }
+
+  @if (showHistory) {
+  @if (myMatches && myMatches.length > 0) {
+  <div style="margin-top:24px;">
+    <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-suit-heart-fill me-1 text-rose"></i> {{
+      'matching.matchRecords' | translate }}</p>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      @for (m of myMatches; track m.id) {
+      <div
+        style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <strong style="color:#0f172a; font-size:13px;">
+            <i class="bi bi-suit-heart-fill" style="color:#e11d48; margin-right:4px;"></i> {{ 'matching.porutham10Title'
+            | translate }}
+          </strong>
+          <span
+            style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{
+            m.admin_status || m.consultation_status || 'Pending' }}</span>
+        </div>
+
+        <div style="font-size:12px; color:#475569; display:flex; align-items:center; gap:8px;">
+          <span>👦 {{ m.boy_name }}</span>
+          <i class="bi bi-arrow-left-right text-muted" style="font-size:10px;"></i>
+          <span>👧 {{ m.girl_name }}</span>
+        </div>
+
+        <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+          <span>{{ m.created_at | date:'dd MMM yyyy' }}</span>
+          @if (m.result_document) {
+          <a [href]="m.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i
+              class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  @if (myProfiles && myProfiles.length > 0) {
+  <div style="margin-top:24px;">
+    <p class="section-sub-heading" style="margin-bottom:12px;"><i
+        class="bi bi-file-earmark-person-fill me-1 text-gold"></i> {{ 'matching.regRecords' | translate }}</p>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      @for (p of myProfiles; track p.id) {
+      <div
+        style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <strong style="color:#0f172a; font-size:13px;">
+            <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> {{
+            'matching.varanRegBadge' | translate }}
+          </strong>
+          <span
+            style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{
+            p.status || 'Pending' }}</span>
+        </div>
+
+        <div style="font-size:12px; color:#475569; display:flex; flex-direction:column; gap:4px;">
+          <span style="font-weight:600; color:#1e293b;">{{ p.name }} <small class="text-muted">({{ p.gender
+              }})</small></span>
+          <span><i class="bi bi-telephone-fill me-1" style="font-size:10px;"></i> {{ p.phone_number }}</span>
+          @if(p.rasi || p.nakshatra) {
+          <span><i class="bi bi-stars me-1" style="font-size:10px;"></i> {{ p.rasi }} - {{ p.nakshatra }}</span>
+          }
+        </div>
+
+        <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+          <span>{{ p.created_at | date:'dd MMM yyyy' }}</span>
+          @if (p.result_document) {
+          <a [href]="p.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i
+              class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+  }
+
+</div>
 }
 
 <!-- ============================================== -->
@@ -122,284 +140,338 @@
 
 <!-- Step 1: Registration Form -->
 @if (serviceStep === 1) {
-  <form ngNoForm (submit)="$event.preventDefault(); goToRegPayment()" class="matching-form-card">
-    <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
-      <h2>{{ translationService.currentLanguage() === 'en' ? 'Matrimony Registration Form' : 'பதிவு விண்ணப்பம்' }}</h2>
+<form ngNoForm (submit)="$event.preventDefault(); goToRegPayment()" class="matching-form-card">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+    <h2>{{ translationService.currentLanguage() === 'en' ? 'Matrimony Registration Form' : 'பதிவு விண்ணப்பம்' }}</h2>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Basic Details' : 'அடிப்படை
+    விவரங்கள்' }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Registration No.' : 'பதிவு எண்' }}</label>
+      <input type="text" [(ngModel)]="regForm.regNo"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 1234' : 'உ.ம்: 1234'">
     </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Basic Details' : 'அடிப்படை விவரங்கள்' }}</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Registration No.' : 'பதிவு எண்' }}</label>
-        <input type="text" [(ngModel)]="regForm.regNo" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 1234' : 'உ.ம்: 1234'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Date' : 'தேதி' }}</label>
-        <input type="date" [(ngModel)]="regForm.date">
-      </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Date' : 'தேதி' }}</label>
+      <input type="date" [(ngModel)]="regForm.date">
+    </div>
+  </div>
+  <div class="input-row">
+    <label>{{ 'profile.name' | translate }}</label>
+    <input type="text" [(ngModel)]="regForm.name" [placeholder]="'register.namePlaceholder' | translate">
+  </div>
+  <div class="input-row">
+    <label>{{ 'learn.gender' | translate }}</label>
+    <div class="radio-row">
+      <label><input type="radio" name="rGender" value="ஆண்" [(ngModel)]="regForm.gender"> {{ 'learn.male' | translate
+        }}</label>
+      <label><input type="radio" name="rGender" value="பெண்" [(ngModel)]="regForm.gender"> {{ 'learn.female' | translate
+        }}</label>
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.religion' | translate }}</label>
+      <select [(ngModel)]="regForm.religion">
+        <option value="">{{ 'common.select' | translate }}</option>
+        <option value="Hindu">{{ 'religion.hindu' | translate }}</option>
+        <option value="Christian">{{ 'religion.christian' | translate }}</option>
+        <option value="Muslim">{{ 'religion.muslim' | translate }}</option>
+
+      </select>
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Caste' : 'ஜாதி' }}</label>
+      <input type="text" [(ngModel)]="regForm.caste"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Caste' : 'ஜாதி'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Sub-caste' : 'உட்பிரிவு' }}</label>
+      <input type="text" [(ngModel)]="regForm.subcaste"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Sub-caste' : 'உட்பிரிவு'">
+    </div>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Birth Details' : 'பிறப்பு
+    விவரங்கள்' }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'astrology.dob' | translate }}</label>
+      <input type="date" [(ngModel)]="regForm.dob">
+    </div>
+    <div class="input-row">
+      <label>{{ 'astrology.tob' | translate }}</label>
+      <input type="time" [(ngModel)]="regForm.tob">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'astrology.pob' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.pob"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'City / Town' : 'ஊர்'">
+    </div>
+    <div class="input-row">
+      <label>{{ 'learn.age' | translate }}</label>
+      <input type="number" [(ngModel)]="regForm.age" [placeholder]="'learn.age' | translate">
+    </div>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Physical & Education' : 'உடல் &
+    கல்வி' }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Height' : 'உயரம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.height"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 5\'6' : 'உ.ம்: 5\'6'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Complexion' : 'நிறம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.complexion"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Complexion' : 'நிறம்'">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Blood Group' : 'இரத்த பிரிவு' }}</label>
+      <input type="text" [(ngModel)]="regForm.bloodGroup" placeholder="B+">
+    </div>
+    <div class="input-row">
+      <label>{{ 'learn.education' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.education"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Qualification' : 'படிப்பு'">
+    </div>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Work & Income' : 'பணி & வருமானம்'
+    }}</div>
+  <div class="input-row">
+    <label>{{ 'learn.job' | translate }}</label>
+    <input type="text" [(ngModel)]="regForm.job"
+      [placeholder]="translationService.currentLanguage() === 'en' ? 'Job details' : 'வேலை விவரம்'">
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Work Place' : 'பணியிடம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.workPlace"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Work Place' : 'பணியிடம்'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Monthly Income' : 'மாத வருமானம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.monthlyIncome" placeholder="₹">
+    </div>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Family Details' : 'குடும்ப
+    விவரங்கள்' }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Father Name' : 'தந்தை பெயர்' }}</label>
+      <input type="text" [(ngModel)]="regForm.fatherName"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Father Name' : 'தந்தை பெயர்'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Mother Name' : 'தாய் பெயர்' }}</label>
+      <input type="text" [(ngModel)]="regForm.motherName"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Mother Name' : 'தாய் பெயர்'">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Father Occupation' : 'தந்தை வேலை' }}</label>
+      <input type="text" [(ngModel)]="regForm.fatherJob"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Father Occupation' : 'தந்தை வேலை'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Mother Occupation' : 'தாய் வேலை' }}</label>
+      <input type="text" [(ngModel)]="regForm.motherJob"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Mother Occupation' : 'தாய் வேலை'">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Native Place' : 'பூர்வீகம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.nativePlace"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Native Town' : 'பூர்வீக ஊர்'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Current City' : 'வசிப்பிடம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.currentPlace"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Current City' : 'தற்போதைய ஊர்'">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Family Deity' : 'குலதெய்வம்' }}</label>
+      <input type="text" [(ngModel)]="regForm.familyDeity"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Family Deity' : 'குலதெய்வம்'">
+    </div>
+    <div class="input-row">
+      <label>{{ 'astrology.gothram' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.gotra" [placeholder]="'astrology.gothram' | translate">
+    </div>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Siblings' : 'உடன்பிறந்தோர்' }}
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Brothers' : 'ஆண்' }}</label>
+      <input type="number" [(ngModel)]="regForm.brothers"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Count' : 'எண்ணிக்கை'">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Sisters' : 'பெண்' }}</label>
+      <input type="number" [(ngModel)]="regForm.sisters"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Count' : 'எண்ணிக்கை'">
+    </div>
+  </div>
+  <div class="input-row">
+    <label>{{ translationService.currentLanguage() === 'en' ? 'Siblings Marital Status' : 'திருமண நிலை (உடன்பிறந்தோர்)'
+      }}</label>
+    <input type="text" [(ngModel)]="regForm.siblingsMaritalStatus"
+      [placeholder]="translationService.currentLanguage() === 'en' ? 'Married/Unmarried details' : 'திருமணமானவர்கள் விவரம்'">
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Expectation & Property' :
+    'எதிர்பார்ப்பு & சொத்து' }}</div>
+  <div class="input-row">
+    <label>{{ translationService.currentLanguage() === 'en' ? 'Dowry / Assets Expectation' : 'சீர் வரிசை' }}</label>
+    <input type="text" [(ngModel)]="regForm.dowryExpectation"
+      [placeholder]="translationService.currentLanguage() === 'en' ? 'Assets expectation details' : 'சீர் வரிசை விவரம்'">
+  </div>
+  <div class="input-row">
+    <label>{{ translationService.currentLanguage() === 'en' ? 'Property Details' : 'சொத்து விவரம்' }}</label>
+    <input type="text" [(ngModel)]="regForm.propertyDetails"
+      [placeholder]="translationService.currentLanguage() === 'en' ? 'Property details' : 'சொத்து விவரம்'">
+  </div>
+  <div class="input-row">
+    <label>{{ translationService.currentLanguage() === 'en' ? 'Partner Expectation' : 'எதிர்பார்ப்பு' }}</label>
+    <textarea [(ngModel)]="regForm.partnerExpectation"
+      [placeholder]="translationService.currentLanguage() === 'en' ? 'Expectations about partner...' : 'வரன் பற்றிய எதிர்பார்ப்பு...'"
+      rows="3"></textarea>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Horoscope Details' : 'ஜாதக
+    விவரங்கள்' }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'profile.lagnam' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.lagnam" [placeholder]="'profile.lagnam' | translate">
+    </div>
+    <div class="input-row">
+      <label>{{ 'profile.rasi' | translate }}</label>
+      <select [(ngModel)]="regForm.rasi">
+        @for (r of rasis; track r) {
+        <option [value]="r.name">{{ translationService.currentLanguage() === 'en' ? r.english : r.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'profile.star' | translate }}</label>
+      <input type="text" [(ngModel)]="regForm.star" [placeholder]="'profile.star' | translate">
+    </div>
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Dasa Balance (Y, M, D)' : 'திசா இருப்பு (வருடம், மாதம்,
+        நாள்)' }}</label>
+      <input type="text" [(ngModel)]="regForm.dasaBalance"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 2Y 3M 10D' : 'உ.ம்: 2வ 3மா 10நா'">
+    </div>
+  </div>
+  <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Contact Details' : 'தொடர்பு
+    விவரங்கள்' }}</div>
+  <div class="input-row">
+    <label>{{ 'profile.address' | translate }}</label>
+    <textarea [(ngModel)]="regForm.address"
+      [placeholder]="translationService.currentLanguage() === 'en' ? 'Full Address' : 'முழு முகவரி'"
+      rows="3"></textarea>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Contact Person Relation' : 'பதிவு செய்தவர் உறவு நிலை'
+        }}</label>
+      <input type="text" [(ngModel)]="regForm.contactPersonRelation"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Relation' : 'உறவு'">
     </div>
     <div class="input-row">
       <label>{{ 'profile.name' | translate }}</label>
-      <input type="text" [(ngModel)]="regForm.name" [placeholder]="'register.namePlaceholder' | translate">
+      <input type="text" [(ngModel)]="regForm.contactPersonName" [placeholder]="'profile.name' | translate">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Phone Number 1' : 'அலைபேசி எண் 1' }}</label>
+      <input type="tel" [(ngModel)]="regForm.phone1"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Number 1' : 'எண் 1'">
     </div>
     <div class="input-row">
-      <label>{{ 'learn.gender' | translate }}</label>
-      <div class="radio-row">
-        <label><input type="radio" name="rGender" value="ஆண்" [(ngModel)]="regForm.gender"> {{ 'learn.male' | translate }}</label>
-        <label><input type="radio" name="rGender" value="பெண்" [(ngModel)]="regForm.gender"> {{ 'learn.female' | translate }}</label>
-      </div>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Phone Number 2' : 'அலைபேசி எண் 2' }}</label>
+      <input type="tel" [(ngModel)]="regForm.phone2"
+        [placeholder]="translationService.currentLanguage() === 'en' ? 'Number 2' : 'எண் 2'">
     </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Religion' : 'மதம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.religion" [placeholder]="translationService.currentLanguage() === 'en' ? 'Religion' : 'மதம்'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Caste' : 'ஜாதி' }}</label>
-        <input type="text" [(ngModel)]="regForm.caste" [placeholder]="translationService.currentLanguage() === 'en' ? 'Caste' : 'ஜாதி'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Sub-caste' : 'உட்பிரிவு' }}</label>
-        <input type="text" [(ngModel)]="regForm.subcaste" [placeholder]="translationService.currentLanguage() === 'en' ? 'Sub-caste' : 'உட்பிரிவு'">
-      </div>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Birth Details' : 'பிறப்பு விவரங்கள்' }}</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ 'astrology.dob' | translate }}</label>
-        <input type="date" [(ngModel)]="regForm.dob">
-      </div>
-      <div class="input-row">
-        <label>{{ 'astrology.tob' | translate }}</label>
-        <input type="time" [(ngModel)]="regForm.tob">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ 'astrology.pob' | translate }}</label>
-        <input type="text" [(ngModel)]="regForm.pob" [placeholder]="translationService.currentLanguage() === 'en' ? 'City / Town' : 'ஊர்'">
-      </div>
-      <div class="input-row">
-        <label>{{ 'learn.age' | translate }}</label>
-        <input type="number" [(ngModel)]="regForm.age" [placeholder]="'learn.age' | translate">
-      </div>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Physical & Education' : 'உடல் & கல்வி' }}</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Height' : 'உயரம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.height" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 5\'6' : 'உ.ம்: 5\'6'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Complexion' : 'நிறம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.complexion" [placeholder]="translationService.currentLanguage() === 'en' ? 'Complexion' : 'நிறம்'">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Blood Group' : 'இரத்த பிரிவு' }}</label>
-        <input type="text" [(ngModel)]="regForm.bloodGroup" placeholder="B+">
-      </div>
-      <div class="input-row">
-        <label>{{ 'learn.education' | translate }}</label>
-        <input type="text" [(ngModel)]="regForm.education" [placeholder]="translationService.currentLanguage() === 'en' ? 'Qualification' : 'படிப்பு'">
-      </div>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Work & Income' : 'பணி & வருமானம்' }}</div>
+  </div>
+  <div class="input-grid">
     <div class="input-row">
-      <label>{{ 'learn.job' | translate }}</label>
-      <input type="text" [(ngModel)]="regForm.job" [placeholder]="translationService.currentLanguage() === 'en' ? 'Job details' : 'வேலை விவரம்'">
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Work Place' : 'பணியிடம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.workPlace" [placeholder]="translationService.currentLanguage() === 'en' ? 'Work Place' : 'பணியிடம்'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Monthly Income' : 'மாத வருமானம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.monthlyIncome" placeholder="₹">
-      </div>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Family Details' : 'குடும்ப விவரங்கள்' }}</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Father Name' : 'தந்தை பெயர்' }}</label>
-        <input type="text" [(ngModel)]="regForm.fatherName" [placeholder]="translationService.currentLanguage() === 'en' ? 'Father Name' : 'தந்தை பெயர்'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Mother Name' : 'தாய் பெயர்' }}</label>
-        <input type="text" [(ngModel)]="regForm.motherName" [placeholder]="translationService.currentLanguage() === 'en' ? 'Mother Name' : 'தாய் பெயர்'">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Father Occupation' : 'தந்தை வேலை' }}</label>
-        <input type="text" [(ngModel)]="regForm.fatherJob" [placeholder]="translationService.currentLanguage() === 'en' ? 'Father Occupation' : 'தந்தை வேலை'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Mother Occupation' : 'தாய் வேலை' }}</label>
-        <input type="text" [(ngModel)]="regForm.motherJob" [placeholder]="translationService.currentLanguage() === 'en' ? 'Mother Occupation' : 'தாய் வேலை'">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Native Place' : 'பூர்வீகம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.nativePlace" [placeholder]="translationService.currentLanguage() === 'en' ? 'Native Town' : 'பூர்வீக ஊர்'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Current City' : 'வசிப்பிடம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.currentPlace" [placeholder]="translationService.currentLanguage() === 'en' ? 'Current City' : 'தற்போதைய ஊர்'">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Family Deity' : 'குலதெய்வம்' }}</label>
-        <input type="text" [(ngModel)]="regForm.familyDeity" [placeholder]="translationService.currentLanguage() === 'en' ? 'Family Deity' : 'குலதெய்வம்'">
-      </div>
-      <div class="input-row">
-        <label>{{ 'astrology.gothram' | translate }}</label>
-        <input type="text" [(ngModel)]="regForm.gotra" [placeholder]="'astrology.gothram' | translate">
-      </div>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Siblings' : 'உடன்பிறந்தோர்' }}</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Brothers' : 'ஆண்' }}</label>
-        <input type="number" [(ngModel)]="regForm.brothers" [placeholder]="translationService.currentLanguage() === 'en' ? 'Count' : 'எண்ணிக்கை'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Sisters' : 'பெண்' }}</label>
-        <input type="number" [(ngModel)]="regForm.sisters" [placeholder]="translationService.currentLanguage() === 'en' ? 'Count' : 'எண்ணிக்கை'">
-      </div>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம் (Photo)' }}</label>
+      <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="image/*">
+      @if (regForm.photoUrl) {
+      <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
+        'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
+      }
     </div>
     <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Siblings Marital Status' : 'திருமண நிலை (உடன்பிறந்தோர்)' }}</label>
-      <input type="text" [(ngModel)]="regForm.siblingsMaritalStatus" [placeholder]="translationService.currentLanguage() === 'en' ? 'Married/Unmarried details' : 'திருமணமானவர்கள் விவரம்'">
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம் (Horoscope)' }}</label>
+      <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="image/*,application/pdf">
+      @if (regForm.jadhagamUrl) {
+      <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
+        'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
+      }
     </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Expectation & Property' : 'எதிர்பார்ப்பு & சொத்து' }}</div>
-    <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Dowry / Assets Expectation' : 'சீர் வரிசை' }}</label>
-      <input type="text" [(ngModel)]="regForm.dowryExpectation" [placeholder]="translationService.currentLanguage() === 'en' ? 'Assets expectation details' : 'சீர் வரிசை விவரம்'">
-    </div>
-    <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Property Details' : 'சொத்து விவரம்' }}</label>
-      <input type="text" [(ngModel)]="regForm.propertyDetails" [placeholder]="translationService.currentLanguage() === 'en' ? 'Property details' : 'சொத்து விவரம்'">
-    </div>
-    <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Partner Expectation' : 'எதிர்பார்ப்பு' }}</label>
-      <textarea [(ngModel)]="regForm.partnerExpectation" [placeholder]="translationService.currentLanguage() === 'en' ? 'Expectations about partner...' : 'வரன் பற்றிய எதிர்பார்ப்பு...'" rows="3"></textarea>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Horoscope Details' : 'ஜாதக விவரங்கள்' }}</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ 'profile.lagnam' | translate }}</label>
-        <input type="text" [(ngModel)]="regForm.lagnam" [placeholder]="'profile.lagnam' | translate">
-      </div>
-      <div class="input-row">
-        <label>{{ 'profile.rasi' | translate }}</label>
-        <select [(ngModel)]="regForm.rasi">
-          @for (r of rasis; track r) {
-            <option [value]="r.name">{{ translationService.currentLanguage() === 'en' ? r.english : r.name }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ 'profile.star' | translate }}</label>
-        <input type="text" [(ngModel)]="regForm.star" [placeholder]="'profile.star' | translate">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Dasa Balance (Y, M, D)' : 'திசா இருப்பு (வருடம், மாதம், நாள்)' }}</label>
-        <input type="text" [(ngModel)]="regForm.dasaBalance" [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. 2Y 3M 10D' : 'உ.ம்: 2வ 3மா 10நா'">
-      </div>
-    </div>
-    <div class="form-section-title">{{ translationService.currentLanguage() === 'en' ? 'Contact Details' : 'தொடர்பு விவரங்கள்' }}</div>
-    <div class="input-row">
-      <label>{{ 'profile.address' | translate }}</label>
-      <textarea [(ngModel)]="regForm.address" [placeholder]="translationService.currentLanguage() === 'en' ? 'Full Address' : 'முழு முகவரி'" rows="3"></textarea>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Contact Person Relation' : 'பதிவு செய்தவர் உறவு நிலை' }}</label>
-        <input type="text" [(ngModel)]="regForm.contactPersonRelation" [placeholder]="translationService.currentLanguage() === 'en' ? 'Relation' : 'உறவு'">
-      </div>
-      <div class="input-row">
-        <label>{{ 'profile.name' | translate }}</label>
-        <input type="text" [(ngModel)]="regForm.contactPersonName" [placeholder]="'profile.name' | translate">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Phone Number 1' : 'அலைபேசி எண் 1' }}</label>
-        <input type="tel" [(ngModel)]="regForm.phone1" [placeholder]="translationService.currentLanguage() === 'en' ? 'Number 1' : 'எண் 1'">
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Phone Number 2' : 'அலைபேசி எண் 2' }}</label>
-        <input type="tel" [(ngModel)]="regForm.phone2" [placeholder]="translationService.currentLanguage() === 'en' ? 'Number 2' : 'எண் 2'">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம் (Photo)' }}</label>
-        <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="image/*">
-        @if (regForm.photoUrl) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
-        }
-      </div>
-      <div class="input-row">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம் (Horoscope)' }}</label>
-        <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="image/*,application/pdf">
-        @if (regForm.jadhagamUrl) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
-        }
-      </div>
-    </div>
+  </div>
 
-    @if (regValidationError) {
-      <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        <span>{{ regValidationError }}</span>
-      </div>
-    }
+  @if (regValidationError) {
+  <div class="blocked-date-alert-banner"
+    style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>{{ regValidationError | translate }}</span>
+  </div>
+  }
 
-    <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">{{ translationService.currentLanguage() === 'en' ? 'Proceed to Payment (Registration Fee)' : 'கட்டணம் செலுத்த (பதிவு கட்டணம்)' }}</button>
-  </form>
+  <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">{{
+    translationService.currentLanguage() === 'en' ? 'Proceed to Payment (Registration Fee)' : 'கட்டணம் செலுத்த (பதிவு
+    கட்டணம்)' }}</button>
+</form>
 }
 
 <!-- Step 2: Registration Payment -->
 @if (serviceStep === 2) {
-  <div class="match-result-container">
-    <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
-      <h2>கட்டண விவரம்</h2>
-    </div>
-    <div class="payment-card" style="margin-top: 1rem;">
-      <div class="pm-row">
-        <span>பதிவு கட்டணம்:</span>
-        <strong>₹500</strong>
-      </div>
-      <div class="pm-row">
-        <span>விண்ணப்பதாரர்:</span>
-        <strong>{{ regForm.name }}</strong>
-      </div>
-      <button class="btn-app-gold btn-pay-now" (click)="payForRegistration()" [disabled]="isProcessingPayment">
-        {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
-      </button>
-    </div>
+<div class="match-result-container">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+    <h2>கட்டண விவரம்</h2>
   </div>
+  <div class="payment-card" style="margin-top: 1rem;">
+    <div class="pm-row">
+      <span>பதிவு கட்டணம்:</span>
+      <strong>₹500</strong>
+    </div>
+    <div class="pm-row">
+      <span>விண்ணப்பதாரர்:</span>
+      <strong>{{ regForm.name }}</strong>
+    </div>
+    <button class="btn-app-gold btn-pay-now" (click)="payForRegistration()" [disabled]="isProcessingPayment">
+      {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
+    </button>
+  </div>
+</div>
 }
 
 <!-- Step 3: Registration Success -->
 @if (serviceStep === 3) {
-  <div class="match-result-container">
-    <div class="success-box">
-      <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
-      <h3>பதிவு வெற்றியடைந்தது!</h3>
-      <p>உங்கள் திருமண பதிவு வெற்றிகரமாக பெறப்பட்டது. எங்கள் மையம் உங்களை விரைவில் தொடர்பு கொள்ளும்.</p>
-      <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>
-    </div>
+<div class="match-result-container">
+  <div class="success-box">
+    <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
+    <h3>பதிவு வெற்றியடைந்தது!</h3>
+    <p>உங்கள் திருமண பதிவு வெற்றிகரமாக பெறப்பட்டது. எங்கள் மையம் உங்களை விரைவில் தொடர்பு கொள்ளும்.</p>
+    <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>
   </div>
+</div>
 }
 
 <!-- ============================================== -->
@@ -412,197 +484,201 @@
 
 <!-- Step 4: Matching Input Form -->
 @if (serviceStep === 4) {
-  <form ngNoForm (submit)="$event.preventDefault(); calculatePorutham()" class="matching-form-card">
-    <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
-      <h2>திருமணப் பொருத்தம்</h2>
+<form ngNoForm (submit)="$event.preventDefault(); calculatePorutham()" class="matching-form-card">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+    <h2>{{ 'matching.title' | translate }}</h2>
+  </div>
+  <!-- Girl Inputs -->
+  <div class="form-section-title"><i class="bi bi-gender-female text-danger me-1"></i> {{ 'matching.girlDetails' |
+    translate }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.girlName' | translate }} *</label>
+      <input type="text" [(ngModel)]="matchingForm.girlName" [placeholder]="'matching.girlNamePlaceholder' | translate">
     </div>
-    <!-- Girl Inputs -->
-    <div class="form-section-title"><i class="bi bi-gender-female text-danger me-1"></i> பெண் விவரங்கள் (ஜாதகி)</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>ஜாதகி பெயர் *</label>
-        <input type="text" [(ngModel)]="matchingForm.girlName" placeholder="பெண்ணின் பெயர்">
-      </div>
-      <div class="input-row">
-        <label>பெண் வயது</label>
-        <input type="number" [(ngModel)]="matchingForm.girlAge" placeholder="வயது">
-      </div>
+    <div class="input-row">
+      <label>{{ 'matching.girlAge' | translate }}</label>
+      <input type="number" [(ngModel)]="matchingForm.girlAge" [placeholder]="'learn.age' | translate">
     </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>பெண் ராசி</label>
-        <select [(ngModel)]="matchingForm.girlRasi">
-          @for (r of rasis; track r) {
-            <option [value]="r.name">{{ r.name }}</option>
-          }
-        </select>
-      </div>
-      <div class="input-row">
-        <label>பெண் நட்சத்திரம் *</label>
-        <select [(ngModel)]="matchingForm.girlStar">
-          @for (s of starsList; track s) {
-            <option [value]="s.star">{{ s.star }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>பிறந்த தேதி</label>
-        <input type="date" [(ngModel)]="matchingForm.girlDob">
-      </div>
-      <div class="input-row">
-        <label>பிறந்த நேரம்</label>
-        <input type="time" [(ngModel)]="matchingForm.girlTob">
-      </div>
-    </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>புகைப்படம் (Photo)</label>
-        <input type="file" (change)="uploadDocument($event, 'match', 'girlPhoto')" accept="image/*">
-        @if (matchingForm.girlPhoto) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.girlRasi' | translate }}</label>
+      <select [(ngModel)]="matchingForm.girlRasi">
+        @for (r of rasis; track r) {
+        <option [value]="r.name">{{ r.name }}</option>
         }
-      </div>
-      <div class="input-row">
-        <label>ஜாதக கட்டம் (Horoscope)</label>
-        <input type="file" (change)="uploadDocument($event, 'match', 'girlJadhagam')" accept="image/*,application/pdf">
-        @if (matchingForm.girlJadhagam) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>{{ 'matching.girlStar' | translate }} *</label>
+      <select [(ngModel)]="matchingForm.girlStar">
+        @for (s of starsList; track s) {
+        <option [value]="s.star">{{ s.star }}</option>
         }
-      </div>
+      </select>
     </div>
-    <div class="form-divider"></div>
-    <!-- Boy Inputs -->
-    <div class="form-section-title"><i class="bi bi-gender-male text-primary me-1"></i> ஆண் விவரங்கள் (ஜாதகர்)</div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>ஜாதகர் பெயர் *</label>
-        <input type="text" [(ngModel)]="matchingForm.boyName" placeholder="ஆணின் பெயர்">
-      </div>
-      <div class="input-row">
-        <label>ஆண் வயது</label>
-        <input type="number" [(ngModel)]="matchingForm.boyAge" placeholder="வயது">
-      </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'astrology.dob' | translate }}</label>
+      <input type="date" [(ngModel)]="matchingForm.girlDob">
     </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>ஆண் ராசி</label>
-        <select [(ngModel)]="matchingForm.boyRasi">
-          @for (r of rasis; track r) {
-            <option [value]="r.name">{{ r.name }}</option>
-          }
-        </select>
-      </div>
-      <div class="input-row">
-        <label>ஆண் நட்சத்திரம் *</label>
-        <select [(ngModel)]="matchingForm.boyStar">
-          @for (s of starsList; track s) {
-            <option [value]="s.star">{{ s.star }}</option>
-          }
-        </select>
-      </div>
+    <div class="input-row">
+      <label>{{ 'astrology.tob' | translate }}</label>
+      <input type="time" [(ngModel)]="matchingForm.girlTob">
     </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>பிறந்த தேதி</label>
-        <input type="date" [(ngModel)]="matchingForm.boyDob">
-      </div>
-      <div class="input-row">
-        <label>பிறந்த நேரம்</label>
-        <input type="time" [(ngModel)]="matchingForm.boyTob">
-      </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.photo' | translate }}</label>
+      <input type="file" (change)="uploadDocument($event, 'match', 'girlPhoto')" accept="image/*">
+      @if (matchingForm.girlPhoto) {
+      <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
+      }
     </div>
-    <div class="input-grid">
-      <div class="input-row">
-        <label>புகைப்படம் (Photo)</label>
-        <input type="file" (change)="uploadDocument($event, 'match', 'boyPhoto')" accept="image/*">
-        @if (matchingForm.boyPhoto) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+    <div class="input-row">
+      <label>{{ 'matching.horoscopeChart' | translate }}</label>
+      <input type="file" (change)="uploadDocument($event, 'match', 'girlJadhagam')" accept="image/*,application/pdf">
+      @if (matchingForm.girlJadhagam) {
+      <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
+      }
+    </div>
+  </div>
+  <div class="form-divider"></div>
+  <!-- Boy Inputs -->
+  <div class="form-section-title"><i class="bi bi-gender-male text-primary me-1"></i> {{ 'matching.boyDetails' |
+    translate }}</div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.boyName' | translate }} *</label>
+      <input type="text" [(ngModel)]="matchingForm.boyName" [placeholder]="'matching.boyNamePlaceholder' | translate">
+    </div>
+    <div class="input-row">
+      <label>{{ 'matching.boyAge' | translate }}</label>
+      <input type="number" [(ngModel)]="matchingForm.boyAge" [placeholder]="'learn.age' | translate">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.boyRasi' | translate }}</label>
+      <select [(ngModel)]="matchingForm.boyRasi">
+        @for (r of rasis; track r) {
+        <option [value]="r.name">{{ r.name }}</option>
         }
-      </div>
-      <div class="input-row">
-        <label>ஜாதக கட்டம் (Horoscope)</label>
-        <input type="file" (change)="uploadDocument($event, 'match', 'boyJadhagam')" accept="image/*,application/pdf">
-        @if (matchingForm.boyJadhagam) {
-          <small class="text-success"><i class="bi bi-check-circle-fill"></i> பதிவேற்றப்பட்டது</small>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>{{ 'matching.boyStar' | translate }} *</label>
+      <select [(ngModel)]="matchingForm.boyStar">
+        @for (s of starsList; track s) {
+        <option [value]="s.star">{{ s.star }}</option>
         }
-      </div>
+      </select>
     </div>
-    <div class="input-row" style="margin-top: 1rem;">
-      <label>தொடர்பு கொள்ள வேண்டிய அலைபேசி எண் <span class="required-star">*</span></label>
-      <input type="tel" [(ngModel)]="matchingForm.requesterPhone" placeholder="+91 98765 43210">
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'astrology.dob' | translate }}</label>
+      <input type="date" [(ngModel)]="matchingForm.boyDob">
     </div>
+    <div class="input-row">
+      <label>{{ 'astrology.tob' | translate }}</label>
+      <input type="time" [(ngModel)]="matchingForm.boyTob">
+    </div>
+  </div>
+  <div class="input-grid">
+    <div class="input-row">
+      <label>{{ 'matching.photo' | translate }}</label>
+      <input type="file" (change)="uploadDocument($event, 'match', 'boyPhoto')" accept="image/*">
+      @if (matchingForm.boyPhoto) {
+      <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
+      }
+    </div>
+    <div class="input-row">
+      <label>{{ 'matching.horoscopeChart' | translate }}</label>
+      <input type="file" (change)="uploadDocument($event, 'match', 'boyJadhagam')" accept="image/*,application/pdf">
+      @if (matchingForm.boyJadhagam) {
+      <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
+      }
+    </div>
+  </div>
+  <div class="input-row" style="margin-top: 1rem;">
+    <label>{{ 'matching.contactPhone' | translate }} <span class="required-star">*</span></label>
+    <input type="tel" [(ngModel)]="matchingForm.requesterPhone" placeholder="+91 98765 43210">
+  </div>
 
-    @if (validationError) {
-      <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        <span>{{ validationError }}</span>
-      </div>
-    }
+  @if (validationError) {
+  <div class="blocked-date-alert-banner"
+    style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>{{ validationError | translate }}</span>
+  </div>
+  }
 
-    <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
-      <span>10 பொருத்தங்கள் கணக்கிடுக ➔</span>
-    </button>
-  </form>
+  <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
+    <span>{{ 'matching.calculate10Porutham' | translate }} ➔</span>
+  </button>
+</form>
 }
 
 <!-- Step 5: Traditional Matching Sheet Result (ஓம் பிரகஸ்பதி ஜோதிடாலயம் படிவம்) -->
 @if (serviceStep === 5) {
-  <div class="traditional-sheet-container">
-    <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
-      <h2>பொருத்தப் படிவம்</h2>
-    </div>
-    
-    <!-- Action buttons at the top -->
-    <div class="sheet-actions" style="margin-bottom: 15px; display: flex; justify-content: center;">
-      <button class="btn-app-gold" (click)="downloadAdminResult()">
-        <i class="bi bi-download me-1"></i> பொருத்த சீட்டை டவுன்லோட் செய்க
-      </button>
-    </div>
-
-    <div class="sheet-paper" style="display: none;">
-      <!-- Hidden because user only wants to see it in profile after admin uploads, or maybe they just don't want to see the dummy sheet -->
-    </div>
-    
-    <div style="text-align: center; padding: 30px 15px;">
-      <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #10b981;"></i>
-      <h3 style="margin-top: 15px; color: #064e3b;">கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!</h3>
-      <p style="color: #475569; margin-top: 10px; line-height: 1.5;">
-        உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது. 
-        முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் (Profile) -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை பதிவிறக்கம் செய்து கொள்ளலாம்.
-      </p>
-    </div>
-    <!-- Bottom Action buttons -->
-    <div class="sheet-actions" style="margin-top: 15px;">
-      <button class="btn-secondary-pill" (click)="serviceStep = 4">
-        <i class="bi bi-arrow-repeat me-1"></i> புதிய பொருத்தம்
-      </button>
-    </div>
+<div class="traditional-sheet-container">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+    <h2>பொருத்தப் படிவம்</h2>
   </div>
+
+  <!-- Action buttons at the top -->
+  <div class="sheet-actions" style="margin-bottom: 15px; display: flex; justify-content: center;">
+    <button class="btn-app-gold" (click)="downloadAdminResult()">
+      <i class="bi bi-download me-1"></i> பொருத்த சீட்டை டவுன்லோட் செய்க
+    </button>
+  </div>
+
+  <div class="sheet-paper" style="display: none;">
+    <!-- Hidden because user only wants to see it in profile after admin uploads, or maybe they just don't want to see the dummy sheet -->
+  </div>
+
+  <div style="text-align: center; padding: 30px 15px;">
+    <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #10b981;"></i>
+    <h3 style="margin-top: 15px; color: #064e3b;">கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!</h3>
+    <p style="color: #475569; margin-top: 10px; line-height: 1.5;">
+      உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது.
+      முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் (Profile) -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை
+      பதிவிறக்கம் செய்து கொள்ளலாம்.
+    </p>
+  </div>
+  <!-- Bottom Action buttons -->
+  <div class="sheet-actions" style="margin-top: 15px;">
+    <button class="btn-secondary-pill" (click)="serviceStep = 4">
+      <i class="bi bi-arrow-repeat me-1"></i> புதிய பொருத்தம்
+    </button>
+  </div>
+</div>
 }
 
 <!-- Step 6: Matching Payment -->
 @if (serviceStep === 6) {
-  <div class="match-result-container">
-    <div class="overlay-header-inline">
-      <button class="btn-back" (click)="goBack()">◀</button>
-      <h2>கட்டண விவரம்</h2>
-    </div>
-    <div class="payment-card" style="margin-top: 1rem;">
-      <div class="pm-row">
-        <span>பொருத்தம் பார்க்க கட்டணம்:</span>
-        <strong>₹100</strong>
-      </div>
-      <div class="pm-row">
-        <span>ஜாதகர்:</span>
-        <strong>{{ matchingForm.boyName }} & {{ matchingForm.girlName }}</strong>
-      </div>
-      <button class="btn-app-gold btn-pay-now" (click)="payForMatching()" [disabled]="isProcessingPayment">
-        {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
-      </button>
-    </div>
+<div class="match-result-container">
+  <div class="overlay-header-inline">
+    <button class="btn-back" (click)="goBack()">◀</button>
+    <h2>கட்டண விவரம்</h2>
   </div>
+  <div class="payment-card" style="margin-top: 1rem;">
+    <div class="pm-row">
+      <span>பொருத்தம் பார்க்க கட்டணம்:</span>
+      <strong>₹100</strong>
+    </div>
+    <div class="pm-row">
+      <span>ஜாதகர்:</span>
+      <strong>{{ matchingForm.boyName }} & {{ matchingForm.girlName }}</strong>
+    </div>
+    <button class="btn-app-gold btn-pay-now" (click)="payForMatching()" [disabled]="isProcessingPayment">
+      {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
+    </button>
+  </div>
+</div>
 }

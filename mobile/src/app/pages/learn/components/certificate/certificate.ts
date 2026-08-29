@@ -13,6 +13,7 @@ export class LearnCertificateComponent implements OnInit {
   @Input() enrollForm: any;
   @Output() close = new EventEmitter<void>();
 
+  activeDocumentTab: 'certificate' | 'marksheet' = 'certificate';
   certificates: any[] = [];
   selectedCert: any = null;
   isLoading = false;
@@ -55,28 +56,40 @@ export class LearnCertificateComponent implements OnInit {
     this.selectedCert = cert;
   }
 
-  downloadCertificate(cert: any) {
-    const url = cert?.pdf_download_url;
-    if (url) {
-      window.open(url, '_blank');
+  downloadCertificate(cert?: any) {
+    const target = cert || this.selectedCert;
+    const fileUrl = target?.pdf_url || target?.file_url || target?.url || '';
+    const name = target?.course_title || 'Certificate';
+    this.downloadDocument(fileUrl, name);
+  }
+
+  shareCertificate(cert?: any) {
+    const target = cert || this.selectedCert;
+    const fileUrl = target?.pdf_url || target?.file_url || target?.url || '';
+    const name = target?.course_title || 'Certificate';
+    this.shareDocument(fileUrl, name);
+  }
+
+  downloadDocument(docUrl: string, fallbackName: string) {
+    if (docUrl) {
+      window.open(docUrl, '_blank');
     } else {
-      alert('சான்றிதழ் பதிவிறக்க இணைப்பு கிடைக்கவில்லை (Download link not available)');
+      alert(`${fallbackName} பதிவிறக்க இணைப்பு கிடைக்கவில்லை (Download link not available)`);
     }
   }
 
-  shareCertificate(cert: any) {
-    const url = cert?.pdf_download_url || window.location.href;
-    const title = cert?.course_title || 'சாதனைச் சான்றிதழ்';
+  shareDocument(docUrl: string, title: string) {
+    const url = docUrl || window.location.href;
     if (navigator.share) {
       navigator.share({
         title: title,
-        text: `${title} சான்றிதழ்`,
+        text: title,
         url: url
       }).catch(() => {});
     } else {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
-          alert('சான்றிதழ் இணைப்பு நகலெடுக்கப்பட்டது (Certificate link copied to clipboard)');
+          alert('இணைப்பு நகலெடுக்கப்பட்டது (Link copied to clipboard)');
         });
       } else {
         alert(url);

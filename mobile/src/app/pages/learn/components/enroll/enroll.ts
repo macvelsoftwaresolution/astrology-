@@ -117,7 +117,7 @@ export class LearnEnrollComponent implements OnInit {
   fetchIlanilaiDetails() {
     const query = (this.ilanilaiSearchQuery || this.localForm.prevUserId || '').trim();
     if (!query) {
-      this.fetchErrorMsg = 'தயவுசெய்து உங்கள் இளநிலை மாணவர் ஐடியை (Student ID e.g. 26AR01) உள்ளிடவும்.';
+      this.fetchErrorMsg = 'errors.fillIlanilaiId';
       this.fetchSuccessMsg = '';
       return;
     }

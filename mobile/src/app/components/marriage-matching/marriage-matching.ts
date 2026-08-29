@@ -274,33 +274,33 @@ export class MarriageMatchingComponent implements OnInit {
     this.validationError = '';
 
     if (!this.matchingForm.girlName || this.matchingForm.girlName.trim().length < 2) {
-      this.validationError = 'தயவுசெய்து மணமகளின் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.validationError = 'errors.brideName';
       return;
     }
     if (!this.matchingForm.girlDob) {
-      this.validationError = 'தயவுசெய்து மணமகளின் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+      this.validationError = 'errors.brideDob';
       return;
     }
     if (!this.matchingForm.girlRasi || !this.matchingForm.girlStar) {
-      this.validationError = 'தயவுசெய்து மணமகளின் ராசி மற்றும் நட்சத்திரத்தைத் தேர்ந்தெடுக்கவும்!';
+      this.validationError = 'errors.brideRasiStar';
       return;
     }
     if (!this.matchingForm.boyName || this.matchingForm.boyName.trim().length < 2) {
-      this.validationError = 'தயவுசெய்து மணமகனின் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.validationError = 'errors.groomName';
       return;
     }
     if (!this.matchingForm.boyDob) {
-      this.validationError = 'தயவுசெய்து மணமகனின் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+      this.validationError = 'errors.groomDob';
       return;
     }
     if (!this.matchingForm.boyRasi || !this.matchingForm.boyStar) {
-      this.validationError = 'தயவுசெய்து மணமகனின் ராசி மற்றும் நட்சத்திரத்தைத் தேர்ந்தெடுக்கவும்!';
+      this.validationError = 'errors.groomRasiStar';
       return;
     }
 
     const cleanPhone = (this.matchingForm.requesterPhone || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      this.validationError = 'தயவுசெய்து தொடர்பு கொள்ள வேண்டிய சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      this.validationError = 'errors.enterPhone';
       return;
     }
 
@@ -524,16 +524,16 @@ export class MarriageMatchingComponent implements OnInit {
   goToRegPayment() {
     this.regValidationError = '';
     if (!this.regForm.name || this.regForm.name.trim().length < 2) {
-      this.regValidationError = 'தயவுசெய்து வரனின் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.regValidationError = 'errors.varanName';
       return;
     }
     if (!this.regForm.dob) {
-      this.regValidationError = 'தயவுசெய்து வரனின் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+      this.regValidationError = 'errors.varanDob';
       return;
     }
     const cleanPhone = (this.regForm.phone1 || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      this.regValidationError = 'தயவுசெய்து தொடர்பு கொள்ள வேண்டிய சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      this.regValidationError = 'errors.enterPhone';
       return;
     }
     this.serviceStep = 2;

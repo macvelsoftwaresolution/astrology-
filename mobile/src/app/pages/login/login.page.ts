@@ -37,7 +37,7 @@ export class LoginPage implements OnInit {
 
   onLogin() {
     if (!this.mobileNumber || !this.password) {
-      this.errorMessage = 'தயவுசெய்து பயனர் பெயர் / மின்னஞ்சல் மற்றும் கடவுச்சொல்லை உள்ளிடவும்.';
+      this.errorMessage = 'login.fillFieldsError';
       return;
     }
 
@@ -52,9 +52,9 @@ export class LoginPage implements OnInit {
         }
       },
       error: (err) => {
-        let msg = 'தவறான பயனர் பெயர்/மின்னஞ்சல் அல்லது கடவுச்சொல்';
+        let msg = 'login.invalidCreds';
         if (err.status === 0) {
-          msg = 'சர்வர் தொடர்புகொள்ள முடியவில்லை (Network Error). உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.';
+          msg = 'login.netError';
         } else if (err.error?.message) {
           msg = err.error.message;
         }

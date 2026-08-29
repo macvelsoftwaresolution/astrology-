@@ -1,29 +1,36 @@
-<div class="tab-header">
-  <h2><i class="bi bi-journal-bookmark-fill" style="color: #0ea5e9; margin-right: 8px;"></i> ஜாதகம் எழுதுதல் (Jathagam Writing Orders)</h2>
-  <p class="tab-subtitle">View and manage all Jathagam Writing requests from users.</p>
+<div class="tab-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom: 20px;">
+  <div>
+    <h2><i class="bi bi-journal-bookmark-fill" style="color: #0ea5e9; margin-right: 8px;"></i> {{ 'jathagamWriting.title' | translate }}</h2>
+    <p class="tab-subtitle">{{ 'jathagamWriting.subtitle' | translate }}</p>
+  </div>
+  <button class="btn-primary" (click)="loadOrders()" [disabled]="isLoading" style="background:#0284c7;">
+    <i class="bi bi-arrow-clockwise" [class.spin]="isLoading"></i> {{ 'common.refresh' | translate }}
+  </button>
 </div>
 
 <div class="table-container">
   @if (isLoading) {
     <div style="text-align:center; padding:40px; color:#64748b;">
-      <i class="bi bi-hourglass-split" style="font-size:24px; color:#d97706; display:block; margin-bottom:10px;"></i>
-      Loading orders...
+      <i class="bi bi-hourglass-split spin" style="font-size:24px; color:#d97706; display:block; margin-bottom:10px;"></i>
+      {{ 'common.loading' | translate }}
     </div>
   } @else if (orders.length === 0) {
     <div style="text-align:center; padding:40px; color:#94a3b8;">
       <i class="bi bi-inbox" style="font-size:32px; display:block; margin-bottom:10px;"></i>
-      No Jathagam Writing orders found.
+      {{ 'jathagamWriting.noOrders' | translate }}
     </div>
   } @else {
     <table class="data-table">
       <thead>
         <tr>
-          <th>Order ID / Date</th>
-          <th>User Info</th>
-          <th>Birth Details</th>
-          <th>Question / Notes</th>
-          <th>Payment</th>
-          <th>Status</th>
+          <th>{{ 'jathagamWriting.orderIdDate' | translate }}</th>
+          <th>{{ 'jathagamWriting.userInfo' | translate }}</th>
+          <th>{{ 'jathagamWriting.birthDetails' | translate }}</th>
+          <th>{{ 'jathagamWriting.deliveryAddress' | translate }}</th>
+          <th>{{ 'jathagamWriting.courierTracking' | translate }}</th>
+          <th>{{ 'jathagamWriting.payment' | translate }}</th>
+          <th>{{ 'common.status' | translate }}</th>
+          <th>{{ 'common.actions' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -39,23 +46,43 @@
               <br>
               <span style="font-size: 12px; color: #64748b;"><i class="bi bi-telephone-fill me-1"></i> {{ order.user_phone }}</span>
             </td>
-            <td style="font-size: 13px;">
+            <td style="font-size: 12px; line-height: 1.4;">
               <div><strong>DOB:</strong> {{ parseDetails(order.details)?.dob || 'N/A' }}</div>
               <div><strong>TOB:</strong> {{ parseDetails(order.details)?.tob || 'N/A' }}</div>
               <div><strong>POB:</strong> {{ parseDetails(order.details)?.pob || 'N/A' }}</div>
               <div><strong>Gender:</strong> {{ parseDetails(order.details)?.gender || 'N/A' }}</div>
             </td>
-            <td style="font-size: 13px; max-width: 200px;">
-              {{ parseDetails(order.details)?.notes || '-' }}
+            <td style="font-size: 12px; max-width: 180px;">
+              @if (order.shipping_address || parseDetails(order.details)?.address) {
+                <div style="color: #1e293b; font-weight: 500;">
+                  <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                  {{ order.shipping_address || parseDetails(order.details)?.address }}
+                </div>
+              } @else {
+                <span style="color: #94a3b8; font-style: italic;">{{ 'jathagamWriting.noAddress' | translate }}</span>
+              }
+            </td>
+            <td>
+              @if (order.awb_number) {
+                <div><strong style="color: #0f172a; font-size: 12px;"><i class="bi bi-truck me-1 text-primary"></i>{{ order.courier_partner || 'Courier' }}</strong></div>
+                <span style="color: #2563eb; font-weight: 700; font-size: 11px;">AWB: {{ order.awb_number }}</span>
+              } @else {
+                <span style="color: #94a3b8; font-size: 12px;">{{ 'jathagamWriting.notDispatched' | translate }}</span>
+              }
             </td>
             <td>
               <div style="font-weight: 700; color: #15803d;">₹{{ order.price }}</div>
-              <span class="status-badge status-paid">Paid</span>
+              <span class="status-badge status-paid" style="font-size: 11px;">Paid</span>
             </td>
             <td>
-              <span class="status-badge" [ngClass]="order.status === 'Completed' ? 'status-active' : 'status-pending'">
-                {{ order.status }}
+              <span class="status-pill" [ngClass]="(order.status || 'Pending').toLowerCase()">
+                {{ order.status || 'Pending' }}
               </span>
+            </td>
+            <td>
+              <button class="btn-sm" (click)="openCourierModal(order)" style="white-space:nowrap; background:#d97706; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-weight:600; cursor:pointer;">
+                <i class="bi bi-truck"></i> {{ 'courier.updateCourier' | translate }}
+              </button>
             </td>
           </tr>
         }
@@ -63,3 +90,69 @@
     </table>
   }
 </div>
+
+<!-- MODAL: UPDATE COURIER DISPATCH -->
+@if (selectedOrderForCourier) {
+  <div class="modal-overlay" (click)="selectedOrderForCourier = null">
+    <div class="modal-box" (click)="$event.stopPropagation()" style="max-width: 480px;">
+      <div class="modal-header" style="border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="margin:0; font-size:16px; font-weight:700; color:#0f172a;">
+          <i class="bi bi-truck" style="color:#d97706; margin-right:6px;"></i>
+          {{ 'jathagamWriting.updateModalTitle' | translate }}
+        </h3>
+        <button class="close-btn" (click)="selectedOrderForCourier = null"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div style="background:#f8fafc; padding:10px 14px; border-radius:8px; margin-bottom:16px; border:1px solid #e2e8f0; font-size:13px;">
+        <div>{{ 'courier.orderId' | translate }}: <strong style="color:#0f172a;">#{{ selectedOrderForCourier.id }}</strong></div>
+        <div>{{ 'team.user' | translate }}: <strong>{{ selectedOrderForCourier.user_name }}</strong> ({{ selectedOrderForCourier.user_phone }})</div>
+      </div>
+
+      <form (ngSubmit)="saveCourierStatus()">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">
+            {{ 'jathagamWriting.orderStatus' | translate }} *
+          </label>
+          <select [(ngModel)]="courierForm.status" name="cstatus" class="ctrl" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Packed">Packed</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">
+            {{ 'jathagamWriting.courierPartner' | translate }}
+          </label>
+          <input [(ngModel)]="courierForm.courier_partner" name="cpartner" placeholder="ST Courier / Blue Dart / DTDC / India Post" class="ctrl" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">
+            {{ 'jathagamWriting.trackingNo' | translate }}
+          </label>
+          <input [(ngModel)]="courierForm.awb_number" name="cawb" placeholder="e.g. ST99882211, BD884729" class="ctrl" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom:18px;">
+          <label style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">
+            {{ 'jathagamWriting.deliveryAddress' | translate }}
+          </label>
+          <textarea [(ngModel)]="courierForm.shipping_address" name="caddr" rows="2" placeholder="Door No, Street, City, Pincode..." class="ctrl" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;"></textarea>
+        </div>
+
+        <div class="modal-btns" style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" (click)="selectedOrderForCourier = null" class="btn-cancel" style="padding:8px 16px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer;">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="submit" class="btn-primary" style="padding:8px 20px; border-radius:6px; background:#d97706; color:#fff; border:none; font-weight:700; cursor:pointer;">
+            <i class="bi bi-check-circle-fill me-1"></i> {{ 'jathagamWriting.saveAndNotify' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

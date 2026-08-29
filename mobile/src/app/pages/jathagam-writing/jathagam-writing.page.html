@@ -73,6 +73,14 @@
         </div>
 
         <div class="form-input-card">
+          <label>கூரியர் டெலிவரி முகவரி (Delivery Address) <span class="required-star">*</span></label>
+          <div class="input-inner-wrap textarea-wrap">
+            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+            <textarea [(ngModel)]="form.address" name="jwAddress" rows="2" placeholder="கதவு எண், தெரு, ஊர், பின்கோடு (Door No, Street, City, Pincode)"></textarea>
+          </div>
+        </div>
+
+        <div class="form-input-card">
           <label>{{ 'jathagamWriting.notes' | translate }}</label>
           <div class="input-inner-wrap textarea-wrap">
             <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
@@ -83,7 +91,7 @@
         @if (validationError) {
           <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>{{ validationError }}</span>
+            <span>{{ validationError | translate }}</span>
           </div>
         }
 

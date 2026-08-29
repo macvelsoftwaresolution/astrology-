@@ -15,26 +15,6 @@
           <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
         </div>
       </div>
-
-      <!-- Right Section: App Language Selector Toggle -->
-      <div class="top-nav-right">
-        <div style="display: inline-flex; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(236, 200, 118, 0.4); padding: 2px; border-radius: 20px;">
-          <button type="button" 
-            (click)="translationService.setLanguage('ta')" 
-            [style.background]="translationService.currentLanguage() === 'ta' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'transparent'"
-            [style.color]="translationService.currentLanguage() === 'ta' ? '#000' : '#FFF'"
-            style="border: none; padding: 4px 10px; border-radius: 16px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;">
-            தமிழ்
-          </button>
-          <button type="button" 
-            (click)="translationService.setLanguage('en')" 
-            [style.background]="translationService.currentLanguage() === 'en' ? 'linear-gradient(135deg, #ffd700, #aa7c11)' : 'transparent'"
-            [style.color]="translationService.currentLanguage() === 'en' ? '#000' : '#FFF'"
-            style="border: none; padding: 4px 10px; border-radius: 16px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;">
-            English
-          </button>
-        </div>
-      </div>
     </div>
   </ion-header>
 }
@@ -110,7 +90,7 @@
                 </div>
               </div>
               @if (loginErrorMessage) {
-                <p class="error-msg-txt">{{ loginErrorMessage }}</p>
+                <p class="error-msg-txt">{{ loginErrorMessage | translate }}</p>
               }
               <button class="action-login-btn" (click)="loginToCourse()">{{ 'learn.loginBtn' | translate }}</button>
 
