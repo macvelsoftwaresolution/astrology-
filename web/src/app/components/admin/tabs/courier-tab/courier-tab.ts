@@ -15,14 +15,19 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
   styleUrls: ['../../admin-dashboard.css', './courier-tab.css']
 })
 export class CourierTabComponent implements OnInit {
+  activeLogisticsTab: 'books' | 'jathagam' = 'books';
+
   bookOrders: any[] = [];
+  jathagamOrders: any[] = [];
   books: any[] = [];
   buyersList: any[] = [];
   isLoading = false;
+  isJathagamLoading = false;
   isBooksLoading = false;
 
   selectedOrderForCourier: any = null;
-  courierForm = { status: 'Shipped', courier_partner: 'Blue Dart', awb_number: '' };
+  selectedOrderType: 'book' | 'jathagam' = 'book';
+  courierForm = { status: 'Shipped', courier_partner: 'ST Courier', awb_number: '', shipping_address: '' };
 
   showAddBookModal = false;
   bookModalTitle = 'Add New Book';
@@ -49,7 +54,15 @@ export class CourierTabComponent implements OnInit {
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       this.loadOrders();
+      this.loadJathagamOrders();
       this.loadBooks();
+    }
+  }
+
+  setLogisticsTab(tab: 'books' | 'jathagam'): void {
+    this.activeLogisticsTab = tab;
+    if (tab === 'jathagam' && this.jathagamOrders.length === 0) {
+      this.loadJathagamOrders();
     }
   }
 
@@ -70,6 +83,35 @@ export class CourierTabComponent implements OnInit {
         try { this.cdr.detectChanges(); } catch {}
       }
     });
+  }
+
+  loadJathagamOrders(): void {
+    this.isJathagamLoading = true;
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/admin/jathagam-writing-orders`, headers).subscribe({
+      next: (res) => {
+        this.jathagamOrders = res?.orders || (Array.isArray(res) ? res : []);
+        this.isJathagamLoading = false;
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
+      },
+      error: () => {
+        this.jathagamOrders = [];
+        this.isJathagamLoading = false;
+        try { this.cdr.markForCheck(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
+      }
+    });
+  }
+
+  parseDetails(detailsStr: any): any {
+    if (!detailsStr) return {};
+    if (typeof detailsStr === 'object') return detailsStr;
+    try {
+      return JSON.parse(detailsStr);
+    } catch {
+      return {};
+    }
   }
 
   loadBooks(): void {
@@ -205,23 +247,41 @@ export class CourierTabComponent implements OnInit {
     });
   }
 
-  openCourierModal(order: any): void {
+  openCourierModal(order: any, type: 'book' | 'jathagam' = 'book'): void {
     this.selectedOrderForCourier = order;
+    this.selectedOrderType = type;
+
+    let address = order.shipping_address || '';
+    if (!address && type === 'jathagam') {
+      const details = this.parseDetails(order.details);
+      address = details.address || details.shipping_address || '';
+    }
+
     this.courierForm = {
       status: order.status || 'Shipped',
-      courier_partner: order.courier_partner || 'Blue Dart',
-      awb_number: order.awb_number || ''
+      courier_partner: order.courier_partner || 'ST Courier',
+      awb_number: order.awb_number || '',
+      shipping_address: address
     };
   }
 
   saveCourierStatus(): void {
     if (!this.selectedOrderForCourier) return;
     const headers = this.authService.getAuthHeaders();
-    this.http.put<any>(`${environment.apiUrl}/admin/book-orders/${this.selectedOrderForCourier.id}/courier`, this.courierForm, headers).subscribe({
+
+    const url = this.selectedOrderType === 'book'
+      ? `${environment.apiUrl}/admin/book-orders/${this.selectedOrderForCourier.id}/courier`
+      : `${environment.apiUrl}/admin/bookings/${this.selectedOrderForCourier.id}/courier`;
+
+    this.http.put<any>(url, this.courierForm, headers).subscribe({
       next: (res) => {
         this.toastService.success(res.message || 'Courier status updated successfully!', 'கூரியர் நிலை மாற்றப்பட்டது');
         this.selectedOrderForCourier = null;
-        this.loadOrders();
+        if (this.selectedOrderType === 'book') {
+          this.loadOrders();
+        } else {
+          this.loadJathagamOrders();
+        }
       },
       error: () => this.toastService.error('Failed to update courier status.', 'பிழை ஏற்பட்டது')
     });

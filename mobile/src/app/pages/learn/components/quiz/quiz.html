@@ -8,7 +8,14 @@
     @if (quizQuestions.length > 0) {
       <div class="quiz-content-body">
         <div class="question-tracker-row">
-          <span>{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}</span>
+          <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 6px;">
+            <span>{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}</span>
+            @if (timerDisplay) {
+              <span style="font-weight: 700; color: #dc2626; display: flex; align-items: center; gap: 4px;">
+                <i class="bi bi-stopwatch"></i> {{ timerDisplay }}
+              </span>
+            }
+          </div>
           <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
         </div>
         <div class="question-box">

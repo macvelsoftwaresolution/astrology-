@@ -56,7 +56,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   myBookOrders: any[] = [];
   showMyOrdersModal = false;
   isLoadingOrders = false;
-  
+
   // Specific Order Status Modal State
   selectedOrderDetails: any = null;
   showOrderStatusModal = false;
@@ -76,7 +76,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     public translationService: TranslationService
-  ) {}
+  ) { }
 
   // 60-Day Curriculum State
   curriculumDays: any[] = [];
@@ -89,7 +89,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     if (savedLesson) {
       try {
         this.selectedLesson = JSON.parse(savedLesson);
-      } catch {}
+      } catch { }
     }
     this.loadUserProfile();
     this.loadStudentCurriculum();
@@ -113,7 +113,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           this.cdr.detectChanges();
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -260,10 +260,11 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
             this.enrollForm.mobileNumber = u.phone || u.mobileNumber || u.mobile || u.mobile_number || '';
             this.enrollForm.postalAddress = u.address || u.postalAddress || u.postal_address || '';
             this.enrollForm.studentId = u.student_id || '';
+            this.enrollForm.avatarUrl = u.avatar_url || u.avatarUrl || '';
             this.cdr.detectChanges();
           }
         },
-        error: () => {}
+        error: () => { }
       });
     }
   }
@@ -279,7 +280,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           this.updateMarqueeMessage();
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -314,8 +315,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     if (isNaN(d.getTime())) return false;
     const now = new Date();
     return d.getFullYear() === now.getFullYear() &&
-           d.getMonth() === now.getMonth() &&
-           d.getDate() === now.getDate();
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate();
   }
 
   dismissTicker(e?: Event) {
@@ -324,7 +325,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       this.currentDisplayedNotifs.forEach(n => {
         try {
           localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
-        } catch {}
+        } catch { }
         this.markNotificationAsRead(n);
       });
     }
@@ -332,7 +333,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       this.currentDisplayedLives.forEach(lc => {
         try {
           localStorage.setItem('ticker_live_dismissed_' + lc.id, 'true');
-        } catch {}
+        } catch { }
       });
     }
     this.hideTicker = true;
@@ -345,7 +346,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       this.currentDisplayedNotifs.forEach(n => {
         try {
           localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
-        } catch {}
+        } catch { }
         this.markNotificationAsRead(n);
       });
     }
@@ -353,7 +354,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       this.currentDisplayedLives.forEach(lc => {
         try {
           localStorage.setItem('ticker_live_dismissed_' + lc.id, 'true');
-        } catch {}
+        } catch { }
       });
     }
     this.hideTicker = true;
@@ -372,7 +373,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
         if (!lc.is_active) return false;
         try {
           if (localStorage.getItem('ticker_live_dismissed_' + lc.id)) return false;
-        } catch {}
+        } catch { }
         return lc.is_today || this.isToday(lc.created_at || lc.date);
       });
 
@@ -390,7 +391,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
         if (n.is_read) return false;
         try {
           if (localStorage.getItem('ticker_notif_seen_' + n.id)) return false;
-        } catch {}
+        } catch { }
         return this.isToday(n.created_at);
       });
 
@@ -429,7 +430,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   markNotificationAsRead(n: any) {
     try {
       localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
-    } catch {}
+    } catch { }
     if (n.is_read || !this.authService.isLoggedIn()) {
       this.updateMarqueeMessage();
       return;
@@ -449,7 +450,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       this.notifications.forEach((n: any) => {
         try {
           localStorage.setItem('ticker_notif_seen_' + n.id, 'true');
-        } catch {}
+        } catch { }
         n.is_read = true;
       });
     }
@@ -458,7 +459,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     if (!this.authService.isLoggedIn()) return;
     const authHeaders = this.authService.getAuthHeaders().headers;
     this.http.put<any>(`${environment.apiUrl}/user/notifications/read-all`, {}, { headers: authHeaders }).subscribe({
-      next: () => {}
+      next: () => { }
     });
   }
 
@@ -490,7 +491,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   syncBooksWithOrders() {
     if (this.books.length > 0) {
       this.books.forEach(b => {
-        const order = this.myBookOrders.find(o => 
+        const order = this.myBookOrders.find(o =>
           o.book_title && b.title && o.book_title.trim().toLowerCase() === b.title.trim().toLowerCase()
         );
         if (order) {
@@ -549,7 +550,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           this.exams = res.exams;
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -568,7 +569,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           }));
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -584,7 +585,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           }));
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -595,7 +596,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           // Find course matching the enrolled level
           const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
           let activeCourse = res.courses.find((c: any) => c.level && c.level.toUpperCase() === userLevel);
-          
+
           if (!activeCourse) {
             // No course found for the selected level. Do not fallback to another level's course.
             this.chapters = [];
@@ -619,7 +620,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           }
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -651,24 +652,24 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     this.activeBookCheckout = true;
     const user: any = this.authService.getCurrentUser('education') || this.authService.getCurrentUser('astrology') || this.authService.getCurrentUser();
 
-    const name = this.enrollForm?.fullName || 
-                 this.enrollForm?.studentNameTamil || 
-                 user?.fullName || 
-                 user?.name || 
-                 user?.student_name || '';
+    const name = this.enrollForm?.fullName ||
+      this.enrollForm?.studentNameTamil ||
+      user?.fullName ||
+      user?.name ||
+      user?.student_name || '';
 
-    const phone = this.enrollForm?.mobileNumber || 
-                  this.enrollForm?.altMobileNumber || 
-                  this.enrollForm?.phone || 
-                  user?.mobileNumber || 
-                  user?.phone || 
-                  user?.mobile || '';
+    const phone = this.enrollForm?.mobileNumber ||
+      this.enrollForm?.altMobileNumber ||
+      this.enrollForm?.phone ||
+      user?.mobileNumber ||
+      user?.phone ||
+      user?.mobile || '';
 
-    const address = this.enrollForm?.postalAddress || 
-                    this.enrollForm?.address || 
-                    user?.postalAddress || 
-                    user?.address || 
-                    user?.postal_address || '';
+    const address = this.enrollForm?.postalAddress ||
+      this.enrollForm?.address ||
+      user?.postalAddress ||
+      user?.address ||
+      user?.postal_address || '';
 
     this.checkoutForm = {
       name: name,
@@ -796,7 +797,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       duration: lesson.duration,
       description: lesson.description || `இப்பாடம் ${lesson.title} பற்றிய விரிவான விளக்கங்களை வழங்குகிறது.`
     };
-    
+
     // Add custom properties for handling different content types
     (this.selectedLesson as any).type = lesson.type;
     (this.selectedLesson as any).url = lesson.url;

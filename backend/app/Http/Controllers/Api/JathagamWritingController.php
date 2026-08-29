@@ -53,6 +53,8 @@ class JathagamWritingController extends Controller
             $details['paid_at'] = now()->toDateTimeString();
         }
 
+        $shippingAddress = $request->shipping_address ?? $request->address ?? ($details['address'] ?? ($details['shipping_address'] ?? null));
+
         DB::table('bookings')->insert([
             'id' => $orderId,
             'user_name' => $request->user_name,
@@ -60,6 +62,7 @@ class JathagamWritingController extends Controller
             'user_id' => $userId,
             'service_type' => 'Jathagam Writing',
             'price' => $request->price,
+            'shipping_address' => $shippingAddress,
             'status' => 'Pending',
             'details' => json_encode($details, JSON_UNESCAPED_UNICODE),
             'created_at' => now(),
@@ -147,6 +150,77 @@ class JathagamWritingController extends Controller
         return response()->json([
             'success' => true,
             'orders' => $orders
+        ]);
+    }
+
+    /**
+     * Admin: Update Courier Dispatch Status & AWB Tracking Number for Jathagam Writing / Booking
+     */
+    public function updateCourierStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:Pending,Processing,Packed,Shipped,Delivered,Completed',
+            'awb_number' => 'nullable|string',
+            'courier_partner' => 'nullable|string',
+            'shipping_address' => 'nullable|string',
+        ]);
+
+        $updateData = [
+            'status' => $request->status,
+            'awb_number' => $request->awb_number,
+            'courier_partner' => $request->courier_partner,
+            'updated_at' => now(),
+        ];
+
+        if ($request->filled('shipping_address')) {
+            $updateData['shipping_address'] = $request->shipping_address;
+        }
+
+        if ($request->status === 'Shipped') {
+            $updateData['dispatch_date'] = now();
+        }
+
+        DB::table('bookings')->where('id', $id)->update($updateData);
+
+        // Send Real Notification to User
+        $booking = DB::table('bookings')->where('id', $id)->first();
+        if ($booking && $booking->user_id) {
+            try {
+                $statusMap = [
+                    'Pending'    => 'காத்திருப்பில் உள்ளது',
+                    'Processing' => 'செயலாக்கத்தில் உள்ளது (தயாராகிறது)',
+                    'Packed'     => 'பேக் செய்யப்பட்டது (பார்சல் தயார்)',
+                    'Shipped'    => 'கூரியரில் அனுப்பி வைக்கப்பட்டது',
+                    'Delivered'  => 'விநியோகிக்கப்பட்டது',
+                    'Completed'  => 'நிறைவடைந்தது',
+                ];
+                $statusTa = $statusMap[$request->status] ?? $request->status;
+
+                $partner = $request->courier_partner ?: 'Courier';
+                $awbText = $request->awb_number ? " ({$partner} AWB: {$request->awb_number})" : '';
+
+                DB::table('notifications')->insert([
+                    'user_id'    => $booking->user_id,
+                    'title'      => 'ஜாதகம் ஆர்டர் நிலை: ' . $statusTa,
+                    'body'       => "உங்கள் ஜாதகம் எழுதுதல் ஆர்டர் #{$booking->id} நிலை: {$statusTa}{$awbText}",
+                    'type'       => 'booking',
+                    'target_tab' => 'profile',
+                    'is_read'    => false,
+                    'data'       => json_encode([
+                        'booking_id'      => $booking->id,
+                        'awb_number'      => $request->awb_number,
+                        'courier_partner' => $request->courier_partner,
+                        'status'          => $request->status
+                    ]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $e) {}
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Courier status updated successfully.'
         ]);
     }
 }

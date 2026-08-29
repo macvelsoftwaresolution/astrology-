@@ -128,6 +128,10 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
               chart_url: b.chart_url,
               parigaram: b.parigaram,
               parigaram_document: b.parigaram_document,
+              shipping_address: b.shipping_address || details.address || details.shipping_address || null,
+              courier_partner: b.courier_partner || null,
+              awb_number: b.awb_number || null,
+              dispatch_date: b.dispatch_date || null,
               razorpay_payment_id: details.razorpay_payment_id || b.razorpay_payment_id,
               razorpay_order_id: details.razorpay_order_id || b.razorpay_order_id,
               notes: details.notes || details.query || '',
@@ -244,9 +248,67 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
 
   isUploadingAvatar = false;
 
+  onDirectAvatarUpload(event: any) {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    // 1. Instant local FileReader preview
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.personDetails.profileImageUrl = e.target.result;
+      this.editForm.profileImageUrl = e.target.result;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+
+    // 2. Upload to Cloudinary / Server
+    this.isUploadingAvatar = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'avatars');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          this.personDetails.profileImageUrl = res.url;
+          this.editForm.profileImageUrl = res.url;
+          this.isUploadingAvatar = false;
+          this.cdr.detectChanges();
+
+          // 3. Immediately persist avatar_url to user profile in database
+          this.http.put<any>(`${environment.apiUrl}/user/profile`, { avatar_url: res.url }, this.headers).subscribe({
+            next: () => {
+              this.isSavedNotification = true;
+              this.cdr.detectChanges();
+              setTimeout(() => {
+                this.isSavedNotification = false;
+                this.cdr.detectChanges();
+              }, 3000);
+            }
+          });
+        } else {
+          this.isUploadingAvatar = false;
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {
+        this.isUploadingAvatar = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   onProfilePicSelected(event: any) {
     const file = event.target?.files?.[0];
     if (!file) return;
+
+    // Instant local preview
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.editForm.profileImageUrl = e.target.result;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
 
     this.isUploadingAvatar = true;
     const formData = new FormData();
@@ -257,11 +319,13 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
       next: (res) => {
         if (res && res.url) {
           this.editForm.profileImageUrl = res.url;
+          this.isUploadingAvatar = false;
+          this.cdr.detectChanges();
         }
-        this.isUploadingAvatar = false;
       },
       error: () => {
         this.isUploadingAvatar = false;
+        this.cdr.detectChanges();
       }
     });
   }
