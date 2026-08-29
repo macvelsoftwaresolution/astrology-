@@ -629,30 +629,30 @@ export class HomePage implements OnInit {
   nextStep() {
     this.bookingValidationError = '';
     if (!this.astrologerBookingForm.name || this.astrologerBookingForm.name.trim().length < 2) {
-      this.bookingValidationError = 'தயவுசெய்து உங்கள் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.bookingValidationError = 'errors.enterValidName';
       return;
     }
     const cleanPhone = (this.astrologerBookingForm.phone || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      this.bookingValidationError = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      this.bookingValidationError = 'errors.enterPhone';
       return;
     }
     if (this.selectedCategory?.id !== 'vasthu') {
       if (!this.astrologerBookingForm.dob) {
-        this.bookingValidationError = 'தயவுசெய்து உங்கள் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+        this.bookingValidationError = 'errors.enterDob';
         return;
       }
       if (!this.astrologerBookingForm.tob) {
-        this.bookingValidationError = 'தயவுசெய்து உங்கள் பிறந்த நேரத்தைக் குறிப்பிடவும்!';
+        this.bookingValidationError = 'errors.enterTob';
         return;
       }
     }
     if (!this.astrologerBookingForm.pob || this.astrologerBookingForm.pob.trim().length < 2) {
-      this.bookingValidationError = 'தயவுசெய்து உங்கள் பிறந்த ஊர் / முகவரியை உள்ளிடவும்!';
+      this.bookingValidationError = 'errors.enterPob';
       return;
     }
     if (this.isCurrentDateBlocked) {
-      this.bookingValidationError = 'தேர்ந்தெடுத்த நாளில் ஜோதிடர் கிடைக்கவில்லை. தயவுசெய்து வேறு தேதியைத் தேர்ந்தெடுக்கவும்!';
+      this.bookingValidationError = 'errors.astrologerUnavailable';
       return;
     }
     this.serviceStep++;
@@ -768,34 +768,34 @@ export class HomePage implements OnInit {
     if (!this.selectedAstrologer || this.isProcessingPayment) return;
 
     if (!this.astrologerBookingForm.name || this.astrologerBookingForm.name.trim().length < 2) {
-      this.bookingValidationError = 'தயவுசெய்து உங்கள் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.bookingValidationError = 'errors.enterValidName';
       return;
     }
 
     const cleanPhone = (this.astrologerBookingForm.phone || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      this.bookingValidationError = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்! (எ.கா: 9876543210)';
+      this.bookingValidationError = 'errors.enterPhone';
       return;
     }
 
     if (this.selectedCategory?.id !== 'vasthu') {
       if (!this.astrologerBookingForm.dob) {
-        this.bookingValidationError = 'தயவுசெய்து உங்கள் பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்!';
+        this.bookingValidationError = 'errors.enterDob';
         return;
       }
       if (!this.astrologerBookingForm.tob) {
-        this.bookingValidationError = 'தயவுசெய்து உங்கள் பிறந்த நேரத்தைக் குறிப்பிடவும்!';
+        this.bookingValidationError = 'errors.enterTob';
         return;
       }
     }
 
     if (!this.astrologerBookingForm.pob || this.astrologerBookingForm.pob.trim().length < 2) {
-      this.bookingValidationError = 'தயவுசெய்து உங்கள் பிறந்த ஊர் / முகவரியை உள்ளிடவும்!';
+      this.bookingValidationError = 'errors.enterPob';
       return;
     }
 
     if (this.isCurrentDateBlocked) {
-      this.bookingValidationError = 'தேர்ந்தெடுத்த நாளில் ஜோதிடர் கிடைக்கவில்லை. தயவுசெய்து வேறு தேதியைத் தேர்ந்தெடுக்கவும்!';
+      this.bookingValidationError = 'errors.astrologerUnavailable';
       return;
     }
 

@@ -3,7 +3,7 @@
     <button class="cert-back-btn" (click)="close.emit()">
       <i class="bi bi-arrow-left me-1"></i>
     </button>
-    <h2>சாதனைச் சான்றிதழ் (Certificate)</h2>
+    <h2>{{ 'profile.certTitle' | translate }}</h2>
     <div style="width: 32px;"></div>
   </div>
 
@@ -11,12 +11,12 @@
 
     @if (isLoading) {
       <div style="text-align: center; padding: 40px; color: #ECC876; font-weight: 700;">
-        <i class="bi bi-hourglass-split me-1"></i> சான்றிதழ்கள் ஏற்றப்படுகிறது...
+        <i class="bi bi-hourglass-split me-1"></i> {{ 'common.loading' | translate }}
       </div>
     } @else if (certificates.length > 0) {
       <div class="cert-message-banner">
-        <h3><i class="bi bi-award-fill text-gold me-1"></i>உங்கள் சாதனை சான்றிதழ்</h3>
-        <p>வாழ்த்துகள்! நிர்வாகியால் வழங்கப்பட்ட உங்களின் சான்றிதழ் கீழே பதிவேற்றப்பட்டுள்ளது.</p>
+        <h3><i class="bi bi-award-fill text-gold me-1"></i>{{ 'profile.yourCert' | translate }}</h3>
+        <p>{{ 'profile.certCongrats' | translate }}</p>
       </div>
 
       <!-- Certificate Selector Tabs if multiple -->
@@ -37,24 +37,24 @@
       <div class="cert-gold-card">
         <div class="cert-border-outer">
           <div class="cert-border-inner">
-            <h1 class="cert-academy-title">ஆருத்ரா அகாடமி</h1>
-            <p class="cert-cert-title">சாதனைச் சான்றிதழ் (Certificate of Achievement)</p>
+            <h1 class="cert-academy-title">{{ 'profile.academyTitle' | translate }}</h1>
+            <p class="cert-cert-title">{{ 'profile.certTitle' | translate }}</p>
             
-            <p class="cert-given-to">வழங்கப்படும் நபர்:</p>
-            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'மாணவர்' }}</h2>
+            <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
+            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</h2>
             
             <p class="cert-accomplishment">
-              <strong>{{ selectedCert?.course_title || 'வேத ஜோதிட படிப்புகள்' }}</strong> என்ற பாடநெறியை வெற்றிகரமாக நிறைவு செய்ததற்காக இச்சான்றிதழ் வழங்கப்படுகிறது.
+              <strong>{{ selectedCert?.course_title || ('profile.vedicCourseTitle' | translate) }}</strong>
             </p>
 
             <div style="text-align: center; margin: 10px 0; font-family: monospace; color: #7A3508; font-weight: 800; font-size: 12px;">
-              சான்றிதழ் எண்: {{ selectedCert?.certificate_number }}
+              {{ 'profile.certNumber' | translate }} {{ selectedCert?.certificate_number }}
             </div>
 
             <div class="cert-details-footer">
               <div>
-                <span>வழங்கப்பட்ட நாள்: {{ selectedCert?.issue_date }}</span>
-                <span>மதிப்பெண்: {{ selectedCert?.score || 100 }}%</span>
+                <span>{{ 'profile.issueDate' | translate }} {{ selectedCert?.issue_date }}</span>
+                <span>{{ 'profile.score' | translate }} {{ selectedCert?.score || 100 }}%</span>
               </div>
               <div class="cert-seal"><i class="bi bi-patch-check-fill text-gold me-1"></i> VERIFIED</div>
             </div>
@@ -63,10 +63,10 @@
       </div>
 
       <button class="cert-action-btn pdf" (click)="downloadCertificate(selectedCert)">
-        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> சான்றிதழ் பதிவிறக்கம் (Download PDF/Image)
+        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> {{ 'profile.downloadCert' | translate }}
       </button>
       <button class="cert-action-btn share" (click)="shareCertificate(selectedCert)">
-        <i class="bi bi-share-fill me-2"></i> பகிர் (Share)
+        <i class="bi bi-share-fill me-2"></i> {{ 'profile.shareCert' | translate }}
       </button>
 
     } @else {
@@ -74,9 +74,9 @@
       <!-- Fallback when no certificate uploaded by Admin yet -->
       <div style="text-align: center; padding: 30px 15px; background: rgba(255,255,255,0.08); border-radius: 16px; border: 1px dashed rgba(236,200,118,0.4); margin-bottom: 20px;">
         <i class="bi bi-award-fill" style="font-size: 3.5rem; color: #ECC876; display: block; margin-bottom: 12px;"></i>
-        <h3 style="color: #ECC876; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">சான்றிதழ் தயாரிப்பில் உள்ளது</h3>
+        <h3 style="color: #ECC876; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">{{ 'profile.certInPrep' | translate }}</h3>
         <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; line-height: 1.5; margin-bottom: 0;">
-          நிர்வாகியால் சான்றிதழ் பதிவேற்றப்பட்டவுடன் இங்கு தோன்றும் மற்றும் பதிவிறக்கம் செய்ய இயலும்.
+          {{ 'profile.certInPrepDesc' | translate }}
         </p>
       </div>
 
@@ -84,12 +84,12 @@
       <div class="cert-gold-card" style="opacity: 0.75;">
         <div class="cert-border-outer">
           <div class="cert-border-inner">
-            <h1 class="cert-academy-title">ஆருத்ரா அகாடமி</h1>
-            <p class="cert-cert-title">சாதனைச் சான்றிதழ் (Certificate Preview)</p>
-            <p class="cert-given-to">வழங்கப்படும் நபர்:</p>
-            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'மாணவர்' }}</h2>
+            <h1 class="cert-academy-title">{{ 'profile.academyTitle' | translate }}</h1>
+            <p class="cert-cert-title">{{ 'profile.certPreview' | translate }}</p>
+            <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
+            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</h2>
             <p class="cert-accomplishment">
-              <strong>வேத ஜோதிட சான்றிதழ் பாடநெறி</strong>
+              <strong>{{ 'profile.vedicCourseTitle' | translate }}</strong>
             </p>
           </div>
         </div>

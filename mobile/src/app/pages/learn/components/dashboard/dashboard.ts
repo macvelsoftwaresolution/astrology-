@@ -185,6 +185,70 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     return this.enrollForm?.fullName || dbUser?.name || (dbUser as any)?.fullName || 'மாணவர்';
   }
 
+  get studentProfilePic(): string {
+    const user = this.authService.getCurrentUser();
+    const savedPic = this.enrollForm?.profileImageUrl || localStorage.getItem('astro_student_avatar') || user?.avatar_url || (user as any)?.profileImageUrl || user?.profileImage;
+    if (savedPic) return savedPic;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(this.studentName)}&background=4A0E17&color=ECC876&size=128`;
+  }
+
+  isUploadingPic = false;
+
+  triggerProfilePicUpload() {
+    const fileInput = document.getElementById('learnStudentPicInput') as HTMLInputElement;
+    if (fileInput) fileInput.click();
+  }
+
+  onStudentPicSelected(event: any) {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    // Instant local preview via FileReader
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const base64Url = e.target.result;
+      localStorage.setItem('astro_student_avatar', base64Url);
+      if (!this.enrollForm) this.enrollForm = {};
+      this.enrollForm.profileImageUrl = base64Url;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server if user is authenticated
+    this.isUploadingPic = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'avatars');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          localStorage.setItem('astro_student_avatar', res.url);
+          this.enrollForm.profileImageUrl = res.url;
+
+          // Save photo URL directly into Database user profile
+          if (this.authService.isLoggedIn()) {
+            this.http.put<any>(`${environment.apiUrl}/user/profile`, { avatar_url: res.url }, this.authService.getAuthHeaders()).subscribe({
+              next: () => {
+                const currentUser = this.authService.getCurrentUser();
+                if (currentUser) {
+                  currentUser.avatar_url = res.url;
+                  sessionStorage.setItem('astro_auth_user', JSON.stringify(currentUser));
+                  sessionStorage.setItem('auth_user', JSON.stringify(currentUser));
+                }
+              }
+            });
+          }
+        }
+        this.isUploadingPic = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isUploadingPic = false;
+      }
+    });
+  }
+
   loadUserProfile() {
     if (this.authService.isLoggedIn('education') || this.authService.isLoggedIn()) {
       this.authService.getUserProfileFromDb().subscribe({
@@ -616,7 +680,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   async confirmCheckoutPayment() {
     if (this.selectedCheckoutBook) {
       if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
-        this.showToast('தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).', 'warning');
+        this.showToast(this.translationService.currentLanguage() === 'en' ? 'Please fill in all details (Name, Phone, Address).' : 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).', 'warning');
         return;
       }
 
@@ -714,7 +778,6 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     sessionStorage.removeItem('current_selected_lesson');
     // Auto-open syllabus or scroll to exam
     this.chapters.forEach(c => c.isOpen = true);
-    this.showToast('தேர்வுகள் பிரிவிற்கு நகர்த்தப்பட்டது. பாடத்தைத் தேர்வுசெய்து தேர்வினை எழுதலாம்.', 'secondary');
   }
 
   goToSyllabus() {

@@ -57,16 +57,16 @@ export class JathagamWritingPage implements OnInit {
     this.validationError = '';
 
     if (!this.form.name || this.form.name.trim().length < 2) {
-      this.validationError = 'தயவுசெய்து உங்கள் பெயரைச் சரியாக உள்ளிடவும்!';
+      this.validationError = 'errors.enterValidName';
       return;
     }
     const cleanPhone = (this.form.phone || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length !== 10) {
-      this.validationError = 'தயவுசெய்து சரியான 10 இலக்க அலைபேசி எண்ணை உள்ளிடவும்!';
+      this.validationError = 'errors.enterPhone';
       return;
     }
     if (!this.form.dob || !this.form.tob || !this.form.pob) {
-      this.validationError = 'பிறந்த தேதி, நேரம் மற்றும் ஊர் விவரங்களை முழுமையாக நிரப்பவும்!';
+      this.validationError = 'errors.enterDob';
       return;
     }
 
