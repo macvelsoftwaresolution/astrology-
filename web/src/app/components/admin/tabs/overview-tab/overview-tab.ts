@@ -66,7 +66,6 @@ export class OverviewTabComponent implements OnInit {
 
   loadMetrics(): void {
     this.isLoading = true;
-    this.cdr.detectChanges();
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/dashboard-metrics?_t=${Date.now()}`, headers).subscribe({
       next: (res) => {
@@ -77,11 +76,11 @@ export class OverviewTabComponent implements OnInit {
           this.recentMembers = res.recent_members;
         }
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }
     });
   }

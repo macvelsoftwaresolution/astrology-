@@ -10,6 +10,7 @@ export class LoadingService {
   readonly isLoading = signal<boolean>(false);
 
   show(): void {
+    if (typeof window === 'undefined') return;
     this.activeRequests++;
 
     if (!this.debounceTimer && !this.isLoading()) {
@@ -23,21 +24,28 @@ export class LoadingService {
     clearTimeout(this.maxTimeoutTimer);
     this.maxTimeoutTimer = setTimeout(() => {
       this.forceHide();
-    }, 800);
+    }, 1500);
   }
 
   hide(): void {
+    if (typeof window === 'undefined') return;
     this.activeRequests = Math.max(0, this.activeRequests - 1);
     if (this.activeRequests === 0) {
       this.clearTimers();
-      this.isLoading.set(false);
+      setTimeout(() => {
+        if (this.activeRequests === 0) {
+          this.isLoading.set(false);
+        }
+      }, 0);
     }
   }
 
   forceHide(): void {
     this.activeRequests = 0;
     this.clearTimers();
-    this.isLoading.set(false);
+    setTimeout(() => {
+      this.isLoading.set(false);
+    }, 0);
   }
 
   private clearTimers(): void {
