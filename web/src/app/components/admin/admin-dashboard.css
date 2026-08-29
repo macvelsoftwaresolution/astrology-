@@ -3103,4 +3103,235 @@
     min-width: unset;
     max-width: unset;
   }
+}
+
+/* =========================================================
+   COMPREHENSIVE RESPONSIVE STYLES FOR ALL ADMIN TABS & PAGES
+   ========================================================= */
+
+/* 1. TABLET & LAPTOP ADJUSTMENTS (<= 1024px) */
+@media (max-width: 1024px) {
+  .main-panel {
+    padding: 16px 18px !important;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+/* 2. MOBILE & TABLET LAYOUT (<= 992px) */
+@media (max-width: 992px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .main-panel {
+    padding: 12px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  /* Responsive Metric Cards & Analytics Grids */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .analytics-row {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .grid-2, .grid-3, .grid-4, .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Card Box Padding Reduction */
+  .card-box {
+    padding: 14px 14px !important;
+    border-radius: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Universal Table Responsive Wrapping */
+  .table-responsive,
+  .card-box table,
+  .data-table,
+  .users-table,
+  .table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .data-table th,
+  .data-table td,
+  .users-table th,
+  .users-table td,
+  table th,
+  table td {
+    white-space: nowrap !important;
+    padding: 10px 12px !important;
+    font-size: 12.5px !important;
+  }
+}
+
+/* 3. MOBILE SMARTPHONE BREAKPOINT (<= 768px) */
+@media (max-width: 768px) {
+  /* Header Banners & Action Cards */
+  .header-banner-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 14px 16px !important;
+    text-align: left !important;
+  }
+
+  .header-banner-card > div {
+    width: 100% !important;
+  }
+
+  .header-banner-card h1 {
+    font-size: 17px !important;
+  }
+
+  /* Search & Filter Containers */
+  .search-filter-box,
+  .search-filter-row,
+  .filter-bar,
+  .action-bar,
+  .card-box.search-filter-box {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px 14px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .search-filter-box > div,
+  .search-filter-row > div,
+  .user-custom-dropdown-wrap,
+  .custom-select-container,
+  .ctrl,
+  .search-input-ctrl {
+    width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .user-custom-dropdown-wrap {
+    margin-top: 2px !important;
+  }
+
+  .custom-select-trigger-btn {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* Tab Navigation Pills & Segment Bars */
+  .view-segment-container,
+  .tab-pills,
+  .nav-tabs,
+  .sub-nav-bar {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-bottom: 6px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .view-segment-container::-webkit-scrollbar,
+  .tab-pills::-webkit-scrollbar,
+  .nav-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .view-segment-btn,
+  .tab-pill,
+  .nav-tab-item {
+    flex-shrink: 0 !important;
+    padding: 8px 14px !important;
+    font-size: 12.5px !important;
+  }
+
+  /* Universal Modal & Dialog Boxes */
+  .modal-box,
+  .modal-dialog,
+  .batch-modal-box,
+  .modal-content {
+    width: 94% !important;
+    max-width: 94% !important;
+    margin: 10px auto !important;
+    padding: 16px 14px !important;
+    border-radius: 14px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-footer,
+  .modal-actions {
+    flex-direction: column-reverse !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .modal-footer button,
+  .modal-actions button,
+  .btn-primary-action,
+  .btn-secondary-action {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Form Inputs & Controls */
+  .form-group, .input-group {
+    width: 100% !important;
+  }
+
+  /* Mobile Button Padding & Touch Targets */
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-action {
+    padding: 9px 14px !important;
+    font-size: 13px !important;
+    min-height: 38px !important;
+  }
+}
+
+/* 4. SMALL MOBILE SCREENS (<= 480px) */
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .metric-card {
+    padding: 12px 14px !important;
+  }
+
+  .metric-card .val {
+    font-size: 18px !important;
+  }
+
+  .metric-card .lbl {
+    font-size: 11.5px !important;
+  }
+
+  .mobile-topbar {
+    padding: 10px 12px !important;
+  }
+
+  .mobile-topbar .brand h2 {
+    font-size: 15px !important;
+  }
 }
