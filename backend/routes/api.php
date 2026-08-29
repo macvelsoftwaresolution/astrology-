@@ -154,6 +154,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/exams/{examId}/questions',        [App\Http\Controllers\ExamController::class, 'storeQuestion']);
     Route::delete('/questions/{id}',                [App\Http\Controllers\ExamController::class, 'destroyQuestion']);
     Route::post('/exams/{examId}/import-pdf',       [App\Http\Controllers\ExamController::class, 'importPdf']);
+    Route::post('/exams/{examId}/import-csv',       [App\Http\Controllers\ExamController::class, 'importCsv']);
 
     // Student Exam Submissions & Certificates
     Route::get('/submissions',                      [GradingController::class, 'getSubmissions']);

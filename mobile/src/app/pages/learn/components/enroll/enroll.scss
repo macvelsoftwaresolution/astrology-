@@ -488,7 +488,7 @@ $color-text-dark: #2A2421;
     }
   }
 
-  input[type="text"], input[type="number"] {
+  input[type="text"], input[type="number"], input[type="date"], input[type="tel"], input[type="email"], textarea {
     width: 100%;
     padding: 0.7rem 0.75rem;
     border: 1.2px solid rgba($color-gold, 0.35);
@@ -498,6 +498,20 @@ $color-text-dark: #2A2421;
     color: $color-text-dark;
     box-sizing: border-box;
     min-height: 42px;
+    
+    /* Hide native dropdown arrows and picker icons */
+    &::-webkit-calendar-picker-indicator,
+    &::-webkit-list-button {
+      display: none !important;
+      -webkit-appearance: none;
+    }
+
+    /* Hide number spinner arrows */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
 }
 
@@ -1288,7 +1302,6 @@ $color-text-dark: #2A2421;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    padding: 0.75rem 2.2rem 0.75rem 0.85rem !important;
     border: 1.5px solid rgba($color-gold, 0.45) !important;
     border-radius: 10px !important;
     background-color: #ffffff !important;
@@ -1298,18 +1311,27 @@ $color-text-dark: #2A2421;
     outline: none !important;
     transition: all 0.2s ease !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-    cursor: pointer !important;
     appearance: none !important;
     -webkit-appearance: none !important;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A0E17' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 0.85rem center !important;
-    background-size: 1rem !important;
 
     &:focus {
       border-color: $color-maroon !important;
       box-shadow: 0 0 0 3px rgba($color-maroon, 0.15) !important;
     }
+  }
+
+  input, textarea {
+    padding: 0.75rem 0.85rem !important;
+    cursor: text !important;
+  }
+
+  select, .simple-select-box {
+    padding: 0.75rem 2.2rem 0.75rem 0.85rem !important;
+    cursor: pointer !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A0E17' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.85rem center !important;
+    background-size: 1rem !important;
 
     option {
       font-size: 0.88rem;

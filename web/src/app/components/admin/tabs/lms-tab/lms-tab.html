@@ -1342,10 +1342,21 @@
         <div
           style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
           <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">2. Questions Builder</h3>
-          @if (activeExamWizard.id) {
           <div style="display: flex; align-items: center; gap: 10px;">
-            <label class="btn-xs"
-              style="background: #10b981; color: #fff; cursor: pointer; margin: 0; padding: 6px 12px; border-radius: 6px; font-weight: 600;">
+            <label class="btn-xs" [style.opacity]="activeExamWizard.id ? '1' : '0.5'"
+              style="background: #f59e0b; color: #fff; cursor: pointer; margin: 0; padding: 6px 12px; border-radius: 6px; font-weight: 600;"
+              (click)="!activeExamWizard.id ? $event.preventDefault() : null" [title]="!activeExamWizard.id ? 'Save Exam Details first' : 'Upload CSV'">
+              <i class="bi bi-file-earmark-excel me-1"></i> Upload CSV Questions
+              <input type="file" accept=".csv" (change)="importQuestionsFromCsv($event)"
+                style="display:none;" />
+            </label>
+            @if (isImportingCsv) {
+            <span style="font-size: 12px; color: #f59e0b; font-weight: 600;"><i class="bi bi-hourglass-split"></i>
+              Importing...</span>
+            }
+            <label class="btn-xs" [style.opacity]="activeExamWizard.id ? '1' : '0.5'"
+              style="background: #10b981; color: #fff; cursor: pointer; margin: 0; padding: 6px 12px; border-radius: 6px; font-weight: 600;"
+              (click)="!activeExamWizard.id ? $event.preventDefault() : null" [title]="!activeExamWizard.id ? 'Save Exam Details first' : 'Upload PDF'">
               <i class="bi bi-file-earmark-pdf me-1"></i> Upload PDF Questions
               <input type="file" accept="application/pdf" (change)="importQuestionsFromPdf($event)"
                 style="display:none;" />
@@ -1354,10 +1365,10 @@
             <span style="font-size: 12px; color: #10b981; font-weight: 600;"><i class="bi bi-hourglass-split"></i>
               Importing...</span>
             }
+            @if (!activeExamWizard.id) {
+            <span style="font-size: 12px; color: #ef4444; font-weight: 600; margin-left: 8px;">* Save Details first</span>
+            }
           </div>
-          } @else {
-          <span style="font-size: 12px; color: #64748b;">Save Exam Details first to add questions.</span>
-          }
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 24px;">

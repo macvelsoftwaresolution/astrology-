@@ -106,12 +106,12 @@
     <div class="simple-fields-stack">
       <div class="simple-field-group">
         <label class="simple-label">{{ 'learn.studentName' | translate }} <span class="req">*</span></label>
-        <input type="text" [(ngModel)]="localForm.fullName" [placeholder]="'learn.studentName' | translate">
+        <input type="text" [(ngModel)]="localForm.fullName" [placeholder]="'learn.studentName' | translate" autocomplete="off">
       </div>
 
       <div class="simple-field-group">
         <label class="simple-label">{{ 'learn.fatherName' | translate }}</label>
-        <input type="text" [(ngModel)]="localForm.fatherName" [placeholder]="'learn.fatherName' | translate">
+        <input type="text" [(ngModel)]="localForm.fatherName" [placeholder]="'learn.fatherName' | translate" autocomplete="off">
       </div>
 
       <div class="form-row-dob-age">

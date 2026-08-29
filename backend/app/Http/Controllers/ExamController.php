@@ -219,4 +219,77 @@ class ExamController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Import Questions from CSV (Admin)
+     */
+    public function importCsv(Request $request, $examId)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:10240'
+        ]);
+
+        try {
+            $file = $request->file('file');
+            $handle = fopen($file->getPathname(), "r");
+            
+            $inserted = 0;
+            $isFirstRow = true;
+            
+            while (($row = fgetcsv($handle, 10000, ",")) !== FALSE) {
+                if ($isFirstRow) {
+                    $isFirstRow = false;
+                    // If header row, skip it
+                    if (stripos($row[0], 'question') !== false || stripos($row[0], 'கேள்வி') !== false) {
+                        continue;
+                    }
+                }
+
+                if (count($row) < 6) continue;
+
+                $question = trim($row[0]);
+                $options = [
+                    trim($row[1]),
+                    trim($row[2]),
+                    trim($row[3]),
+                    trim($row[4])
+                ];
+                $ansStr = trim($row[5]);
+
+                $ansMap = ['A' => 0, 'B' => 1, 'C' => 2, 'D' => 3, 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, '1' => 0, '2' => 1, '3' => 2, '4' => 3];
+                if (isset($ansMap[$ansStr])) {
+                    $correctStr = $options[$ansMap[$ansStr]] ?? $ansStr;
+                } else {
+                    $correctStr = $ansStr;
+                }
+
+                if (empty($question) || empty($correctStr)) continue;
+
+                DB::table('exam_questions')->insert([
+                    'exam_id' => $examId,
+                    'type' => 'mcq',
+                    'question_text' => $question,
+                    'options' => json_encode($options),
+                    'correct_answer' => $correctStr,
+                    'marks' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                $inserted++;
+            }
+            fclose($handle);
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully imported {$inserted} questions from CSV."
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to parse CSV: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
