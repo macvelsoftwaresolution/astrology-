@@ -183,6 +183,11 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     return this.enrollForm?.fullName || dbUser?.name || (dbUser as any)?.fullName || 'மாணவர்';
   }
 
+  get avatarUrl(): string {
+    const dbUser = this.authService.getCurrentUser();
+    return this.enrollForm?.avatarUrl || (dbUser as any)?.avatar_url || (dbUser as any)?.avatarUrl || '';
+  }
+
   loadUserProfile() {
     if (this.authService.isLoggedIn('education') || this.authService.isLoggedIn()) {
       this.authService.getUserProfileFromDb().subscribe({
@@ -194,6 +199,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
             this.enrollForm.mobileNumber = u.phone || u.mobileNumber || u.mobile || u.mobile_number || '';
             this.enrollForm.postalAddress = u.address || u.postalAddress || u.postal_address || '';
             this.enrollForm.studentId = u.student_id || '';
+            this.enrollForm.avatarUrl = u.avatar_url || u.avatarUrl || '';
             this.cdr.detectChanges();
           }
         },

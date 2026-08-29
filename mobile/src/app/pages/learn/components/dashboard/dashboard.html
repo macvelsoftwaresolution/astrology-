@@ -387,7 +387,11 @@
     <div class="modern-profile-header-card">
       <div class="mp-avatar-glow">
         <div class="mp-avatar-inner">
-          <span class="mp-avatar-emoji"><i class="bi bi-person-fill"></i></span>
+          @if (avatarUrl) {
+            <img [src]="avatarUrl" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+          } @else {
+            <span class="mp-avatar-emoji"><i class="bi bi-person-fill"></i></span>
+          }
         </div>
       </div>
       <div class="mp-info">

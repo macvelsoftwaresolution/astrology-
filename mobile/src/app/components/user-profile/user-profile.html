@@ -12,11 +12,11 @@
     <div class="avatar-container">
       <img
         [src]="personDetails.profileImageUrl || 'https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'"
-        alt="User Avatar" class="profile-avatar-img"
-        (error)="$event.target.src='https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'">
-      <div class="edit-badge-btn" (click)="openEditModal()">
-        <i class="bi bi-pencil-fill"></i>
-      </div>
+        alt="User Avatar" class="profile-avatar-img">
+      <label for="directAvatarInput" class="edit-badge-btn" style="cursor: pointer;">
+        <i class="bi" [ngClass]="isUploadingAvatar ? 'bi-hourglass-split' : 'bi-pencil-fill'"></i>
+      </label>
+      <input type="file" id="directAvatarInput" accept="image/*" (change)="onDirectAvatarUpload($event)" style="display: none;">
     </div>
 
     <h2 class="user-name">{{ personDetails.name }}</h2>
