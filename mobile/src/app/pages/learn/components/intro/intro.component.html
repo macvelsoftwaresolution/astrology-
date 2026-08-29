@@ -14,18 +14,7 @@
     </div>
   </div>
 
-  <div class="section-block" *ngIf="topics && topics.length > 0">
-    <h3 class="section-title"><i class="bi bi-lightbulb-fill text-gold me-2"></i>{{ 'learn.whatYouWillLearn' | translate }}</h3>
-    <div class="topics-grid">
-      <div class="topic-item" *ngFor="let topic of topics; let i = index">
-        <div class="topic-icon" [ngClass]="getColorClass(i)"><i class="bi" [ngClass]="getIcon(i)"></i></div>
-        <div>
-          <strong>{{ topic.title }}</strong>
-          <p>{{ topic.desc }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <div class="actions-wrapper">
     <button class="action-submit-btn" (click)="next.emit()">

@@ -500,8 +500,8 @@ export class LmsTabComponent implements OnInit {
     req.subscribe({
       next: (res) => {
         alert('Exam details saved successfully!');
-        if (!this.activeExamWizard.id && res.exam) {
-          this.activeExamWizard.id = res.exam.id;
+        if (!this.activeExamWizard.id && res.exam_id) {
+          this.activeExamWizard.id = res.exam_id;
         }
         this.loadExams();
       },
@@ -543,6 +543,41 @@ export class LmsTabComponent implements OnInit {
         this.loadExams();
       },
       error: () => alert('Failed to delete question.')
+    });
+  }
+
+  isImportingCsv = false;
+
+  importQuestionsFromCsv(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+    if (!this.activeExamWizard.id) {
+      alert('Please save the exam details first.');
+      return;
+    }
+
+    this.isImportingCsv = true;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/import-csv`, formData, {
+      headers: {
+        Authorization: `Bearer ${typeof window !== 'undefined' ? sessionStorage.getItem('token') : ''}`
+      }
+    }).subscribe({
+      next: (res) => {
+        alert(res.message || 'Questions imported successfully!');
+        this.loadExams();
+        this.isImportingCsv = false;
+        event.target.value = '';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        alert('Failed to import questions from CSV: ' + (err.error?.message || 'Unknown error'));
+        this.isImportingCsv = false;
+        event.target.value = '';
+        this.cdr.detectChanges();
+      }
     });
   }
 
