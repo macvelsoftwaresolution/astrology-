@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://127.0.0.1:8000/api',
-  pathUrl: 'http://127.0.0.1:8000',
+  apiUrl: 'https://api.sriaarudhraaastro.com/api',
+  pathUrl: 'https://api.sriaarudhraaastro.com',
 };
