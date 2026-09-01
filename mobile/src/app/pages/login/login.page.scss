@@ -116,10 +116,10 @@ $color-text-muted: #7E716A;
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.35rem;
 
   label {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: $color-maroon;
     font-weight: 700;
     letter-spacing: 0.2px;
@@ -132,11 +132,11 @@ $color-text-muted: #7E716A;
 
     input {
       width: 100%;
-      padding: 0.75rem 2.4rem 0.75rem 0.9rem;
-      border: 1.5px solid rgba($color-gold, 0.5);
-      border-radius: 10px;
+      padding: 0.82rem 2.6rem 0.82rem 0.95rem;
+      border: 1.5px solid rgba($color-gold, 0.55);
+      border-radius: 11px;
       background-color: #FFFFFF;
-      font-size: 0.92rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: $color-maroon-dark;
       outline: none;
@@ -149,8 +149,8 @@ $color-text-muted: #7E716A;
 
     .input-icon {
       position: absolute;
-      right: 0.8rem;
-      font-size: 1.1rem;
+      right: 0.85rem;
+      font-size: 1.25rem;
       color: $color-maroon;
       pointer-events: none;
 
@@ -165,8 +165,8 @@ $color-text-muted: #7E716A;
 
 .forgot-pwd-link {
   text-align: right;
-  font-size: 0.8rem;
-  margin-top: -0.25rem;
+  font-size: 0.85rem;
+  margin-top: -0.2rem;
 
   a {
     color: $color-maroon;
@@ -182,7 +182,7 @@ $color-text-muted: #7E716A;
   color: #991b1b;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -196,7 +196,7 @@ $color-text-muted: #7E716A;
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
-  padding: 0.85rem;
+  padding: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +205,7 @@ $color-text-muted: #7E716A;
   margin-top: 0.4rem;
 
   .btn-primary-text {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 700;
   }
 }

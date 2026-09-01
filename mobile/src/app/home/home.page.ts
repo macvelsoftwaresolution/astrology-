@@ -63,15 +63,15 @@ export class HomePage implements OnInit {
 
   get userInitial(): string {
     const user = this.authService.getCurrentUser();
-    if (user && user.name) {
-      return user.name.charAt(0).toUpperCase();
-    }
-    return 'A';
+    const name = user?.fullName || user?.name || '';
+    return name ? name.trim().charAt(0).toUpperCase() : 'A';
   }
 
   get userProfileImage(): string | null {
     const user = this.authService.getCurrentUser();
-    return user?.profileImage || (user as any)?.avatar_url || null;
+    const localAvatar = localStorage.getItem('astro_user_avatar') || localStorage.getItem('astro_student_avatar');
+    const pic = user?.profileImage || (user as any)?.avatar_url || (user as any)?.profile_photo || (user as any)?.profile_image || localAvatar || null;
+    return (pic && typeof pic === 'string' && pic.trim().length > 0) ? pic : null;
   }
 
   // Hero Slider (Dynamic from DB)

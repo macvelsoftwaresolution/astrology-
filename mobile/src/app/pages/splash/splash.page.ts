@@ -26,12 +26,16 @@ export class SplashPage implements OnInit {
   }
 
   checkAuthAndNavigate() {
-    if (this.authService.isLoggedIn('education')) {
-      this.router.navigate(['/learn'], { replaceUrl: true });
-    } else if (this.authService.isLoggedIn('astrology')) {
-      this.router.navigate(['/home'], { replaceUrl: true });
-    } else {
+    if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/welcome'], { replaceUrl: true });
+      return;
+    }
+
+    const activeService = this.authService.getActiveService();
+    if (activeService === 'education') {
+      this.router.navigate(['/learn'], { replaceUrl: true });
+    } else {
+      this.router.navigate(['/home'], { replaceUrl: true });
     }
   }
 }

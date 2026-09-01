@@ -218,6 +218,18 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           this.personDetails.email = res.email || '';
           this.personDetails.phone = res.phone || '';
           this.personDetails.profileImageUrl = res.avatar_url || '';
+          if (res.avatar_url) {
+            try {
+              localStorage.setItem('astro_user_avatar', res.avatar_url);
+              localStorage.setItem('astro_student_avatar', res.avatar_url);
+            } catch (err) {}
+            const u = this.authService.getCurrentUser();
+            if (u) {
+              u.profileImage = res.avatar_url;
+              (u as any).avatar_url = res.avatar_url;
+              this.authService.updateCurrentUser(u);
+            }
+          }
 
           const jd = res.jathagam_details;
           if (jd) {
@@ -257,6 +269,15 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     reader.onload = (e: any) => {
       this.personDetails.profileImageUrl = e.target.result;
       this.editForm.profileImageUrl = e.target.result;
+      try {
+        localStorage.setItem('astro_user_avatar', e.target.result);
+        localStorage.setItem('astro_student_avatar', e.target.result);
+      } catch (err) {}
+      if (this.currentUser) {
+        this.currentUser.profileImage = e.target.result;
+        (this.currentUser as any).avatar_url = e.target.result;
+        this.authService.updateCurrentUser(this.currentUser);
+      }
       this.cdr.detectChanges();
     };
     reader.readAsDataURL(file);
@@ -272,6 +293,15 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
         if (res && res.url) {
           this.personDetails.profileImageUrl = res.url;
           this.editForm.profileImageUrl = res.url;
+          try {
+            localStorage.setItem('astro_user_avatar', res.url);
+            localStorage.setItem('astro_student_avatar', res.url);
+          } catch (err) {}
+          if (this.currentUser) {
+            this.currentUser.profileImage = res.url;
+            (this.currentUser as any).avatar_url = res.url;
+            this.authService.updateCurrentUser(this.currentUser);
+          }
           this.isUploadingAvatar = false;
           this.cdr.detectChanges();
 

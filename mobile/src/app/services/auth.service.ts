@@ -40,7 +40,8 @@ export class AuthService {
   clearSession(): void {
     const keys = [
       'auth_token', 'astro_auth_token', 'edu_auth_token',
-      'auth_user', 'astro_auth_user', 'edu_auth_user'
+      'auth_user', 'astro_auth_user', 'edu_auth_user',
+      'auth_service'
     ];
     keys.forEach(k => {
       try {
@@ -64,6 +65,7 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('auth_service', service);
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -84,6 +86,7 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('auth_service', service);
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -104,7 +107,17 @@ export class AuthService {
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    if (service) {
+      const activeService = localStorage.getItem('auth_service') || 'astrology';
+      return activeService === service;
+    }
+    return true;
+  }
+
+  getActiveService(): 'astrology' | 'education' {
+    return (localStorage.getItem('auth_service') as 'astrology' | 'education') || 'astrology';
   }
 
   refreshProfileFromDb(): Observable<any> {
@@ -147,6 +160,16 @@ export class AuthService {
 
   getCurrentUser(service?: 'astrology' | 'education'): User | null {
     return this.currentUserSubject.value;
+  }
+
+  updateCurrentUser(user: User): void {
+    if (!user) return;
+    const updated = { ...this.currentUserSubject.value, ...user };
+    this.currentUserSubject.next(updated);
+    try {
+      localStorage.setItem('auth_user', JSON.stringify(updated));
+      localStorage.setItem('astro_auth_user', JSON.stringify(updated));
+    } catch (e) {}
   }
 
   getToken(service?: 'astrology' | 'education'): string | null {
