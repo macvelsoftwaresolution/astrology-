@@ -1,8 +1,12 @@
 <ion-content [fullscreen]="true" class="register-content">
   <div class="register-container">
-    <!-- Header -->
+    <!-- Back arrow & Header -->
     <div class="nav-header">
-      <h1 class="brand-title">{{ 'welcome.brand' | translate }}</h1>
+      <button class="back-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h1 class="brand-title">{{ 'register.title' | translate }}</h1>
+      <div style="width: 40px;"></div> <!-- placeholder to balance back button -->
     </div>
 
     <!-- Top Image Icon -->
@@ -66,7 +70,7 @@
           <label>{{ 'register.passwordPlaceholder' | translate }}</label>
           <div class="input-wrapper">
             <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
-            <span class="input-icon toggle-pwd-btn" (click)="showPassword = !showPassword">
+            <span class="input-icon toggle-pwd-btn" (click)="showPassword = !showPassword" style="cursor: pointer; pointer-events: auto;">
               <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
             </span>
           </div>
@@ -76,7 +80,7 @@
           <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
           <div class="input-wrapper">
             <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6">
-            <span class="input-icon toggle-pwd-btn" (click)="showConfirmPassword = !showConfirmPassword">
+            <span class="input-icon toggle-pwd-btn" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer; pointer-events: auto;">
               <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
             </span>
           </div>

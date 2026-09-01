@@ -1,8 +1,12 @@
 <ion-content [fullscreen]="true" class="login-content">
   <div class="login-container">
-    <!-- Header -->
+    <!-- Back arrow & Header -->
     <div class="nav-header">
-      <h1 class="brand-title">{{ 'welcome.brand' | translate }}</h1>
+      <button class="back-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h1 class="brand-title">{{ 'login.title' | translate }}</h1>
+      <div style="width: 40px;"></div>
     </div>
 
     <!-- Top Image Icon -->

@@ -41,13 +41,13 @@ export class AuthService {
     const keys = [
       'auth_token', 'astro_auth_token', 'edu_auth_token',
       'auth_user', 'astro_auth_user', 'edu_auth_user',
-      'auth_service'
+      'active_service'
     ];
     keys.forEach(k => {
       try {
         localStorage.removeItem(k);
         sessionStorage.removeItem(k);
-      } catch (e) {}
+      } catch (e) { }
     });
     this.currentUserSubject.next(null);
   }
@@ -65,7 +65,11 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
+<<<<<<< HEAD
           localStorage.setItem('auth_service', service);
+=======
+          localStorage.setItem('active_service', service);
+>>>>>>> f18e2eb2b78fae562789b4a9c57f61cb6256dd4f
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -86,7 +90,11 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
+<<<<<<< HEAD
           localStorage.setItem('auth_service', service);
+=======
+          localStorage.setItem('active_service', service);
+>>>>>>> f18e2eb2b78fae562789b4a9c57f61cb6256dd4f
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -107,6 +115,7 @@ export class AuthService {
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
+<<<<<<< HEAD
     const token = this.getToken();
     if (!token) return false;
     if (service) {
@@ -118,6 +127,16 @@ export class AuthService {
 
   getActiveService(): 'astrology' | 'education' {
     return (localStorage.getItem('auth_service') as 'astrology' | 'education') || 'astrology';
+=======
+    const hasToken = !!this.getToken();
+    if (!hasToken) return false;
+
+    if (service) {
+      const activeService = localStorage.getItem('active_service') || 'astrology';
+      return activeService === service;
+    }
+    return true;
+>>>>>>> f18e2eb2b78fae562789b4a9c57f61cb6256dd4f
   }
 
   refreshProfileFromDb(): Observable<any> {
@@ -169,7 +188,7 @@ export class AuthService {
     try {
       localStorage.setItem('auth_user', JSON.stringify(updated));
       localStorage.setItem('astro_auth_user', JSON.stringify(updated));
-    } catch (e) {}
+    } catch (e) { }
   }
 
   getToken(service?: 'astrology' | 'education'): string | null {

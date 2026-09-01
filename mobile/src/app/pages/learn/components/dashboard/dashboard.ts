@@ -117,15 +117,22 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     });
   }
 
+  get currentMonthTitle(): string {
+    const completed = this.curriculumDays.filter(d => d.is_completed).length;
+    if (completed < 20) return 'Month 1';
+    if (completed < 40) return 'Month 2';
+    return 'Month 3';
+  }
+
   getFilteredStudentCurriculum(): any[] {
-    if (this.curriculumMonthFilter === 'm1') {
+    const completed = this.curriculumDays.filter(d => d.is_completed).length;
+    if (completed < 20) {
       return this.curriculumDays.filter(d => d.day_number >= 1 && d.day_number <= 20);
-    } else if (this.curriculumMonthFilter === 'm2') {
+    } else if (completed < 40) {
       return this.curriculumDays.filter(d => d.day_number >= 21 && d.day_number <= 40);
-    } else if (this.curriculumMonthFilter === 'm3') {
+    } else {
       return this.curriculumDays.filter(d => d.day_number >= 41 && d.day_number <= 60);
     }
-    return this.curriculumDays;
   }
 
   openDayDetail(day: any) {

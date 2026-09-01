@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 
 export const environment = {
-  apiUrl: 'https://sriaarudhraaastro.com/api', // For local dev, change to: 'http://localhost:8000/api'
-  pathUrl: 'https://sriaarudhraaastro.com',
+  apiUrl: Capacitor.getPlatform() === 'android' ? 'http://192.168.1.47:8000/api' : 'http://localhost:8000/api',
+  pathUrl: Capacitor.getPlatform() === 'android' ? 'http://192.168.1.47:8000' : 'http://localhost:8000',
   production: false
 };

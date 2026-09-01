@@ -22,10 +22,22 @@ $color-text-muted: #7E716A;
 
 .nav-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-top: 0.1rem;
   margin-bottom: 0;
+
+  .back-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: $color-maroon;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .brand-title {
     font-family: 'Noto Serif Tamil', serif;
@@ -33,8 +45,6 @@ $color-text-muted: #7E716A;
     font-size: 1.55rem;
     font-weight: 800;
     margin: 0;
-    letter-spacing: 0.5px;
-    text-align: center;
   }
 }
 
@@ -103,7 +113,8 @@ $color-text-muted: #7E716A;
     cursor: pointer;
   }
 
-  .avatar-placeholder, .avatar-preview {
+  .avatar-placeholder,
+  .avatar-preview {
     width: 52px;
     height: 52px;
     border-radius: 50%;
@@ -162,29 +173,8 @@ $color-text-muted: #7E716A;
       font-size: 1.15rem;
       color: $color-maroon;
       pointer-events: none;
-
-      &.toggle-pwd-btn {
-        pointer-events: auto;
-        cursor: pointer;
-        padding: 4px;
-      }
     }
   }
-}
-
-.register-error-alert {
-  background-color: #fee2e2;
-  border: 1px solid #fca5a5;
-  color: #991b1b;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.4rem;
-  line-height: 1.35;
 }
 
 .submit-btn {
