@@ -338,7 +338,7 @@ export class HomePage implements OnInit {
   }
 
   loadNotificationsCount() {
-    const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('edu_auth_token');
+    const token = this.authService.getToken();
     if (!token) return;
     const headers = { headers: { Authorization: `Bearer ${token}` } };
     this.http.get<any>(`${environment.apiUrl}/user/notifications`, headers).subscribe({
@@ -494,7 +494,7 @@ export class HomePage implements OnInit {
   }
 
   loadUserOrders() {
-    const token = sessionStorage.getItem('auth_token');
+    const token = this.authService.getToken();
     if (!token) return;
     this.http.get<any>(`${environment.apiUrl}/user/bookings`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -803,7 +803,7 @@ export class HomePage implements OnInit {
 
     const currentUser = this.authService.getCurrentUser();
     const astro = this.selectedAstrologer;
-    const token = sessionStorage.getItem('auth_token');
+    const token = this.authService.getToken();
     const headers: any = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -867,7 +867,7 @@ export class HomePage implements OnInit {
   completeBooking(razorpayOrderId?: string, razorpayPaymentId?: string, razorpaySignature?: string) {
     const currentUser = this.authService.getCurrentUser();
     const astro = this.selectedAstrologer;
-    const token = this.authService.getToken() || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+    const token = this.authService.getToken();
     const headers: any = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

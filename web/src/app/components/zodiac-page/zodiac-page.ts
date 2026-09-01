@@ -135,9 +135,6 @@ export interface ZodiacPageItem {
 
                   <div class="zodiac-card-actions">
                     <a routerLink="/" class="btn-card-luxury">முழுமையான ஜாதக பலன்கள் <i class="bi bi-chevron-right ms-2"></i></a>
-                    <button class="btn-refresh-zodiac" (click)="loadPredictions()" title="Refresh Predictions">
-                      <i class="bi bi-arrow-clockwise"></i> புதுப்பி
-                    </button>
                   </div>
                 </div>
               </div>
@@ -336,7 +333,9 @@ export class ZodiacPageComponent implements OnInit {
   }
 
   getShortPrediction(text: string): string {
-    if (!text) return '';
+    if (!text || text.trim().length === 0 || text.trim() === '...') {
+      return 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.';
+    }
     const cleanText = text.trim();
     if (cleanText.length <= 75) {
       return cleanText;
