@@ -12,53 +12,55 @@
       </div>
     </div>
 
-    <!-- Header Titles (Single title to prevent duplicate brand name) -->
-    <div class="form-header">
-      <h2 class="form-title">{{ 'login.subtitle' | translate }}</h2>
+    <!-- Auth Card Container -->
+    <div class="auth-card">
+      <!-- Header Titles (Single title to prevent duplicate brand name) -->
+      <div class="form-header">
+        <h2 class="form-title">{{ 'login.subtitle' | translate }}</h2>
+      </div>
+
+      <!-- Form -->
+      <form #loginFormRef="ngForm" (ngSubmit)="onLogin()" class="login-form" novalidate>
+        <div class="input-group">
+          <label>{{ 'login.usernamePlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required>
+            <span class="input-icon"><i class="bi bi-person"></i></span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>{{ 'login.passwordPlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
+            <span class="input-icon toggle-pwd-btn" (click)="toggleShowPassword()" style="cursor: pointer; pointer-events: auto;">
+              <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+            </span>
+          </div>
+        </div>
+
+        @if (errorMessage) {
+          <div class="login-error-alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ errorMessage | translate }}</span>
+          </div>
+        }
+
+        <button type="submit" class="submit-btn">
+          <span class="btn-primary-text">{{ 'login.submitBtn' | translate }}</span>
+        </button>
+
+        <!-- Switch to register -->
+        <div class="switch-auth-mode">
+          <span>{{ 'login.needAccount' | translate }} </span>
+          <a (click)="goToRegister()">{{ 'login.registerNow' | translate }}</a>
+        </div>
+
+        <!-- Privacy Note -->
+        <div class="privacy-note">
+          <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
+        </div>
+      </form>
     </div>
-
-
-    <!-- Form -->
-    <form #loginFormRef="ngForm" (ngSubmit)="onLogin()" class="login-form" novalidate>
-      <div class="input-group">
-        <label>{{ 'login.usernamePlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input type="text" name="mobileNumber" [(ngModel)]="mobileNumber" required>
-          <span class="input-icon"><i class="bi bi-person"></i></span>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <label>{{ 'login.passwordPlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
-          <span class="input-icon toggle-pwd-btn" (click)="toggleShowPassword()" style="cursor: pointer; pointer-events: auto;">
-            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
-          </span>
-        </div>
-      </div>
-
-      @if (errorMessage) {
-        <div class="login-error-alert">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-          <span>{{ errorMessage | translate }}</span>
-        </div>
-      }
-
-      <button type="submit" class="submit-btn">
-        <span class="btn-primary-text">{{ 'login.submitBtn' | translate }}</span>
-      </button>
-
-      <!-- Switch to register -->
-      <div class="switch-auth-mode">
-        <span>{{ 'login.needAccount' | translate }} </span>
-        <a (click)="goToRegister()">{{ 'login.registerNow' | translate }}</a>
-      </div>
-
-      <!-- Privacy Note -->
-      <div class="privacy-note">
-        <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
-      </div>
-    </form>
   </div>
 </ion-content>

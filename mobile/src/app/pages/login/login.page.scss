@@ -41,11 +41,11 @@ $color-text-muted: #7E716A;
 .gopuram-icon-wrapper {
   display: flex;
   justify-content: center;
-  margin: 0.2rem 0;
+  margin: 0.1rem 0;
 
   .gopuram-icon {
-    width: 85px;
-    height: 85px;
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
     background-color: rgba($color-gold-light, 0.25);
     display: flex;
@@ -64,9 +64,20 @@ $color-text-muted: #7E716A;
   }
 }
 
+.auth-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1.5px solid rgba($color-gold, 0.35);
+  box-shadow: 0 10px 25px rgba($color-maroon, 0.08);
+  padding: 1.1rem 1.1rem 1rem 1.1rem;
+  margin-top: 0.2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .form-header {
   text-align: center;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.8rem;
 
   .form-title {
     color: $color-maroon;
