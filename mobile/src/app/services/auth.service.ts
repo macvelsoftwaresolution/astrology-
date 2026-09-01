@@ -65,11 +65,7 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
-<<<<<<< HEAD
-          localStorage.setItem('auth_service', service);
-=======
           localStorage.setItem('active_service', service);
->>>>>>> f18e2eb2b78fae562789b4a9c57f61cb6256dd4f
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -90,11 +86,7 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
-<<<<<<< HEAD
-          localStorage.setItem('auth_service', service);
-=======
           localStorage.setItem('active_service', service);
->>>>>>> f18e2eb2b78fae562789b4a9c57f61cb6256dd4f
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -115,19 +107,6 @@ export class AuthService {
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
-<<<<<<< HEAD
-    const token = this.getToken();
-    if (!token) return false;
-    if (service) {
-      const activeService = localStorage.getItem('auth_service') || 'astrology';
-      return activeService === service;
-    }
-    return true;
-  }
-
-  getActiveService(): 'astrology' | 'education' {
-    return (localStorage.getItem('auth_service') as 'astrology' | 'education') || 'astrology';
-=======
     const hasToken = !!this.getToken();
     if (!hasToken) return false;
 
@@ -136,7 +115,6 @@ export class AuthService {
       return activeService === service;
     }
     return true;
->>>>>>> f18e2eb2b78fae562789b4a9c57f61cb6256dd4f
   }
 
   refreshProfileFromDb(): Observable<any> {

@@ -25,21 +25,6 @@ class JathagamController extends Controller
 
 
     // Porutham names (10 Porutham matching criteria)
-    private array $defaultPredictions = [
-        'மேஷம்'       => 'இன்று உங்களுக்கு சுப பலன்கள் அதிகரிக்கும். தொட்ட காரியங்கள் அனைத்தும் வெற்றியடையும்.',
-        'ரிஷபம்'      => 'நினைத்த காரியங்கள் தடையின்றி முடியும். குடும்பத்தில் மகிழ்ச்சியும் அமைதியும் நிலவும்.',
-        'மிதுனம்'     => 'தொழில் மற்றும் வியாபாரத்தில் நல்ல முன்னேற்றம் ஏற்படும். புதிய வாய்ப்புகள் தேடி வரும்.',
-        'கடகம்'       => 'பணப்புழக்கம் அதிகரிக்கும். புதிய முயற்சிகளுக்கு உறவினர்களின் ஆதரவு கிடைக்கும்.',
-        'சிம்மம்'      => 'உத்தியோகத்தில் மேலதிகாரிகளின் பாராட்டு கிடைக்கும். மனதில் தெளிவும் தன்னம்பிக்கையும் கூடும்.',
-        'கன்னி'       => 'திட்டமிட்ட காரியங்கள் சுமுகமாக முடியும். சுபச் செய்திகள் வந்து சேரும்.',
-        'துலாம்'       => 'எடுத்த காரியங்களில் வெற்றி கிடைக்கும். நண்பர்கள் மற்றும் குடும்பத்தினரின் ஒத்துழைப்பு உண்டு.',
-        'விருச்சிகம்'  => 'வியாபாரத்தில் லாபம் அதிகரிக்கும். பழைய கடன்கள் அடைபடும் வாய்ப்பு உண்டு.',
-        'தனுசு'       => 'பயணங்களால் நன்மைகள் கூடும். ஆரோக்கியத்தில் முன்னேற்றம் காணப்படும்.',
-        'மகரம்'       => 'கடைப்பிடித்த உழைப்பிற்கு ஏற்ற பலன் கிடைக்கும். எதிர்பாராத பணவரவு உண்டு.',
-        'கும்பம்'      => 'குடும்பத்தில் சுப நிகழ்ச்சிகள் திட்டமிடப்படும். மனநிறைவும் சந்தோஷமும் அதிகரிக்கும்.',
-        'மீனம்'       => 'சுப காரியங்கள் கைகூடும். புதிய முதலீடுகள் மற்றும் திட்டங்களுக்கு நல்ல நாள்.'
-    ];
-
     /**
      * Get all 12 rasi predictions (public)
      */
@@ -56,45 +41,29 @@ class JathagamController extends Controller
             ->get()
             ->keyBy('rasi_name');
 
-        // 2. If nothing for exact date, check latest updated for this tab_type
-        if ($dbPredictions->isEmpty()) {
-            $dbPredictions = DB::table('rasi_palans')
-                ->where('tab_type', $type)
-                ->whereIn('rasi_name', $this->rasiList)
-                ->orderBy('prediction_date', 'desc')
-                ->orderBy('updated_at', 'desc')
-                ->get()
-                ->keyBy('rasi_name');
-        }
-
-        // 3. Guarantee ordered array of all 12 rasis with default fallbacks if empty
+        // 2. Guarantee ordered array of all 12 rasis
         $orderedPredictions = [];
         foreach ($this->rasiList as $rasi) {
-            $text = '';
-            $audio = null;
-            $video = null;
-            $predDate = $date;
-
             if (isset($dbPredictions[$rasi])) {
                 $item = $dbPredictions[$rasi];
-                $text = (string) ($item->prediction_text ?? '');
-                $audio = $item->audio_url ?? null;
-                $video = $item->video_url ?? null;
-                $predDate = $item->prediction_date ?? $date;
+                $orderedPredictions[] = [
+                    'rasi_name'       => $rasi,
+                    'tab_type'        => $type,
+                    'prediction_text' => (string) ($item->prediction_text ?? ''),
+                    'audio_url'       => $item->audio_url ?? null,
+                    'video_url'       => $item->video_url ?? null,
+                    'prediction_date' => $item->prediction_date ?? $date
+                ];
+            } else {
+                $orderedPredictions[] = [
+                    'rasi_name'       => $rasi,
+                    'tab_type'        => $type,
+                    'prediction_text' => '',
+                    'audio_url'       => null,
+                    'video_url'       => null,
+                    'prediction_date' => $date
+                ];
             }
-
-            if (trim($text) === '') {
-                $text = $this->defaultPredictions[$rasi] ?? 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.';
-            }
-
-            $orderedPredictions[] = [
-                'rasi_name'       => $rasi,
-                'tab_type'        => $type,
-                'prediction_text' => $text,
-                'audio_url'       => $audio,
-                'video_url'       => $video,
-                'prediction_date' => $predDate
-            ];
         }
 
         return response()->json([
