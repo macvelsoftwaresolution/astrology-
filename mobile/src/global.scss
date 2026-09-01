@@ -40,6 +40,10 @@
   --ion-text-color: #2A2421;
 }
 
+html, body, ion-app, ion-content {
+  background-color: #FBF9E7 !important;
+}
+
 /* ----------------------------------------------------------------------------
  * Universal Astrological Typography Setup (Noto Serif Tamil)
  * Scale down root font-size slightly to keep Tamil text neat and proportioned

@@ -16,6 +16,7 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Header Titles -->
     <div class="form-header">
       <h2 class="form-title">{{ 'register.title' | translate }}</h2>
@@ -39,32 +40,51 @@
           <span class="upload-text" style="color: #A27B38; font-size: 14px;">{{ 'register.uploadPhoto' | translate }}</span>
         </label>
         <input type="file" id="profilePicInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+=======
+    <!-- Auth Card Container -->
+    <div class="auth-card">
+      <!-- Header Titles (Single title to prevent duplicate brand name) -->
+      <div class="form-header">
+        <h2 class="form-title">{{ 'register.subtitle' | translate }}</h2>
+>>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
       </div>
 
-      <div class="input-group">
-        <label>{{ 'register.namePlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input type="text" name="fullName" [(ngModel)]="fullName" required minlength="2">
-          <span class="input-icon"><i class="bi bi-person"></i></span>
+      <!-- Form -->
+      <form #registerFormRef="ngForm" (ngSubmit)="onRegister()" class="register-form" novalidate>
+        <!-- Profile Image Upload -->
+        <div class="profile-pic-upload">
+          <label for="profilePicInput" class="upload-label">
+            @if (profilePicBase64) {
+              <div class="avatar-preview">
+                <img [src]="profilePicBase64" alt="Profile"/>
+              </div>
+            } @else {
+              <div class="avatar-placeholder">
+                <i class="bi bi-camera-fill"></i>
+              </div>
+            }
+            <span class="upload-text">{{ 'register.uploadPhoto' | translate }}</span>
+          </label>
+          <input type="file" id="profilePicInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
         </div>
-      </div>
 
-      <div class="input-group">
-        <label>{{ 'register.phonePlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input type="tel" name="mobileNumber" [(ngModel)]="mobileNumber" required pattern="^[6-9]\d{9}$">
-          <span class="input-icon"><i class="bi bi-phone"></i></span>
+        <div class="input-group">
+          <label>{{ 'register.namePlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="text" name="fullName" [(ngModel)]="fullName" required minlength="2">
+            <span class="input-icon"><i class="bi bi-person"></i></span>
+          </div>
         </div>
-      </div>
 
-      <div class="input-group">
-        <label>{{ 'register.emailPlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input type="email" name="emailAddress" [(ngModel)]="emailAddress" required>
-          <span class="input-icon"><i class="bi bi-envelope"></i></span>
+        <div class="input-group">
+          <label>{{ 'register.phonePlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="tel" name="mobileNumber" [(ngModel)]="mobileNumber" required pattern="^[6-9]\d{9}$">
+            <span class="input-icon"><i class="bi bi-phone"></i></span>
+          </div>
         </div>
-      </div>
 
+<<<<<<< HEAD
       <div class="input-group">
         <label>{{ 'register.passwordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
@@ -72,9 +92,17 @@
           <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
             <i class="bi" [class.bi-eye]="showPassword" [class.bi-key]="!showPassword"></i>
           </span>
+=======
+        <div class="input-group">
+          <label>{{ 'register.emailPlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="email" name="emailAddress" [(ngModel)]="emailAddress" required>
+            <span class="input-icon"><i class="bi bi-envelope"></i></span>
+          </div>
+>>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
         </div>
-      </div>
 
+<<<<<<< HEAD
       <div class="input-group">
         <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
@@ -82,30 +110,57 @@
           <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
             <i class="bi" [class.bi-eye]="showConfirmPassword" [class.bi-lock]="!showConfirmPassword"></i>
           </span>
+=======
+        <div class="input-group">
+          <label>{{ 'register.passwordPlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
+            <span class="input-icon toggle-pwd-btn" (click)="showPassword = !showPassword">
+              <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+            </span>
+          </div>
+>>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
         </div>
-      </div>
 
+<<<<<<< HEAD
       @if (errorMessage) {
         <div class="register-error-alert" style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; line-height: 1.35;">
           <i class="bi bi-exclamation-triangle-fill"></i>
           <span>{{ errorMessage | translate }}</span>
+=======
+        <div class="input-group">
+          <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
+          <div class="input-wrapper">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6">
+            <span class="input-icon toggle-pwd-btn" (click)="showConfirmPassword = !showConfirmPassword">
+              <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+            </span>
+          </div>
+>>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
         </div>
-      }
 
-      <button type="submit" class="submit-btn">
-        <span class="btn-primary-text">{{ 'register.submitBtn' | translate }}</span>
-      </button>
-    </form>
+        @if (errorMessage) {
+          <div class="register-error-alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ errorMessage | translate }}</span>
+          </div>
+        }
 
-    <!-- Switch to login -->
-    <div class="switch-auth-mode">
-      <span>{{ 'register.haveAccount' | translate }} </span>
-      <a (click)="goToLogin()">{{ 'register.loginNow' | translate }}</a>
-    </div>
+        <button type="submit" class="submit-btn">
+          <span class="btn-primary-text">{{ 'register.submitBtn' | translate }}</span>
+        </button>
 
-    <!-- Privacy Note -->
-    <div class="privacy-note">
-      <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
+        <!-- Switch to login -->
+        <div class="switch-auth-mode">
+          <span>{{ 'register.haveAccount' | translate }} </span>
+          <a (click)="goToLogin()">{{ 'register.loginNow' | translate }}</a>
+        </div>
+
+        <!-- Privacy Note -->
+        <div class="privacy-note">
+          <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
+        </div>
+      </form>
     </div>
   </div>
 </ion-content>
