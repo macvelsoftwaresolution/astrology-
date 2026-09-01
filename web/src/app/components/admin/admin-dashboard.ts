@@ -134,12 +134,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Backward compatibility for queryParams ?tab=...
+    // Backward compatibility for queryParams ?tab=... -> Auto-redirect to clean URL path /admin/:tab
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
-        this.currentTab = params['tab'];
+        const cleanTab = params['tab'];
+        this.currentTab = cleanTab;
         this.updateCategoryState();
         this.cdr.detectChanges();
+        this.router.navigate(['/admin', cleanTab], { replaceUrl: true });
       }
     });
   }
