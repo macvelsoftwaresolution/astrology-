@@ -91,8 +91,13 @@ export class AppComponent implements OnInit {
           if (this.router.url === '/home' || this.router.url.startsWith('/home?') || this.router.url === '/learn' || this.router.url.startsWith('/learn?') || this.router.url === '/welcome') {
             this.exitModalService.open();
           } else {
-            // Standard history back navigation
-            this.navCtrl.back();
+            // Standard history back navigation with fallback for auth pages
+            const currentUrl = this.router.url;
+            if (currentUrl.includes('/login') || currentUrl.includes('/register') || currentUrl.includes('/forgot-password')) {
+              this.router.navigate(['/welcome']);
+            } else {
+              this.navCtrl.back();
+            }
           }
         });
       });
