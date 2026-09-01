@@ -212,7 +212,7 @@ export class HomePage implements OnInit {
   }
 
   goToJathagamWriting() {
-    this.selectTab('services');
+    this.router.navigate(['/jathagam-writing']);
   }
 
   scrollToTop() {
