@@ -16,10 +16,9 @@
       </div>
     </div>
 
-    <!-- Header Titles -->
+    <!-- Header Titles (Single title to prevent duplicate brand name) -->
     <div class="form-header">
-      <h2 class="form-title">{{ 'welcome.brand' | translate }}</h2>
-      <p class="form-subtitle">{{ 'register.subtitle' | translate }}</p>
+      <h2 class="form-title">{{ 'register.subtitle' | translate }}</h2>
     </div>
 
     <!-- Form -->
@@ -69,8 +68,8 @@
         <label>{{ 'register.passwordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
           <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
-          <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
-            <i class="bi" [class.bi-eye]="showPassword" [class.bi-key]="!showPassword"></i>
+          <span class="input-icon toggle-pwd-btn" (click)="showPassword = !showPassword">
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
           </span>
         </div>
       </div>
@@ -79,14 +78,14 @@
         <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
         <div class="input-wrapper">
           <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6">
-          <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
-            <i class="bi" [class.bi-eye]="showConfirmPassword" [class.bi-lock]="!showConfirmPassword"></i>
+          <span class="input-icon toggle-pwd-btn" (click)="showConfirmPassword = !showConfirmPassword">
+            <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
           </span>
         </div>
       </div>
 
       @if (errorMessage) {
-        <div class="register-error-alert" style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; line-height: 1.35;">
+        <div class="register-error-alert">
           <i class="bi bi-exclamation-triangle-fill"></i>
           <span>{{ errorMessage | translate }}</span>
         </div>

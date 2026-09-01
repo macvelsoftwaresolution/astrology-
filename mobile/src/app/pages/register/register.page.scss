@@ -149,8 +149,29 @@ $color-text-muted: #7E716A;
       font-size: 1.1rem;
       color: $color-maroon;
       pointer-events: none;
+
+      &.toggle-pwd-btn {
+        pointer-events: auto;
+        cursor: pointer;
+        padding: 4px;
+      }
     }
   }
+}
+
+.register-error-alert {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  line-height: 1.35;
 }
 
 .submit-btn {
