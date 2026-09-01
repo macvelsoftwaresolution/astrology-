@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 interface Booking {
   id: string;
@@ -24,7 +25,7 @@ interface Booking {
   styleUrl: './admin.css'
 })
 export class AdminComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = environment.apiUrl;
 
   // Login Gate State
   isLoggedIn = false;
