@@ -40,7 +40,8 @@ export class AuthService {
   clearSession(): void {
     const keys = [
       'auth_token', 'astro_auth_token', 'edu_auth_token',
-      'auth_user', 'astro_auth_user', 'edu_auth_user'
+      'auth_user', 'astro_auth_user', 'edu_auth_user',
+      'active_service'
     ];
     keys.forEach(k => {
       try {
@@ -64,6 +65,7 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('active_service', service);
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -84,6 +86,7 @@ export class AuthService {
         if (res && res.success && res.token) {
           this.clearSession();
           localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('active_service', service);
           if (res.user) {
             this.currentUserSubject.next(res.user);
           }
@@ -104,7 +107,14 @@ export class AuthService {
   }
 
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
-    return !!this.getToken();
+    const hasToken = !!this.getToken();
+    if (!hasToken) return false;
+    
+    if (service) {
+      const activeService = localStorage.getItem('active_service') || 'astrology';
+      return activeService === service;
+    }
+    return true;
   }
 
   refreshProfileFromDb(): Observable<any> {

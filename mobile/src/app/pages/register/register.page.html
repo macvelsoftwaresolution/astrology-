@@ -16,37 +16,11 @@
       </div>
     </div>
 
-<<<<<<< HEAD
-    <!-- Header Titles -->
-    <div class="form-header">
-      <h2 class="form-title">{{ 'register.title' | translate }}</h2>
-      <p class="form-subtitle">{{ 'register.subtitle' | translate }}</p>
-    </div>
-
-    <!-- Form -->
-    <form #registerFormRef="ngForm" (ngSubmit)="onRegister()" class="register-form" novalidate>
-      <!-- Profile Image Upload -->
-      <div class="profile-pic-upload" style="text-align: center; margin-bottom: 20px;">
-        <label for="profilePicInput" class="upload-label" style="display: inline-block; cursor: pointer;">
-          @if (profilePicBase64) {
-            <div class="avatar-preview" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid #ECC876;">
-              <img [src]="profilePicBase64" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;"/>
-            </div>
-          } @else {
-            <div class="avatar-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px dashed #A27B38;">
-              <i class="bi bi-camera-fill" style="font-size: 24px; color: #A27B38;"></i>
-            </div>
-          }
-          <span class="upload-text" style="color: #A27B38; font-size: 14px;">{{ 'register.uploadPhoto' | translate }}</span>
-        </label>
-        <input type="file" id="profilePicInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
-=======
     <!-- Auth Card Container -->
     <div class="auth-card">
       <!-- Header Titles (Single title to prevent duplicate brand name) -->
       <div class="form-header">
         <h2 class="form-title">{{ 'register.subtitle' | translate }}</h2>
->>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
       </div>
 
       <!-- Form -->
@@ -84,59 +58,32 @@
           </div>
         </div>
 
-<<<<<<< HEAD
-      <div class="input-group">
-        <label>{{ 'register.passwordPlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
-          <span class="input-icon" (click)="showPassword = !showPassword" style="cursor: pointer;">
-            <i class="bi" [class.bi-eye]="showPassword" [class.bi-key]="!showPassword"></i>
-          </span>
-=======
         <div class="input-group">
           <label>{{ 'register.emailPlaceholder' | translate }}</label>
           <div class="input-wrapper">
             <input type="email" name="emailAddress" [(ngModel)]="emailAddress" required>
             <span class="input-icon"><i class="bi bi-envelope"></i></span>
           </div>
->>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
         </div>
 
-<<<<<<< HEAD
-      <div class="input-group">
-        <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
-        <div class="input-wrapper">
-          <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6">
-          <span class="input-icon" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer;">
-            <i class="bi" [class.bi-eye]="showConfirmPassword" [class.bi-lock]="!showConfirmPassword"></i>
-          </span>
-=======
         <div class="input-group">
           <label>{{ 'register.passwordPlaceholder' | translate }}</label>
           <div class="input-wrapper">
             <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6">
-            <span class="input-icon toggle-pwd-btn" (click)="showPassword = !showPassword">
+            <span class="input-icon toggle-pwd-btn" (click)="showPassword = !showPassword" style="cursor: pointer; pointer-events: auto;">
               <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
             </span>
           </div>
->>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
         </div>
 
-<<<<<<< HEAD
-      @if (errorMessage) {
-        <div class="register-error-alert" style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; line-height: 1.35;">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-          <span>{{ errorMessage | translate }}</span>
-=======
         <div class="input-group">
           <label>{{ 'register.confirmPasswordPlaceholder' | translate }}</label>
           <div class="input-wrapper">
             <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6">
-            <span class="input-icon toggle-pwd-btn" (click)="showConfirmPassword = !showConfirmPassword">
+            <span class="input-icon toggle-pwd-btn" (click)="showConfirmPassword = !showConfirmPassword" style="cursor: pointer; pointer-events: auto;">
               <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
             </span>
           </div>
->>>>>>> 503d3691343f07f3a399a866fe802f96d41bd2d9
         </div>
 
         @if (errorMessage) {
