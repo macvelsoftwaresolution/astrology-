@@ -90,17 +90,17 @@
       <button type="submit" class="submit-btn">
         <span class="btn-primary-text">{{ 'register.submitBtn' | translate }}</span>
       </button>
+
+      <!-- Switch to login -->
+      <div class="switch-auth-mode">
+        <span>{{ 'register.haveAccount' | translate }} </span>
+        <a (click)="goToLogin()">{{ 'register.loginNow' | translate }}</a>
+      </div>
+
+      <!-- Privacy Note -->
+      <div class="privacy-note">
+        <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
+      </div>
     </form>
-
-    <!-- Switch to login -->
-    <div class="switch-auth-mode">
-      <span>{{ 'register.haveAccount' | translate }} </span>
-      <a (click)="goToLogin()">{{ 'register.loginNow' | translate }}</a>
-    </div>
-
-    <!-- Privacy Note -->
-    <div class="privacy-note">
-      <span><i class="bi bi-shield-lock-fill"></i> Your information is secure and private.</span>
-    </div>
   </div>
 </ion-content>
