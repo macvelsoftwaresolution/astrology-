@@ -354,8 +354,10 @@ export class ZodiacPageComponent implements OnInit {
         this.loading = false;
         if (res && Array.isArray(res.predictions) && res.predictions.length > 0) {
           this.zodiacSigns = this.zodiacSigns.map(z => {
-            const found = res.predictions.find((p: any) => p.rasi_name === z.name);
-            const rawText = found && found.prediction_text ? found.prediction_text : z.prediction;
+            const found = res.predictions.find((p: any) => p.rasi_name === z.name || p.rasi === z.name);
+            const rawText = (found && found.prediction_text && found.prediction_text.trim().length > 0)
+              ? found.prediction_text.trim()
+              : 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.';
             const displayText = (this.selectedTab === 'daily') ? this.getShortPrediction(rawText) : rawText;
             return {
               ...z,

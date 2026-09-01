@@ -12,7 +12,8 @@ import { adminGuard } from './guards/role.guard';
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'admin', component: AdminDashboardComponent, canActivate: [adminGuard] },
+  { path: 'admin', redirectTo: 'admin/overview', pathMatch: 'full' },
+  { path: 'admin/:section', component: AdminDashboardComponent, canActivate: [adminGuard] },
   { path: 'panchangam', component: PanchangamPageComponent },
   { path: 'zodiac', component: ZodiacPageComponent },
   { path: 'services', component: ServicesPageComponent },

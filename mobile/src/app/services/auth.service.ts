@@ -111,10 +111,14 @@ export class AuthService {
     if (!hasToken) return false;
 
     if (service) {
-      const activeService = localStorage.getItem('active_service') || 'astrology';
+      const activeService = this.getActiveService();
       return activeService === service;
     }
     return true;
+  }
+
+  getActiveService(): 'astrology' | 'education' {
+    return (localStorage.getItem('active_service') as 'astrology' | 'education') || (localStorage.getItem('auth_service') as 'astrology' | 'education') || 'astrology';
   }
 
   refreshProfileFromDb(): Observable<any> {

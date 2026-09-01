@@ -125,20 +125,20 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.loadNotifications();
     }
 
+    // Listen to URL Path parameter (:section e.g. /admin/rasi-editor)
+    this.route.params.subscribe(params => {
+      if (params['section']) {
+        this.currentTab = params['section'];
+        this.updateCategoryState();
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Backward compatibility for queryParams ?tab=...
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
         this.currentTab = params['tab'];
-        // Auto-expand the category if a tab within it is selected, and close others
-        if (this.isAstrologyActive()) {
-          this.astrologyCategoryOpen = true;
-          this.learnCategoryOpen = false;
-        } else if (this.isLearnActive()) {
-          this.learnCategoryOpen = true;
-          this.astrologyCategoryOpen = false;
-        } else {
-          this.astrologyCategoryOpen = false;
-          this.learnCategoryOpen = false;
-        }
+        this.updateCategoryState();
         this.cdr.detectChanges();
       }
     });
@@ -350,6 +350,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateCategoryState(): void {
+    if (this.isAstrologyActive()) {
+      this.astrologyCategoryOpen = true;
+      this.learnCategoryOpen = false;
+    } else if (this.isLearnActive()) {
+      this.learnCategoryOpen = true;
+      this.astrologyCategoryOpen = false;
+    } else {
+      this.astrologyCategoryOpen = false;
+      this.learnCategoryOpen = false;
+    }
+  }
+
   isAstrologyActive(): boolean {
     return ['team', 'services', 'rasi-editor', 'matches', 'matrimony'].includes(this.currentTab);
   }
@@ -361,23 +374,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   selectTab(tabName: string): void {
     this.currentTab = tabName;
     this.mobileMenuOpen = false;
+    this.updateCategoryState();
 
-    if (this.isAstrologyActive()) {
-      this.astrologyCategoryOpen = true;
-      this.learnCategoryOpen = false;
-    } else if (this.isLearnActive()) {
-      this.learnCategoryOpen = true;
-      this.astrologyCategoryOpen = false;
-    } else {
-      this.astrologyCategoryOpen = false;
-      this.learnCategoryOpen = false;
-    }
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab: tabName },
-      queryParamsHandling: 'merge'
-    });
+    this.router.navigate(['/admin', tabName]);
 
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
