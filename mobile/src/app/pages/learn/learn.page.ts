@@ -333,6 +333,11 @@ export class LearnPage implements OnInit {
     // 1. Create Razorpay order via backend API
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }).subscribe({
       next: (orderRes) => {
+        // --- TESTING BYPASS: Skip real payment so you can test the success screens ---
+        this.handlePaymentSuccess('test_order_123', 'test_payment_123', 'test_sig');
+        return;
+        // ----------------------------------------------------------------------------
+        
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           if (orderRes.is_demo) {
             // Demo order mode (when no live/test Razorpay keys present in backend .env)

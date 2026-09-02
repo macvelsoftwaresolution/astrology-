@@ -18,8 +18,9 @@ $color-purple-dark: #200438;
   background-color: #{$color-beige};
   border-bottom: 1.5px solid rgba($color-gold, 0.35);
   box-shadow: 0 4px 18px rgba($color-maroon, 0.08);
-  position: sticky;
+  position: absolute;
   top: 0;
+  width: 100%;
   z-index: 990;
 
   .top-navbar-content {
@@ -313,6 +314,7 @@ $color-purple-dark: #200438;
 /* ================= SMOOTH SCREEN TRANSITION ================= */
 .screen-transition-container {
   min-height: 100%;
+  padding-top: calc(env(safe-area-inset-top, 24px) + 65px);
 }
 
 .screen-pane {

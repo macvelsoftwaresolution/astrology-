@@ -1,25 +1,23 @@
 <!-- ================= FIXED STICKY TOP HEADER NAVBAR ================= -->
-@if (currentScreen !== 'dashboard') {
-  <ion-header class="app-top-navbar ion-no-border">
-    <div class="top-navbar-content">
-      <!-- Left Section: Back Button + Screen Title -->
-      <div class="top-nav-left">
-        <button
-          type="button"
-          class="top-nav-back-btn"
-          (click)="handleBack()"
-          title="Go Back">
-          <i class="bi bi-arrow-left"></i>
-        </button>
-        <div class="top-nav-title-box">
-          <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
-        </div>
+<ion-header [hidden]="currentScreen === 'dashboard'" class="app-top-navbar ion-no-border">
+  <div class="top-navbar-content">
+    <!-- Left Section: Back Button + Screen Title -->
+    <div class="top-nav-left">
+      <button
+        type="button"
+        class="top-nav-back-btn"
+        (click)="handleBack()"
+        title="Go Back">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div class="top-nav-title-box">
+        <h1 class="top-nav-title">{{ getHeaderTitle() }}</h1>
       </div>
     </div>
-  </ion-header>
-}
+  </div>
+</ion-header>
 
-<ion-content [fullscreen]="true" class="edu-content">
+<ion-content class="edu-content">
 
   @if (currentScreen !== 'dashboard') {
     <div class="screen-transition-container">
