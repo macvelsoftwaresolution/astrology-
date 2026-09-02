@@ -47,7 +47,7 @@ export class AuthService {
       try {
         localStorage.removeItem(k);
         sessionStorage.removeItem(k);
-      } catch (e) {}
+      } catch (e) { }
     });
     this.currentUserSubject.next(null);
   }
@@ -109,12 +109,16 @@ export class AuthService {
   isLoggedIn(service?: 'astrology' | 'education'): boolean {
     const hasToken = !!this.getToken();
     if (!hasToken) return false;
-    
+
     if (service) {
-      const activeService = localStorage.getItem('active_service') || 'astrology';
+      const activeService = this.getActiveService();
       return activeService === service;
     }
     return true;
+  }
+
+  getActiveService(): 'astrology' | 'education' {
+    return (localStorage.getItem('active_service') as 'astrology' | 'education') || (localStorage.getItem('auth_service') as 'astrology' | 'education') || 'astrology';
   }
 
   refreshProfileFromDb(): Observable<any> {
@@ -157,6 +161,16 @@ export class AuthService {
 
   getCurrentUser(service?: 'astrology' | 'education'): User | null {
     return this.currentUserSubject.value;
+  }
+
+  updateCurrentUser(user: User): void {
+    if (!user) return;
+    const updated = { ...this.currentUserSubject.value, ...user };
+    this.currentUserSubject.next(updated);
+    try {
+      localStorage.setItem('auth_user', JSON.stringify(updated));
+      localStorage.setItem('astro_auth_user', JSON.stringify(updated));
+    } catch (e) { }
   }
 
   getToken(service?: 'astrology' | 'education'): string | null {

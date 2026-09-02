@@ -156,15 +156,17 @@ export class LandingComponent implements OnInit, AfterViewInit {
     const today = new Date().toISOString().split('T')[0];
     this.http.get<any>(`${environment.apiUrl}/rasi-palan?date=${today}&type=daily`).subscribe({
       next: (res) => {
-        if (res && Array.isArray(res.predictions) && res.predictions.length > 0) {
+        if (res && Array.isArray(res.predictions)) {
           setTimeout(() => {
             this.zodiacSigns = this.zodiacSigns.map(z => {
-              const found = res.predictions.find((p: any) => p.rasi_name === z.name);
-              const fullText = found && found.prediction_text ? found.prediction_text : z.prediction;
+              const found = res.predictions.find((p: any) => p.rasi_name === z.name || p.rasi === z.name);
+              const textFromDb = (found && found.prediction_text && found.prediction_text.trim().length > 0)
+                ? found.prediction_text.trim()
+                : 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.';
               return {
                 ...z,
-                fullPrediction: fullText,
-                prediction: this.getShortPrediction(fullText),
+                fullPrediction: textFromDb,
+                prediction: this.getShortPrediction(textFromDb),
                 iconUrl: z.iconUrl || ''
               };
             });
@@ -187,18 +189,18 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
   // 12 Zodiac signs with Tamil names and predictions
   zodiacSigns: ZodiacSign[] = [
-    { name: 'மேஷம்', englishName: 'Aries', symbol: '♈', dates: 'மார்ச் 21 - ஏப்ரல் 19', prediction: 'இன்று உங்களுக்கு சுப பலன்கள் அதிகரிக்கும். தொட்ட காரியங்கள் அனைத்தும் வெற்றியடையும்.', iconUrl: '' },
-    { name: 'ரிஷபம்', englishName: 'Taurus', symbol: '♉', dates: 'ஏப்ரல் 20 - மே 20', prediction: 'இன்று தனலாபம் உண்டு. குடும்பத்தில் மகிழ்ச்சியும் அமைதியும் நிலவும்.', iconUrl: '' },
-    { name: 'மிதுனம்', englishName: 'Gemini', symbol: '♊', dates: 'மே 21 - ஜூன் 20', prediction: 'தொழிலில் புதிய வாய்ப்புகள் தேடி வரும். நண்பர்களின் ஆதரவு கிடைக்கும்.', iconUrl: '' },
-    { name: 'கடகம்', englishName: 'Cancer', symbol: '♋', dates: 'ஜூன் 21 - ஜூலை 22', prediction: 'மனதில் தெளிவும் உற்சாகமும் பிறக்கும். புதிய முயற்சிகள் கைகூடும்.', iconUrl: '' },
-    { name: 'சிம்மம்', englishName: 'Leo', symbol: '♌', dates: 'ஜூலை 23 - ஆகஸ்ட் 22', prediction: 'தொழிலில் நல்ல முன்னேற்றம் காணப்படும். சுப நிகழ்ச்சிகள் திட்டமிடுவீர்கள்.', iconUrl: '' },
-    { name: 'கன்னி', englishName: 'Virgo', symbol: '♍', dates: 'ஆகஸ்ட் 23 - செப்டம்பர் 22', prediction: 'அலுவலகத்தில் உங்களின் உழைப்பிற்கு நல்ல அங்கீகாரம் கிடைக்கும்.', iconUrl: '' },
-    { name: 'துலாம்', englishName: 'Libra', symbol: '♎', dates: 'செப்டம்பர் 23 - அக்டோபர் 22', prediction: 'பயணங்களால் நன்மைகள் விளையும். பணப்புழக்கம் தாராளமாக இருக்கும்.', iconUrl: '' },
-    { name: 'விருச்சிகம்', englishName: 'Scorpio', symbol: '♏', dates: 'அக்டோபர் 23 - நவம்பர் 21', prediction: 'ஆரோக்கியத்தில் கவனம் தேவை. காரியங்களில் சிந்தித்து செயல்படவும்.', iconUrl: '' },
-    { name: 'தனுசு', englishName: 'Sagittarius', symbol: '♐', dates: 'நவம்பர் 22 - டிசம்பர் 21', prediction: 'தொழில் விரிவாக்க சிந்தனை மேலோங்கும். நல்ல லாபம் கிட்டும்.', iconUrl: '' },
-    { name: 'மகரம்', englishName: 'Capricorn', symbol: '♑', dates: 'டிசம்பர் 22 - ஜனவரி 19', prediction: 'உறவினர்களின் ஆதரவு கிடைக்கும். தடைபட்ட காரியங்கள் நிவர்த்தியாகும்.', iconUrl: '' },
-    { name: 'கும்பம்', englishName: 'Aquarius', symbol: '♒', dates: 'ஜனவரி 20 - பிப்ரவரி 18', prediction: 'சுப செய்தி வந்து சேரும். எதிர்பார்த்த தனவரவு உண்டாகும்.', iconUrl: '' },
-    { name: 'மீனம்', englishName: 'Pisces', symbol: '♓', dates: 'பிப்ரவரி 19 - மார்ச் 20', prediction: 'ஆன்மீக சிந்தனை மேலோங்கும். புதிய மனிதர்களின் நட்பு கிடைக்கும்.', iconUrl: '' }
+    { name: 'மேஷம்', englishName: 'Aries', symbol: '♈', dates: 'மார்ச் 21 - ஏப்ரல் 19', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'ரிஷபம்', englishName: 'Taurus', symbol: '♉', dates: 'ஏப்ரல் 20 - மே 20', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'மிதுனம்', englishName: 'Gemini', symbol: '♊', dates: 'மே 21 - ஜூன் 20', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'கடகம்', englishName: 'Cancer', symbol: '♋', dates: 'ஜூன் 21 - ஜூலை 22', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'சிம்மம்', englishName: 'Leo', symbol: '♌', dates: 'ஜூலை 23 - ஆகஸ்ட் 22', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'கன்னி', englishName: 'Virgo', symbol: '♍', dates: 'ஆகஸ்ட் 23 - செப்டம்பர் 22', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'துலாம்', englishName: 'Libra', symbol: '♎', dates: 'செப்டம்பர் 23 - அக்டோபர் 22', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'விருச்சிகம்', englishName: 'Scorpio', symbol: '♏', dates: 'அக்டோபர் 23 - நவம்பர் 21', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'தனுசு', englishName: 'Sagittarius', symbol: '♐', dates: 'நவம்பர் 22 - டிசம்பர் 21', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'மகரம்', englishName: 'Capricorn', symbol: '♑', dates: 'டிசம்பர் 22 - ஜனவரி 19', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'கும்பம்', englishName: 'Aquarius', symbol: '♒', dates: 'ஜனவரி 20 - பிப்ரவரி 18', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
+    { name: 'மீனம்', englishName: 'Pisces', symbol: '^{-/-}$', dates: 'பிப்ரவரி 19 - மார்ச் 20', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' }
   ];
 
   selectedZodiac: ZodiacSign = this.zodiacSigns[0];

@@ -45,6 +45,9 @@ export class LoginPage implements OnInit {
 
     this.authService.login(this.mobileNumber, this.password, this.serviceType).subscribe({
       next: (res) => {
+        try {
+          localStorage.setItem('auth_service', this.serviceType);
+        } catch (e) {}
         if (this.serviceType === 'education') {
           this.router.navigate(['/learn'], { replaceUrl: true });
         } else {

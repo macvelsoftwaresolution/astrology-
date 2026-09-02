@@ -196,7 +196,7 @@ export class MyJathagamComponent implements OnInit {
   ngOnInit() { this.loadSaved(); }
 
   loadSaved() {
-    const token = sessionStorage.getItem('auth_token');
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
     if (!token) return;
     this.loading = true;
     this.http.get<any>(`${environment.apiUrl}/user/jathagam`, {
@@ -219,7 +219,7 @@ export class MyJathagamComponent implements OnInit {
       this.errorMsg = 'errors.dobRasiRequired';
       return;
     }
-    const token = sessionStorage.getItem('auth_token');
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
     if (!token) { this.errorMsg = 'errors.loginRequired'; return; }
     this.saving = true;
     this.errorMsg = '';

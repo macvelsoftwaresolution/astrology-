@@ -154,37 +154,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: '../landing/landing.css'
 })
 export class AstrologersPageComponent implements OnInit {
-  defaultAstrologers = [
-    {
-      name: 'குரு ஸ்ரீநிவாசன்',
-      role_title: 'தலைமை வேத ஜோதிடர் (ஜாதகம் எழுதுதல்)',
-      experience: '25+ ஆண்டுகள் அனுபவம்',
-      specialty: 'துல்லிய ஜாதகம் எழுதுதல், திருமணப் பொருத்தம், தோஷ நிவர்த்தி',
-      bio: 'வேத ஜோதிடக் கலை பாரம்பரிய குடும்பத்தைச் சேர்ந்தவர். ஆயிரக்கணக்கான குடும்பங்களுக்கு துல்லியமான ஜாதகம் எழுதி வழிகாட்டுதல் வழங்கியுள்ளார்.',
-      avatar_icon: 'bi bi-person-fill',
-      status: 'Available'
-    },
-    {
-      name: 'குரு ராமஜெயம்',
-      role_title: 'முதுநிலை வாஸ்து நிபுணர் (வாஸ்து சாஸ்திரம்)',
-      experience: '18+ ஆண்டுகள் அனுபவம்',
-      specialty: 'மனை வாஸ்து சாஸ்திரம், வீடு & அலுவலக வாஸ்து பார்வை, வரைபட ஆய்வு',
-      bio: 'வாஸ்து சாஸ்திரம் மற்றும் பிரசன்ன ஜோதிடத்தில் 18+ ஆண்டுகள் ஆழ்ந்த அனுபவம் கொண்டவர். எளிய வாஸ்து பரிகாரங்கள் மூலம் தீர்வு வழங்குபவர்.',
-      avatar_icon: 'bi bi-person-bounding-box',
-      status: 'Available'
-    },
-    {
-      name: 'குரு மீனாட்சி சுந்தரம்',
-      role_title: 'எண்கணித வல்லுநர் (நியூமராலஜி & நாடி)',
-      experience: '15+ ஆண்டுகள் அனுபவம்',
-      specialty: 'அதிர்ஷ்ட பெயர் நியூமராலஜி, தொழில் & வியாபார எண் கணிதம், நாடி பலன்',
-      bio: 'எண்கணிதம் (Numerology) மற்றும் நாடி ஜோதிடத்தில் தேர்ச்சி பெற்றவர். தொழில், வேலை மற்றும் குழந்தைகளின் அதிர்ஷ்ட பெயர் தேர்வில் புகழ்பெற்றவர்.',
-      avatar_icon: 'bi bi-person-badge',
-      status: 'Available'
-    }
-  ];
-
-  astrologers: any[] = this.defaultAstrologers;
+  astrologers: any[] = [];
   isLoading = true;
 
   constructor(
@@ -196,22 +166,18 @@ export class AstrologersPageComponent implements OnInit {
     if (typeof window === 'undefined') return;
     this.http.get<any>(`${environment.apiUrl}/public/astrologers`).subscribe({
       next: (res) => {
-        setTimeout(() => {
-          if (res && Array.isArray(res.astrologers) && res.astrologers.length > 0) {
-            this.astrologers = res.astrologers;
-          } else {
-            this.astrologers = this.defaultAstrologers;
-          }
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        }, 0);
+        if (res && Array.isArray(res.astrologers)) {
+          this.astrologers = res.astrologers;
+        } else {
+          this.astrologers = [];
+        }
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
-        setTimeout(() => {
-          this.astrologers = this.defaultAstrologers;
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        }, 0);
+        this.astrologers = [];
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }

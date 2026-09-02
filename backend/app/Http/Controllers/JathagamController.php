@@ -25,11 +25,6 @@ class JathagamController extends Controller
 
 
     // Porutham names (10 Porutham matching criteria)
-    private array $poruthams = [
-        'Dinam', 'Ganam', 'Mahendram', 'Stree Deergham',
-        'Yoni', 'Rasi', 'Rajju', 'Vedhai', 'Vasiyam', 'Rasi Adhipathi'
-    ];
-
     /**
      * Get all 12 rasi predictions (public)
      */
@@ -46,18 +41,7 @@ class JathagamController extends Controller
             ->get()
             ->keyBy('rasi_name');
 
-        // 2. If nothing for exact date, check latest updated for this tab_type
-        if ($dbPredictions->isEmpty()) {
-            $dbPredictions = DB::table('rasi_palans')
-                ->where('tab_type', $type)
-                ->whereIn('rasi_name', $this->rasiList)
-                ->orderBy('prediction_date', 'desc')
-                ->orderBy('updated_at', 'desc')
-                ->get()
-                ->keyBy('rasi_name');
-        }
-
-        // 3. Guarantee ordered array of all 12 rasis
+        // 2. Guarantee ordered array of all 12 rasis
         $orderedPredictions = [];
         foreach ($this->rasiList as $rasi) {
             if (isset($dbPredictions[$rasi])) {

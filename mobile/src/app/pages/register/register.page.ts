@@ -87,6 +87,15 @@ export class RegisterPage implements OnInit {
 
     this.authService.register(user, this.serviceType).subscribe({
       next: (res) => {
+        if (this.profilePicBase64) {
+          try {
+            localStorage.setItem('astro_user_avatar', this.profilePicBase64);
+            localStorage.setItem('astro_student_avatar', this.profilePicBase64);
+          } catch (e) {}
+        }
+        try {
+          localStorage.setItem('auth_service', this.serviceType);
+        } catch (e) {}
         if (this.serviceType === 'education') {
           this.navCtrl.navigateRoot('/learn');
         } else {
