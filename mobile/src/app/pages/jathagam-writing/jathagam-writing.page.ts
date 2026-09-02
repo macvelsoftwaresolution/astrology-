@@ -84,12 +84,6 @@ export class JathagamWritingPage implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: this.price }, { headers }).subscribe({
       next: (orderRes) => {
-        // --- TESTING BYPASS ---
-        console.log("Bypassing Razorpay for Testing");
-        this.completeBooking('test_order_123', 'test_payment_123', 'test_sig');
-        return;
-        // ----------------------
-
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
