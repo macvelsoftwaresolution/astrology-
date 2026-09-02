@@ -36,25 +36,12 @@
 
 /* Explicit theme colors */
 :root {
-  color-scheme: light !important;
-  accent-color: #4A0E17 !important;
-
-  /* Ionic Primary Color Palette (Maroon & Gold Theme) */
-  --ion-color-primary: #4A0E17;
-  --ion-color-primary-rgb: 74, 14, 23;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #410c14;
-  --ion-color-primary-tint: #5c262e;
-
   --ion-background-color: #FBF9E7;
   --ion-text-color: #2A2421;
 }
 
 html, body, ion-app, ion-content {
   background-color: #FBF9E7 !important;
-  color-scheme: light !important;
-  accent-color: #4A0E17 !important;
 }
 
 /* ----------------------------------------------------------------------------
@@ -134,8 +121,6 @@ ion-header.app-top-navbar,
   z-index: 999999 !important;
   background-color: #FDFBF0 !important;
   --background: #FDFBF0 !important;
-  padding-top: 0px !important;
-  box-sizing: border-box !important;
 }
 
 ion-footer.app-footer-tabs,
@@ -148,16 +133,15 @@ ion-footer.app-footer-tabs,
   z-index: 999999 !important;
   background-color: #FBF9E7 !important;
   --background: #FBF9E7 !important;
-  padding-bottom: 0px !important;
-  box-sizing: border-box !important;
+  padding-bottom: max(0.4rem, var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0.4rem))) !important;
 }
 
 /* Constrain ion-content strictly between top navbar and bottom footer */
 ion-content.astrology-app-content,
 .astrology-app-content {
   position: absolute !important;
-  top: 56px !important;
-  bottom: 56px !important;
+  top: calc(72px + var(--ion-safe-area-top, env(safe-area-inset-top, 12px))) !important;
+  bottom: calc(64px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0.4rem))) !important;
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
@@ -172,26 +156,17 @@ ion-content.astrology-app-content,
  * Universal Form Typography Overrides (Matches Login & Register enlarged fonts)
  * Enlarges labels, inputs, selects, textareas, and buttons across ALL forms
  * ---------------------------------------------------------------------------- */
-form label:not(.pill-btn):not(.btn),
-.form-input-card label:not(.pill-btn):not(.btn),
-.form-group label:not(.pill-btn):not(.btn),
-.form-input-group label:not(.pill-btn):not(.btn),
-.input-row label:not(.pill-btn):not(.btn),
-.input-card label:not(.pill-btn):not(.btn),
-label:not(.pill-btn):not(.btn):not(.active) {
+form label,
+.form-input-card label,
+.form-group label,
+.form-input-group label,
+.input-row label,
+.input-card label,
+label {
   font-size: 0.95rem !important;
   font-weight: 700 !important;
   color: #4A0E17 !important;
   line-height: 1.35 !important;
-}
-
-/* Explicit Active Pill Button Text Color Fix */
-.pill-btn.active,
-label.pill-btn.active,
-.pill-btn.active span,
-label.pill-btn.active span,
-.pill-btn.active * {
-  color: #ffffff !important;
 }
 
 input[type="text"],
@@ -211,8 +186,6 @@ textarea,
   font-size: 1.05rem !important;
   font-weight: 500 !important;
   color: #2A2421 !important;
-  color-scheme: light !important;
-  accent-color: #4A0E17 !important;
 
   &::placeholder {
     font-size: 0.95rem !important;
@@ -230,141 +203,4 @@ button[type="submit"] {
   font-size: 1.05rem !important;
   font-weight: 700 !important;
 }
-
-/* ----------------------------------------------------------------------------
- * Native Date / Time Picker Dialog Contrast & Text Visibility Fixes
- * Fixes white text on light header in HTML5 Date Picker dialogs on Android.
- * ---------------------------------------------------------------------------- */
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"] {
-  color-scheme: light !important;
-  accent-color: #4A0E17 !important;
-}
-
-/* Material Date Picker Theme variables for Android WebView / Chrome dialogs */
-:root {
-  --mdc-dialog-heading-color: #4A0E17;
-  --mdc-dialog-subhead-color: #4A0E17;
-  --mdc-theme-primary: #4A0E17;
-  --mdc-theme-on-primary: #FFFFFF;
-}
-
-/* Fix webkit datetime fields wrapper text color */
-::-webkit-datetime-edit-fields-wrapper {
-  color: #2A2421 !important;
-}
-
-::-webkit-datetime-edit-text,
-::-webkit-datetime-edit-month-field,
-::-webkit-datetime-edit-day-field,
-::-webkit-datetime-edit-year-field {
-  color: #2A2421 !important;
-}
-
-/* Ensure WebKit Calendar picker icon is maroon & clear */
-::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  filter: invert(15%) sepia(85%) saturate(2000%) hue-rotate(335deg) brightness(30%) contrast(100%);
-}
-
-/* ----------------------------------------------------------------------------
- * Custom Ionic Date Picker Modal Architecture (100% Theme Controlled)
- * Works flawlessly across ALL Android & iOS phones regardless of Dark/Light OS mode.
- * ---------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------
- * Simple Clean Date Picker Modal Architecture
- * Bright White Selected Date Number + High Contrast Normal Calendar Overlay
- * ---------------------------------------------------------------------------- */
-.simple-clean-date-modal {
-  --width: 92% !important;
-  --max-width: 340px !important;
-  --height: 440px !important;
-  --border-radius: 16px !important;
-  --box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4) !important;
-
-  &::part(backdrop) {
-    background: rgba(0, 0, 0, 0.65) !important;
-    backdrop-filter: blur(3px) !important;
-  }
-
-  &::part(content) {
-    border-radius: 16px !important;
-    background: #FFFFFF !important;
-    border: 1.5px solid rgba(162, 123, 56, 0.4) !important;
-    overflow: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 440px !important;
-  }
-
-  .simple-modal-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 0.75rem 1rem !important;
-    background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%) !important;
-    color: #ECC876 !important;
-    font-family: 'Noto Serif Tamil', serif !important;
-    font-size: 0.95rem !important;
-    font-weight: 800 !important;
-    flex-shrink: 0 !important;
-
-    .modal-label {
-      display: flex !important;
-      align-items: center !important;
-      color: #ECC876 !important;
-    }
-
-    .btn-close-modal {
-      background: rgba(255, 255, 255, 0.18) !important;
-      border: none !important;
-      color: #FFFFFF !important;
-      width: 28px !important;
-      height: 28px !important;
-      border-radius: 50% !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      cursor: pointer !important;
-      font-size: 0.85rem !important;
-    }
-  }
-
-  .simple-modal-wrap {
-    background: #FFFFFF !important;
-    padding: 0.35rem !important;
-    display: flex !important;
-    justify-content: center !important;
-    flex: 1 !important;
-    overflow: hidden !important;
-  }
-
-  .simple-ion-datetime {
-    --background: #FFFFFF !important;
-    --color: #2A2421 !important;
-    --color-selected: #FFFFFF !important;
-    --background-selected: #4A0E17 !important;
-    --title-color: #4A0E17 !important;
-    font-family: 'Noto Serif Tamil', -apple-system, sans-serif !important;
-    width: 100% !important;
-    height: 100% !important;
-
-    /* Month and Year title text */
-    .datetime-header, .month-year-button, .calendar-month-year, .calendar-action-btn {
-      color: #4A0E17 !important;
-      font-weight: 800 !important;
-    }
-
-    /* Selected Active Date Number - Bright White Text inside Maroon Circle */
-    &::part(calendar-day-active) {
-      background: #4A0E17 !important;
-      color: #FFFFFF !important;
-      font-weight: 800 !important;
-    }
-  }
-}
-
-
-
 
