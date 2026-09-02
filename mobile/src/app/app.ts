@@ -114,8 +114,8 @@ export class AppComponent implements OnInit {
     if (this.platform.is('capacitor')) {
       try {
         await StatusBar.setOverlaysWebView({ overlay: false });
-        await StatusBar.setStyle({ style: Style.Dark });
-        await StatusBar.setBackgroundColor({ color: '#FAF6E8' });
+        await StatusBar.setStyle({ style: Style.Light }); // Light style gives dark text on iOS/Capacitor
+        await StatusBar.setBackgroundColor({ color: '#FFFFFF' });
       } catch (e) {
         console.log('StatusBar not available in browser', e);
       }

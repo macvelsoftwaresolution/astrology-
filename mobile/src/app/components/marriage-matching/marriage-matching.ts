@@ -173,6 +173,18 @@ export class MarriageMatchingComponent implements OnInit {
     girlJadhagam: ''
   };
 
+  regDobDisplay = '';
+  regTobDisplay = '';
+  regTobAmPm = 'AM';
+
+  girlDobDisplay = '';
+  girlTobDisplay = '';
+  girlTobAmPm = 'AM';
+
+  boyDobDisplay = '';
+  boyTobDisplay = '';
+  boyTobAmPm = 'AM';
+
   // Calculated 11 Poruthams & Elements Result Sheet
   matchResult = {
     girlElements: null as NakshatraData | null,
@@ -256,6 +268,101 @@ export class MarriageMatchingComponent implements OnInit {
         alert('Failed to upload file.');
       }
     });
+  }
+
+  formatRegDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.regDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) this.regForm.dob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    else this.regForm.dob = '';
+  }
+
+  formatRegTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    this.regTobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateRegTobBackend();
+  }
+
+  updateRegTobBackend() {
+    if (this.regTobDisplay && this.regTobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.regTobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.regTobAmPm === 'PM' && h < 12) h += 12;
+      if (this.regTobAmPm === 'AM' && h === 12) h = 0;
+      this.regForm.tob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else this.regForm.tob = '';
+  }
+
+  formatBoyDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.boyDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) {
+      this.matchingForm.boyDob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else this.matchingForm.boyDob = '';
+  }
+
+  formatBoyTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    this.boyTobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateBoyTobBackend();
+  }
+
+  updateBoyTobBackend() {
+    if (this.boyTobDisplay && this.boyTobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.boyTobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.boyTobAmPm === 'PM' && h < 12) h += 12;
+      if (this.boyTobAmPm === 'AM' && h === 12) h = 0;
+      this.matchingForm.boyTob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else this.matchingForm.boyTob = '';
+  }
+
+  formatGirlDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.girlDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) {
+      this.matchingForm.girlDob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else this.matchingForm.girlDob = '';
+  }
+
+  formatGirlTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    this.girlTobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateGirlTobBackend();
+  }
+
+  updateGirlTobBackend() {
+    if (this.girlTobDisplay && this.girlTobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.girlTobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.girlTobAmPm === 'PM' && h < 12) h += 12;
+      if (this.girlTobAmPm === 'AM' && h === 12) h = 0;
+      this.matchingForm.girlTob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else this.matchingForm.girlTob = '';
   }
 
   selectOption(option: 'register' | 'match') {

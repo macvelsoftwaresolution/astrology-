@@ -43,6 +43,8 @@ import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { ProfilePage } from './pages/profile/profile.page';
 import { TranslatePipe } from './pipes/translate.pipe';
 
+import { SegmentedDobComponent } from './components/segmented-dob/segmented-dob.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -78,6 +80,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
     ParaJathagamComponent,
     VastuKanithaComponent,
     ProfilePage,
+    SegmentedDobComponent,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
