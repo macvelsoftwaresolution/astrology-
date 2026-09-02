@@ -11,7 +11,8 @@
   <div class="profile-center-card">
     <div class="avatar-container">
       <img
-        [src]="personDetails.profileImageUrl || 'https://ui-avatars.com/api/?name=' + personDetails.name + '&background=4A0E17&color=ECC876&size=128'"
+        [src]="personDetails.profileImageUrl || getFallbackAvatarUrl(personDetails.name)"
+        (error)="onAvatarError($event)"
         alt="User Avatar" class="profile-avatar-img">
       <label for="directAvatarInput" class="edit-badge-btn" style="cursor: pointer;">
         <i class="bi" [ngClass]="isUploadingAvatar ? 'bi-hourglass-split' : 'bi-pencil-fill'"></i>

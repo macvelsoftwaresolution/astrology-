@@ -113,9 +113,9 @@
     }
 
     <!-- PANCHANGAM LIVE EDITOR -->
-    <div class="card-box" style="margin-top: 28px; padding: 24px 28px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9;">
-        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+    <div class="card-box panchangam-editor-card" style="margin-top: 28px;">
+      <div class="panchangam-header-bar">
+        <h3 class="panchangam-title">
           <i class="bi bi-calendar-date-fill" style="color: #d97706;"></i>
           {{ 'rasi_editor.todayPanchangam' | translate }}
         </h3>
@@ -124,15 +124,15 @@
         </span>
       </div>
       
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 24px;">
+      <div class="panchangam-grid-responsive">
 
         <!-- Card 1: Basic Panchangam (Thithi & Nakshatra) -->
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px;">
+        <div class="panchangam-item-card basic-card">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <h4 class="panchangam-item-heading">
               <i class="bi bi-stars" style="color: #d97706;"></i> பஞ்சாங்க அடிப்படை (Tithi & Star)
             </h4>
-            <span style="font-size: 11px; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 20px;">Daily Info</span>
+            <span class="panchangam-badge">Daily Info</span>
           </div>
 
           <div class="form-group" style="margin: 0;">

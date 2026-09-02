@@ -75,6 +75,16 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    // Initial avatar preload from storage/user session immediately
+    const cachedAvatar = localStorage.getItem('astro_user_avatar') || 
+                         localStorage.getItem('astro_student_avatar') || 
+                         this.authService.getCurrentUser()?.profileImage || 
+                         (this.authService.getCurrentUser() as any)?.avatar_url || '';
+    if (cachedAvatar) {
+      this.personDetails.profileImageUrl = cachedAvatar;
+      this.editForm.profileImageUrl = cachedAvatar;
+    }
+
     if (this.initialOption) {
       this.selectedOption = this.initialOption;
       this.teleportModalToBody();
@@ -217,7 +227,8 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           this.personDetails.name = res.name || '';
           this.personDetails.email = res.email || '';
           this.personDetails.phone = res.phone || '';
-          this.personDetails.profileImageUrl = res.avatar_url || '';
+          const savedAvatar = res.avatar_url || localStorage.getItem('astro_user_avatar') || localStorage.getItem('astro_student_avatar') || '';
+          this.personDetails.profileImageUrl = savedAvatar;
           if (res.avatar_url) {
             try {
               localStorage.setItem('astro_user_avatar', res.avatar_url);
@@ -250,6 +261,17 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  getFallbackAvatarUrl(name: string): string {
+    const n = name || 'User';
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(n)}&background=4A0E17&color=ECC876&size=128`;
+  }
+
+  onAvatarError(event: any) {
+    if (event?.target) {
+      event.target.src = this.getFallbackAvatarUrl(this.personDetails.name);
+    }
   }
 
   openEditModal() {
