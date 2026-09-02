@@ -113,7 +113,8 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     if (this.platform.is('capacitor')) {
       try {
-        await StatusBar.setStyle({ style: Style.Light });
+        await StatusBar.setOverlaysWebView({ overlay: false });
+        await StatusBar.setStyle({ style: Style.Dark });
         await StatusBar.setBackgroundColor({ color: '#FAF6E8' });
       } catch (e) {
         console.log('StatusBar not available in browser', e);

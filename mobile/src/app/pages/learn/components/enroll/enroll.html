@@ -117,7 +117,35 @@
       <div class="form-row-dob-age">
         <div class="simple-field-group">
           <label class="simple-label">{{ 'learn.dob' | translate }} <span class="req">*</span></label>
-          <input type="date" [(ngModel)]="localForm.dob" (change)="calculateAge()" (ngModelChange)="calculateAge()">
+          <div class="dob-segmented-container">
+            <div class="dob-segments-group">
+              <input #dayInput
+                     type="tel"
+                     maxlength="2"
+                     placeholder="DD"
+                     [(ngModel)]="dobDay"
+                     (input)="onDayInput($event, monthInput)"
+                     class="dob-seg-input seg-day">
+              <span class="dob-sep">/</span>
+              <input #monthInput
+                     type="tel"
+                     maxlength="2"
+                     placeholder="MM"
+                     [(ngModel)]="dobMonth"
+                     (input)="onMonthInput($event, yearInput)"
+                     (keydown)="onMonthKeydown($event, dayInput)"
+                     class="dob-seg-input seg-month">
+              <span class="dob-sep">/</span>
+              <input #yearInput
+                     type="tel"
+                     maxlength="4"
+                     placeholder="YYYY"
+                     [(ngModel)]="dobYear"
+                     (input)="onYearInput($event)"
+                     (keydown)="onYearKeydown($event, monthInput)"
+                     class="dob-seg-input seg-year">
+            </div>
+          </div>
         </div>
 
         <div class="simple-field-group">

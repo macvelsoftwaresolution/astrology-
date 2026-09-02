@@ -77,6 +77,10 @@ export class LearnEnrollComponent implements OnInit {
 
   errorMessage: string = '';
 
+  dobDay: string = '';
+  dobMonth: string = '';
+  dobYear: string = '';
+
   ngOnInit() {
     if (this.form) {
       this.localForm = {
@@ -87,7 +91,84 @@ export class LearnEnrollComponent implements OnInit {
         this.ilanilaiSearchQuery = this.localForm.prevUserId;
       }
     }
+    if (this.localForm.dob) {
+      this.syncSegmentsFromIso(this.localForm.dob);
+      this.calculateAge();
+    }
     this.loadBatches();
+  }
+
+  syncSegmentsFromIso(isoDate: string) {
+    if (!isoDate) {
+      this.dobDay = '';
+      this.dobMonth = '';
+      this.dobYear = '';
+      return;
+    }
+    const parts = isoDate.split('-');
+    if (parts.length === 3) {
+      this.dobYear = parts[0];
+      this.dobMonth = parts[1];
+      this.dobDay = parts[2];
+    }
+  }
+
+  updateDobFromSegments() {
+    const d = (this.dobDay || '').trim();
+    const m = (this.dobMonth || '').trim();
+    const y = (this.dobYear || '').trim();
+
+    if (d && m && y && y.length === 4) {
+      const dayNum = parseInt(d, 10);
+      const monthNum = parseInt(m, 10);
+      const yearNum = parseInt(y, 10);
+
+      if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= 2099) {
+        const dd = d.padStart(2, '0');
+        const mm = m.padStart(2, '0');
+        this.localForm.dob = `${y}-${mm}-${dd}`;
+        this.calculateAge();
+        return;
+      }
+    }
+    this.localForm.dob = '';
+    this.calculateAge();
+  }
+
+  onDayInput(event: any, monthInput: HTMLInputElement) {
+    const val = (event.target.value || '').replace(/[^0-9]/g, '').slice(0, 2);
+    this.dobDay = val;
+    if (val.length === 2 && monthInput) {
+      monthInput.focus();
+    }
+    this.updateDobFromSegments();
+  }
+
+  onMonthInput(event: any, yearInput: HTMLInputElement) {
+    const val = (event.target.value || '').replace(/[^0-9]/g, '').slice(0, 2);
+    this.dobMonth = val;
+    if (val.length === 2 && yearInput) {
+      yearInput.focus();
+    }
+    this.updateDobFromSegments();
+  }
+
+  onMonthKeydown(event: KeyboardEvent, dayInput: HTMLInputElement) {
+    if (event.key === 'Backspace' && !this.dobMonth && dayInput) {
+      dayInput.focus();
+    }
+  }
+
+  onYearInput(event: any) {
+    const val = (event.target.value || '').replace(/[^0-9]/g, '').slice(0, 4);
+    this.dobYear = val;
+    this.updateDobFromSegments();
+  }
+
+  onYearKeydown(event: KeyboardEvent, monthInput: HTMLInputElement) {
+    if (event.key === 'Backspace' && !this.dobYear && monthInput) {
+      monthInput.focus();
+    }
   }
 
   loadBatches() {
@@ -136,6 +217,9 @@ export class LearnEnrollComponent implements OnInit {
           this.localForm.fullName = s.fullName || this.localForm.fullName;
           this.localForm.fatherName = s.fatherName || this.localForm.fatherName;
           this.localForm.dob = s.dob || this.localForm.dob;
+          if (this.localForm.dob) {
+            this.syncSegmentsFromIso(this.localForm.dob);
+          }
           this.localForm.gender = s.gender || this.localForm.gender;
           this.localForm.age = s.age || this.localForm.age;
           this.localForm.occupation = s.occupation || this.localForm.occupation;
@@ -166,16 +250,20 @@ export class LearnEnrollComponent implements OnInit {
   calculateAge() {
     if (this.localForm.dob) {
       const birthDate = new Date(this.localForm.dob);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      if (age > 0) {
-        this.localForm.age = age.toString();
+      if (!isNaN(birthDate.getTime())) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        if (age > 0) {
+          this.localForm.age = age.toString();
+          return;
+        }
       }
     }
+    this.localForm.age = '';
   }
 
   onPhotoChange(event: any) {

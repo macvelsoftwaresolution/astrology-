@@ -323,81 +323,84 @@ $color-text-dark: #2A2421;
   display: grid;
   grid-template-columns: 1.8fr 1fr;
   gap: 0.65rem;
+  align-items: start;
 
-  .dob-group {
-    min-width: 0;
+  .dob-segmented-container {
+    width: 100%;
 
-    .date-input-wrapper {
+    .dob-segments-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #FAF6E8;
+      border: 1.2px solid rgba($color-gold, 0.35);
+      border-radius: 12px;
+      padding: 0 0.4rem;
       width: 100%;
+      height: 42px;
+      box-sizing: border-box;
 
-      .native-date-input {
-        width: 100%;
-        padding: 0.7rem 0.65rem;
-        border: 1.2px solid rgba($color-gold, 0.35);
-        border-radius: 12px;
-        background-color: #FAF6E8;
-        font-size: 0.84rem;
-        color: $color-text-dark;
-        outline: none;
-        box-sizing: border-box;
+      &:focus-within {
+        border-color: $color-gold;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba($color-gold, 0.18);
+      }
+
+      .dob-seg-input {
+        border: none !important;
+        background: transparent !important;
+        text-align: center;
+        font-size: 0.95rem !important;
+        font-weight: 700;
+        color: $color-text-dark !important;
+        outline: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
         font-family: inherit;
-        min-height: 42px;
+        height: 100% !important;
+        line-height: 42px !important;
 
-        &:focus {
-          border-color: $color-gold;
-          background-color: #ffffff;
-          box-shadow: 0 0 0 3px rgba($color-gold, 0.18);
+        &.seg-day, &.seg-month {
+          width: 32px;
         }
+
+        &.seg-year {
+          width: 52px;
+        }
+
+        &::placeholder {
+          color: #a0938a !important;
+          font-size: 0.84rem;
+          font-weight: 500;
+        }
+      }
+
+      .dob-sep {
+        color: $color-gold;
+        font-weight: 700;
+        font-size: 0.95rem;
+        user-select: none;
+        padding: 0 2px;
+        line-height: 42px;
       }
     }
   }
 
-  .age-group {
-    min-width: 0;
-
-    .age-display-box {
-      width: 100%;
-      height: 42px;
-      padding: 0 0.4rem;
-      border: 1.2px solid rgba($color-gold, 0.35);
-      border-radius: 12px;
-      background-color: #FAF6E8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      text-align: center;
-      transition: all 0.25s ease;
-
-      .age-placeholder {
-        font-size: 0.74rem;
-        color: $color-text-muted;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-
-      .age-val {
-        font-size: 0.92rem;
-        font-weight: 800;
-        color: $color-maroon;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        white-space: nowrap;
-
-        i {
-          color: #B45309;
-          font-size: 0.95rem;
-        }
-      }
-
-      &.has-age {
-        background: #FEF9C3;
-        border-color: #CA8A04;
-        box-shadow: 0 2px 8px rgba(202, 138, 4, 0.15);
-      }
-    }
+  .simple-read-box {
+    width: 100%;
+    height: 42px;
+    border: 1.2px solid rgba($color-gold, 0.35);
+    border-radius: 12px;
+    background-color: #FAF6E8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: $color-maroon;
   }
 }
 
@@ -614,11 +617,62 @@ $color-text-dark: #2A2421;
   text-align: center;
 }
 
+/* ================= WIZARD NAV FOOTER ================= */
+.wizard-nav-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.75rem !important;
+  margin-top: 1.5rem !important;
+  padding-top: 0.85rem !important;
+  border-top: 1px dashed rgba($color-gold, 0.4) !important;
+  margin-bottom: calc(1rem + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px))) !important;
+
+  .btn-wizard-prev {
+    background: transparent !important;
+    border: 1.2px solid rgba($color-maroon, 0.4) !important;
+    color: $color-maroon !important;
+    padding: 0.65rem 1.1rem !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+
+    &:active {
+      background: rgba($color-maroon, 0.08) !important;
+    }
+  }
+
+  .btn-wizard-next {
+    background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    padding: 0.65rem 1.25rem !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    font-size: 0.88rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba($color-maroon, 0.25) !important;
+    transition: all 0.2s ease !important;
+
+    &:active {
+      transform: scale(0.97) !important;
+    }
+  }
+}
+
 /* ================= SUBMIT BUTTON ================= */
 .submit-button-container {
   width: 100%;
   margin-top: 0.4rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: calc(1.5rem + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)));
 }
 
 .action-submit-btn {
@@ -1381,9 +1435,13 @@ $color-text-dark: #2A2421;
 
     &.active {
       background: linear-gradient(135deg, $color-maroon 0%, #2a080c 100%);
-      color: #ffffff;
+      color: #ffffff !important;
       border-color: $color-maroon;
       box-shadow: 0 4px 12px rgba($color-maroon, 0.25);
+
+      span, label, p, div {
+        color: #ffffff !important;
+      }
     }
   }
 }

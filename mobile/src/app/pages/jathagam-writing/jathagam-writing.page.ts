@@ -89,12 +89,12 @@ export class JathagamWritingPage implements OnInit {
             key: orderRes.key_id,
             amount: this.price * 100,
             currency: 'INR',
-            name: 'Astro Divine',
-            description: 'ஜாதகம் எழுதுதல் (Jathagam Writing)',
+            name: 'ஆருத்ரா ஜோதிடம்',
+            description: 'ஜாதகம் எழுதுதல் (Test Mode)',
             order_id: orderRes.order_id,
             prefill: {
               name: this.form.name,
-              contact: this.form.phone
+              contact: this.form.phone || '9876543210'
             },
             theme: { color: '#4A0E17' },
             handler: (response: any) => {
@@ -120,7 +120,7 @@ export class JathagamWritingPage implements OnInit {
           }
         } else {
           this.isProcessingPayment = false;
-          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை.');
+          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {

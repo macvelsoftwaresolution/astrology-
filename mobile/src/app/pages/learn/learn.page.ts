@@ -330,32 +330,20 @@ export class LearnPage implements OnInit {
 
     const amount = this.getCurrentCourseFee();
 
-    // 1. Create Razorpay order via backend API
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }).subscribe({
       next: (orderRes) => {
-        // --- TESTING BYPASS: Skip real payment so you can test the success screens ---
-        this.handlePaymentSuccess('test_order_123', 'test_payment_123', 'test_sig');
-        return;
-        // ----------------------------------------------------------------------------
-        
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
-          if (orderRes.is_demo) {
-            // Demo order mode (when no live/test Razorpay keys present in backend .env)
-            this.handlePaymentSuccess('order_demo', 'payment_demo');
-            return;
-          }
-
           const options = {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
             currency: orderRes.currency || 'INR',
-            name: 'Astro Divine',
-            description: 'Vedic Astrology Course Fee',
+            name: 'ஆருத்ரா ஜோதிட பயிலரங்கம்',
+            description: 'மாணவர் சேர்க்கை கட்டணம் (Test Mode)',
             order_id: orderRes.order_id,
             prefill: {
               name: this.enrollForm.fullName || 'மாணவர்',
-              email: this.enrollForm.emailAddress || '',
-              contact: this.enrollForm.mobileNumber || ''
+              email: this.enrollForm.emailAddress || 'student@aruthra.com',
+              contact: this.enrollForm.mobileNumber || '9876543210'
             },
             theme: {
               color: '#4A0E17'
@@ -388,7 +376,8 @@ export class LearnPage implements OnInit {
             alert('Razorpay popup பிழை: ' + (e?.message || e));
           }
         } else {
-          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+          this.isProcessingPayment = false;
+          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {

@@ -811,7 +811,7 @@ export class HomePage implements OnInit {
 
     const amount = this.totalAstrologerFee;
 
-    // 1. Create Razorpay Order via Backend
+    // Create Razorpay Test Order via Backend
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }, { headers }).subscribe({
       next: (orderRes) => {
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
@@ -819,19 +819,18 @@ export class HomePage implements OnInit {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
             currency: orderRes.currency || 'INR',
-            name: 'Astro Divine',
-            description: `${astro.name} - ${astro.role_title}`,
+            name: 'ஆருத்ரா ஜோதிடம்',
+            description: `${astro.name} - ஆலோசனை கட்டணம் (Test Mode)`,
             order_id: orderRes.order_id,
             prefill: {
               name: this.astrologerBookingForm.name || currentUser?.name || 'பயனர்',
-              contact: this.astrologerBookingForm.phone || currentUser?.phone || '',
+              contact: this.astrologerBookingForm.phone || currentUser?.phone || '9876543210',
               email: currentUser?.email || 'user@astrology.com'
             },
             theme: {
               color: '#4A0E17'
             },
             handler: (response: any) => {
-              // Razorpay payment successful
               this.completeBooking(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
             },
             modal: {
@@ -854,12 +853,12 @@ export class HomePage implements OnInit {
           }
         } else {
           this.isProcessingPayment = false;
-          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை: ' + (orderRes?.message || 'Authentication failed. Please check Key ID & Secret in .env'));
+          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {
         this.isProcessingPayment = false;
-        alert('Razorpay பிழை: ' + (err.error?.message || err.message || 'Authentication failed. Please check Key ID in .env'));
+        alert('கட்டண சேவைக்கான ஆர்டரை உருவாக்க முடியவில்லை.');
       }
     });
   }
