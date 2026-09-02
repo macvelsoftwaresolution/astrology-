@@ -270,20 +270,19 @@ class AstrologyController extends Controller
                     'key_id' => $keyId,
                     'currency' => 'INR'
                 ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Razorpay API Key ID / Secret not configured in .env'
+                ], 400);
             }
         } catch (\Exception $e) {
-            \Log::warning('Razorpay Order creation API error: ' . $e->getMessage());
+            \Log::error('Razorpay Order creation API error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create Razorpay order: ' . $e->getMessage()
+            ], 400);
         }
-
-        // Fallback for Test Mode popup
-        $activeKey = ($keyId && str_starts_with($keyId, 'rzp_')) ? $keyId : 'rzp_test_1DP5mmOlF5G5ag';
-        return response()->json([
-            'success' => true,
-            'order_id' => 'order_' . \Illuminate\Support\Str::random(14),
-            'amount' => $request->amount,
-            'key_id' => $activeKey,
-            'currency' => 'INR'
-        ]);
     }
 
     /**
