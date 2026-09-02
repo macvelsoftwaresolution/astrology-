@@ -34,7 +34,7 @@ export class JathagamWritingPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const user = this.authService.getCurrentUser();
@@ -84,6 +84,12 @@ export class JathagamWritingPage implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: this.price }, { headers }).subscribe({
       next: (orderRes) => {
+        // --- TESTING BYPASS ---
+        console.log("Bypassing Razorpay for Testing");
+        this.completeBooking('test_order_123', 'test_payment_123', 'test_sig');
+        return;
+        // ----------------------
+
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
@@ -109,14 +115,15 @@ export class JathagamWritingPage implements OnInit {
 
           try {
             const rzp = new Razorpay(options);
-            rzp.on('payment.failed', (resp: any) => {
+            rzp.on('payment.failed', (response: any) => {
               this.isProcessingPayment = false;
-              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+              alert('Payment Failed: ' + response.error.description);
             });
             rzp.open();
-          } catch (e: any) {
+          } catch (e) {
+            console.error('Razorpay initialization failed', e);
             this.isProcessingPayment = false;
-            alert('Razorpay popup பிழை: ' + (e?.message || e));
+            alert('Could not initialize payment gateway.');
           }
         } else {
           this.isProcessingPayment = false;

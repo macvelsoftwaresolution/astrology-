@@ -440,6 +440,14 @@ export class MarriageMatchingComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 100 }, headers).subscribe({
       next: (orderRes) => {
+        // --- TESTING BYPASS ---
+        console.log("Bypassing Razorpay for Testing");
+        this.isProcessingPayment = false;
+        this.sendMatchingToAdmin();
+        this.serviceStep = 5;
+        return;
+        // ----------------------
+        
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
@@ -546,6 +554,13 @@ export class MarriageMatchingComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 500 }, headers).subscribe({
       next: (orderRes) => {
+        // --- TESTING BYPASS ---
+        console.log("Bypassing Razorpay for Testing");
+        this.isProcessingPayment = false;
+        this.submitRegistrationData();
+        return;
+        // ----------------------
+        
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,

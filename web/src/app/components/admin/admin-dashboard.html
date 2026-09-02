@@ -177,10 +177,6 @@
               <i class="bi bi-gear-fill nav-icon"></i>
               <span>{{ 'nav.lmsSettings' | translate }}</span>
             </button>
-            <button [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
-              <i class="bi bi-box-seam-fill nav-icon"></i>
-              <span>{{ 'nav.courier' | translate }}</span>
-            </button>
             <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
               <i class="bi bi-award-fill nav-icon"></i>
               <span>{{ 'nav.grading' | translate }}</span>
@@ -194,6 +190,10 @@
         <span>{{ 'nav.general' | translate }}</span>
       </div>
 
+      <button class="nav-single-btn" [class.active]="currentTab === 'courier'" (click)="selectTab('courier')">
+        <i class="bi bi-box-seam-fill nav-icon"></i>
+        <span>{{ 'nav.courier' | translate }}</span>
+      </button>
       <button class="nav-single-btn" [class.active]="currentTab === 'payments'" (click)="selectTab('payments')">
         <i class="bi bi-credit-card-2-front-fill nav-icon"></i>
         <span>{{ 'nav.payments' | translate }}</span>
