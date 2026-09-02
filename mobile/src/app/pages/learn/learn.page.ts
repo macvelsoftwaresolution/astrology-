@@ -344,7 +344,7 @@ export class LearnPage implements OnInit {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
             currency: orderRes.currency || 'INR',
-            name: 'ஆருத்ரா ஜோதிட பயிலரங்கம்',
+            name: 'Astro Divine',
             description: 'Vedic Astrology Course Fee',
             order_id: orderRes.order_id,
             prefill: {

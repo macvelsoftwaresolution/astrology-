@@ -445,7 +445,7 @@ export class MarriageMatchingComponent implements OnInit {
             key: orderRes.key_id,
             amount: 10000, // 100 INR in paise
             currency: 'INR',
-            name: 'ஆருத்ரா ஜோதிடம்',
+            name: 'Astro Divine',
             description: 'திருமணப் பொருத்தம்',
             order_id: orderRes.order_id,
             theme: { color: '#4A0E17' },
@@ -551,7 +551,7 @@ export class MarriageMatchingComponent implements OnInit {
             key: orderRes.key_id,
             amount: 50000,
             currency: 'INR',
-            name: 'ஆருத்ரா ஜோதிடம்',
+            name: 'Astro Divine',
             description: 'திருமணப் பதிவு',
             order_id: orderRes.order_id,
             theme: { color: '#4A0E17' },

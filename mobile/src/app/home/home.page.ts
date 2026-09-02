@@ -819,7 +819,7 @@ export class HomePage implements OnInit {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
             currency: orderRes.currency || 'INR',
-            name: 'ஆருத்ரா ஜோதிடம்',
+            name: 'Astro Divine',
             description: `${astro.name} - ${astro.role_title}`,
             order_id: orderRes.order_id,
             prefill: {

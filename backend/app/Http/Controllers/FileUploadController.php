@@ -36,13 +36,25 @@ class FileUploadController extends Controller
 
             $timestamp = time();
             $targetFolder = "astrology/{$folder}";
+            
+            // Determine correct resource type for Cloudinary
+            $mime = strtolower($file->getMimeType());
+            $resourceType = 'auto';
+            if (str_starts_with($mime, 'audio/') || str_starts_with($mime, 'video/')) {
+                $resourceType = 'video';
+            } elseif (str_starts_with($mime, 'image/')) {
+                $resourceType = 'image';
+            } else {
+                $resourceType = 'raw'; // Fallback for PDFs, documents, etc.
+            }
+
             $paramsToSign = "folder={$targetFolder}&public_id={$safeName}&timestamp={$timestamp}";
             $signature = sha1($paramsToSign . $apiSecret);
 
             try {
                 $response = Http::withoutVerifying()->timeout(90)->attach(
                     'file', file_get_contents($file->getRealPath()), $file->getClientOriginalName()
-                )->post("https://api.cloudinary.com/v1_1/{$cloudName}/auto/upload", [
+                )->post("https://api.cloudinary.com/v1_1/{$cloudName}/{$resourceType}/upload", [
                     'api_key'   => $apiKey,
                     'timestamp' => $timestamp,
                     'folder'    => $targetFolder,
@@ -75,7 +87,7 @@ class FileUploadController extends Controller
                 $uploaded = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
                     'folder' => "astrology/{$folder}",
                     'public_id' => $safeName,
-                    'resource_type' => 'auto'
+                    'resource_type' => $resourceType
                 ]);
 
                 if ($uploaded && method_exists($uploaded, 'getSecurePath') && $uploaded->getSecurePath()) {

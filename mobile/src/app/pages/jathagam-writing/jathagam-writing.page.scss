@@ -297,10 +297,6 @@ $color-white: #FFFFFF;
 .app-footer-tabs {
   background-color: #FBF9E7;
   border-top: 1px solid rgba(162, 123, 56, 0.25);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
   z-index: 1000;
   box-shadow: 0 -4px 20px rgba(74, 14, 23, 0.08);
   padding-bottom: var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 12px));

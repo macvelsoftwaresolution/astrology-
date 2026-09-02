@@ -89,7 +89,7 @@ export class JathagamWritingPage implements OnInit {
             key: orderRes.key_id,
             amount: this.price * 100,
             currency: 'INR',
-            name: 'ஆருத்ரா ஜோதிடம்',
+            name: 'Astro Divine',
             description: 'ஜாதகம் எழுதுதல் (Jathagam Writing)',
             order_id: orderRes.order_id,
             prefill: {
