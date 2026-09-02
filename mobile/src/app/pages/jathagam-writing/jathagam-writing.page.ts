@@ -30,6 +30,9 @@ export class JathagamWritingPage implements OnInit {
   bookingRefCode = '';
   isSuccess = false;
 
+  tobDisplay = '';
+  tobAmPm = 'AM';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -176,6 +179,30 @@ export class JathagamWritingPage implements OnInit {
         alert('Error saving order.');
       }
     });
+  }
+
+  formatTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) {
+      formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    }
+    this.tobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateTobBackend();
+  }
+
+  updateTobBackend() {
+    if (this.tobDisplay && this.tobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.tobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.tobAmPm === 'PM' && h < 12) h += 12;
+      if (this.tobAmPm === 'AM' && h === 12) h = 0;
+      this.form.tob = `${h.toString().padStart(2, '0')}:${mStr}:00`;
+    } else {
+      this.form.tob = '';
+    }
   }
 }
 

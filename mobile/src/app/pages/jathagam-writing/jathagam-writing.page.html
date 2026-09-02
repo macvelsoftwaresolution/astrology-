@@ -11,7 +11,7 @@
   </div>
 </ion-header>
 
-<ion-content class="astrology-app-content">
+<ion-content class="astrology-app-content" [fullscreen]="true">
   <div class="tab-content consultation-booking-content">
     
     @if (!isSuccess) {
@@ -34,18 +34,21 @@
         </div>
 
         <div class="form-dual-grid">
-          <div class="form-input-card">
+          <div class="form-input-card" style="grid-column: span 2;">
             <label>{{ 'jathagamWriting.dob' | translate }} <span class="required-star">*</span></label>
-            <div class="input-inner-wrap">
-              <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
-              <input type="date" name="jwDob" [(ngModel)]="form.dob" class="custom-native-date">
-            </div>
+            <app-segmented-dob [(value)]="form.dob"></app-segmented-dob>
           </div>
-          <div class="form-input-card">
+          <div class="form-input-card" style="grid-column: span 2;">
             <label>{{ 'jathagamWriting.tob' | translate }} <span class="required-star">*</span></label>
-            <div class="input-inner-wrap">
-              <span class="input-icon"><i class="bi bi-clock"></i></span>
-              <input type="time" name="jwTob" [(ngModel)]="form.tob" class="custom-native-time">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="input-inner-wrap" style="flex: 1; min-width: 120px;">
+                <span class="input-icon"><i class="bi bi-clock"></i></span>
+                <input type="tel" name="jwTob" [(ngModel)]="tobDisplay" (input)="formatTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1;">
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0; background: #fff; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(81, 23, 23, 0.4);">
+                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="AM" name="jwAmPm" id="jwAM"><label for="jwAM">AM</label>
+                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="PM" name="jwAmPm" id="jwPM"><label for="jwPM">PM</label>
+              </div>
             </div>
           </div>
         </div>

@@ -16,11 +16,12 @@ const RASI_SYMBOLS: Record<string, string> = {
 };
 
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
 
 @Component({
   selector: 'app-para-jathagam',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent],
   template: `
     <div class="para-wrapper">
       <div class="section-header">
@@ -36,11 +37,17 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
           </div>
           <div class="form-group">
             <label>பிறந்த தேதி *</label>
-            <input type="date" [(ngModel)]="form.dob" class="field"/>
+            <app-segmented-dob [(value)]="form.dob"></app-segmented-dob>
           </div>
           <div class="form-group">
             <label>பிறந்த நேரம்</label>
-            <input type="time" [(ngModel)]="form.tob" class="field"/>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="tel" [(ngModel)]="paraTobDisplay" (input)="formatParaTobDisplay($event)" placeholder="HH:MM" maxlength="5" class="field" style="flex: 1; min-width: 80px;"/>
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0; padding-bottom: 10px;">
+                <input type="radio" [(ngModel)]="paraTobAmPm" (change)="updateParaTobBackend()" value="AM" name="pAmPm" id="pAM"><label for="pAM">AM</label>
+                <input type="radio" [(ngModel)]="paraTobAmPm" (change)="updateParaTobBackend()" value="PM" name="pAmPm" id="pPM"><label for="pPM">PM</label>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label>பிறந்த ஊர்</label>
@@ -145,8 +152,44 @@ export class ParaJathagamComponent {
   result: any = null;
   loading = false;
   errorMsg = '';
+  
+  paraDobDisplay = '';
+  paraTobDisplay = '';
+  paraTobAmPm = 'AM';
 
   constructor(private http: HttpClient) {}
+
+  formatParaDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.paraDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) {
+      this.form.dob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else this.form.dob = '';
+  }
+
+  formatParaTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    this.paraTobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateParaTobBackend();
+  }
+
+  updateParaTobBackend() {
+    if (this.paraTobDisplay && this.paraTobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.paraTobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.paraTobAmPm === 'PM' && h < 12) h += 12;
+      if (this.paraTobAmPm === 'AM' && h === 12) h = 0;
+      this.form.tob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else this.form.tob = '';
+  }
 
   getSymbol(rasi: string) { return RASI_SYMBOLS[rasi] ?? '⭐'; }
 

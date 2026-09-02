@@ -198,11 +198,17 @@
   <div class="input-grid">
     <div class="input-row">
       <label>{{ 'astrology.dob' | translate }}</label>
-      <input type="date" [(ngModel)]="regForm.dob">
+      <app-segmented-dob [(value)]="regForm.dob"></app-segmented-dob>
     </div>
     <div class="input-row">
       <label>{{ 'astrology.tob' | translate }}</label>
-      <input type="time" [(ngModel)]="regForm.tob">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <input type="tel" [(ngModel)]="regTobDisplay" (input)="formatRegTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1; min-width: 80px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0;">
+          <input type="radio" [(ngModel)]="regTobAmPm" (change)="updateRegTobBackend()" value="AM" name="regAmPm" id="regAM"><label for="regAM">AM</label>
+          <input type="radio" [(ngModel)]="regTobAmPm" (change)="updateRegTobBackend()" value="PM" name="regAmPm" id="regPM"><label for="regPM">PM</label>
+        </div>
+      </div>
     </div>
   </div>
   <div class="input-grid">
@@ -523,11 +529,17 @@
   <div class="input-grid">
     <div class="input-row">
       <label>{{ 'astrology.dob' | translate }}</label>
-      <input type="date" [(ngModel)]="matchingForm.girlDob">
+      <app-segmented-dob [(value)]="matchingForm.girlDob"></app-segmented-dob>
     </div>
     <div class="input-row">
       <label>{{ 'astrology.tob' | translate }}</label>
-      <input type="time" [(ngModel)]="matchingForm.girlTob">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <input type="tel" [(ngModel)]="girlTobDisplay" (input)="formatGirlTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1; min-width: 80px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0;">
+          <input type="radio" [(ngModel)]="girlTobAmPm" (change)="updateGirlTobBackend()" value="AM" name="gAmPm" id="gAM"><label for="gAM">AM</label>
+          <input type="radio" [(ngModel)]="girlTobAmPm" (change)="updateGirlTobBackend()" value="PM" name="gAmPm" id="gPM"><label for="gPM">PM</label>
+        </div>
+      </div>
     </div>
   </div>
   <div class="input-grid">
@@ -581,11 +593,17 @@
   <div class="input-grid">
     <div class="input-row">
       <label>{{ 'astrology.dob' | translate }}</label>
-      <input type="date" [(ngModel)]="matchingForm.boyDob">
+      <app-segmented-dob [(value)]="matchingForm.boyDob"></app-segmented-dob>
     </div>
     <div class="input-row">
       <label>{{ 'astrology.tob' | translate }}</label>
-      <input type="time" [(ngModel)]="matchingForm.boyTob">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <input type="tel" [(ngModel)]="boyTobDisplay" (input)="formatBoyTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1; min-width: 80px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0;">
+          <input type="radio" [(ngModel)]="boyTobAmPm" (change)="updateBoyTobBackend()" value="AM" name="bAmPm" id="bAM"><label for="bAM">AM</label>
+          <input type="radio" [(ngModel)]="boyTobAmPm" (change)="updateBoyTobBackend()" value="PM" name="bAmPm" id="bPM"><label for="bPM">PM</label>
+        </div>
+      </div>
     </div>
   </div>
   <div class="input-grid">

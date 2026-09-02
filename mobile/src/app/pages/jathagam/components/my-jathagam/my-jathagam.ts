@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
 
 const RASIS = [
   'மேஷம்', 'ரிஷபம்', 'மிதுனம்', 'கடகம்', 'சிம்மம்', 'கன்னி',
@@ -21,7 +22,7 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-my-jathagam',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent],
   template: `
     <div class="my-jathagam-wrapper">
       <div class="section-header">
@@ -72,14 +73,22 @@ const NAKSHATRAS = [
       <!-- Form (Edit / New) -->
       @if (!saved || editing) {
         <div class="form-card">
-          <div class="form-group">
-            <label>பிறந்த தேதி *</label>
-            <input type="date" [(ngModel)]="form.dob" class="field"/>
+          <div class="input-row">
+            <label>{{ 'astrology.dob' | translate }}</label>
+            <app-segmented-dob [(value)]="form.dob"></app-segmented-dob>
           </div>
-          <div class="form-group">
-            <label>பிறந்த நேரம்</label>
-            <input type="time" [(ngModel)]="form.tob" class="field"/>
+
+          <div class="input-row">
+            <label>{{ 'astrology.tob' | translate }}</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="tel" [(ngModel)]="tobDisplay" (input)="formatTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1; min-width: 80px;" class="field">
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0;">
+                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="AM" name="mAmPm" id="mAM"><label for="mAM">AM</label>
+                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="PM" name="mAmPm" id="mPM"><label for="mPM">PM</label>
+              </div>
+            </div>
           </div>
+
           <div class="form-group">
             <label>பிறந்த ஊர்</label>
             <input [(ngModel)]="form.pob" placeholder="e.g. Chennai, Madurai" class="field"/>
@@ -191,6 +200,10 @@ export class MyJathagamComponent implements OnInit {
 
   form = { dob: '', tob: '', pob: '', rasi: '', nakshatra: '', lagnam: '', gender: 'Male' };
 
+  dobDisplay = '';
+  tobDisplay = '';
+  tobAmPm = 'AM';
+
   constructor(private http: HttpClient) {}
 
   ngOnInit() { this.loadSaved(); }
@@ -209,10 +222,68 @@ export class MyJathagamComponent implements OnInit {
 
   startEdit() {
     this.form = { ...this.saved };
+    this.parseDates();
     this.editing = true;
   }
 
   cancelEdit() { this.editing = false; }
+
+  parseDates() {
+    if (this.form.dob) {
+      const [y, m, d] = this.form.dob.split('-');
+      if (y && m && d) this.dobDisplay = `${d}/${m}/${y}`;
+    }
+    if (this.form.tob) {
+      const [hStr, mStr] = this.form.tob.split(':');
+      let h = parseInt(hStr || '0', 10);
+      this.tobAmPm = h >= 12 ? 'PM' : 'AM';
+      if (h > 12) h -= 12;
+      if (h === 0) h = 12;
+      if (hStr && mStr) this.tobDisplay = `${h.toString().padStart(2, '0')}:${mStr}`;
+    }
+  }
+
+  formatDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) {
+      formatted = val.slice(0, 2) + '/' + val.slice(2);
+    } else if (val.length >= 5) {
+      formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    }
+    this.dobDisplay = formatted;
+    event.target.value = formatted;
+    
+    if (val.length === 8) {
+      this.form.dob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else {
+      this.form.dob = '';
+    }
+  }
+
+  formatTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) {
+      formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    }
+    this.tobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateTobBackend();
+  }
+
+  updateTobBackend() {
+    if (this.tobDisplay && this.tobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.tobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.tobAmPm === 'PM' && h < 12) h += 12;
+      if (this.tobAmPm === 'AM' && h === 12) h = 0;
+      this.form.tob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else {
+      this.form.tob = '';
+    }
+  }
 
   save() {
     if (!this.form.dob || !this.form.rasi) {

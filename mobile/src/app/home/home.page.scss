@@ -8,32 +8,23 @@ $color-text-muted: #7E716A;
 $color-white: #FFFFFF;
 
 /* Main Content Background */
-.astrology-app-content {
-  --background: #{$color-beige};
-  --color: #{$color-text-dark};
-  --padding-top: calc(76px + var(--ion-safe-area-top, env(safe-area-inset-top, 12px)));
-  --padding-bottom: calc(75px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px)));
-}
-
-.tab-content {
-  padding-top: calc(76px + var(--ion-safe-area-top, env(safe-area-inset-top, 12px)));
-  padding-bottom: calc(75px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px)));
-}
+/* (Moved astrology-app-content to global.scss for app-wide consistency) */
 
 /* Bottom Footer Tab Navigation */
 .app-footer-tabs {
-  --background: #{$color-beige};
-  background-color: #{$color-beige} !important;
-  border-top: 1px solid rgba($color-gold, 0.3);
+  --background: #FFFFFF;
+  background-color: #FFFFFF !important;
+  border-top: none;
   position: fixed !important;
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
   z-index: 9999 !important;
-  box-shadow: 0 -4px 20px rgba($color-maroon, 0.12);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 24px 24px 0 0 !important;
   padding-bottom: max(0.4rem, var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0.4rem))) !important;
-  padding-top: 0.35rem;
+  padding-top: 0.5rem;
   margin: 0 !important;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);

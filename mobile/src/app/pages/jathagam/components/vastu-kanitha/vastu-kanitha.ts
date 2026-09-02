@@ -4,11 +4,12 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
+import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
 
 @Component({
   selector: 'app-vastu-kanitha',
   standalone: true,
-  imports: [FormsModule, IonSpinner],
+  imports: [FormsModule, IonSpinner, SegmentedDobComponent],
   template: `
     <div class="vk-wrapper">
       <!-- Service Type Toggle -->
@@ -114,7 +115,7 @@ import { IonSpinner } from '@ionic/angular/standalone';
           </div>
           <div class="form-group">
             <label>பிறந்த தேதி *</label>
-            <input type="date" [(ngModel)]="kanithaForm.dob" class="field"/>
+            <app-segmented-dob [(value)]="kanithaForm.dob"></app-segmented-dob>
           </div>
           <div class="form-group">
             <label>திருமண நிலை</label>
@@ -251,8 +252,22 @@ export class VastuKanithaComponent {
   }
 
   kanithaForm = { name: '', phone: '', dob: '', marital_status: 'Single', query: '' };
+  
+  kanithaDobDisplay = '';
 
   constructor(private http: HttpClient) {}
+
+  formatKanithaDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.kanithaDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) {
+      this.kanithaForm.dob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else this.kanithaForm.dob = '';
+  }
 
   getLifePathNumber(): number {
     if (!this.kanithaForm.dob) return 0;

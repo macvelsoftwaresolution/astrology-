@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
 
 import { IonSpinner } from '@ionic/angular/standalone';
 
@@ -22,7 +23,7 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-matching',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent],
   template: `
     <div class="matching-wrapper">
 
@@ -41,9 +42,15 @@ const NAKSHATRAS = [
               <label>பெயர்</label>
               <input [(ngModel)]="form.boy_name" placeholder="பையன் பெயர்" class="field"/>
               <label>பிறந்த தேதி</label>
-              <input type="date" [(ngModel)]="form.boy_dob" class="field"/>
+              <app-segmented-dob [(value)]="form.boy_dob"></app-segmented-dob>
               <label>பிறந்த நேரம்</label>
-              <input type="time" [(ngModel)]="form.boy_tob" class="field"/>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="tel" [(ngModel)]="boyTobDisplay" (input)="formatBoyTobDisplay($event)" placeholder="HH:MM" maxlength="5" class="field" style="flex: 1; min-width: 80px;"/>
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0; padding-bottom: 10px;">
+                  <input type="radio" [(ngModel)]="boyTobAmPm" (change)="updateBoyTobBackend()" value="AM" name="bAmPm" id="bAM"><label for="bAM">AM</label>
+                  <input type="radio" [(ngModel)]="boyTobAmPm" (change)="updateBoyTobBackend()" value="PM" name="bAmPm" id="bPM"><label for="bPM">PM</label>
+                </div>
+              </div>
               <label>பிறந்த ஊர்</label>
               <input [(ngModel)]="form.boy_pob" placeholder="ஊர் பெயர்" class="field"/>
               <label>ராசி</label>
@@ -68,9 +75,15 @@ const NAKSHATRAS = [
               <label>பெயர்</label>
               <input [(ngModel)]="form.girl_name" placeholder="பெண் பெயர்" class="field"/>
               <label>பிறந்த தேதி</label>
-              <input type="date" [(ngModel)]="form.girl_dob" class="field"/>
+              <app-segmented-dob [(value)]="form.girl_dob"></app-segmented-dob>
               <label>பிறந்த நேரம்</label>
-              <input type="time" [(ngModel)]="form.girl_tob" class="field"/>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="tel" [(ngModel)]="girlTobDisplay" (input)="formatGirlTobDisplay($event)" placeholder="HH:MM" maxlength="5" class="field" style="flex: 1; min-width: 80px;"/>
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0; padding-bottom: 10px;">
+                  <input type="radio" [(ngModel)]="girlTobAmPm" (change)="updateGirlTobBackend()" value="AM" name="gAmPm" id="gAM"><label for="gAM">AM</label>
+                  <input type="radio" [(ngModel)]="girlTobAmPm" (change)="updateGirlTobBackend()" value="PM" name="gAmPm" id="gPM"><label for="gPM">PM</label>
+                </div>
+              </div>
               <label>பிறந்த ஊர்</label>
               <input [(ngModel)]="form.girl_pob" placeholder="ஊர் பெயர்" class="field"/>
               <label>ராசி</label>
@@ -375,7 +388,79 @@ export class MatchingComponent {
     girl_name: '', girl_dob: '', girl_tob: '', girl_pob: '', girl_rasi: '', girl_nakshatra: ''
   };
 
+  boyDobDisplay = '';
+  boyTobDisplay = '';
+  boyTobAmPm = 'AM';
+  
+  girlDobDisplay = '';
+  girlTobDisplay = '';
+  girlTobAmPm = 'AM';
+
   constructor(private http: HttpClient) {}
+
+  formatBoyDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.boyDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) {
+      this.form.boy_dob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else this.form.boy_dob = '';
+  }
+
+  formatBoyTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    this.boyTobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateBoyTobBackend();
+  }
+
+  updateBoyTobBackend() {
+    if (this.boyTobDisplay && this.boyTobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.boyTobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.boyTobAmPm === 'PM' && h < 12) h += 12;
+      if (this.boyTobAmPm === 'AM' && h === 12) h = 0;
+      this.form.boy_tob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else this.form.boy_tob = '';
+  }
+
+  formatGirlDobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3 && val.length <= 4) formatted = val.slice(0, 2) + '/' + val.slice(2);
+    else if (val.length >= 5) formatted = val.slice(0, 2) + '/' + val.slice(2, 4) + '/' + val.slice(4, 8);
+    this.girlDobDisplay = formatted;
+    event.target.value = formatted;
+    if (val.length === 8) {
+      this.form.girl_dob = `${val.slice(4, 8)}-${val.slice(2, 4)}-${val.slice(0, 2)}`;
+    } else this.form.girl_dob = '';
+  }
+
+  formatGirlTobDisplay(event: any) {
+    let val = event.target.value.replace(/\D/g, '');
+    let formatted = val;
+    if (val.length >= 3) formatted = val.slice(0, 2) + ':' + val.slice(2, 4);
+    this.girlTobDisplay = formatted;
+    event.target.value = formatted;
+    this.updateGirlTobBackend();
+  }
+
+  updateGirlTobBackend() {
+    if (this.girlTobDisplay && this.girlTobDisplay.replace(/\D/g, '').length === 4) {
+      let val = this.girlTobDisplay.replace(/\D/g, '');
+      let h = parseInt(val.slice(0, 2) || '0', 10);
+      let mStr = val.slice(2, 4);
+      if (this.girlTobAmPm === 'PM' && h < 12) h += 12;
+      if (this.girlTobAmPm === 'AM' && h === 12) h = 0;
+      this.form.girl_tob = `${h.toString().padStart(2, '0')}:${mStr.padStart(2, '0')}`;
+    } else this.form.girl_tob = '';
+  }
 
   calculate() {
     if (!this.form.boy_name || !this.form.boy_dob || !this.form.boy_rasi ||

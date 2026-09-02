@@ -8,6 +8,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { PanchangamWidgetComponent } from '../components/panchangam-widget/panchangam-widget';
 import { RasiPalanComponent } from '../components/rasi-palan/rasi-palan';
 import { MarriageMatchingComponent } from '../components/marriage-matching/marriage-matching';
+import { SegmentedDobComponent } from '../components/segmented-dob/segmented-dob.component';
 import { UserProfileComponent } from '../components/user-profile/user-profile';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -18,7 +19,8 @@ import { TranslatePipe } from '../pipes/translate.pipe';
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    TranslatePipe
+    TranslatePipe,
+    SegmentedDobComponent
   ],
   declarations: [
     HomePage,

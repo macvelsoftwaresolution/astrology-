@@ -119,8 +119,58 @@ ion-header.app-top-navbar,
   right: 0 !important;
   width: 100% !important;
   z-index: 999999 !important;
-  background-color: #FDFBF0 !important;
-  --background: #FDFBF0 !important;
+  background-color: #FFFFFF !important;
+  --background: #FFFFFF !important;
+  border-radius: 0 0 28px 28px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+  border-bottom: none !important;
+}
+
+/* DOB Segmented Inputs (Restored for 3rd image layout) */
+.dob-segmented-container {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid rgba(81, 23, 23, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 48px;
+  padding: 0 10px;
+}
+
+.dob-segments-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.dob-seg-input {
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  color: #511717;
+  font-weight: 500;
+  outline: none;
+}
+
+.dob-seg-input:focus {
+  outline: none;
+}
+
+.seg-day, .seg-month {
+  width: 25%;
+}
+
+.seg-year {
+  width: 35%;
+}
+
+.dob-sep {
+  color: rgba(81, 23, 23, 0.4);
+  font-weight: 600;
 }
 
 ion-footer.app-footer-tabs,
@@ -136,21 +186,17 @@ ion-footer.app-footer-tabs,
   padding-bottom: max(0.4rem, var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0.4rem))) !important;
 }
 
-/* Constrain ion-content strictly between top navbar and bottom footer */
+/* Fullscreen Content Area */
 ion-content.astrology-app-content,
 .astrology-app-content {
-  position: absolute !important;
-  top: calc(72px + var(--ion-safe-area-top, env(safe-area-inset-top, 12px))) !important;
-  bottom: calc(64px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0.4rem))) !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  height: auto !important;
+  --background: #FBF9E7;
+  --color: #2A2421;
   --offset-top: 0px !important;
   --offset-bottom: 0px !important;
-  --padding-top: 0px !important;
-  --padding-bottom: 0px !important;
+  --padding-top: calc(76px + var(--ion-safe-area-top, env(safe-area-inset-top, 12px))) !important;
+  --padding-bottom: calc(85px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px))) !important;
 }
+
 
 /* ----------------------------------------------------------------------------
  * Universal Form Typography Overrides (Matches Login & Register enlarged fonts)
@@ -203,4 +249,6 @@ button[type="submit"] {
   font-size: 1.05rem !important;
   font-weight: 700 !important;
 }
+
+/* ================= SEGMENTED DATE/TIME INPUTS ================= */
 

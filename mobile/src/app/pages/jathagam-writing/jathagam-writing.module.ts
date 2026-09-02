@@ -9,6 +9,7 @@ import { JathagamWritingPageRoutingModule } from './jathagam-writing-routing.mod
 import { JathagamWritingPage } from './jathagam-writing.page';
 
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { SegmentedDobComponent } from '../../components/segmented-dob/segmented-dob.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     FormsModule,
     IonicModule,
     JathagamWritingPageRoutingModule,
-    TranslatePipe
+    TranslatePipe,
+    SegmentedDobComponent
   ],
   declarations: [JathagamWritingPage]
 })
