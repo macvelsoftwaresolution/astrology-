@@ -200,7 +200,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
     { name: 'தனுசு', englishName: 'Sagittarius', symbol: '♐', dates: 'நவம்பர் 22 - டிசம்பர் 21', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
     { name: 'மகரம்', englishName: 'Capricorn', symbol: '♑', dates: 'டிசம்பர் 22 - ஜனவரி 19', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
     { name: 'கும்பம்', englishName: 'Aquarius', symbol: '♒', dates: 'ஜனவரி 20 - பிப்ரவரி 18', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' },
-    { name: 'மீனம்', englishName: 'Pisces', symbol: '^{-/-}$', dates: 'பிப்ரவரி 19 - மார்ச் 20', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' }
+    { name: 'மீனம்', englishName: 'Pisces', symbol: '♓', dates: 'பிப்ரவரி 19 - மார்ச் 20', prediction: 'இன்றைய ராசி பலன் தகவல்கள் விரைவில் வெளியிடப்படும்.', iconUrl: '' }
   ];
 
   selectedZodiac: ZodiacSign = this.zodiacSigns[0];
