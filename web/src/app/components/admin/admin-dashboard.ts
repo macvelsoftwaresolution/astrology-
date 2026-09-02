@@ -370,7 +370,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isLearnActive(): boolean {
-    return ['lms', 'lms-settings', 'courier', 'grading'].includes(this.currentTab);
+    return ['lms', 'lms-settings', 'grading'].includes(this.currentTab);
   }
 
   selectTab(tabName: string): void {
