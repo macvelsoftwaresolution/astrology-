@@ -36,14 +36,17 @@ export class TranslationService {
 
   public loadTranslations(lang: LanguageCode): void {
     if (typeof window === 'undefined') return;
-    this.http.get<Record<string, any>>(`/assets/i18n/${lang}.json`).subscribe({
+    const v = Date.now();
+    this.http.get<Record<string, any>>(`/assets/i18n/${lang}.json?v=${v}`).subscribe({
       next: (data) => {
         if (data && Object.keys(data).length > 0) {
           this.translations[lang] = this.deepMerge(this.translations[lang], data);
           this.version.update((v) => v + 1);
         }
       },
-      error: () => {}
+      error: (err) => {
+        console.error(`Failed to load /assets/i18n/${lang}.json`, err);
+      }
     });
   }
 
