@@ -118,7 +118,7 @@ export class NotificationsPage implements OnInit {
               });
               const liveNotifs = activeLives.map((lc: any) => ({
                 id: 'live_' + lc.id,
-                title: '🔴 நேரலை வகுப்பு: ' + lc.title,
+                title: 'நேரலை வகுப்பு: ' + lc.title,
                 body: lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.',
                 type: 'course',
                 is_read: false,
@@ -154,7 +154,7 @@ export class NotificationsPage implements OnInit {
               const activeLives = lcRes.data.filter((lc: any) => lc.is_active);
               const liveNotifs = activeLives.map((lc: any) => ({
                 id: 'live_' + lc.id,
-                title: '🔴 நேரலை வகுப்பு: ' + lc.title,
+                title: 'நேரலை வகுப்பு: ' + lc.title,
                 body: lc.description || 'நேரலை வகுப்பில் உடனடியாக இணையவும்.',
                 type: 'course',
                 is_read: false,

@@ -312,7 +312,7 @@ export class RasiEditorTabComponent implements OnInit {
 
     this.http.put<any>(`${environment.apiUrl}/admin/rasi-palan`, payload, headers).subscribe({
       next: () => {
-        this.rasiSaveSuccessMsg = `✅ ${item.rasi_name} ராசிக்கான ${this.rasiEditorType} பலன் சேமிக்கப்பட்டது!`;
+        this.rasiSaveSuccessMsg = `${item.rasi_name} ராசிக்கான ${this.rasiEditorType} பலன் சேமிக்கப்பட்டது!`;
         setTimeout(() => {
           this.rasiSaveSuccessMsg = '';
           this.cdr.detectChanges();
@@ -336,7 +336,7 @@ export class RasiEditorTabComponent implements OnInit {
     this.http.put<any>(`${environment.apiUrl}/admin/rasi-palan`, payload, headers).subscribe({
       next: (res) => {
         this.rasiPublishing = false;
-        this.rasiSaveSuccessMsg = res.message || `✅ அனைத்து 12 ராசிகளின் ${this.rasiEditorType} பலன்களும் வெளியிடப்பட்டது!`;
+        this.rasiSaveSuccessMsg = res.message || `அனைத்து 12 ராசிகளின் ${this.rasiEditorType} பலன்களும் வெளியிடப்பட்டது!`;
         setTimeout(() => {
           this.rasiSaveSuccessMsg = '';
           this.cdr.detectChanges();
