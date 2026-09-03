@@ -114,12 +114,22 @@
     </div>
     <div class="home-card-body">
       @for (ex of exams; track ex.id) {
-      <div class="quick-exam-item" (click)="startQuiz.emit(ex)">
-        <div class="qe-icon-box">
-          <i class="bi bi-clipboard-check-fill"></i>
+      <div class="quick-exam-item" 
+           [style.opacity]="isExamSubmitted(ex.id) ? '0.85' : '1'"
+           [style.border-color]="isExamSubmitted(ex.id) ? '#a7f3d0' : ''"
+           (click)="handleExamClick(ex)">
+        <div class="qe-icon-box" [style.background]="isExamSubmitted(ex.id) ? '#ecfdf5' : ''" [style.color]="isExamSubmitted(ex.id) ? '#059669' : ''">
+          <i [class]="isExamSubmitted(ex.id) ? 'bi bi-patch-check-fill' : 'bi bi-clipboard-check-fill'"></i>
         </div>
         <div class="qe-info">
-          <strong>{{ ex.title }}</strong>
+          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <strong>{{ ex.title }}</strong>
+            @if (isExamSubmitted(ex.id)) {
+              <span style="background: #dcfce7; color: #166534; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #bbf7d0;">
+                ✓ முடிந்தது ({{ getExamScore(ex.id) }}%)
+              </span>
+            }
+          </div>
           <span>{{ ex.questions?.length || 0 }} Questions • {{ ex.duration }} Mins</span>
         </div>
         <i class="bi bi-chevron-right qe-arrow-icon"></i>

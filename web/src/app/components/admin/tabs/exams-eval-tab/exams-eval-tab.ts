@@ -726,4 +726,16 @@ export class ExamsEvalTabComponent implements OnInit {
       error: () => alert('முடிவுகளை வெளியிடுவதில் பிழை.')
     });
   }
+
+  deleteSubmission(id: number): void {
+    if (!confirm('இந்த தேர்வு சமர்ப்பிப்பை நீக்க விரும்புகிறீர்களா? (Delete this submission?)')) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`${environment.apiUrl}/admin/submissions/${id}`, headers).subscribe({
+      next: (res) => {
+        alert(res.message || 'சமர்ப்பிப்பு நீக்கப்பட்டது.');
+        this.loadSubmissions();
+      },
+      error: () => alert('நீக்குவதில் பிழை.')
+    });
+  }
 }

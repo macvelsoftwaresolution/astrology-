@@ -553,15 +553,31 @@
             @for (s of submissions; track s.id) {
               <tr>
                 <td>
-                  <div class="font-bold text-slate-900">{{ s.student_name }}</div>
+                  <div class="font-bold text-slate-900 flex items-center gap-1 flex-wrap">
+                    <i class="bi bi-person-circle text-gold me-1"></i> {{ s.student_name }}
+                    @if (s.student_code) {
+                      <span style="background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 4px; border: 1px solid #fde68a;">
+                        {{ s.student_code }}
+                      </span>
+                    }
+                  </div>
                   <div class="text-xs text-slate-500">{{ s.student_email }}</div>
+                  @if (s.student_phone) {
+                    <div class="text-xs text-slate-400"><i class="bi bi-telephone text-[10px]"></i> {{ s.student_phone }}</div>
+                  }
                 </td>
                 <td>
-                  <div class="font-semibold text-sm">{{ s.course_title }}</div>
-                  <div class="text-xs text-slate-400">{{ s.batch_name || s.course_title }}</div>
+                  <div class="font-bold text-sm text-slate-800">{{ s.course_title }}</div>
+                  <div class="text-xs text-slate-500 mt-0.5">
+                    <span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: 600; color: #475569;">
+                      <i class="bi bi-people me-1"></i> {{ s.batch_name ? (s.batch_name + (s.batch_code ? ' - ' + s.batch_code : '')) : 'பொது வகுப்பு (General)' }}
+                    </span>
+                  </div>
                 </td>
                 <td>
-                  <span class="badge-type">{{ s.submission_type }}</span>
+                  <span class="badge-type" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
+                    <i class="bi bi-laptop"></i> {{ s.submission_type === 'online_quiz' ? 'ஆன்லைன் தேர்வு (Online Quiz)' : s.submission_type === 'practical_assignment' ? 'செய்முறைத் தேர்வு (Practical)' : s.submission_type }}
+                  </span>
                 </td>
                 <td>
                   @if (s.pdf_url) {
@@ -569,36 +585,39 @@
                       <i class="bi bi-file-earmark-pdf-fill"></i> {{ 'exams.viewPdf' | translate }}
                     </a>
                   } @else {
-                    <span class="text-slate-400 text-xs">N/A</span>
+                    <span class="text-slate-400 text-xs font-semibold">-</span>
                   }
                 </td>
                 <td class="text-sm">
-                  <div>MCQ: <strong>{{ s.mcq_score !== null ? s.mcq_score : '-' }}</strong></div>
-                  <div>{{ 'exams.practicalMarks' | translate }}: <strong>{{ s.practical_score !== null ? s.practical_score : '-' }}</strong></div>
+                  <div style="font-size: 12px; color: #334155;">MCQ: <strong style="color: #0f172a;">{{ s.mcq_score !== null && s.mcq_score !== undefined ? s.mcq_score : '-' }}</strong></div>
+                  <div style="font-size: 12px; color: #334155;">{{ 'exams.practicalMarks' | translate }}: <strong style="color: #0f172a;">{{ s.practical_score !== null && s.practical_score !== undefined ? s.practical_score : '-' }}</strong></div>
                 </td>
                 <td>
-                  <span class="score-badge">{{ s.score !== null ? s.score : '-' }} / 100</span>
+                  <span class="score-badge" style="font-weight: 800;">{{ s.score !== null && s.score !== undefined ? s.score : '-' }} / 100</span>
                 </td>
                 <td>
                   <span [class]="s.status === 'Approved' ? 'badge-pass' : 'badge-pending'">
                     {{ s.status === 'Approved' ? ('exams.passBadge' | translate) : ('exams.pendingBadge' | translate) }}
                   </span>
                   @if (s.is_published) {
-                    <span class="badge-published">
+                    <span class="badge-published" style="display: block; margin-top: 4px;">
                       <i class="bi bi-globe"></i> Published
                     </span>
                   }
                 </td>
                 <td>
-                  <div class="flex-actions-cell">
+                  <div class="flex-actions-cell" style="display: flex; gap: 6px; align-items: center;">
                     <button (click)="openGradingModal(s)" class="btn-eval-action" [title]="'exams.evaluateBtn' | translate">
                       <i class="bi bi-pencil-square"></i> {{ 'exams.evaluateBtn' | translate }}
                     </button>
                     @if (s.status === 'Approved' || (s.score && s.score >= 40)) {
                       <button (click)="issueCertificateForStudent(s)" class="btn-cert-action" [title]="'exams.certificateBtn' | translate">
-                        <i class="bi bi-award-fill"></i> {{ 'exams.certificateBtn' | translate }}
+                        <i class="bi bi-award-fill"></i>
                       </button>
                     }
+                    <button (click)="deleteSubmission(s.id)" class="btn-action-delete" style="padding: 6px 8px; border-radius: 6px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer;" title="Delete Submission">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
                   </div>
                 </td>
               </tr>

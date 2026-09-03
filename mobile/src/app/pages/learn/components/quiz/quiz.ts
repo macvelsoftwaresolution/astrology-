@@ -17,6 +17,8 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
   currentQuestionIndex: number = 0;
   selectedOption: string | null = null;
   fillupAnswer: string = '';
+  practicalAnalysisAnswer: string = '';
+  isSubmittingPractical: boolean = false;
   quizScore: number = 0;
   quizPassed: boolean = false;
   correctAnswersCount: number = 0;
@@ -133,12 +135,45 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
         course_id: this.exam?.course_id || null,
         exam_id: this.exam?.id || null,
         submission_type: 'online_quiz',
-        score: this.quizScore
+        score: this.quizScore,
+        mcq_score: this.quizScore,
+        practical_score: null
       };
       this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload, this.authService.getAuthHeaders()).subscribe({
         next: () => {},
         error: () => {}
       });
     }
+  }
+
+  submitPracticalExam() {
+    if (!this.practicalAnalysisAnswer.trim()) return;
+    this.isSubmittingPractical = true;
+    if (this.timerInterval) clearInterval(this.timerInterval);
+
+    const payload = {
+      course_id: this.exam?.course_id || null,
+      exam_id: this.exam?.id || null,
+      submission_type: 'practical_assignment',
+      score: 100,
+      mcq_score: null,
+      practical_score: 100,
+      notes: this.practicalAnalysisAnswer.trim()
+    };
+
+    this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload, this.authService.getAuthHeaders()).subscribe({
+      next: () => {
+        this.isSubmittingPractical = false;
+        this.quizSubmitted = true;
+        this.quizPassed = true;
+        this.quizScore = 100;
+      },
+      error: () => {
+        this.isSubmittingPractical = false;
+        this.quizSubmitted = true;
+        this.quizPassed = true;
+        this.quizScore = 100;
+      }
+    });
   }
 }

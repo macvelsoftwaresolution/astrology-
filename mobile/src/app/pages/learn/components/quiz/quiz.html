@@ -18,13 +18,32 @@
           </div>
           <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
         </div>
+
+        <!-- Rasi Chart Image (If exam has chart image) -->
+        @if (exam?.chart_image_url) {
+          <div class="exam-chart-card">
+            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம் (Rasi Chart)</span>
+            <div class="chart-img-wrap">
+              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" />
+            </div>
+          </div>
+        }
+
+        <!-- Practical Prompt / Question Note -->
+        @if (exam?.practical_prompt) {
+          <div class="exam-prompt-card">
+            <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> செய்முறை வழிகாட்டுதல் / குறிப்பு</span>
+            <p class="prompt-txt">{{ exam.practical_prompt }}</p>
+          </div>
+        }
+
         <div class="question-box">
           <span class="q-badge">{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }}</span>
           <p class="q-text">{{ quizQuestions[currentQuestionIndex].question }}</p>
         </div>
         <div class="quiz-options-list">
           @if (quizQuestions[currentQuestionIndex].type === 'mcq') {
-            @for (opt of quizQuestions[currentQuestionIndex].options; track opt; let i = $index) {
+            @for (opt of quizQuestions[currentQuestionIndex].options; track $index; let i = $index) {
               <div class="quiz-option-card"
                 [class.selected]="selectedOption === opt"
                 (click)="selectOption(opt)">
@@ -42,6 +61,43 @@
         </div>
         <button class="submit-quiz-btn" [disabled]="(quizQuestions[currentQuestionIndex].type === 'mcq' && !selectedOption) || (quizQuestions[currentQuestionIndex].type === 'fillup' && !fillupAnswer)" (click)="submitAnswer()">
           {{ currentQuestionIndex < quizQuestions.length - 1 ? ('learn.nextQuestion' | translate) : ('learn.submitQuiz' | translate) }}
+        </button>
+      </div>
+    } @else if (exam?.chart_image_url || exam?.practical_prompt) {
+      <div class="quiz-content-body">
+        <div class="practical-exam-header-badge">
+          <i class="bi bi-patch-question-fill text-gold"></i>
+          <span>செய்முறை ஜாதக ஆய்வுத் தேர்வு (Practical Chart Exam)</span>
+        </div>
+
+        @if (exam?.chart_image_url) {
+          <div class="exam-chart-card">
+            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம் (Rasi Chart)</span>
+            <div class="chart-img-wrap">
+              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" />
+            </div>
+          </div>
+        }
+
+        @if (exam?.practical_prompt) {
+          <div class="exam-prompt-card">
+            <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> செய்முறை வழிகாட்டுதல் / கேள்வி</span>
+            <p class="prompt-txt">{{ exam.practical_prompt }}</p>
+          </div>
+        }
+
+        <div class="practical-answer-box">
+          <label class="ans-label"><i class="bi bi-pen-fill"></i> உங்கள் ஜாதக பலன் / ஆய்வு விடை (Your Analysis Answer):</label>
+          <textarea [(ngModel)]="practicalAnalysisAnswer" 
+                    placeholder="இந்த ஜாதகத்திற்கான பலன் மற்றும் விளக்கங்களை விரிவாக எழுதவும்..." 
+                    rows="6" 
+                    class="practical-textarea"></textarea>
+        </div>
+
+        <button class="submit-quiz-btn" 
+                [disabled]="!practicalAnalysisAnswer.trim() || isSubmittingPractical" 
+                (click)="submitPracticalExam()">
+          {{ isSubmittingPractical ? 'சமர்ப்பிக்கப்படுகிறது...' : 'ஆய்வு விடையை சமர்ப்பிக்கவும் (Submit Analysis)' }}
         </button>
       </div>
     } @else {
