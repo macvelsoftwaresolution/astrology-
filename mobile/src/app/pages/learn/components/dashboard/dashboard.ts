@@ -126,6 +126,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     this.loadLiveClass();
     this.loadMaterials();
     this.loadExams();
+    this.loadMySubmissions();
     this.loadNotifications();
     this.checkInitialOption();
   }
@@ -655,6 +656,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   // Exams List (Dynamic from DB)
   exams: any[] = [];
+  mySubmissions: any[] = [];
 
   loadExams() {
     const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
@@ -666,6 +668,38 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
       },
       error: () => { }
     });
+  }
+
+  loadMySubmissions() {
+    if (this.authService.isLoggedIn()) {
+      this.http.get<any>(`${environment.apiUrl}/user/my-submissions`, this.authService.getAuthHeaders()).subscribe({
+        next: (res) => {
+          if (res && res.submissions) {
+            this.mySubmissions = res.submissions;
+            this.cdr.detectChanges();
+          }
+        },
+        error: () => {}
+      });
+    }
+  }
+
+  isExamSubmitted(examId: number): boolean {
+    return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId));
+  }
+
+  getExamScore(examId: number): number {
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    return sub ? (sub.score || 0) : 0;
+  }
+
+  handleExamClick(ex: any) {
+    if (this.isExamSubmitted(ex.id)) {
+      const score = this.getExamScore(ex.id);
+      alert(`நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள்.\nஉங்கள் மதிப்பெண்: ${score}%\n(You have already submitted this exam. Only one attempt is permitted.)`);
+      return;
+    }
+    this.startQuiz.emit(ex);
   }
 
   loadSeminars() {

@@ -14,20 +14,36 @@ class GradingController extends Controller
     public function getSubmissions(Request $request)
     {
         $query = DB::table('student_submissions')
-            ->join('users', 'student_submissions.student_id', '=', 'users.id')
+            ->leftJoin('students', 'student_submissions.student_id', '=', 'students.id')
+            ->leftJoin('users', function($join) {
+                $join->on('student_submissions.student_id', '=', 'users.id')
+                     ->whereNull('students.id');
+            })
             ->leftJoin('courses', 'student_submissions.course_id', '=', 'courses.id')
-            ->leftJoin('course_batches', 'student_submissions.batch_id', '=', 'course_batches.id')
+            ->leftJoin('course_batches', function($join) {
+                $join->on('student_submissions.batch_id', '=', 'course_batches.id')
+                     ->orOn('students.batch_id', '=', 'course_batches.id');
+            })
+            ->leftJoin('exams', 'student_submissions.exam_id', '=', 'exams.id')
             ->select(
                 'student_submissions.*',
-                'users.name as student_name',
-                'users.email as student_email',
-                'users.phone as student_phone',
+                DB::raw("COALESCE(student_submissions.mcq_score, CASE WHEN student_submissions.submission_type = 'online_quiz' THEN student_submissions.score ELSE NULL END) as mcq_score"),
+                DB::raw("COALESCE(student_submissions.practical_score, CASE WHEN student_submissions.submission_type = 'practical_assignment' THEN student_submissions.score ELSE NULL END) as practical_score"),
+                DB::raw("COALESCE(students.name, users.name, 'மாணவர் (Student)') as student_name"),
+                DB::raw("COALESCE(students.email, users.email, '-') as student_email"),
+                DB::raw("COALESCE(students.phone, users.phone, '-') as student_phone"),
+                DB::raw("COALESCE(students.student_id, '') as student_code"),
                 'course_batches.name as batch_name',
-                DB::raw("COALESCE(courses.title, 'வேத ஜோதிடம் (Vedic Astrology)') as course_title")
+                'course_batches.batch_code as batch_code',
+                'exams.title as exam_title',
+                DB::raw("COALESCE(exams.title, courses.title, 'இளநிலை ஜோதிடப் படிப்பு (Ilanilai)') as course_title")
             );
 
         if ($request->has('batch_id') && $request->batch_id) {
-            $query->where('student_submissions.batch_id', $request->batch_id);
+            $query->where(function($q) use ($request) {
+                $q->where('student_submissions.batch_id', $request->batch_id)
+                  ->orWhere('students.batch_id', $request->batch_id);
+            });
         }
 
         $submissions = $query->orderBy('student_submissions.created_at', 'desc')->get();
@@ -35,6 +51,15 @@ class GradingController extends Controller
         return response()->json([
             'success' => true,
             'submissions' => $submissions
+        ]);
+    }
+
+    public function deleteSubmission($id)
+    {
+        DB::table('student_submissions')->where('id', $id)->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'தேர்வு சமர்ப்பிப்பு நீக்கப்பட்டது.'
         ]);
     }
 
@@ -259,6 +284,23 @@ class GradingController extends Controller
         ]);
     }
 
+    public function getMySubmissions(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['success' => true, 'submissions' => []]);
+        }
+
+        $submissions = DB::table('student_submissions')
+            ->where('student_id', $user->id)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'submissions' => $submissions
+        ]);
+    }
+
     /**
      * User/Student: Submit Exam Answers (PDF or Courier Tracking)
      */
@@ -267,8 +309,10 @@ class GradingController extends Controller
         $request->validate([
             'course_id' => 'nullable',
             'batch_id' => 'nullable',
-            'submission_type' => 'required|in:pdf_upload,physical_courier,online_quiz,hybrid_exam',
+            'exam_id' => 'nullable',
+            'submission_type' => 'required|in:pdf_upload,physical_courier,online_quiz,hybrid_exam,practical_assignment',
             'pdf_url' => 'nullable|string',
+            'notes' => 'nullable|string',
             'courier_tracking_no' => 'nullable|string',
             'courier_name' => 'nullable|string',
             'score' => 'nullable|integer',
@@ -278,18 +322,49 @@ class GradingController extends Controller
 
         $user = $request->user();
         $studentId = $user ? $user->id : 1;
+        $batchId = $request->batch_id;
+        if (!$batchId && $user && isset($user->batch_id)) {
+            $batchId = $user->batch_id;
+        }
+
+        // Prevent duplicate exam submissions (One-Time Exam Enforcement)
+        if ($request->exam_id) {
+            $alreadySubmitted = DB::table('student_submissions')
+                ->where('student_id', $studentId)
+                ->where('exam_id', $request->exam_id)
+                ->first();
+
+            if ($alreadySubmitted) {
+                return response()->json([
+                    'success' => false,
+                    'already_submitted' => true,
+                    'message' => 'நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள். ஒரு முறை மட்டுமே எழுத அனுமதிக்கப்படும்.'
+                ], 400);
+            }
+        }
+
         $courseId = $request->course_id ?: (DB::table('courses')->value('id') ?: 1);
 
-        $mcqScore = $request->mcq_score ?: null;
-        $practicalScore = $request->practical_score ?: null;
-        $totalScore = $request->score ?: (($mcqScore ?: 0) + ($practicalScore ?: 0));
+        $mcqScore = $request->has('mcq_score') && $request->mcq_score !== null 
+            ? (int)$request->mcq_score 
+            : ($request->submission_type === 'online_quiz' ? (int)$request->score : null);
+
+        $practicalScore = $request->has('practical_score') && $request->practical_score !== null 
+            ? (int)$request->practical_score 
+            : ($request->submission_type === 'practical_assignment' ? (int)$request->score : null);
+
+        $totalScore = $request->score !== null 
+            ? (int)$request->score 
+            : (($mcqScore ?: 0) + ($practicalScore ?: 0));
 
         $submissionId = DB::table('student_submissions')->insertGetId([
             'student_id' => $studentId,
             'course_id' => $courseId,
-            'batch_id' => $request->batch_id ?: null,
+            'batch_id' => $batchId,
+            'exam_id' => $request->exam_id ?: null,
             'submission_type' => $request->submission_type,
             'pdf_url' => $request->pdf_url,
+            'notes' => $request->notes,
             'courier_tracking_no' => $request->courier_tracking_no,
             'courier_name' => $request->courier_name,
             'score' => $totalScore,
