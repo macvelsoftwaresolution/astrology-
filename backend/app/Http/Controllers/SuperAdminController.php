@@ -437,7 +437,9 @@ class SuperAdminController extends Controller
         if ($level) {
             $query->where('level', strtoupper($level));
         }
-        $todayShort = strtolower(now()->format('D')); // mon, tue, wed, thu, fri, sat, sun
+        $now = now();
+        $currentTime = $now->format('H:i');
+        $todayShort = strtolower($now->format('D')); // mon, tue, wed, thu, fri, sat, sun
         $todayTamil = match($todayShort) {
             'mon' => 'திங்கள்',
             'tue' => 'செவ்வாய்',
@@ -449,7 +451,7 @@ class SuperAdminController extends Controller
             default => ''
         };
 
-        $liveClasses = $query->orderBy('created_at', 'desc')->get()->map(function ($lc) use ($todayShort, $todayTamil) {
+        $liveClasses = $query->orderBy('created_at', 'desc')->get()->map(function ($lc) use ($todayShort, $todayTamil, $currentTime) {
             $days = [];
             if ($lc->days_of_week) {
                 $days = is_string($lc->days_of_week) ? json_decode($lc->days_of_week, true) : (array)$lc->days_of_week;
@@ -457,6 +459,30 @@ class SuperAdminController extends Controller
             $lc->days_of_week = $days ?: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
             $lc->is_today = empty($days) || in_array($todayShort, $lc->days_of_week);
             $lc->today_name = $todayTamil;
+
+            $startTime = $lc->start_time ?: '18:00';
+            $endTime   = $lc->end_time   ?: '19:30';
+
+            $lc->is_live_now = false;
+            $lc->is_upcoming = false;
+            $lc->is_expired  = false;
+            $lc->status_text = 'அட்டவணைப்படுத்தப்பட்டது';
+
+            if ($lc->is_today) {
+                if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                    $lc->is_live_now = true;
+                    $lc->status_text = 'நேரலை (LIVE NOW)';
+                } elseif ($currentTime < $startTime) {
+                    $lc->is_upcoming = true;
+                    $lc->status_text = 'இன்று தொடங்க உள்ளது';
+                } else {
+                    $lc->is_expired  = true;
+                    $lc->status_text = 'வகுப்பு நிறைவடைந்தது';
+                }
+            } else {
+                $lc->status_text = 'அடுத்த வகுப்பிற்கான அட்டவணை';
+            }
+
             return $lc;
         });
 
@@ -483,6 +509,7 @@ class SuperAdminController extends Controller
             'start_time' => $request->input('start_time', '18:00'),
             'end_time' => $request->input('end_time', '19:30'),
             'link' => $request->input('link', ''),
+            'banner_image_url' => $request->input('banner_image_url', null),
             'is_active' => $request->boolean('is_active', false),
             'level' => $request->input('level', 'ILANILAI'),
             'updated_at' => now()

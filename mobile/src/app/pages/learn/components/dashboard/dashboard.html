@@ -34,109 +34,198 @@
 
 <!-- ================= SUB-TAB 1: HOME ================= -->
 @if (dashboardTab === 'home') {
-<div class="dashboard-tab-content">
-  <!-- Live class banners -->
+<div class="dashboard-tab-content home-unified-layout">
+  
+  <!-- 1. LIVE CLASS BANNER SECTION -->
   @for (lc of liveClasses; track lc.id) {
-  <div class="live-class-card" (click)="playLiveClass(lc.link)" style="margin-bottom: 12px;">
+  <div class="live-class-card" (click)="lc.is_active && !lc.is_expired && playLiveClass(lc.link)" style="margin-bottom: 14px;" [style.opacity]="lc.is_expired ? '0.75' : '1'">
     <div class="lc-img-overlay"></div>
-    <img src="assets/images/astro_service_bg.png" alt="Live Class" class="lc-img">
+    <img [src]="lc.banner_image_url || 'assets/images/astro_service_bg.png'" alt="Live Class" class="lc-img">
     <div class="lc-info">
-      <div class="live-badge"><i class="bi bi-record-fill text-danger me-1"></i> {{ 'learn.liveClass' | translate }}
-      </div>
-      <h3>{{ lc.title }}</h3>
-      <p>{{ lc.description }}</p>
-      <button class="lc-btn" (click)="playLiveClass(lc.link); $event.stopPropagation()">{{ 'learn.continueLearning' |
-        translate }}</button>
+      @if (lc.is_live_now && lc.is_active) {
+        <div class="live-badge" style="background: #dc2626; color: #fff;"><i class="bi bi-record-fill text-white me-1"></i> 🔴 நேரலை (LIVE NOW)</div>
+      } @else if (lc.is_expired) {
+        <div class="live-badge" style="background: #64748b; color: #fff;"><i class="bi bi-check-circle-fill me-1"></i> வகுப்பு நிறைவடைந்தது</div>
+      } @else if (lc.is_upcoming) {
+        <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> இன்று • {{ lc.time_text || 'மாலை 06:00' }}</div>
+      } @else {
+        <div class="live-badge" style="background: #d97706; color: #fff;"><i class="bi bi-calendar-event me-1"></i> {{ lc.time_text || 'அட்டவணை நேரலை' }}</div>
+      }
+      <h3 style="margin-top: 6px;">{{ lc.title }}</h3>
+      <p style="margin-bottom: 8px;">
+        {{ (lc.description && lc.description !== lc.time_text) ? lc.description : 'இன்றைய நேரடி வகுப்பு மற்றும் ஆன்லைன் வழிகாட்டுதல்' }}
+      </p>
+      @if (lc.is_live_now && lc.is_active) {
+        <button class="lc-btn" style="background: linear-gradient(135deg, #dc2626, #991b1b); font-weight: 800;" (click)="playLiveClass(lc.link); $event.stopPropagation()">
+          <i class="bi bi-box-arrow-in-right"></i> நேரலையில் இணை (Join Live)
+        </button>
+      } @else if (lc.is_expired) {
+        <button class="lc-btn" disabled style="background: #64748b; color: #f1f5f9; cursor: not-allowed; opacity: 0.8;" (click)="$event.stopPropagation()">
+          <i class="bi bi-lock-fill"></i> வகுப்பு முடிந்தது (Meeting Ended)
+        </button>
+      } @else {
+        <button class="lc-btn" (click)="playLiveClass(lc.link); $event.stopPropagation()">
+          <i class="bi bi-play-circle-fill"></i> வகுப்பைக் காண்க
+        </button>
+      }
     </div>
   </div>
   }
-  <!-- Dynamic Syllabus Section Quick Link -->
+
+  <!-- 2. SYLLABUS SECTION CONTAINER -->
   @if (chapters.length > 0) {
-  <div class="db-section-header" style="margin-top: 1.5rem;">
-    <h3>{{ 'learn.syllabus' | translate }}</h3>
-    <span class="subheader-badge" (click)="goToSyllabus()" style="cursor: pointer;">{{ 'learn.viewAll' | translate }} <i
-        class="bi bi-arrow-right ms-1"></i></span>
-  </div>
-  @for (c of chapters.slice(0, 2); track c.title) {
-  <div class="quick-syllabus-card" (click)="goToSyllabus()">
-    <div class="qs-icon box-gold">
-      <i class="bi bi-journal-text"></i>
+  <div class="home-grouped-card">
+    <div class="home-card-header">
+      <div class="header-title">
+        <i class="bi bi-journal-text header-icon gold"></i>
+        <h3>{{ 'learn.syllabus' | translate }}</h3>
+      </div>
+      <span class="view-all-link" (click)="goToSyllabus()">
+        {{ 'learn.viewAll' | translate }} <i class="bi bi-arrow-right"></i>
+      </span>
     </div>
-    <div class="qs-details">
-      <strong>{{ c.title }}</strong>
-      <span>{{ c.lessons.length }} {{ 'learn.tabLessons' | translate }}</span>
+    <div class="home-card-body">
+      @for (c of chapters.slice(0, 2); track c.title) {
+      <div class="quick-syllabus-item" (click)="goToSyllabus()">
+        <div class="qs-icon-box">
+          <i class="bi bi-book-half"></i>
+        </div>
+        <div class="qs-info">
+          <strong>{{ c.title }}</strong>
+          <span>{{ c.lessons.length }} {{ 'learn.tabLessons' | translate }}</span>
+        </div>
+        <i class="bi bi-chevron-right qs-arrow-icon"></i>
+      </div>
+      }
     </div>
-    <span class="qs-arrow"><i class="bi bi-chevron-right"></i></span>
-  </div>
-  }
-  }
-
-  <!-- Exams Section Quick Link -->
-  <div class="db-section-header" style="margin-top: 1.5rem;">
-    <h3>{{ 'learn.exams' | translate }}</h3>
-    <span class="subheader-badge" (click)="goToExams()" style="cursor: pointer;">{{ 'learn.viewAll' | translate }} <i
-        class="bi bi-arrow-right ms-1"></i></span>
-  </div>
-  @for (ex of exams; track ex.id) {
-  <div class="quick-exam-card" (click)="startQuiz.emit(ex)">
-    <div class="qe-icon box-peach">
-      <i class="bi bi-pencil-square"></i>
-    </div>
-    <div class="qe-details">
-      <strong>{{ ex.title }}</strong>
-      <span>{{ ex.questions?.length || 0 }} Questions • {{ ex.duration }} Mins</span>
-    </div>
-    <span class="qe-arrow"><i class="bi bi-chevron-right"></i></span>
-  </div>
-  }
-  @if (exams.length === 0) {
-  <div style="text-align:center;color:#64748b;font-size:13px;padding:10px;">
-    {{ 'learn.noExams' | translate }}
   </div>
   }
 
-  <!-- Webinars -->
-  <div class="db-section-header" style="margin-top: 1.5rem;">
-    <h3>{{ 'learn.webinars' | translate }}</h3>
-  </div>
-  <div class="webinar-scroller">
-    @for (s of seminars; track s.title) {
-    <div class="webinar-card" [class.live]="s.status === 'live'" [class.past]="s.status === 'past'"
-      (click)="openMeeting(s.join_url, s.status, s)">
-      @if (s.status === 'live') {
-      <span class="web-status-badge"><i class="bi bi-broadcast me-1"></i>LIVE</span>
+  <!-- 3. EXAMS SECTION CONTAINER -->
+  <div class="home-grouped-card">
+    <div class="home-card-header">
+      <div class="header-title">
+        <i class="bi bi-pencil-square header-icon peach"></i>
+        <h3>{{ 'learn.exams' | translate }}</h3>
+      </div>
+      <span class="view-all-link" (click)="goToExams()">
+        {{ 'learn.viewAll' | translate }} <i class="bi bi-arrow-right"></i>
+      </span>
+    </div>
+    <div class="home-card-body">
+      @for (ex of exams; track ex.id) {
+      <div class="quick-exam-item" (click)="startQuiz.emit(ex)">
+        <div class="qe-icon-box">
+          <i class="bi bi-clipboard-check-fill"></i>
+        </div>
+        <div class="qe-info">
+          <strong>{{ ex.title }}</strong>
+          <span>{{ ex.questions?.length || 0 }} Questions • {{ ex.duration }} Mins</span>
+        </div>
+        <i class="bi bi-chevron-right qe-arrow-icon"></i>
+      </div>
       }
-      <h4>{{ s.title }}</h4>
-      <span class="web-speaker"><i class="bi bi-person-fill me-1"></i> {{ s.speaker }}</span>
-      <span class="web-date"><i class="bi bi-calendar3 me-1"></i> {{ s.date_text || s.date || 'Today' }} • {{
-        s.time_text || s.time }}</span>
-      @if (s.status === 'live') {
-      <button class="web-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">Join</button>
-      }
-      @if (s.status === 'past') {
-      <button class="web-btn past"
-        (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">Ended</button>
-      }
-      @if (s.status === 'upcoming' || !s.status) {
-      <button class="web-btn" style="background: #FFF8E7; color: #A27B38; border: 1px solid #ECC876;"
-        (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">Scheduled</button>
+      @if (exams.length === 0) {
+      <div class="home-empty-notice">
+        <i class="bi bi-inbox-fill me-1"></i> {{ 'learn.noExams' | translate }}
+      </div>
       }
     </div>
-    }
   </div>
-  <!-- PDF Notes -->
-  <div class="db-section-header" style="margin-top: 1.5rem;">
-    <h3>{{ 'learn.pdfNotes' | translate }}</h3>
-  </div>
-  <div class="pdf-notes-grid">
-    @for (p of pdfNotes; track p) {
-    <div class="pdf-note-card" (click)="downloadPDF(p.title, p.url)">
-      <span class="pdf-icon"><i class="bi bi-file-earmark-pdf-fill"></i></span>
-      <h4>{{ p.title }}</h4>
-      <span>{{ p.pages }}</span>
+
+  <!-- 4. SEMINARS / WEBINARS SECTION CONTAINER -->
+  <div class="home-grouped-card">
+    <div class="home-card-header">
+      <div class="header-title">
+        <i class="bi bi-camera-video-fill header-icon maroon"></i>
+        <h3>{{ 'learn.webinars' | translate }}</h3>
+      </div>
+      @if (seminars.length > 1) {
+        <span class="header-subtitle-tag">{{ seminars.length }} வகுப்புகள்</span>
+      }
     </div>
-    }
+    <div class="home-card-body p-0">
+      <div class="webinar-slider-wrap">
+        @for (s of seminars; track s.title) {
+        <div class="webinar-card-item" [class.is-live]="s.status === 'live'" (click)="openMeeting(s.join_url, s.status, s)">
+          <div class="sem-badge-row">
+            @if (s.status === 'live') {
+              <span class="sem-status-pill live"><i class="bi bi-broadcast me-1"></i> நேரலை</span>
+            } @else if (s.status === 'past') {
+              <span class="sem-status-pill ended"><i class="bi bi-check-circle-fill me-1"></i> முடிந்தது</span>
+            } @else {
+              <span class="sem-status-pill upcoming"><i class="bi bi-clock-fill me-1"></i> அட்டவணை</span>
+            }
+            <span class="sem-type-tag">சிறப்பு வகுப்பு</span>
+          </div>
+
+          <div class="sem-content-wrap">
+            <h4 class="sem-heading">{{ s.title }}</h4>
+            <div class="sem-meta-group">
+              <div class="sem-meta-line">
+                <i class="bi bi-person-circle"></i>
+                <span>{{ s.speaker || 'ஆருத்ரா குரு' }}</span>
+              </div>
+              <div class="sem-meta-line">
+                <i class="bi bi-calendar3"></i>
+                <span>{{ s.date_text || s.date || 'இன்று' }} • {{ s.time_text || s.time }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sem-action-row">
+            @if (s.status === 'live') {
+              <button class="sem-btn live-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
+                <i class="bi bi-play-circle-fill me-1"></i> நேரலையில் இணை
+              </button>
+            } @else if (s.status === 'past') {
+              <button class="sem-btn past-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
+                <i class="bi bi-file-earmark-play me-1"></i> பதிவு காண்க
+              </button>
+            } @else {
+              <button class="sem-btn upcoming-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
+                <i class="bi bi-bell-fill me-1"></i> நினைவூட்டல்
+              </button>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
   </div>
+
+  <!-- 5. PDF NOTES / STUDY MATERIALS SECTION CONTAINER -->
+  <div class="home-grouped-card">
+    <div class="home-card-header">
+      <div class="header-title">
+        <i class="bi bi-journal-bookmark-fill header-icon red"></i>
+        <h3>{{ 'learn.pdfNotes' | translate }}</h3>
+      </div>
+      @if (pdfNotes.length > 0) {
+        <span class="header-subtitle-tag">{{ pdfNotes.length }} குறிப்புகள்</span>
+      }
+    </div>
+    <div class="home-card-body p-2">
+      <div class="pdf-list-stack">
+        @for (p of pdfNotes; track p.title) {
+        <div class="pdf-row-item" (click)="downloadPDF(p.title, p.url)">
+          <div class="pdf-row-icon">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+          </div>
+          <div class="pdf-row-info">
+            <strong class="pdf-row-title">{{ p.title }}</strong>
+            <span class="pdf-row-meta"><i class="bi bi-file-text me-1"></i> {{ p.pages || 'PDF குறிப்பு' }}</span>
+          </div>
+          <button class="pdf-row-btn" (click)="downloadPDF(p.title, p.url); $event.stopPropagation()">
+            <i class="bi bi-cloud-arrow-down-fill me-1"></i>
+            <span>பதிவிறக்கு</span>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
 </div>
 }
 
@@ -145,13 +234,15 @@
   <!-- 60-DAY CURRICULUM BANNER & MONTH FILTER -->
   @if (curriculumDays.length > 0) {
   <div style="margin-bottom: 16px; padding: 0 5px; display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="font-family: 'Noto Serif Tamil', serif; font-size: 1.15rem; color: #4A0E17; margin: 0; font-weight: bold;">
+    <h3
+      style="font-family: 'Noto Serif Tamil', serif; font-size: 1.15rem; color: #4A0E17; margin: 0; font-weight: bold;">
       <i class="bi bi-calendar3 me-1"></i> {{ currentMonthTitle }}
     </h3>
     @if (activeBatch) {
-      <span style="font-size: 0.75rem; background: rgba(162,123,56,0.15); color: #A27B38; padding: 3px 10px; border-radius: 20px; font-weight: 700;">
-        {{ activeBatch.name }}
-      </span>
+    <span
+      style="font-size: 0.75rem; background: rgba(162,123,56,0.15); color: #A27B38; padding: 3px 10px; border-radius: 20px; font-weight: 700;">
+      {{ activeBatch.name }}
+    </span>
     }
   </div>
 
@@ -192,7 +283,8 @@
     }
   </div>
   } @else {
-  <div style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; border: 1px dashed #ccc; margin-bottom: 20px;">
+  <div
+    style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; border: 1px dashed #ccc; margin-bottom: 20px;">
     <i class="bi bi-journal-x" style="font-size: 2.5rem; color: #ccc; margin-bottom: 10px; display: block;"></i>
     <p style="color: #7E716A; font-family: 'Noto Serif Tamil', serif;">பாடங்கள் இன்னும் சேர்க்கப்படவில்லை.</p>
     <p style="font-size: 0.8rem; color: #999;">Batch: {{ activeBatch?.name || 'No Active Batch' }}</p>
@@ -594,113 +686,118 @@
 
 <!-- DAILY LESSON PLAYER MODAL OVERLAY -->
 @if (selectedCurriculumDay) {
-<div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #F8FAFC; z-index: 9999; display: flex; flex-direction: column;">
-  <div style="background: #4A0E17; color: #FFFDF0; padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-    <button (click)="closeDayDetail()" style="background: transparent; border: none; color: #FFFDF0; font-size: 1.5rem; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+<div
+  style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #F8FAFC; z-index: 9999; display: flex; flex-direction: column;">
+  <div
+    style="background: #4A0E17; color: #FFFDF0; padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <button (click)="closeDayDetail()"
+      style="background: transparent; border: none; color: #FFFDF0; font-size: 1.5rem; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;">
       <i class="bi bi-arrow-left"></i>
     </button>
     <div style="display: flex; flex-direction: column; gap: 4px;">
-      <span style="background: #ECC876; color: #4A0E17; font-weight: 800; font-size: 0.75rem; padding: 2px 10px; border-radius: 12px; align-self: flex-start;">
+      <span
+        style="background: #ECC876; color: #4A0E17; font-weight: 800; font-size: 0.75rem; padding: 2px 10px; border-radius: 12px; align-self: flex-start;">
         Day {{ selectedCurriculumDay.day_number }}
       </span>
-      <h3 style="font-family: 'Noto Serif Tamil', serif; font-size: 1.1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
+      <h3
+        style="font-family: 'Noto Serif Tamil', serif; font-size: 1.1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
         {{ selectedCurriculumDay.title }}
       </h3>
     </div>
   </div>
 
   <div style="flex: 1; padding: 20px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
-      <!-- Audio Player Section -->
-      @if (selectedCurriculumDay.audios_json && selectedCurriculumDay.audios_json.length > 0) {
-      @for (audio of selectedCurriculumDay.audios_json; track audio.url) {
-      <div style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
-        <div
-          style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ audio.title ||
-          ('profile.voiceLecture' | translate) }}
-        </div>
-        <audio [src]="audio.url" controls style="width: 100%; height: 40px;"></audio>
+    <!-- Audio Player Section -->
+    @if (selectedCurriculumDay.audios_json && selectedCurriculumDay.audios_json.length > 0) {
+    @for (audio of selectedCurriculumDay.audios_json; track audio.url) {
+    <div style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
+      <div
+        style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ audio.title ||
+        ('profile.voiceLecture' | translate) }}
       </div>
-      }
-      } @else if (selectedCurriculumDay.audio_url) {
-      <div style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
-        <div
-          style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ 'profile.voiceLecture' |
-          translate }}
-        </div>
-        <audio [src]="selectedCurriculumDay.audio_url" controls style="width: 100%; height: 40px;"></audio>
-      </div>
-      }
-
-      <!-- Text Lesson Notes -->
-      <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
-        <h4
-          style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
-          <i class="bi bi-journal-bookmark-fill me-1"></i> {{ 'profile.lessonNotes' | translate }}
-        </h4>
-        <div style="font-size: 0.88rem; color: #2A2421; line-height: 1.6; white-space: pre-wrap;">
-          {{ selectedCurriculumDay.description }}
-        </div>
-      </div>
-
-      <!-- Diagrams & Chart Gallery -->
-      @if (selectedCurriculumDay.images_json && selectedCurriculumDay.images_json.length > 0) {
-      <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
-        <h4
-          style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 10px 0;">
-          <i class="bi bi-images me-1"></i> {{ 'profile.chartDiagrams' | translate }}
-        </h4>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          @for (imgUrl of selectedCurriculumDay.images_json; track imgUrl) {
-          <a [href]="imgUrl" target="_blank"
-            style="display: block; width: 100px; height: 100px; border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876;">
-            <img [src]="imgUrl" style="width: 100%; height: 100%; object-fit: cover;">
-          </a>
-          }
-        </div>
-      </div>
-      }
-
-      <!-- PDF Study Material -->
-      @if (selectedCurriculumDay.pdfs_json && selectedCurriculumDay.pdfs_json.length > 0) {
-      @for (pdf of selectedCurriculumDay.pdfs_json; track pdf.url) {
-      <div (click)="downloadPDF(pdf.title, pdf.url)"
-        style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
-          <div>
-            <strong style="color: #991B1B; font-size: 0.9rem; display: block;">{{ pdf.title || 'PDF' }}</strong>
-            <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
-          </div>
-        </div>
-        <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
-      </div>
-      }
-      } @else if (selectedCurriculumDay.pdf_material_url) {
-      <div (click)="downloadPDF(selectedCurriculumDay.title + ' Notes', selectedCurriculumDay.pdf_material_url)"
-        style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
-          <div>
-            <strong style="color: #991B1B; font-size: 0.9rem; display: block;">PDF</strong>
-            <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
-          </div>
-        </div>
-        <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
-      </div>
-      }
-
-      <!-- Complete Action Button -->
-      <button (click)="markDayCompleted(selectedCurriculumDay)" [disabled]="selectedCurriculumDay.is_completed"
-        style="width: 100%; background: #4A0E17; color: #ECC876; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
-        <i class="bi" [class.bi-check-circle-fill]="selectedCurriculumDay.is_completed"
-          [class.bi-check-circle]="!selectedCurriculumDay.is_completed"></i>
-        {{ selectedCurriculumDay.is_completed ? ('profile.lessonCompleted' | translate) : ('profile.markCompleted' |
-        translate) }}
-      </button>
+      <audio [src]="audio.url" controls style="width: 100%; height: 40px;"></audio>
     </div>
+    }
+    } @else if (selectedCurriculumDay.audio_url) {
+    <div style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
+      <div
+        style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ 'profile.voiceLecture' |
+        translate }}
+      </div>
+      <audio [src]="selectedCurriculumDay.audio_url" controls style="width: 100%; height: 40px;"></audio>
+    </div>
+    }
+
+    <!-- Text Lesson Notes -->
+    <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
+      <h4
+        style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
+        <i class="bi bi-journal-bookmark-fill me-1"></i> {{ 'profile.lessonNotes' | translate }}
+      </h4>
+      <div style="font-size: 0.88rem; color: #2A2421; line-height: 1.6; white-space: pre-wrap;">
+        {{ selectedCurriculumDay.description }}
+      </div>
+    </div>
+
+    <!-- Diagrams & Chart Gallery -->
+    @if (selectedCurriculumDay.images_json && selectedCurriculumDay.images_json.length > 0) {
+    <div style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
+      <h4
+        style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 10px 0;">
+        <i class="bi bi-images me-1"></i> {{ 'profile.chartDiagrams' | translate }}
+      </h4>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        @for (imgUrl of selectedCurriculumDay.images_json; track imgUrl) {
+        <a [href]="imgUrl" target="_blank"
+          style="display: block; width: 100px; height: 100px; border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876;">
+          <img [src]="imgUrl" style="width: 100%; height: 100%; object-fit: cover;">
+        </a>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- PDF Study Material -->
+    @if (selectedCurriculumDay.pdfs_json && selectedCurriculumDay.pdfs_json.length > 0) {
+    @for (pdf of selectedCurriculumDay.pdfs_json; track pdf.url) {
+    <div (click)="downloadPDF(pdf.title, pdf.url)"
+      style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
+        <div>
+          <strong style="color: #991B1B; font-size: 0.9rem; display: block;">{{ pdf.title || 'PDF' }}</strong>
+          <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
+        </div>
+      </div>
+      <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
+    </div>
+    }
+    } @else if (selectedCurriculumDay.pdf_material_url) {
+    <div (click)="downloadPDF(selectedCurriculumDay.title + ' Notes', selectedCurriculumDay.pdf_material_url)"
+      style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
+        <div>
+          <strong style="color: #991B1B; font-size: 0.9rem; display: block;">PDF</strong>
+          <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
+        </div>
+      </div>
+      <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
+    </div>
+    }
+
+    <!-- Complete Action Button -->
+    <button (click)="markDayCompleted(selectedCurriculumDay)" [disabled]="selectedCurriculumDay.is_completed"
+      style="width: 100%; background: #4A0E17; color: #ECC876; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
+      <i class="bi" [class.bi-check-circle-fill]="selectedCurriculumDay.is_completed"
+        [class.bi-check-circle]="!selectedCurriculumDay.is_completed"></i>
+      {{ selectedCurriculumDay.is_completed ? ('profile.lessonCompleted' | translate) : ('profile.markCompleted' |
+      translate) }}
+    </button>
   </div>
+</div>
 }
 
 

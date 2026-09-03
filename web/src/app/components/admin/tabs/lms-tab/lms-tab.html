@@ -836,6 +836,24 @@
         </div>
       </div>
 
+      <!-- Banner Image Upload (Optional) -->
+      <div>
+        <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
+          பேனர் படம் (Banner Image - Optional)
+        </label>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <input type="file" (change)="onLiveBannerSelected($event)" accept="image/*" class="ctrl" style="flex: 1; font-size: 12px;" />
+          @if (isUploadingLiveBanner) {
+            <span style="color: #d97706; font-size: 12px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> படம் பதிவேறுகிறது...</span>
+          }
+          @if (editingLiveClass.banner_image_url) {
+            <a [href]="editingLiveClass.banner_image_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 12px; text-decoration: none;">
+              <i class="bi bi-check-circle-fill"></i> படத்தை காண்க
+            </a>
+          }
+        </div>
+      </div>
+
       <!-- Meet Link -->
       <div>
         <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">

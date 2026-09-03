@@ -297,10 +297,7 @@
         </div>
         <div class="form-input-card">
           <label>{{ 'astrology.tob' | translate }}</label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-clock"></i></span>
-            <input type="time" name="bookingTob" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
-          </div>
+          <app-segmented-tob [(value)]="astrologerBookingForm.tob"></app-segmented-tob>
         </div>
       </div>
 
