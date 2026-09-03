@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
+import { RazorpayNativeService } from '../../services/razorpay-native.service';
 
 declare var Razorpay: any;
 
@@ -209,7 +210,8 @@ export class MarriageMatchingComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private razorpayService: RazorpayNativeService
   ) { }
 
   ngOnInit() {
@@ -547,7 +549,7 @@ export class MarriageMatchingComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 100 }, headers).subscribe({
       next: (orderRes) => {
-        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+        if (orderRes && orderRes.success && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
             amount: 10000, // 100 INR in paise
@@ -555,14 +557,17 @@ export class MarriageMatchingComponent implements OnInit {
             name: 'Astro Divine',
             description: 'திருமணப் பொருத்தம் (Test Mode)',
             order_id: orderRes.order_id,
-            theme: { color: '#4A0E17' },
-            handler: (response: any) => {
+            theme: { color: '#4A0E17' }
+          };
+
+          this.razorpayService.open(options)
+            .then((res) => {
               // Record payment verification
               this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
                 order_id: orderRes.order_id || ('MATCH-' + Date.now()),
-                razorpay_order_id: response.razorpay_order_id || orderRes.order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
+                razorpay_order_id: res.razorpay_order_id || orderRes.order_id,
+                razorpay_payment_id: res.razorpay_payment_id,
+                razorpay_signature: res.razorpay_signature,
                 amount: 100,
                 description: 'திருமணப் பொருத்தம் கணிப்பு கட்டணம்',
                 order_type: 'marriage_matching'
@@ -574,24 +579,14 @@ export class MarriageMatchingComponent implements OnInit {
               this.isProcessingPayment = false;
               this.sendMatchingToAdmin();
               this.serviceStep = 5;
-            },
-            modal: {
-              ondismiss: () => {
-                this.isProcessingPayment = false;
-              }
-            }
-          };
-          try {
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', (resp: any) => {
+            })
+            .catch((err) => {
               this.isProcessingPayment = false;
-              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+              }
             });
-            rzp.open();
-          } catch (e: any) {
-            this.isProcessingPayment = false;
-            alert('Razorpay popup பிழை: ' + (e?.message || e));
-          }
         } else {
           this.isProcessingPayment = false;
           alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
@@ -653,7 +648,7 @@ export class MarriageMatchingComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 500 }, headers).subscribe({
       next: (orderRes) => {
-        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+        if (orderRes && orderRes.success && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
             amount: 50000, // 500 INR in paise
@@ -661,14 +656,17 @@ export class MarriageMatchingComponent implements OnInit {
             name: 'Astro Divine',
             description: 'திருமணப் பதிவு (Test Mode)',
             order_id: orderRes.order_id,
-            theme: { color: '#4A0E17' },
-            handler: (response: any) => {
+            theme: { color: '#4A0E17' }
+          };
+
+          this.razorpayService.open(options)
+            .then((res) => {
               // Record payment verification
               this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
                 order_id: orderRes.order_id || ('MATRIMONY-' + Date.now()),
-                razorpay_order_id: response.razorpay_order_id || orderRes.order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
+                razorpay_order_id: res.razorpay_order_id || orderRes.order_id,
+                razorpay_payment_id: res.razorpay_payment_id,
+                razorpay_signature: res.razorpay_signature,
                 amount: 500,
                 description: 'திருமண வரன் பதிவு கட்டணம்',
                 order_type: 'matrimony_registration'
@@ -679,24 +677,14 @@ export class MarriageMatchingComponent implements OnInit {
 
               this.isProcessingPayment = false;
               this.submitRegistrationData();
-            },
-            modal: {
-              ondismiss: () => {
-                this.isProcessingPayment = false;
-              }
-            }
-          };
-          try {
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', (resp: any) => {
+            })
+            .catch((err) => {
               this.isProcessingPayment = false;
-              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+              }
             });
-            rzp.open();
-          } catch (e: any) {
-            this.isProcessingPayment = false;
-            alert('Razorpay popup பிழை: ' + (e?.message || e));
-          }
         } else {
           this.isProcessingPayment = false;
           alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');

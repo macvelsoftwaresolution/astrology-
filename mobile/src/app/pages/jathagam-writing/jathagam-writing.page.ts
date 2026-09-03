@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { RazorpayNativeService } from '../../services/razorpay-native.service';
 import { environment } from '../../../environments/environment';
 
 declare var Razorpay: any;
@@ -36,7 +37,8 @@ export class JathagamWritingPage implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private razorpayService: RazorpayNativeService
   ) { }
 
   ngOnInit() {
@@ -87,7 +89,7 @@ export class JathagamWritingPage implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: this.price }, { headers }).subscribe({
       next: (orderRes) => {
-        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+        if (orderRes && orderRes.success && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
             amount: this.price * 100,
@@ -99,29 +101,20 @@ export class JathagamWritingPage implements OnInit {
               name: this.form.name,
               contact: this.form.phone || '9876543210'
             },
-            theme: { color: '#4A0E17' },
-            handler: (response: any) => {
-              this.completeBooking(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
-            },
-            modal: {
-              ondismiss: () => {
-                this.isProcessingPayment = false;
-              }
-            }
+            theme: { color: '#4A0E17' }
           };
 
-          try {
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', (response: any) => {
+          this.razorpayService.open(options)
+            .then((res) => {
+              this.completeBooking(res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature);
+            })
+            .catch((err) => {
               this.isProcessingPayment = false;
-              alert('Payment Failed: ' + (response.error?.description || 'தோல்வியடைந்தது'));
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('Payment Failed: ' + msg);
+              }
             });
-            rzp.open();
-          } catch (e) {
-            console.error('Razorpay initialization failed', e);
-            this.isProcessingPayment = false;
-            alert('Could not initialize payment gateway.');
-          }
         } else {
           this.isProcessingPayment = false;
           alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
