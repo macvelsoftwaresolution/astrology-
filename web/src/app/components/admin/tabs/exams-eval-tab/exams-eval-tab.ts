@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +23,11 @@ export interface ChartHouse {
   styleUrls: ['../../admin-dashboard.css', './exams-eval-tab.css']
 })
 export class ExamsEvalTabComponent implements OnInit {
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  public translationService = inject(TranslationService);
+  private cdr = inject(ChangeDetectorRef);
+
   activeView: 'list' | 'exam-wizard' | 'evaluation' | 'leaderboard' | 'analytics' = 'list';
   selectedCategory = 'ILANILAI';
 
@@ -82,12 +87,7 @@ export class ExamsEvalTabComponent implements OnInit {
     is_published: true
   };
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    public translationService: TranslationService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -151,11 +151,7 @@ export class ExamsEvalTabComponent implements OnInit {
       .sort((a, b) => b.score - a.score);
 
     return list.map((item, idx) => {
-      let badge = `${idx + 1}`;
-      if (idx === 0) badge = '🥇 1';
-      else if (idx === 1) badge = '🥈 2';
-      else if (idx === 2) badge = '🥉 3';
-      return { ...item, rank: idx + 1, rankBadge: badge };
+      return { ...item, rank: idx + 1, rankBadge: `#${idx + 1}` };
     });
   }
 
@@ -181,7 +177,7 @@ export class ExamsEvalTabComponent implements OnInit {
         if (res && res.success) {
           this.backendAnalytics = res;
         }
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => {}
     });
@@ -193,7 +189,7 @@ export class ExamsEvalTabComponent implements OnInit {
       next: (res) => {
         this.exams = res.exams || [];
         this.loadAnalytics();
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => {}
     });
@@ -204,7 +200,7 @@ export class ExamsEvalTabComponent implements OnInit {
     this.http.get<any>(`${environment.apiUrl}/admin/lms/batches`, headers).subscribe({
       next: (res) => {
         this.batches = res.batches || res || [];
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => {}
     });
@@ -221,11 +217,11 @@ export class ExamsEvalTabComponent implements OnInit {
       next: (res) => {
         this.submissions = res.submissions || [];
         this.isLoadingSubmissions = false;
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => {
         this.isLoadingSubmissions = false;
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       }
     });
   }
@@ -245,20 +241,20 @@ export class ExamsEvalTabComponent implements OnInit {
       house.planets.push(this.selectedPlanetTool);
     }
     this.syncChartToExamPrompt();
-    this.cdr.markForCheck();
+    this.cdr?.markForCheck();
   }
 
   clearHousePlanets(house: ChartHouse, event: Event): void {
     event.stopPropagation();
     house.planets = [];
     this.syncChartToExamPrompt();
-    this.cdr.markForCheck();
+    this.cdr?.markForCheck();
   }
 
   resetAllChartHouses(): void {
     this.chartHouses.forEach(h => h.planets = []);
     this.syncChartToExamPrompt();
-    this.cdr.markForCheck();
+    this.cdr?.markForCheck();
   }
 
   loadChartPreset(presetKey: string): void {
@@ -287,7 +283,7 @@ export class ExamsEvalTabComponent implements OnInit {
       if (katakam) katakam.planets = ['சந்', 'சுக்'];
     }
     this.syncChartToExamPrompt();
-    this.cdr.markForCheck();
+    this.cdr?.markForCheck();
   }
 
   syncChartToExamPrompt(): void {
@@ -340,12 +336,12 @@ export class ExamsEvalTabComponent implements OnInit {
         } else if (res && res.path) {
           this.activeExamWizard.chart_image_url = res.path;
         }
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => {
         this.isUploadingChart = false;
         alert('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       }
     });
   }
@@ -353,7 +349,7 @@ export class ExamsEvalTabComponent implements OnInit {
   removeUploadedChart(): void {
     if (this.activeExamWizard) {
       this.activeExamWizard.chart_image_url = '';
-      this.cdr.markForCheck();
+      this.cdr?.markForCheck();
     }
   }
 
@@ -453,12 +449,12 @@ export class ExamsEvalTabComponent implements OnInit {
         if (res.url && this.activeExamWizard) {
           this.activeExamWizard.chart_image_url = res.url;
         }
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => {
         this.isUploadingChart = false;
         alert('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       }
     });
   }
@@ -539,7 +535,7 @@ export class ExamsEvalTabComponent implements OnInit {
           ],
           marks: 10
         };
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => alert('வினாவை சேர்ப்பதில் பிழை.')
     });
@@ -593,7 +589,7 @@ export class ExamsEvalTabComponent implements OnInit {
     this.http.delete<any>(`${environment.apiUrl}/questions/${id}`, headers).subscribe({
       next: () => {
         this.activeExamWizard.questions.splice(idx, 1);
-        this.cdr.markForCheck();
+        this.cdr?.markForCheck();
       },
       error: () => alert('வினாவை நீக்குவதில் பிழை.')
     });
