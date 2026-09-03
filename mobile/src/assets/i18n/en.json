@@ -412,6 +412,23 @@
     "fillAllDetails": "Please fill in all details (Name, Phone, Address).",
     "emailRegistered": "This email address is already registered. Please sign in."
   },
+  "jathagamWriting": {
+    "title": "Jathagam Writing",
+    "name": "Full Name",
+    "phone": "Mobile Number",
+    "dob": "Date of Birth",
+    "tob": "Time of Birth",
+    "pob": "Place of Birth",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "deliveryAddress": "Courier Delivery Address",
+    "notes": "Additional Notes",
+    "submitBtn": "Pay & Book Order",
+    "processing": "Processing...",
+    "successTitle": "Booking Confirmed!",
+    "successDesc": "Your Jathagam Writing order has been received successfully. Our team will contact you shortly."
+  },
   "marriageReport": {
     "title": "Marriage Match Report",
     "subtitle": "Fill horoscope matching details and evaluation report",

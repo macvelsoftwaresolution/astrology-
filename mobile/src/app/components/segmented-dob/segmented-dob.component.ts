@@ -62,16 +62,28 @@ export class SegmentedDobComponent implements OnInit, OnChanges {
         this.dobMonth = parts[1];
         this.dobDay = parts[2];
       }
-    } else {
+    } else if (!this.value) {
       this.dobDay = '';
       this.dobMonth = '';
       this.dobYear = '';
     }
   }
 
+  isValidCalendarDate(y: number, m: number, d: number): boolean {
+    if (y < 1900 || y > new Date().getFullYear()) return false;
+    if (m < 1 || m > 12) return false;
+    if (d < 1 || d > 31) return false;
+    const date = new Date(y, m - 1, d);
+    return date.getFullYear() === y && date.getMonth() === (m - 1) && date.getDate() === d;
+  }
+
   emitValue() {
-    if (this.dobDay && this.dobMonth && this.dobYear && this.dobYear.length === 4) {
-      const formatted = `${this.dobYear}-${this.dobMonth.padStart(2, '0')}-${this.dobDay.padStart(2, '0')}`;
+    const y = parseInt(this.dobYear, 10);
+    const m = parseInt(this.dobMonth, 10);
+    const d = parseInt(this.dobDay, 10);
+
+    if (this.dobYear && this.dobYear.length === 4 && this.dobMonth && this.dobDay && this.isValidCalendarDate(y, m, d)) {
+      const formatted = `${this.dobYear}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       this.valueChange.emit(formatted);
     } else {
       this.valueChange.emit('');
@@ -80,6 +92,12 @@ export class SegmentedDobComponent implements OnInit, OnChanges {
 
   onDayInput(event: any, nextInput: HTMLInputElement) {
     let val = event.target.value.replace(/\D/g, '');
+    if (val.length >= 2) {
+      let num = parseInt(val, 10);
+      if (num > 31) num = 31;
+      if (num === 0) num = 1;
+      val = num < 10 ? '0' + num : '' + num;
+    }
     this.dobDay = val;
     event.target.value = val;
     this.emitValue();
@@ -90,6 +108,12 @@ export class SegmentedDobComponent implements OnInit, OnChanges {
 
   onMonthInput(event: any, nextInput: HTMLInputElement) {
     let val = event.target.value.replace(/\D/g, '');
+    if (val.length >= 2) {
+      let num = parseInt(val, 10);
+      if (num > 12) num = 12;
+      if (num === 0) num = 1;
+      val = num < 10 ? '0' + num : '' + num;
+    }
     this.dobMonth = val;
     event.target.value = val;
     this.emitValue();
@@ -106,6 +130,12 @@ export class SegmentedDobComponent implements OnInit, OnChanges {
 
   onYearInput(event: any) {
     let val = event.target.value.replace(/\D/g, '');
+    if (val.length === 4) {
+      let num = parseInt(val, 10);
+      const currentYear = new Date().getFullYear();
+      if (num > currentYear) num = currentYear;
+      val = '' + num;
+    }
     this.dobYear = val;
     event.target.value = val;
     this.emitValue();

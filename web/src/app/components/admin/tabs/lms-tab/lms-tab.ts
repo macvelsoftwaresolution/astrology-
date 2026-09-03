@@ -977,6 +977,35 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
+  isUploadingLiveBanner = false;
+
+  onLiveBannerSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingLiveBanner = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'live_banners');
+
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          if (!this.editingLiveClass) this.editingLiveClass = {};
+          this.editingLiveClass.banner_image_url = res.url;
+        }
+        this.isUploadingLiveBanner = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('பேனர் படம் பதிவேற்றுவதில் பிழைப்பட்டது.');
+        this.isUploadingLiveBanner = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   uploadLessonFile(event: any, isInline: boolean = false): void {
     const file = event.target.files[0];
     if (!file) return;

@@ -68,16 +68,24 @@ export class JathagamWritingPage implements OnInit {
       return;
     }
     const cleanPhone = (this.form.phone || '').replace(/\D/g, '');
-    if (!cleanPhone || cleanPhone.length !== 10) {
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
       this.validationError = 'errors.enterPhone';
       return;
     }
-    if (!this.form.dob || !this.form.tob || !this.form.pob) {
+    if (!this.form.dob) {
       this.validationError = 'errors.enterDob';
       return;
     }
+    if (!this.form.tob) {
+      this.validationError = 'errors.enterTob';
+      return;
+    }
+    if (!this.form.pob || !this.form.pob.trim()) {
+      this.validationError = 'errors.enterPob';
+      return;
+    }
     if (!this.form.address || this.form.address.trim().length < 5) {
-      this.validationError = 'ஜாதகம் கூரியரில் அனுப்ப உங்கள் முழு முகவரியை (Door No, Street, Pincode) உள்ளிடவும்!';
+      this.validationError = 'errors.enterPostalAddress';
       return;
     }
 
@@ -170,6 +178,19 @@ export class JathagamWritingPage implements OnInit {
 
   formatTobDisplay(event: any) {
     let val = event.target.value.replace(/\D/g, '');
+    if (val.length >= 2) {
+      let hh = parseInt(val.slice(0, 2), 10);
+      if (hh > 12) hh = 12;
+      if (hh === 0) hh = 12;
+      const hhStr = hh < 10 ? '0' + hh : '' + hh;
+      let mmStr = val.slice(2, 4);
+      if (mmStr.length === 2) {
+        let mm = parseInt(mmStr, 10);
+        if (mm > 59) mm = 59;
+        mmStr = mm < 10 ? '0' + mm : '' + mm;
+      }
+      val = hhStr + mmStr;
+    }
     let formatted = val;
     if (val.length >= 3) {
       formatted = val.slice(0, 2) + ':' + val.slice(2, 4);

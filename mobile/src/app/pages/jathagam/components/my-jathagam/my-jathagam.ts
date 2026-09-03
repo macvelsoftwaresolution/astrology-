@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
+import { SegmentedTobComponent } from '../../../../components/segmented-tob/segmented-tob.component';
 
 const RASIS = [
   'மேஷம்', 'ரிஷபம்', 'மிதுனம்', 'கடகம்', 'சிம்மம்', 'கன்னி',
@@ -22,7 +23,7 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-my-jathagam',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent, SegmentedTobComponent],
   template: `
     <div class="my-jathagam-wrapper">
       <div class="section-header">
@@ -80,13 +81,7 @@ const NAKSHATRAS = [
 
           <div class="input-row">
             <label>{{ 'astrology.tob' | translate }}</label>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <input type="tel" [(ngModel)]="tobDisplay" (input)="formatTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1; min-width: 80px;" class="field">
-              <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0;">
-                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="AM" name="mAmPm" id="mAM"><label for="mAM">AM</label>
-                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="PM" name="mAmPm" id="mPM"><label for="mPM">PM</label>
-              </div>
-            </div>
+            <app-segmented-tob [(value)]="form.tob"></app-segmented-tob>
           </div>
 
           <div class="form-group">
