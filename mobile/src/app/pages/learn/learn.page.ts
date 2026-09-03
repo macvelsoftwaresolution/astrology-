@@ -55,6 +55,7 @@ export interface Seminar {
   status: 'live' | 'upcoming' | 'past';
   join_url?: string;
   level?: string;
+  reminderSet?: boolean;
 }
 
 @Component({

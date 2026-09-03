@@ -183,8 +183,9 @@
                 <i class="bi bi-file-earmark-play me-1"></i> {{ 'learn.watchRecording' | translate }}
               </button>
             } @else {
-              <button class="sem-btn upcoming-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
-                <i class="bi bi-bell-fill me-1"></i> {{ 'learn.setReminder' | translate }}
+              <button class="sem-btn upcoming-btn" [class.reminder-active]="s.reminderSet" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
+                <i class="bi" [class.bi-bell-fill]="!s.reminderSet" [class.bi-check-circle-fill]="s.reminderSet" style="margin-right: 4px;"></i>
+                {{ s.reminderSet ? 'நினைவூட்டல் அமைந்தது' : ('learn.setReminder' | translate) }}
               </button>
             }
           </div>

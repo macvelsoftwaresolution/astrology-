@@ -987,8 +987,27 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     }
     if (status === 'upcoming' || (!status && !url)) {
       const timeInfo = seminar ? `${seminar.date_text || seminar.date || ''} ${seminar.time_text || seminar.time || ''}`.trim() : '';
-      const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
-      this.showToast(msg, 'info');
+      if (seminar) {
+        seminar.reminderSet = !seminar.reminderSet;
+        if (seminar.reminderSet) {
+          const msg = timeInfo ? `நினைவூட்டல் அமைந்தது! 🔔 (${timeInfo}) தொடங்கும் போது உங்களுக்கு அறிவிக்கப்படும்.` : 'நினைவூட்டல் வெற்றிகரமாக அமைந்தது! 🔔';
+          this.showToast(msg, 'success');
+          this.notifications.unshift({
+            id: Date.now(),
+            title: `🔔 நினைவூட்டல்: ${seminar.title || 'கருத்தரங்கம்'}`,
+            message: `கருத்தரங்கம் நேரம்: ${timeInfo}`,
+            created_at: new Date().toISOString(),
+            is_read: false
+          });
+          this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+          this.cdr.detectChanges();
+        } else {
+          this.showToast('கருத்தரங்க நினைவூட்டல் ரத்து செய்யப்பட்டது.', 'info');
+        }
+      } else {
+        const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
+        this.showToast(msg, 'info');
+      }
       return;
     }
     if (url) {
