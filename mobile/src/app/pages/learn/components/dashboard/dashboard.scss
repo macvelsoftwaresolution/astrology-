@@ -15,7 +15,9 @@ $color-orange: #F49320;
   justify-content: space-between;
   padding: calc(env(safe-area-inset-top, 24px) + 0.75rem) 1.25rem 0.75rem 1.25rem;
   background-color: #FFFFFF;
-  border-bottom: 1.5px solid rgba($color-gold-bright, 0.3);
+  border-bottom: 2px solid rgba($color-gold-bright, 0.45);
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 20px rgba($color-maroon, 0.12);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -101,6 +103,34 @@ $color-orange: #F49320;
   padding: 1.25rem;
   box-sizing: border-box;
   padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 140px) !important;
+}
+
+/* LIVE CLASSES HORIZONTAL CAROUSEL */
+.live-classes-carousel-wrapper {
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.live-classes-slider-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  .live-class-card.horizontal-slide-card {
+    scroll-snap-align: start;
+    flex: 0 0 calc(88% - 6px);
+    min-width: 275px;
+    margin-bottom: 0 !important;
+
+    &:only-child {
+      flex: 0 0 100%;
+    }
+  }
 }
 
 /* SUB-TAB 1: HOME */
@@ -1989,14 +2019,15 @@ $color-orange: #F49320;
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #FAF6E8;
-  border-top: 1px solid rgba($color-maroon, 0.12);
+  background-color: #FFFFFF;
+  border-top: 2px solid rgba($color-gold-bright, 0.35);
+  border-radius: 24px 24px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0.35rem calc(env(safe-area-inset-bottom, 16px) + 0.25rem) 0.35rem;
+  padding: 0.35rem 0.4rem calc(env(safe-area-inset-bottom, 16px) + 0.35rem) 0.4rem;
   box-sizing: border-box;
-  box-shadow: 0 -4px 20px rgba($color-maroon, 0.08);
+  box-shadow: 0 -6px 24px rgba(74, 14, 23, 0.12);
   z-index: 100;
 
   .db-nav-item {
@@ -3012,6 +3043,65 @@ $color-orange: #F49320;
   100% {
     opacity: 0;
     transform: translate(-50%, 25px) scale(0.9);
+  }
+}
+
+/* RECORDED SEMINAR VIDEO MODAL */
+.video-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+
+  .video-modal-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 20px;
+    padding: 1.25rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1.5px solid rgba($color-gold, 0.4);
+    animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    .video-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      .vm-title-wrap {
+        display: flex;
+        align-items: center;
+        h3 {
+          margin: 0;
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: $color-maroon;
+        }
+      }
+
+      .close-vm-btn {
+        background: #f1f5f9;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+    }
   }
 }
 

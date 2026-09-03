@@ -393,7 +393,9 @@
     "clickToDownloadPdf": "PDF Material • Click to Download",
     "liveClassTitle": "Live Class",
     "clickToJoinLive": "Click to Join Live Class",
-    "noTextContent": "No text content available."
+    "noTextContent": "No text content available.",
+    "seminarVideoTitle": "Recorded Seminar Video",
+    "noVideoRecordedYet": "No recorded video uploaded for this class yet."
   },
   "astrology": {
     "title": "Vedic Astrology Services",

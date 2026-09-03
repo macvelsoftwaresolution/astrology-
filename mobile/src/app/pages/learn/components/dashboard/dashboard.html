@@ -36,37 +36,43 @@
 @if (dashboardTab === 'home') {
 <div class="dashboard-tab-content home-unified-layout">
   
-  <!-- 1. LIVE CLASS BANNER SECTION -->
-  @for (lc of liveClasses; track lc.id) {
-  <div class="live-class-card" (click)="lc.is_active && !lc.is_expired && playLiveClass(lc.link)" style="margin-bottom: 14px;" [style.opacity]="lc.is_expired ? '0.75' : '1'">
-    <div class="lc-img-overlay"></div>
-    <img [src]="lc.banner_image_url || 'assets/images/astro_service_bg.png'" alt="Live Class" class="lc-img">
-    <div class="lc-info">
-      @if (lc.is_live_now && lc.is_active) {
-        <div class="live-badge" style="background: #dc2626; color: #fff;"><i class="bi bi-record-fill text-white me-1"></i> {{ 'learn.liveNow' | translate }}</div>
-      } @else if (lc.is_expired) {
-        <div class="live-badge" style="background: #64748b; color: #fff;"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.classFinished' | translate }}</div>
-      } @else if (lc.is_upcoming) {
-        <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> {{ 'learn.todayPrefix' | translate }} {{ lc.time_text || 'மாலை 06:00' }}</div>
-      } @else {
-        <div class="live-badge" style="background: #d97706; color: #fff;"><i class="bi bi-calendar-event me-1"></i> {{ lc.time_text || ('learn.scheduledLive' | translate) }}</div>
-      }
-      <h3 style="margin-top: 6px;">{{ lc.title }}</h3>
-      <p style="margin-bottom: 8px;">
-        {{ (lc.description && lc.description !== lc.time_text) ? lc.description : ('learn.defaultLiveDesc' | translate) }}
-      </p>
-      @if (lc.is_live_now && lc.is_active) {
-        <button class="lc-btn" style="background: linear-gradient(135deg, #dc2626, #991b1b); font-weight: 800;" (click)="playLiveClass(lc.link); $event.stopPropagation()">
-          <i class="bi bi-box-arrow-in-right"></i> {{ 'learn.joinLiveBtn' | translate }}
-        </button>
-      } @else if (lc.is_expired) {
-        <button class="lc-btn" disabled style="background: #64748b; color: #f1f5f9; cursor: not-allowed; opacity: 0.8;" (click)="$event.stopPropagation()">
-          <i class="bi bi-lock-fill"></i> {{ 'learn.classEndedBtn' | translate }}
-        </button>
-      } @else {
-        <button class="lc-btn" (click)="playLiveClass(lc.link); $event.stopPropagation()">
-          <i class="bi bi-play-circle-fill"></i> {{ 'learn.watchClassBtn' | translate }}
-        </button>
+  <!-- 1. LIVE CLASS BANNER SECTION (HORIZONTAL SLIDER) -->
+  @if (liveClasses.length > 0) {
+  <div class="live-classes-carousel-wrapper">
+    <div class="live-classes-slider-track">
+      @for (lc of liveClasses; track lc.id) {
+      <div class="live-class-card horizontal-slide-card" (click)="lc.is_active && !lc.is_expired && playLiveClass(lc.link)" [style.opacity]="lc.is_expired ? '0.75' : '1'">
+        <div class="lc-img-overlay"></div>
+        <img [src]="lc.banner_image_url || 'assets/images/astro_service_bg.png'" alt="Live Class" class="lc-img">
+        <div class="lc-info">
+          @if (lc.is_live_now && lc.is_active) {
+            <div class="live-badge" style="background: #dc2626; color: #fff;"><i class="bi bi-record-fill text-white me-1"></i> {{ 'learn.liveNow' | translate }}</div>
+          } @else if (lc.is_expired) {
+            <div class="live-badge" style="background: #64748b; color: #fff;"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.classFinished' | translate }}</div>
+          } @else if (lc.is_upcoming) {
+            <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> {{ 'learn.todayPrefix' | translate }} {{ lc.time_text || 'மாலை 06:00' }}</div>
+          } @else {
+            <div class="live-badge" style="background: #d97706; color: #fff;"><i class="bi bi-calendar-event me-1"></i> {{ lc.time_text || ('learn.scheduledLive' | translate) }}</div>
+          }
+          <h3 style="margin-top: 6px;">{{ lc.title }}</h3>
+          <p style="margin-bottom: 8px;">
+            {{ (lc.description && lc.description !== lc.time_text) ? lc.description : ('learn.defaultLiveDesc' | translate) }}
+          </p>
+          @if (lc.is_live_now && lc.is_active) {
+            <button class="lc-btn" style="background: linear-gradient(135deg, #dc2626, #991b1b); font-weight: 800;" (click)="playLiveClass(lc.link); $event.stopPropagation()">
+              <i class="bi bi-box-arrow-in-right"></i> {{ 'learn.joinLiveBtn' | translate }}
+            </button>
+          } @else if (lc.is_expired) {
+            <button class="lc-btn" disabled style="background: #64748b; color: #f1f5f9; cursor: not-allowed; opacity: 0.8;" (click)="$event.stopPropagation()">
+              <i class="bi bi-lock-fill"></i> {{ 'learn.classEndedBtn' | translate }}
+            </button>
+          } @else {
+            <button class="lc-btn" (click)="playLiveClass(lc.link); $event.stopPropagation()">
+              <i class="bi bi-play-circle-fill"></i> {{ 'learn.watchClassBtn' | translate }}
+            </button>
+          }
+        </div>
+      </div>
       }
     </div>
   </div>
@@ -193,8 +199,9 @@
                 <i class="bi bi-file-earmark-play me-1"></i> {{ 'learn.watchRecording' | translate }}
               </button>
             } @else {
-              <button class="sem-btn upcoming-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
-                <i class="bi bi-bell-fill me-1"></i> {{ 'learn.setReminder' | translate }}
+              <button class="sem-btn upcoming-btn" [class.reminder-active]="s.reminderSet" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
+                <i class="bi" [class.bi-bell-fill]="!s.reminderSet" [class.bi-check-circle-fill]="s.reminderSet" style="margin-right: 4px;"></i>
+                {{ s.reminderSet ? 'நினைவூட்டல் அமைந்தது' : ('learn.setReminder' | translate) }}
               </button>
             }
           </div>
@@ -921,6 +928,40 @@
 
 
 
+
+<!-- Recorded Seminar Video Player Modal Overlay -->
+@if (showSeminarVideoModal && activeSeminarVideo) {
+<div class="video-modal-overlay" (click)="closeSeminarVideoModal()">
+  <div class="video-modal-card" (click)="$event.stopPropagation()">
+    <div class="video-modal-header">
+      <div class="vm-title-wrap">
+        <i class="bi bi-camera-reels-fill text-danger me-2"></i>
+        <h3>{{ activeSeminarVideo.title || ('learn.seminarVideoTitle' | translate) }}</h3>
+      </div>
+      <button class="close-vm-btn" (click)="closeSeminarVideoModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="video-player-body">
+      @if (activeSeminarVideo.recording_video_url) {
+        <video [src]="activeSeminarVideo.recording_video_url" controls autoplay style="width:100%; border-radius: 12px; max-height: 280px; background:#000; box-shadow: 0 4px 14px rgba(0,0,0,0.25);"></video>
+      } @else {
+        <div class="no-video-placeholder" style="text-align: center; padding: 24px 12px; background: #f8fafc; border-radius: 12px;">
+          <i class="bi bi-film" style="font-size: 2.5rem; color: #94a3b8; display: block; margin-bottom: 8px;"></i>
+          <p style="margin: 0; font-size: 13px; color: #64748b; font-weight: 600;">{{ 'learn.noVideoRecordedYet' | translate }}</p>
+        </div>
+      }
+      <div class="vm-meta-info" style="margin-top: 14px; background: #fdfbf0; padding: 12px; border-radius: 10px; border: 1px solid rgba(162, 123, 56, 0.2);">
+        <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #4A0E17;"><i class="bi bi-person-circle me-1" style="color: #A27B38;"></i> {{ activeSeminarVideo.speaker || ('learn.defaultSpeaker' | translate) }}</p>
+        <p style="margin: 0; font-size: 12px; color: #7E716A;"><i class="bi bi-calendar3 me-1" style="color: #A27B38;"></i> {{ activeSeminarVideo.date_text || activeSeminarVideo.date || 'முந்தைய வகுப்பு' }} • {{ activeSeminarVideo.time_text || activeSeminarVideo.time }}</p>
+      </div>
+    </div>
+    <div class="video-modal-footer" style="margin-top: 16px; display: flex; justify-content: flex-end;">
+      <button type="button" class="btn-cancel" style="padding: 8px 20px; font-weight: 700; border-radius: 8px; font-size: 13px;" (click)="closeSeminarVideoModal()">
+        {{ 'common.close' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+}
 
 <!-- ================= LUXURY ANIMATED TOAST NOTIFICATION ================= -->
 @if (activeToast) {

@@ -343,6 +343,7 @@ class SuperAdminController extends Controller
             'time_text' => $request->input('time_text'),
             'status' => $request->input('status', 'upcoming'),
             'join_url' => $request->input('join_url'),
+            'recording_video_url' => $request->input('recording_video_url'),
             'level' => $request->input('level', 'ILANILAI'),
             'updated_at' => now()
         ];

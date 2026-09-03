@@ -689,10 +689,27 @@
         </select>
       </div>
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet /
-          Zoom URL)</label>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet / Zoom URL)</label>
         <input type="text" [(ngModel)]="editingSeminar.join_url" class="ctrl"
           placeholder="https://meet.google.com/..." />
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">
+          பதிவுசெய்யப்பட்ட வீடியோ (Recorded Video Link / Upload)
+        </label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" [(ngModel)]="editingSeminar.recording_video_url" class="ctrl" style="flex:1;"
+            placeholder="https://... அல்லது MP4 Video URL / Cloudinary Link" />
+          <input type="file" #seminarVideoFile (change)="uploadSeminarVideo($event)" accept="video/*" style="display:none;" />
+          <button type="button" class="btn-cancel" style="padding:6px 12px;font-size:12px;display:flex;align-items:center;gap:4px;" (click)="seminarVideoFile.click()">
+            <i class="bi bi-upload"></i> {{ isUploadingSeminarVideo ? 'பதிவேற்றுகிறது...' : 'வீடியோ தேர்வு' }}
+          </button>
+        </div>
+        @if (editingSeminar.recording_video_url) {
+          <div style="margin-top:4px;font-size:11px;color:#16a34a;display:flex;align-items:center;gap:4px;">
+            <i class="bi bi-check-circle-fill"></i> பதிவு செய்யப்பட்ட வீடியோ சேர்க்கப்பட்டுவிட்டது!
+          </div>
+        }
       </div>
     </div>
     <div class="modal-btns">
