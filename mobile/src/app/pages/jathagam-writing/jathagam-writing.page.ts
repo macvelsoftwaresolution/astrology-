@@ -89,11 +89,7 @@ export class JathagamWritingPage implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: this.price }, { headers }).subscribe({
       next: (orderRes) => {
-<<<<<<< HEAD
-        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
-=======
         if (orderRes && orderRes.success && orderRes.key_id) {
->>>>>>> a60be1c76ce808c3fed009b4aec1cbb811742415
           const options = {
             key: orderRes.key_id,
             amount: this.price * 100,

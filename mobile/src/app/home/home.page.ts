@@ -222,7 +222,7 @@ export class HomePage implements OnInit {
       this.content.scrollToTop(0);
       this.content.getScrollElement().then(el => {
         if (el) el.scrollTop = 0;
-      }).catch(() => {});
+      }).catch(() => { });
     }
     const ionEl = document.querySelector('ion-content') as any;
     if (ionEl) {
@@ -230,7 +230,7 @@ export class HomePage implements OnInit {
       if (ionEl.getScrollElement) {
         ionEl.getScrollElement().then((el: HTMLElement) => {
           if (el) el.scrollTop = 0;
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
     window.scrollTo(0, 0);
@@ -242,12 +242,12 @@ export class HomePage implements OnInit {
         this.content.scrollToTop(0);
         this.content.getScrollElement().then(el => {
           if (el) el.scrollTop = 0;
-        }).catch(() => {});
+        }).catch(() => { });
       }
       if (ionEl?.getScrollElement) {
         ionEl.getScrollElement().then((el: HTMLElement) => {
           if (el) el.scrollTop = 0;
-        }).catch(() => {});
+        }).catch(() => { });
       }
       window.scrollTo(0, 0);
     }, 40);
@@ -256,9 +256,9 @@ export class HomePage implements OnInit {
   private syncQueryParams() {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { 
-        tab: this.currentTab === 'home' && !this.activeServiceFlow ? null : this.currentTab, 
-        flow: this.activeServiceFlow 
+      queryParams: {
+        tab: this.currentTab === 'home' && !this.activeServiceFlow ? null : this.currentTab,
+        flow: this.activeServiceFlow
       },
       queryParamsHandling: 'merge'
     });
@@ -335,8 +335,8 @@ export class HomePage implements OnInit {
     if (isNaN(d.getTime())) return false;
     const now = new Date();
     return d.getFullYear() === now.getFullYear() &&
-           d.getMonth() === now.getMonth() &&
-           d.getDate() === now.getDate();
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate();
   }
 
   loadNotificationsCount() {
@@ -365,11 +365,11 @@ export class HomePage implements OnInit {
                   this.closeNotifBanner();
                 }, 8000);
               }
-            } catch {}
+            } catch { }
           }
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -384,7 +384,7 @@ export class HomePage implements OnInit {
           });
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -442,7 +442,7 @@ export class HomePage implements OnInit {
           }));
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -480,7 +480,7 @@ export class HomePage implements OnInit {
           };
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -491,7 +491,7 @@ export class HomePage implements OnInit {
           this.astrologers = res.astrologers;
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -530,7 +530,7 @@ export class HomePage implements OnInit {
           });
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -668,7 +668,7 @@ export class HomePage implements OnInit {
 
   get totalAstrologerFee(): number {
     if (!this.selectedAstrologer) return 0;
-    
+
     // Check which call type is selected and return its specific fee
     if (this.astrologerBookingForm.call_type === 'Phone' && this.selectedAstrologer.is_phone_call_available) {
       return this.selectedAstrologer.phone_call_fee;
@@ -677,7 +677,7 @@ export class HomePage implements OnInit {
     } else if (this.astrologerBookingForm.call_type === 'Audio' && this.selectedAstrologer.is_audio_call_available) {
       return this.selectedAstrologer.audio_call_fee;
     }
-    
+
     // Fallback to base fee if the selected option somehow became unavailable
     return this.selectedAstrologer.fee || 0;
   }
@@ -816,11 +816,7 @@ export class HomePage implements OnInit {
     // Create Razorpay Test Order via Backend
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }, { headers }).subscribe({
       next: (orderRes) => {
-<<<<<<< HEAD
-        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
-=======
         if (orderRes && orderRes.success && orderRes.key_id) {
->>>>>>> a60be1c76ce808c3fed009b4aec1cbb811742415
           const options = {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
@@ -912,8 +908,8 @@ export class HomePage implements OnInit {
             razorpay_payment_id: razorpayPaymentId,
             razorpay_signature: razorpaySignature
           }, { headers }).subscribe({
-            next: () => {},
-            error: () => {}
+            next: () => { },
+            error: () => { }
           });
         }
 
