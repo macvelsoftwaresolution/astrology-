@@ -1,11 +1,112 @@
 <div class="quiz-overlay">
   <div class="quiz-header">
-    <span class="quiz-title-txt">{{ 'learn.quizTitle' | translate }}</span>
-    <button class="close-quiz-btn" (click)="close.emit()"><i class="bi bi-x-lg"></i></button>
+    <span class="quiz-title-txt">{{ isPracticalStep ? 'செய்முறைத் தேர்வு (Practical Exam)' : ('learn.quizTitle' | translate) }}</span>
+    <button class="close-quiz-btn" (click)="handleQuizClose()"><i class="bi bi-x-lg"></i></button>
   </div>
 
   @if (!quizSubmitted) {
-    @if (quizQuestions.length > 0) {
+    <!-- 1. Practical Chart Question Step -->
+    @if (isPracticalStep) {
+      <div class="quiz-content-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+          <div class="practical-exam-header-badge" style="margin: 0;">
+            <i class="bi bi-patch-question-fill text-gold"></i>
+            <span>செய்முறை ஜாதக ஆய்வுத் தேர்வு (Practical Chart Exam)</span>
+          </div>
+          @if (timerDisplay) {
+            <span style="font-weight: 800; color: #dc2626; display: flex; align-items: center; gap: 5px; font-size: 0.95rem; background: #fef2f2; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 20px; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08);">
+              <i class="bi bi-stopwatch-fill"></i> {{ timerDisplay }}
+            </span>
+          }
+        </div>
+
+        @if (exam?.chart_image_url) {
+          <div class="exam-chart-card">
+            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம் (Rasi Chart)</span>
+            <div class="chart-img-wrap">
+              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" />
+            </div>
+          </div>
+        }
+
+        @if (exam?.practical_prompt) {
+          <div class="exam-prompt-card">
+            <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> செய்முறை வழிகாட்டுதல் / கேள்வி</span>
+            <p class="prompt-txt">{{ exam.practical_prompt }}</p>
+          </div>
+        }
+
+        <!-- Answer Sheet Upload Section (Handwritten Paper Photo or PDF) -->
+        <div class="answer-upload-card" style="background: #FFFFFF; border-radius: 14px; padding: 1.25rem; border: 1.5px solid rgba(162, 123, 56, 0.3); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #4A0E17; font-weight: 800; font-size: 0.95rem;">
+            <i class="bi bi-file-earmark-arrow-up-fill" style="color: #A27B38; font-size: 1.1rem;"></i>
+            <span>உங்கள் விடைத்தாளைப் பதிவேற்றவும் (Upload Answer Sheet)</span>
+          </div>
+          <p style="font-size: 0.8rem; color: #64748b; line-height: 1.4; margin: 0 0 12px 0;">
+            மேற்கண்ட ஜாதகத்திற்கான பலன்களை ஒரு தாளில் எழுதி (Handwritten Paper), அதை புகைப்படம் (Photo/Image) அல்லது PDF வடிவில் பதிவேற்றம் செய்யவும்.
+          </p>
+
+          <!-- If no file is uploaded yet -->
+          @if (!uploadedAnswerUrl) {
+            <label class="upload-dropzone" style="display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px 16px; background: #fafafa; cursor: pointer; transition: all 0.2s; text-align: center;">
+              <input type="file" (change)="onAnswerFileSelected($event)" accept="image/*,application/pdf" style="display: none;" [disabled]="isUploadingAnswerSheet" />
+              
+              @if (isUploadingAnswerSheet) {
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                  <div style="width: 26px; height: 26px; border: 3px solid #e2e8f0; border-top-color: #4A0E17; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                  <span style="font-size: 0.85rem; color: #4A0E17; font-weight: 700;">விடைத்தாள் பதிவேற்றப்படுகிறது...</span>
+                </div>
+              } @else {
+                <i class="bi bi-cloud-arrow-up-fill" style="font-size: 2.2rem; color: #A27B38; margin-bottom: 6px;"></i>
+                <strong style="font-size: 0.9rem; color: #1e293b;">விடைத்தாள் கோப்பைத் தேர்வு செய்க</strong>
+                <span style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">புகைப்படம் (JPG, PNG) அல்லது PDF (Max 15MB)</span>
+              }
+            </label>
+          }
+
+          <!-- If file is uploaded successfully -->
+          @if (uploadedAnswerUrl) {
+            <div class="uploaded-preview-box" style="display: flex; align-items: center; justify-content: space-between; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 12px 14px;">
+              <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                @if (uploadedFileType === 'pdf') {
+                  <i class="bi bi-file-earmark-pdf-fill" style="font-size: 1.8rem; color: #dc2626; flex-shrink: 0;"></i>
+                } @else {
+                  <i class="bi bi-file-earmark-image-fill" style="font-size: 1.8rem; color: #2563eb; flex-shrink: 0;"></i>
+                }
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <strong style="font-size: 0.85rem; color: #14532d; display: block; overflow: hidden; text-overflow: ellipsis;">{{ uploadedFileName || 'Answer Sheet' }}</strong>
+                  <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;">✓ பதிவேற்றம் முடிந்தது</span>
+                </div>
+              </div>
+              <button type="button" (click)="removeUploadedFile()" style="background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0;">
+                <i class="bi bi-trash-fill"></i> மாற்று
+              </button>
+            </div>
+
+            @if (uploadedFileType === 'image') {
+              <div style="margin-top: 10px; text-align: center; border-radius: 8px; overflow: hidden; max-height: 180px; border: 1px solid #e2e8f0;">
+                <img [src]="uploadedAnswerUrl" alt="Uploaded Answer" style="width: 100%; max-height: 180px; object-fit: contain; background: #000;" />
+              </div>
+            }
+          }
+
+          @if (uploadErrorMessage) {
+            <div style="margin-top: 8px; color: #dc2626; font-size: 0.8rem; font-weight: 600;">
+              <i class="bi bi-exclamation-circle-fill"></i> {{ uploadErrorMessage }}
+            </div>
+          }
+        </div>
+
+        <button class="submit-quiz-btn" 
+                [disabled]="!uploadedAnswerUrl || isSubmittingPractical" 
+                (click)="submitPracticalExam()">
+          {{ isSubmittingPractical ? 'சமர்ப்பிக்கப்படுகிறது...' : 'தேர்வைச் சமர்ப்பிக்கவும் (Submit Exam)' }}
+        </button>
+      </div>
+    }
+
+    <!-- 2. MCQ Questions Step -->
+    @else if (quizQuestions.length > 0) {
       <div class="quiz-content-body">
         <div class="question-tracker-row">
           <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 6px;">
@@ -18,24 +119,6 @@
           </div>
           <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
         </div>
-
-        <!-- Rasi Chart Image (If exam has chart image) -->
-        @if (exam?.chart_image_url) {
-          <div class="exam-chart-card">
-            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம் (Rasi Chart)</span>
-            <div class="chart-img-wrap">
-              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" />
-            </div>
-          </div>
-        }
-
-        <!-- Practical Prompt / Question Note -->
-        @if (exam?.practical_prompt) {
-          <div class="exam-prompt-card">
-            <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> செய்முறை வழிகாட்டுதல் / குறிப்பு</span>
-            <p class="prompt-txt">{{ exam.practical_prompt }}</p>
-          </div>
-        }
 
         <div class="question-box">
           <span class="q-badge">{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }}</span>
@@ -60,44 +143,7 @@
           }
         </div>
         <button class="submit-quiz-btn" [disabled]="(quizQuestions[currentQuestionIndex].type === 'mcq' && !selectedOption) || (quizQuestions[currentQuestionIndex].type === 'fillup' && !fillupAnswer)" (click)="submitAnswer()">
-          {{ currentQuestionIndex < quizQuestions.length - 1 ? ('learn.nextQuestion' | translate) : ('learn.submitQuiz' | translate) }}
-        </button>
-      </div>
-    } @else if (exam?.chart_image_url || exam?.practical_prompt) {
-      <div class="quiz-content-body">
-        <div class="practical-exam-header-badge">
-          <i class="bi bi-patch-question-fill text-gold"></i>
-          <span>செய்முறை ஜாதக ஆய்வுத் தேர்வு (Practical Chart Exam)</span>
-        </div>
-
-        @if (exam?.chart_image_url) {
-          <div class="exam-chart-card">
-            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம் (Rasi Chart)</span>
-            <div class="chart-img-wrap">
-              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" />
-            </div>
-          </div>
-        }
-
-        @if (exam?.practical_prompt) {
-          <div class="exam-prompt-card">
-            <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> செய்முறை வழிகாட்டுதல் / கேள்வி</span>
-            <p class="prompt-txt">{{ exam.practical_prompt }}</p>
-          </div>
-        }
-
-        <div class="practical-answer-box">
-          <label class="ans-label"><i class="bi bi-pen-fill"></i> உங்கள் ஜாதக பலன் / ஆய்வு விடை (Your Analysis Answer):</label>
-          <textarea [(ngModel)]="practicalAnalysisAnswer" 
-                    placeholder="இந்த ஜாதகத்திற்கான பலன் மற்றும் விளக்கங்களை விரிவாக எழுதவும்..." 
-                    rows="6" 
-                    class="practical-textarea"></textarea>
-        </div>
-
-        <button class="submit-quiz-btn" 
-                [disabled]="!practicalAnalysisAnswer.trim() || isSubmittingPractical" 
-                (click)="submitPracticalExam()">
-          {{ isSubmittingPractical ? 'சமர்ப்பிக்கப்படுகிறது...' : 'ஆய்வு விடையை சமர்ப்பிக்கவும் (Submit Analysis)' }}
+          {{ currentQuestionIndex < quizQuestions.length - 1 ? ('learn.nextQuestion' | translate) : (hasPracticalSection() ? 'செய்முறைத் தேர்வுக்குச் செல்க ➔' : ('learn.submitQuiz' | translate)) }}
         </button>
       </div>
     } @else {

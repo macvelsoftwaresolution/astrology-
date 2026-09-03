@@ -576,13 +576,14 @@
                 </td>
                 <td>
                   <span class="badge-type" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
-                    <i class="bi bi-laptop"></i> {{ s.submission_type === 'online_quiz' ? 'ஆன்லைன் தேர்வு (Online Quiz)' : s.submission_type === 'practical_assignment' ? 'செய்முறைத் தேர்வு (Practical)' : s.submission_type }}
+                    <i class="bi bi-file-earmark-text"></i> {{ s.submission_type === 'online_quiz' ? 'ஆன்லைன் தேர்வு (Online Quiz)' : s.submission_type === 'practical_assignment' ? 'செய்முறை விடைத்தாள் (Practical)' : s.submission_type === 'pdf_upload' ? 'PDF விடைத்தாள்' : s.submission_type }}
                   </span>
                 </td>
                 <td>
                   @if (s.pdf_url) {
-                    <a [href]="s.pdf_url" target="_blank" class="link-pdf">
-                      <i class="bi bi-file-earmark-pdf-fill"></i> {{ 'exams.viewPdf' | translate }}
+                    <a [href]="s.pdf_url" target="_blank" class="link-pdf" style="display: inline-flex; align-items: center; gap: 4px; color: #dc2626; font-weight: 700; font-size: 12px; text-decoration: none; background: #fef2f2; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 6px;">
+                      <i [class]="s.pdf_url.includes('.pdf') ? 'bi bi-file-earmark-pdf-fill' : 'bi bi-image-fill'"></i>
+                      <span>{{ s.pdf_url.includes('.pdf') ? 'PDF காண்க' : 'விடைத்தாள் படம்' }}</span>
                     </a>
                   } @else {
                     <span class="text-slate-400 text-xs font-semibold">-</span>
