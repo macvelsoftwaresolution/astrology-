@@ -547,25 +547,17 @@ export class MarriageMatchingComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 100 }, headers).subscribe({
       next: (orderRes) => {
-        // --- TESTING BYPASS ---
-        console.log("Bypassing Razorpay for Testing");
-        this.isProcessingPayment = false;
-        this.sendMatchingToAdmin();
-        this.serviceStep = 5;
-        return;
-        // ----------------------
-        
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
             amount: 10000, // 100 INR in paise
             currency: 'INR',
             name: 'Astro Divine',
-            description: 'திருமணப் பொருத்தம்',
+            description: 'திருமணப் பொருத்தம் (Test Mode)',
             order_id: orderRes.order_id,
             theme: { color: '#4A0E17' },
             handler: (response: any) => {
-              // Verify payment on backend to record in payment_transactions ledger
+              // Record payment verification
               this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
                 order_id: orderRes.order_id || ('MATCH-' + Date.now()),
                 razorpay_order_id: response.razorpay_order_id || orderRes.order_id,
@@ -661,24 +653,17 @@ export class MarriageMatchingComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: 500 }, headers).subscribe({
       next: (orderRes) => {
-        // --- TESTING BYPASS ---
-        console.log("Bypassing Razorpay for Testing");
-        this.isProcessingPayment = false;
-        this.submitRegistrationData();
-        return;
-        // ----------------------
-        
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
-            amount: 50000,
+            amount: 50000, // 500 INR in paise
             currency: 'INR',
             name: 'Astro Divine',
-            description: 'திருமணப் பதிவு',
+            description: 'திருமணப் பதிவு (Test Mode)',
             order_id: orderRes.order_id,
             theme: { color: '#4A0E17' },
             handler: (response: any) => {
-              // Verify payment on backend to record in payment_transactions ledger
+              // Record payment verification
               this.http.post<any>(`${environment.apiUrl}/payments/verify`, {
                 order_id: orderRes.order_id || ('MATRIMONY-' + Date.now()),
                 razorpay_order_id: response.razorpay_order_id || orderRes.order_id,
@@ -705,7 +690,7 @@ export class MarriageMatchingComponent implements OnInit {
             const rzp = new Razorpay(options);
             rzp.on('payment.failed', (resp: any) => {
               this.isProcessingPayment = false;
-              alert('கட்டணம் செலுத்துவதில் பிழை');
+              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
             });
             rzp.open();
           } catch (e: any) {

@@ -87,12 +87,6 @@ export class JathagamWritingPage implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: this.price }, { headers }).subscribe({
       next: (orderRes) => {
-        // --- TESTING BYPASS ---
-        console.log("Bypassing Razorpay for Testing");
-        this.completeBooking('test_order_123', 'test_payment_123', 'test_sig');
-        return;
-        // ----------------------
-
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
@@ -120,7 +114,7 @@ export class JathagamWritingPage implements OnInit {
             const rzp = new Razorpay(options);
             rzp.on('payment.failed', (response: any) => {
               this.isProcessingPayment = false;
-              alert('Payment Failed: ' + response.error.description);
+              alert('Payment Failed: ' + (response.error?.description || 'தோல்வியடைந்தது'));
             });
             rzp.open();
           } catch (e) {
