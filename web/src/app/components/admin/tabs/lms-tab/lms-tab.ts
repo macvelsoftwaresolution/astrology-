@@ -988,7 +988,7 @@ export class LmsTabComponent implements OnInit {
     formData.append('file', file);
     formData.append('folder', 'live_banners');
 
-    const headers = this.authService.getAuthHeaders();
+    const headers = this.authService.getUploadHeaders();
     this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
       next: (res) => {
         if (res && res.url) {
