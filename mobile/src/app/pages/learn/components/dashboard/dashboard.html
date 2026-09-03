@@ -634,12 +634,6 @@
           class="checkout-input" rows="3"></textarea>
       </div>
 
-      <div class="payment-methods-box">
-        <p>பணம் செலுத்தும் முறை தேர்வு செய்யவும்:</p>
-        <div class="pay-method-option active">
-          <span><i class="bi bi-shield-check me-1" style="color: #059669;"></i> Razorpay (GPay / PhonePe / Card / NetBanking)</span>
-        </div>
-      </div>
       <button class="confirm-pay-btn" [disabled]="isProcessingPayment" (click)="confirmCheckoutPayment()">
         @if (isProcessingPayment) {
           <span>செயலாக்கப்படுகிறது...</span>
@@ -647,6 +641,11 @@
           <span>₹{{ selectedCheckoutBook.price }} செலுத்தி முன்பதிவு செய்க <i class="bi bi-lock-fill ms-1"></i></span>
         }
       </button>
+
+      <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; font-size: 0.78rem; color: #64748b;">
+        <i class="bi bi-shield-check" style="color: #059669; font-size: 0.95rem;"></i>
+        <span>100% பாதுகாப்பான Razorpay (GPay / PhonePe / Cards) வழியே கட்டணம்</span>
+      </div>
     </div>
   </div>
 </div>
