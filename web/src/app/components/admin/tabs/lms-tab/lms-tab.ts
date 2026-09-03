@@ -226,13 +226,19 @@ export class LmsTabComponent implements OnInit {
   }
 
   openEditDay(day: any): void {
-    const audios = Array.isArray(day.audios_json) && day.audios_json.length > 0
-      ? [...day.audios_json]
-      : (day.audio_url ? [{ title: 'குரல் பதிவு 1', url: day.audio_url }] : []);
+    let audios: any[] = [];
+    if (day.audios_json !== undefined && day.audios_json !== null) {
+      audios = Array.isArray(day.audios_json) ? [...day.audios_json] : [];
+    } else if (day.audio_url) {
+      audios = [{ title: 'குரல் பதிவு 1', url: day.audio_url }];
+    }
 
-    const pdfs = Array.isArray(day.pdfs_json) && day.pdfs_json.length > 0
-      ? [...day.pdfs_json]
-      : (day.pdf_material_url ? [{ title: 'பாடக் குறிப்பு PDF 1', url: day.pdf_material_url }] : []);
+    let pdfs: any[] = [];
+    if (day.pdfs_json !== undefined && day.pdfs_json !== null) {
+      pdfs = Array.isArray(day.pdfs_json) ? [...day.pdfs_json] : [];
+    } else if (day.pdf_material_url) {
+      pdfs = [{ title: 'பாடக் குறிப்பு PDF 1', url: day.pdf_material_url }];
+    }
 
     this.editingDayLesson = {
       batch_id: this.selectedBatchId,
@@ -271,6 +277,12 @@ export class LmsTabComponent implements OnInit {
   removeAudioItem(index: number): void {
     if (this.editingDayLesson && Array.isArray(this.editingDayLesson.audios_json)) {
       this.editingDayLesson.audios_json.splice(index, 1);
+      if (this.editingDayLesson.audios_json.length === 0) {
+        this.editingDayLesson.audio_url = '';
+      } else {
+        this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url || '';
+      }
+      this.cdr.detectChanges();
     }
   }
 
@@ -314,6 +326,12 @@ export class LmsTabComponent implements OnInit {
   removePdfItem(index: number): void {
     if (this.editingDayLesson && Array.isArray(this.editingDayLesson.pdfs_json)) {
       this.editingDayLesson.pdfs_json.splice(index, 1);
+      if (this.editingDayLesson.pdfs_json.length === 0) {
+        this.editingDayLesson.pdf_material_url = '';
+      } else {
+        this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url || '';
+      }
+      this.cdr.detectChanges();
     }
   }
 
@@ -371,6 +389,7 @@ export class LmsTabComponent implements OnInit {
   removeDayImage(index: number): void {
     if (this.editingDayLesson && Array.isArray(this.editingDayLesson.images_json)) {
       this.editingDayLesson.images_json.splice(index, 1);
+      this.cdr.detectChanges();
     }
   }
 
@@ -380,12 +399,17 @@ export class LmsTabComponent implements OnInit {
       return;
     }
 
-    // Legacy sync
+    // Sync legacy single URL columns with the current arrays
     if (Array.isArray(this.editingDayLesson.audios_json) && this.editingDayLesson.audios_json.length > 0) {
-      this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url;
+      this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url || '';
+    } else {
+      this.editingDayLesson.audio_url = '';
     }
+
     if (Array.isArray(this.editingDayLesson.pdfs_json) && this.editingDayLesson.pdfs_json.length > 0) {
-      this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url;
+      this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url || '';
+    } else {
+      this.editingDayLesson.pdf_material_url = '';
     }
 
     const dayNum = this.editingDayLesson.day_number;

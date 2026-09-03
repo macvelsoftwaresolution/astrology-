@@ -182,10 +182,10 @@ class LmsCurriculumController extends Controller
             [
                 'title'            => $request->input('title'),
                 'description'      => $request->input('description', ''),
-                'audio_url'        => $request->input('audio_url', null),
+                'audio_url'        => $request->input('audio_url') ? $request->input('audio_url') : null,
                 'audios_json'      => $request->input('audios_json', []),
                 'images_json'      => $request->input('images_json', []),
-                'pdf_material_url' => $request->input('pdf_material_url', null),
+                'pdf_material_url' => $request->input('pdf_material_url') ? $request->input('pdf_material_url') : null,
                 'pdfs_json'        => $request->input('pdfs_json', []),
                 'is_published'     => $request->input('is_published', true),
             ]
