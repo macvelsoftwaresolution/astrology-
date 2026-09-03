@@ -75,6 +75,15 @@
       </div>
       }
     </div>
+    @if (liveClasses.length > 1) {
+      <div class="carousel-dots-container" style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
+        @for (lc of liveClasses; track lc.id; let i = $index) {
+          <span class="carousel-dot" [class.active]="i === currentLiveIndex" (click)="setLiveIndex(i)"
+            style="width:8px; height:8px; border-radius:50%; background:rgba(162,123,56,0.3); cursor:pointer; transition:all 0.3s ease;">
+          </span>
+        }
+      </div>
+    }
   </div>
   }
 
@@ -198,6 +207,15 @@
         </div>
         }
       </div>
+      @if (seminars.length > 1) {
+        <div class="carousel-dots-container" style="display:flex; justify-content:center; gap:6px; padding-bottom:12px;">
+          @for (s of seminars; track s.title; let i = $index) {
+            <span class="carousel-dot" [class.active]="i === currentWebinarIndex" (click)="setWebinarIndex(i)"
+              style="width:8px; height:8px; border-radius:50%; background:rgba(162,123,56,0.3); cursor:pointer; transition:all 0.3s ease;">
+            </span>
+          }
+        </div>
+      }
     </div>
   </div>
 

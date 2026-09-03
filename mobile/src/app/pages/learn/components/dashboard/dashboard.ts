@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, OnChanges, SimpleChanges, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, Output, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
@@ -15,7 +15,7 @@ declare var Razorpay: any;
   styleUrls: ['./dashboard.scss'],
   standalone: false
 })
-export class LearnDashboardComponent implements OnInit, OnChanges {
+export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   @Input() enrollForm: any;
   @Output() back = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
@@ -128,6 +128,83 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     this.loadExams();
     this.loadNotifications();
     this.checkInitialOption();
+  }
+
+  currentLiveIndex = 0;
+  private liveSliderInterval: any = null;
+
+  currentWebinarIndex = 0;
+  private webinarSliderInterval: any = null;
+
+  ngOnDestroy() {
+    this.stopLiveSlider();
+    this.stopWebinarSlider();
+  }
+
+  startLiveSlider() {
+    this.stopLiveSlider();
+    if (!this.liveClasses || this.liveClasses.length <= 1) return;
+    this.liveSliderInterval = setInterval(() => {
+      this.currentLiveIndex = (this.currentLiveIndex + 1) % this.liveClasses.length;
+      this.scrollToLiveCard(this.currentLiveIndex);
+      this.cdr.detectChanges();
+    }, 4000);
+  }
+
+  stopLiveSlider() {
+    if (this.liveSliderInterval) {
+      clearInterval(this.liveSliderInterval);
+      this.liveSliderInterval = null;
+    }
+  }
+
+  setLiveIndex(index: number) {
+    this.currentLiveIndex = index;
+    this.scrollToLiveCard(index);
+    this.startLiveSlider();
+  }
+
+  scrollToLiveCard(index: number) {
+    if (typeof document !== 'undefined') {
+      const container = document.querySelector('.live-classes-slider-track');
+      const cards = container?.querySelectorAll('.live-class-card');
+      if (container && cards && cards[index]) {
+        (cards[index] as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }
+    }
+  }
+
+  startWebinarSlider() {
+    this.stopWebinarSlider();
+    if (!this.seminars || this.seminars.length <= 1) return;
+    this.webinarSliderInterval = setInterval(() => {
+      this.currentWebinarIndex = (this.currentWebinarIndex + 1) % this.seminars.length;
+      this.scrollToWebinarCard(this.currentWebinarIndex);
+      this.cdr.detectChanges();
+    }, 4500);
+  }
+
+  stopWebinarSlider() {
+    if (this.webinarSliderInterval) {
+      clearInterval(this.webinarSliderInterval);
+      this.webinarSliderInterval = null;
+    }
+  }
+
+  setWebinarIndex(index: number) {
+    this.currentWebinarIndex = index;
+    this.scrollToWebinarCard(index);
+    this.startWebinarSlider();
+  }
+
+  scrollToWebinarCard(index: number) {
+    if (typeof document !== 'undefined') {
+      const container = document.querySelector('.webinar-slider-wrap');
+      const cards = container?.querySelectorAll('.webinar-card-item');
+      if (container && cards && cards[index]) {
+        (cards[index] as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }
+    }
   }
 
   loadStudentCurriculum() {
@@ -314,6 +391,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
         if (res && res.data && Array.isArray(res.data)) {
           this.liveClasses = res.data.filter((lc: any) => lc.is_active);
           this.updateMarqueeMessage();
+          this.startLiveSlider();
         }
       },
       error: () => { }
@@ -601,8 +679,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
             date: s.date_text,
             time: s.time_text,
             status: s.status || 'upcoming',
-            join_url: s.join_url
+            join_url: s.join_url,
+            recording_video_url: s.recording_video_url || s.video_url
           }));
+          this.startWebinarSlider();
         }
       },
       error: () => { }

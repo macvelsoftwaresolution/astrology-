@@ -102,7 +102,7 @@ $color-orange: #F49320;
   display: block;
   padding: 1.25rem;
   box-sizing: border-box;
-  padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 140px) !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 70px) !important;
 }
 
 /* LIVE CLASSES HORIZONTAL CAROUSEL */
@@ -130,6 +130,14 @@ $color-orange: #F49320;
     &:only-child {
       flex: 0 0 100%;
     }
+  }
+}
+
+.carousel-dot {
+  &.active {
+    width: 22px !important;
+    border-radius: 6px !important;
+    background: #4A0E17 !important;
   }
 }
 
