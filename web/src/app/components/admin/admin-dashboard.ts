@@ -333,6 +333,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'matrimony': 'nav.matrimony',
       'lms': 'nav.lms',
       'lms-settings': 'nav.lmsSettings',
+      'exams-eval': 'nav.exams',
+      'certificates': 'nav.certificates',
       'courier': 'nav.courier',
       'grading': 'nav.grading',
       'payments': 'nav.payments',
@@ -374,7 +376,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isLearnActive(): boolean {
-    return ['lms', 'lms-settings', 'grading'].includes(this.currentTab);
+    return ['lms', 'lms-settings', 'exams-eval', 'certificates', 'grading'].includes(this.currentTab);
   }
 
   selectTab(tabName: string): void {

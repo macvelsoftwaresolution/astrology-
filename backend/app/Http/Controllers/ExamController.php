@@ -47,25 +47,31 @@ class ExamController extends Controller
     public function storeExam(Request $request)
     {
         $request->validate([
-            'level' => 'required|string',
             'title' => 'required|string',
-            'duration' => 'required|integer',
-            'total_marks' => 'required|integer',
-            'pass_mark' => 'required|integer',
+            'level' => 'nullable|string',
+            'duration' => 'nullable',
+            'total_marks' => 'nullable',
+            'pass_mark' => 'nullable',
             'practical_prompt' => 'nullable|string',
             'chart_image_url' => 'nullable|string',
-            'batch_id' => 'nullable|integer',
+            'batch_id' => 'nullable',
         ]);
 
+        $batchId = $request->batch_id ? (int)$request->batch_id : null;
+        $duration = $request->duration ? (int)$request->duration : 60;
+        $totalMarks = $request->total_marks ? (int)$request->total_marks : 100;
+        $passMark = $request->pass_mark ? (int)$request->pass_mark : 40;
+        $level = $request->level ? strtoupper($request->level) : 'ILANILAI';
+
         $examId = DB::table('exams')->insertGetId([
-            'level' => strtoupper($request->level),
+            'level' => $level,
             'title' => $request->title,
-            'duration' => $request->duration,
-            'total_marks' => $request->total_marks,
-            'pass_mark' => $request->pass_mark,
-            'practical_prompt' => $request->practical_prompt,
-            'chart_image_url' => $request->chart_image_url,
-            'batch_id' => $request->batch_id,
+            'duration' => $duration,
+            'total_marks' => $totalMarks,
+            'pass_mark' => $passMark,
+            'practical_prompt' => $request->practical_prompt ?: null,
+            'chart_image_url' => $request->chart_image_url ?: null,
+            'batch_id' => $batchId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -84,22 +90,27 @@ class ExamController extends Controller
     {
         $request->validate([
             'title' => 'required|string',
-            'duration' => 'required|integer',
-            'total_marks' => 'required|integer',
-            'pass_mark' => 'required|integer',
+            'duration' => 'nullable',
+            'total_marks' => 'nullable',
+            'pass_mark' => 'nullable',
             'practical_prompt' => 'nullable|string',
             'chart_image_url' => 'nullable|string',
-            'batch_id' => 'nullable|integer',
+            'batch_id' => 'nullable',
         ]);
+
+        $batchId = $request->batch_id ? (int)$request->batch_id : null;
+        $duration = $request->duration ? (int)$request->duration : 60;
+        $totalMarks = $request->total_marks ? (int)$request->total_marks : 100;
+        $passMark = $request->pass_mark ? (int)$request->pass_mark : 40;
 
         DB::table('exams')->where('id', $id)->update([
             'title' => $request->title,
-            'duration' => $request->duration,
-            'total_marks' => $request->total_marks,
-            'pass_mark' => $request->pass_mark,
-            'practical_prompt' => $request->practical_prompt,
-            'chart_image_url' => $request->chart_image_url,
-            'batch_id' => $request->batch_id,
+            'duration' => $duration,
+            'total_marks' => $totalMarks,
+            'pass_mark' => $passMark,
+            'practical_prompt' => $request->practical_prompt ?: null,
+            'chart_image_url' => $request->chart_image_url ?: null,
+            'batch_id' => $batchId,
             'updated_at' => now(),
         ]);
 
@@ -127,25 +138,29 @@ class ExamController extends Controller
     public function storeQuestion(Request $request, $examId)
     {
         $request->validate([
-            'type' => 'required|in:mcq,fillup',
             'question_text' => 'required|string',
-            'correct_answer' => 'required|string',
-            'marks' => 'required|integer',
+            'type' => 'nullable|string',
+            'correct_answer' => 'nullable|string',
+            'marks' => 'nullable',
         ]);
 
+        $type = $request->type ?: 'mcq';
         $optionsJson = null;
-        if ($request->type === 'mcq') {
-            $request->validate(['options' => 'required|array']);
-            $optionsJson = json_encode($request->options);
+        if ($type === 'mcq') {
+            $options = is_array($request->options) ? $request->options : (is_string($request->options) ? explode(',', $request->options) : []);
+            $optionsJson = json_encode(array_values(array_filter(array_map('trim', $options))));
         }
+
+        $marks = $request->marks ? (int)$request->marks : 10;
+        $correctAnswer = $request->correct_answer ?: '';
 
         $questionId = DB::table('exam_questions')->insertGetId([
             'exam_id' => $examId,
-            'type' => $request->type,
+            'type' => $type,
             'question_text' => $request->question_text,
             'options' => $optionsJson,
-            'correct_answer' => $request->correct_answer,
-            'marks' => $request->marks,
+            'correct_answer' => $correctAnswer,
+            'marks' => $marks,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

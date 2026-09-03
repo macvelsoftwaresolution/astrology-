@@ -1,33 +1,97 @@
 <div class="exams-eval-container">
 
-  <!-- HEADER NAVIGATION -->
-  <div class="header-box" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+  <!-- TOP ANALYTICS & STATS KPI CARDS -->
+  <div class="stats-overview-grid">
+    <div class="stat-card">
+      <div class="stat-icon-wrapper icon-gold">
+        <i class="bi bi-journal-text"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">{{ 'exams.totalExamsCard' | translate }}</span>
+        <h3 class="stat-value">{{ totalExamsCount }}</h3>
+        <span class="stat-sub">
+          @if (selectedCategory === 'MUTHUNILAI') {
+            {{ 'courses.muthunilai' | translate }}
+          } @else if (selectedCategory === 'RESEARCH') {
+            {{ 'courses.research' | translate }}
+          } @else {
+            {{ 'courses.ilanilai' | translate }}
+          }
+          {{ 'exams.levelSub' | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon-wrapper icon-blue">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">{{ 'exams.submissionsCard' | translate }}</span>
+        <h3 class="stat-value">{{ totalSubmissionsCount }}</h3>
+        <span class="stat-sub">{{ 'exams.studentSubs' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon-wrapper icon-emerald">
+        <i class="bi bi-patch-check-fill"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">{{ 'exams.passRateCard' | translate }}</span>
+        <h3 class="stat-value">{{ passRatePercentage }}%</h3>
+        <span class="stat-sub text-emerald">{{ passedSubmissionsCount }} {{ 'exams.passedCount' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon-wrapper icon-rose">
+        <i class="bi bi-hourglass-top"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">{{ 'exams.pendingCard' | translate }}</span>
+        <h3 class="stat-value">{{ pendingEvaluationCount }}</h3>
+        <span class="stat-sub text-rose">{{ 'exams.pendingInVal' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER NAVIGATION & ACTION BAR -->
+  <div class="header-box">
     <div>
-      <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-journal-check" style="color: #D4AF37;"></i> {{ 'exams.title' | translate }}
+      <h2 class="main-title">
+        <i class="bi bi-journal-check text-gold"></i> {{ 'exams.title' | translate }}
       </h2>
-      <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+      <p class="main-sub">
         {{ 'exams.subtitle' | translate }}
       </p>
     </div>
 
-    <!-- Category Filter & Views -->
-    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-      <select [(ngModel)]="selectedCategory" (change)="loadExams()" class="ctrl" style="font-weight: 700; background: #fffdfa; border: 1px solid #D4AF37;">
-        <option value="ILANILAI">இளநிலை (ILANILAI)</option>
-        <option value="MUTHUNILAI">முதுநிலை (MUTHUNILAI)</option>
-        <option value="RESEARCH">ஆராய்ச்சி (RESEARCH)</option>
+    <!-- Category Filter & View Navigation Tabs -->
+    <div class="actions-wrapper">
+      <select [(ngModel)]="selectedCategory" (change)="loadExams()" class="category-select">
+        <option value="ILANILAI">{{ 'courses.ilanilai' | translate }}</option>
+        <option value="MUTHUNILAI">{{ 'courses.muthunilai' | translate }}</option>
+        <option value="RESEARCH">{{ 'courses.research' | translate }}</option>
       </select>
 
-      <button [class.active]="activeView === 'list'" (click)="activeView = 'list'" class="btn-tab" style="padding: 8px 14px; border-radius: 8px; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+      <button [class.active]="activeView === 'list'" (click)="activeView = 'list'" class="tab-btn">
         <i class="bi bi-list-task"></i> {{ 'exams.listTab' | translate }}
       </button>
 
-      <button [class.active]="activeView === 'evaluation'" (click)="activeView = 'evaluation'; loadSubmissions()" class="btn-tab" style="padding: 8px 14px; border-radius: 8px; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer; background: #1e3a8a; color: #fff;">
+      <button [class.active]="activeView === 'evaluation'" (click)="activeView = 'evaluation'; loadSubmissions()" class="tab-btn tab-btn-eval">
         <i class="bi bi-person-check-fill"></i> {{ 'exams.evalTab' | translate }}
       </button>
 
-      <button (click)="openCreateExam()" class="btn-primary" style="background: linear-gradient(135deg, #4A0E17, #7A1C28); border: 1px solid #D4AF37; padding: 8px 16px; border-radius: 8px; font-weight: 700; color: #fef3c7; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+      <button [class.active]="activeView === 'leaderboard'" (click)="activeView = 'leaderboard'" class="tab-btn tab-btn-leaderboard">
+        <i class="bi bi-trophy-fill text-gold"></i> {{ 'exams.leaderboardTab' | translate }}
+      </button>
+
+      <button [class.active]="activeView === 'analytics'" (click)="activeView = 'analytics'" class="tab-btn tab-btn-analytics">
+        <i class="bi bi-bar-chart-fill"></i> {{ 'exams.analyticsTab' | translate }}
+      </button>
+
+      <button (click)="openCreateExam()" class="btn-create-exam">
         <i class="bi bi-plus-circle-fill"></i> {{ 'exams.createBtn' | translate }}
       </button>
     </div>
@@ -35,36 +99,36 @@
 
   <!-- VIEW 1: EXAMS LIST -->
   @if (activeView === 'list') {
-    <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+    <div class="exams-grid">
       @for (ex of exams; track ex.id) {
-        <div class="card-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-            <span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
+        <div class="exam-card">
+          <div class="exam-card-header">
+            <span class="badge-level">
               {{ ex.level }}
             </span>
-            <span style="font-size: 12px; color: #64748b; font-weight: 600;">
-              <i class="bi bi-clock-history"></i> {{ ex.duration }} Mins
+            <span class="badge-duration">
+              <i class="bi bi-clock-history"></i> {{ ex.duration || 60 }} Mins
             </span>
           </div>
 
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 800; color: #0f172a;">{{ ex.title }}</h3>
+          <h3 class="exam-title">{{ ex.title }}</h3>
           
-          <div style="font-size: 13px; color: #475569; margin-bottom: 14px; display: flex; gap: 16px;">
-            <span><strong>{{ 'exams.totalMarks' | translate }}:</strong> {{ ex.total_marks }}</span>
-            <span><strong>{{ 'exams.passMark' | translate }}:</strong> {{ ex.pass_mark }}</span>
+          <div class="exam-meta-row">
+            <span><strong>{{ 'exams.totalMarks' | translate }}:</strong> {{ ex.total_marks || 100 }}</span>
+            <span><strong>{{ 'exams.passMark' | translate }}:</strong> {{ ex.pass_mark || 40 }}</span>
           </div>
 
           @if (ex.practical_prompt) {
-            <div style="font-size: 12px; background: #f8fafc; border-left: 3px solid #D4AF37; padding: 8px 10px; margin-bottom: 14px; border-radius: 4px; color: #334155;">
-              <i class="bi bi-diagram-3-fill" style="color: #4A0E17;"></i> {{ ex.practical_prompt | slice:0:60 }}...
+            <div class="practical-preview-box">
+              <i class="bi bi-diagram-3-fill text-maroon me-1"></i> {{ ex.practical_prompt | slice:0:70 }}...
             </div>
           }
 
-          <div style="display: flex; gap: 8px; justify-content: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 12px;">
-            <button (click)="editExam(ex)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #1e293b; cursor: pointer;">
+          <div class="exam-card-footer">
+            <button (click)="editExam(ex)" class="btn-action-edit">
               <i class="bi bi-pencil-square"></i> {{ 'exams.editTitle' | translate }}
             </button>
-            <button (click)="deleteExam(ex.id)" style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: #991b1b; cursor: pointer;">
+            <button (click)="deleteExam(ex.id)" class="btn-action-delete" title="Delete">
               <i class="bi bi-trash-fill"></i>
             </button>
           </div>
@@ -72,134 +136,215 @@
       }
 
       @if (exams.length === 0) {
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; color: #64748b;">
-          <i class="bi bi-journal-x" style="font-size: 32px; color: #94a3b8;"></i>
-          <p style="margin-top: 8px; font-weight: 600;">{{ 'exams.noQuestions' | translate }}</p>
+        <div class="empty-state-card">
+          <i class="bi bi-journal-x empty-icon"></i>
+          <p class="empty-text">{{ 'exams.noExams' | translate }}</p>
         </div>
       }
     </div>
   }
 
-  <!-- VIEW 2: EXAM WIZARD (CLEAN 2-PHASE LAYOUT) -->
+  <!-- VIEW 2: EXAM WIZARD (ADVANCED CREATOR STUDIO) -->
   @if (activeView === 'exam-wizard' && activeExamWizard) {
-    <div class="card-box" style="border: 2px solid #D4AF37; border-radius: 14px; padding: 22px; background: #fff;">
+    <div class="wizard-container">
       
       <!-- Wizard Header -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
-        <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
-          <i class="bi bi-gear-wide-connected" style="color: #D4AF37;"></i> 
+      <div class="wizard-header">
+        <h3 class="wizard-title">
+          <i class="bi bi-gear-wide-connected text-gold"></i> 
           {{ activeExamWizard.id ? ('exams.editTitle' | translate) : ('exams.createTitle' | translate) }}
         </h3>
-        <button (click)="activeView = 'list'" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 14px; font-weight: 700; cursor: pointer;">
+        <button (click)="activeView = 'list'" class="btn-back">
           <i class="bi bi-arrow-left"></i> {{ 'exams.backBtn' | translate }}
         </button>
       </div>
 
       <form (ngSubmit)="saveExam()">
         
-        <!-- SECTION 1: GENERAL DETAILS -->
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
-          <h4 style="margin: 0 0 14px 0; font-size: 15px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-            <i class="bi bi-info-circle-fill" style="color: #2563eb;"></i> {{ 'exams.step1' | translate }}
+        <!-- SECTION 1: GENERAL DETAILS & POLICY RULES -->
+        <div class="wizard-section">
+          <h4 class="section-title text-blue">
+            <i class="bi bi-info-circle-fill"></i> {{ 'exams.step1' | translate }}
           </h4>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+          <div class="form-grid-4">
             <div>
-              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.examTitle' | translate }}</label>
-              <input type="text" [(ngModel)]="activeExamWizard.title" name="exTitle" required class="ctrl" style="width: 100%; font-weight: 600;" />
+              <label class="form-label">{{ 'exams.examTitle' | translate }} *</label>
+              <input type="text" [(ngModel)]="activeExamWizard.title" name="exTitle" required class="ctrl w-full font-bold" [placeholder]="'exams.examTitle' | translate" />
             </div>
 
             <div>
-              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.duration' | translate }}</label>
-              <input type="number" [(ngModel)]="activeExamWizard.duration" name="exDuration" class="ctrl" style="width: 100%;" />
+              <label class="form-label"><i class="bi bi-clock"></i> {{ 'exams.duration' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.duration" name="exDuration" class="ctrl w-full" placeholder="60" />
             </div>
 
             <div>
-              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.totalMarks' | translate }}</label>
-              <input type="number" [(ngModel)]="activeExamWizard.total_marks" name="exTotal" class="ctrl" style="width: 100%;" />
+              <label class="form-label">{{ 'exams.totalMarks' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.total_marks" name="exTotal" class="ctrl w-full" placeholder="100" />
             </div>
 
             <div>
-              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.passMark' | translate }}</label>
-              <input type="number" [(ngModel)]="activeExamWizard.pass_mark" name="exPass" class="ctrl" style="width: 100%;" />
+              <label class="form-label">{{ 'exams.passMark' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.pass_mark" name="exPass" class="ctrl w-full" placeholder="40" />
+            </div>
+
+            <div>
+              <label class="form-label"><i class="bi bi-percent"></i> {{ 'exams.passThreshold' | translate }}</label>
+              <select [(ngModel)]="activeExamWizard.pass_percentage" name="exPassPercent" class="ctrl w-full font-semibold">
+                <option [ngValue]="40">40%</option>
+                <option [ngValue]="50">50%</option>
+                <option [ngValue]="60">60%</option>
+                <option [ngValue]="75">75%</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <!-- SECTION 2 / PHASE 1: MCQ QUESTIONS & CSV UPLOAD -->
-        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-            <div>
-              <h4 style="margin: 0; font-size: 16px; font-weight: 800; color: #14532d; display: flex; align-items: center; gap: 8px;">
-                <i class="bi bi-file-earmark-spreadsheet-fill" style="color: #16a34a; font-size: 20px;"></i> 
-                {{ 'exams.phase1' | translate }}
+        <!-- SECTION 2: MCQ QUESTIONS & 1-CLICK CSV IMPORT -->
+        <div class="wizard-section section-mcq">
+          
+          <!-- Section 2 Top Header & CSV Ribbon -->
+          <div class="section-3-top-bar">
+            <div class="section-3-title-wrap">
+              <h4 class="section-title text-emerald">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i> {{ 'exams.phase1' | translate }}
               </h4>
-              <span style="font-size: 12px; color: #166534; font-weight: 600;">
+              <p class="section-desc text-emerald-dark">
                 {{ 'exams.phase1Desc' | translate }}
-              </span>
+              </p>
             </div>
 
-            <!-- CSV Controls -->
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-              <button (click)="downloadSampleCsv()" type="button" style="background: #ffffff; color: #1e3a8a; border: 1px solid #93c5fd; padding: 7px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <i class="bi bi-download" style="color: #2563eb;"></i> {{ 'exams.downloadSample' | translate }}
+            <!-- CSV Quick Action Ribbon -->
+            <div class="csv-ribbon-card">
+              <button (click)="downloadSampleCsv()" type="button" class="btn-sample-csv">
+                <i class="bi bi-download"></i> {{ 'exams.downloadSample' | translate }}
               </button>
 
-              <input type="file" (change)="onCsvFileSelected($event)" accept=".csv" class="ctrl" style="padding: 5px; font-size: 12px; background: #fff;" />
-              
-              <button (click)="uploadCsvQuestions()" type="button" style="background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <i class="bi bi-upload"></i> {{ 'exams.uploadCsv' | translate }}
+              <div class="file-upload-wrapper">
+                <input type="file" (change)="onCsvFileSelected($event)" accept=".csv" id="csvFileInput" class="custom-file-input" />
+                <label for="csvFileInput" class="custom-file-label" [title]="csvFileToUpload ? csvFileToUpload.name : 'Choose CSV'">
+                  <i class="bi bi-filetype-csv text-emerald"></i>
+                  <span class="file-label-text">{{ csvFileToUpload ? csvFileToUpload.name : ('exams.uploadCsv' | translate) }}</span>
+                </label>
+              </div>
+
+              <button (click)="uploadCsvQuestions()" type="button" [disabled]="!csvFileToUpload" class="btn-upload-csv">
+                <i class="bi bi-cloud-arrow-up-fill"></i> {{ 'exams.uploadCsv' | translate }}
               </button>
             </div>
           </div>
 
-          <!-- Manual Question Form -->
-          <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
-            <h5 style="margin: 0 0 10px 0; font-weight: 800; color: #14532d; font-size: 13px;">
-              <i class="bi bi-plus-circle"></i> {{ 'exams.manualAdd' | translate }}:
-            </h5>
-            <div style="display: grid; grid-template-columns: 2fr 3fr 1fr 1fr; gap: 10px; margin-bottom: 6px;">
-              <input type="text" [(ngModel)]="newQuestion.question_text" name="nqText" [placeholder]="'exams.questionLabel' | translate" class="ctrl" />
-              <input type="text" [(ngModel)]="newQuestion.optionsStr" name="nqOptions" [placeholder]="'exams.optionsLabel' | translate" class="ctrl" />
-              <input type="text" [(ngModel)]="newQuestion.correct_answer" name="nqAns" [placeholder]="'exams.answerLabel' | translate" class="ctrl" />
-              <button (click)="addQuestion()" type="button" style="background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">
-                {{ 'exams.addBtn' | translate }}
+          <!-- Manual Question Form (Dynamic Option Builder) -->
+          <div class="manual-add-box">
+            <div class="manual-header-flex">
+              <div>
+                <h5 class="manual-title">
+                  <i class="bi bi-patch-question-fill text-emerald"></i> {{ 'exams.manualAdd' | translate }}
+                </h5>
+                <span class="manual-subtitle">{{ 'exams.manualOptionSub' | translate }}</span>
+              </div>
+              <button (click)="addDynamicOption()" type="button" class="btn-add-option-pill">
+                <i class="bi bi-plus-circle-fill"></i> {{ 'exams.addOptionBtn' | translate }}
               </button>
+            </div>
+
+            <div class="manual-form-layout">
+              <!-- Question Text -->
+              <div class="mb-3">
+                <label class="form-label font-bold text-slate-800">
+                  {{ 'exams.questionLabel' | translate }} <span class="text-rose-500">*</span>
+                </label>
+                <div class="q-input-wrap">
+                  <i class="bi bi-question-diamond-fill q-icon"></i>
+                  <input type="text" [(ngModel)]="newQuestion.question_text" name="nqText" [placeholder]="'exams.questionInputPlaceholder' | translate" class="ctrl ctrl-question font-bold" />
+                </div>
+              </div>
+
+              <!-- Dynamic Options List -->
+              <div class="dynamic-options-list">
+                @for (opt of newQuestion.optionsList; track $index; let optIdx = $index) {
+                  <div class="dynamic-opt-row" [class.opt-row-selected]="opt.is_correct">
+                    <!-- Option Badge -->
+                    <span class="opt-badge" [class]="'opt-badge-' + (optIdx % 4)">{{ getOptionLetter(optIdx) }}</span>
+                    
+                    <!-- Option Input Text -->
+                    <input type="text" [(ngModel)]="opt.text" [name]="'nqOpt_' + optIdx" [placeholder]="('exams.optionPrefix' | translate) + ' ' + getOptionLetter(optIdx)" class="ctrl opt-input-ctrl" />
+
+                    <!-- Mark as Correct Answer Button / Radio -->
+                    <button type="button" (click)="setCorrectOption(optIdx)" class="btn-correct-toggle" [class.active]="opt.is_correct" [title]="'exams.correctLabel' | translate">
+                      <i [class]="opt.is_correct ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
+                      <span>{{ opt.is_correct ? ('exams.correctLabel' | translate) : ('exams.selectCorrect' | translate) }}</span>
+                    </button>
+
+                    <!-- Remove Option Button -->
+                    @if (newQuestion.optionsList.length > 2) {
+                      <button type="button" (click)="removeDynamicOption(optIdx)" class="btn-remove-opt" title="Remove Option">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Submit Button Row -->
+              <div class="manual-footer-row">
+                <div class="correct-status-hint">
+                  <i class="bi bi-info-circle-fill text-emerald"></i>
+                  <span>{{ 'exams.correctHint' | translate }}</span>
+                </div>
+
+                <button (click)="addQuestion()" type="button" class="btn-add-q-card">
+                  <i class="bi bi-plus-circle-fill"></i> {{ 'exams.addBtn' | translate }}
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Questions Table -->
-          <div style="background: #fff; border: 1px solid #bbf7d0; border-radius: 10px; overflow: hidden;">
-            <table class="table-styled" style="width: 100%; border-collapse: collapse;">
+          <div class="questions-table-wrapper">
+            <table class="table-styled w-full">
               <thead>
-                <tr style="background: #dcfce7; color: #14532d; text-align: left;">
-                  <th style="padding: 10px;">#</th>
-                  <th style="padding: 10px;">{{ 'exams.questionLabel' | translate }}</th>
-                  <th style="padding: 10px;">{{ 'exams.optionsLabel' | translate }}</th>
-                  <th style="padding: 10px;">{{ 'exams.answerLabel' | translate }}</th>
-                  <th style="padding: 10px;">-</th>
+                <tr class="thead-gold">
+                  <th style="width: 50px;">#</th>
+                  <th>{{ 'exams.questionLabel' | translate }}</th>
+                  <th>{{ 'exams.optionsHeader' | translate }}</th>
+                  <th>{{ 'exams.answerLabel' | translate }}</th>
+                  <th style="width: 60px;">-</th>
                 </tr>
               </thead>
               <tbody>
                 @for (q of activeExamWizard.questions; track q.id; let i = $index) {
-                  <tr style="border-bottom: 1px solid #f0fdf4;">
-                    <td style="padding: 10px; font-weight: 700;">{{ i + 1 }}</td>
-                    <td style="padding: 10px; font-weight: 600; color: #0f172a;">{{ q.question_text }}</td>
-                    <td style="padding: 10px; font-size: 12px; color: #475569;">
-                      {{ q.options ? (q.options.join ? q.options.join(', ') : q.options) : '-' }}
+                  <tr>
+                    <td class="font-bold text-slate-700">{{ i + 1 }}</td>
+                    <td class="font-bold text-slate-900">{{ q.question_text }}</td>
+                    <td>
+                      <div class="options-pills-row">
+                        @for (opt of formatQuestionOptions(q.options); track optIdx; let optIdx = $index) {
+                          <span class="opt-pill" [class.opt-pill-correct]="opt === q.correct_answer">
+                            <strong class="me-1">{{ ['A', 'B', 'C', 'D'][optIdx] || (optIdx+1) }})</strong> {{ opt }}
+                          </span>
+                        }
+                      </div>
                     </td>
-                    <td style="padding: 10px; color: #16a34a; font-weight: 800;">{{ q.correct_answer }}</td>
-                    <td style="padding: 10px;">
-                      <button (click)="deleteQuestion(q.id, i)" type="button" style="background: #fee2e2; color: #b91c1c; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
-                        <i class="bi bi-trash"></i>
+                    <td>
+                      <span class="badge-correct-answer">
+                        <i class="bi bi-check-circle-fill"></i> {{ q.correct_answer }}
+                      </span>
+                    </td>
+                    <td>
+                      <button (click)="deleteQuestion(q.id, i)" type="button" class="btn-del-q" title="Delete Question">
+                        <i class="bi bi-trash-fill"></i>
                       </button>
                     </td>
                   </tr>
                 }
                 @if (!activeExamWizard.questions || activeExamWizard.questions.length === 0) {
                   <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: #64748b; font-size: 13px;">
-                      {{ 'exams.noQuestions' | translate }}
+                    <td colspan="5">
+                      <div class="table-empty-box py-3">
+                        <i class="bi bi-card-checklist text-slate-300" style="font-size: 32px; display: block; margin-bottom: 4px; color: #cbd5e1;"></i>
+                        <span style="font-weight: 600; color: #94a3b8; font-size: 13px;">{{ 'exams.noQuestions' | translate }}</span>
+                      </div>
                     </td>
                   </tr>
                 }
@@ -208,45 +353,156 @@
           </div>
         </div>
 
-        <!-- SECTION 3 / PHASE 2: PRACTICAL CHART SOLVING -->
-        <div style="background: #fffdfa; border: 2px solid #fde68a; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
-          <h4 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
-            <i class="bi bi-diagram-3-fill" style="color: #D4AF37; font-size: 20px;"></i> 
-            {{ 'exams.phase2' | translate }}
-          </h4>
+        <!-- SECTION 3: RASI CHART (DUAL MODE: BUILDER / DIRECT IMAGE UPLOAD) -->
+        <div class="wizard-section section-chart-builder">
           
-          <div style="margin-bottom: 14px;">
-            <label style="font-weight: 700; color: #475569; font-size: 13px; margin-bottom: 4px; display: block;">
-              {{ 'exams.promptLabel' | translate }}
-            </label>
-            <textarea [(ngModel)]="activeExamWizard.practical_prompt" name="exPracticalPrompt" rows="3" class="ctrl" style="width: 100%; font-family: inherit;"></textarea>
+          <!-- Mode Switcher Tabs -->
+          <div class="section-2-header-bar">
+            <div>
+              <h4 class="section-title text-maroon">
+                <i class="bi bi-grid-3x3-gap-fill text-gold"></i> {{ 'exams.phase2' | translate }}
+              </h4>
+              <p class="section-desc">
+                {{ 'exams.phase2Desc' | translate }}
+              </p>
+            </div>
+
+            <!-- 2-Option Segmented Selector -->
+            <div class="chart-mode-pill-group">
+              <button type="button" 
+                      (click)="setChartMode('interactive')" 
+                      [class.active]="chartMode === 'interactive'" 
+                      class="btn-chart-mode-pill">
+                <i class="bi bi-diagram-3-fill"></i> {{ 'exams.modeInteractive' | translate }}
+              </button>
+              <button type="button" 
+                      (click)="setChartMode('upload')" 
+                      [class.active]="chartMode === 'upload'" 
+                      class="btn-chart-mode-pill">
+                <i class="bi bi-cloud-arrow-up-fill"></i> {{ 'exams.modeUpload' | translate }}
+              </button>
+            </div>
           </div>
 
-          <div>
-            <label style="font-weight: 700; color: #475569; font-size: 13px; margin-bottom: 4px; display: block;">
-              {{ 'exams.chartImageLabel' | translate }}
-            </label>
-            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-              <input type="file" (change)="onChartImageSelected($event)" accept="image/*" class="ctrl" style="flex: 1; background: #fff;" />
-              @if (isUploadingChart) {
-                <span style="color: #d97706; font-size: 13px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> Uploading...</span>
-              }
-              @if (activeExamWizard.chart_image_url) {
-                <a [href]="activeExamWizard.chart_image_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 13px; text-decoration: none;">
-                  <i class="bi bi-check-circle-fill"></i> View Chart Image
-                </a>
-              }
+          <!-- OPTION 1: INTERACTIVE 12-HOUSE CHART BUILDER -->
+          @if (chartMode === 'interactive') {
+            <div class="interactive-chart-box">
+              <div class="preset-header-row">
+                <span class="preset-label">{{ 'exams.sampleCharts' | translate }}</span>
+                <div class="preset-btn-group">
+                  <button type="button" (click)="loadChartPreset('gajakesari')" class="btn-preset">{{ 'exams.gajakesari' | translate }}</button>
+                  <button type="button" (click)="loadChartPreset('malavya')" class="btn-preset">{{ 'exams.malavya' | translate }}</button>
+                  <button type="button" (click)="loadChartPreset('surya_atchi')" class="btn-preset">{{ 'exams.suryaAtchi' | translate }}</button>
+                  <button type="button" (click)="resetAllChartHouses()" class="btn-preset-clear">{{ 'exams.resetChart' | translate }}</button>
+                </div>
+              </div>
+
+              <!-- Planets Palette -->
+              <div class="planets-palette">
+                <span class="palette-title">{{ 'exams.pickPlanets' | translate }}</span>
+                <div class="palette-chips">
+                  @for (p of availablePlanets; track $index) {
+                    <button type="button" 
+                            (click)="selectPlanetTool(p)" 
+                            [class.active]="selectedPlanetTool === p"
+                            class="planet-chip">
+                      {{ p }}
+                    </button>
+                  }
+                </div>
+                <span class="palette-hint">{{ 'exams.selectedPlanetHint' | translate }} <strong>{{ selectedPlanetTool }}</strong> {{ 'exams.clickHouseHint' | translate }}</span>
+              </div>
+
+              <!-- 12-House South Indian Astrology Chart Grid -->
+              <div class="rasi-chart-wrapper">
+                <div class="south-indian-chart">
+                  @for (h of chartHouses; track h.id) {
+                    <div class="chart-house-cell" 
+                         [style.grid-area]="h.gridPos"
+                         (click)="togglePlanetInHouse(h)">
+                      <div class="house-name-row">
+                        <span class="house-name">{{ h.name }}</span>
+                        @if (h.planets.length > 0) {
+                          <button type="button" (click)="clearHousePlanets(h, $event)" class="btn-clear-house" title="Clear">×</button>
+                        }
+                      </div>
+                      <div class="house-planets">
+                        @for (pl of h.planets; track $index) {
+                          <span class="placed-planet" [class.planet-lagna]="pl === 'லக்'">{{ pl }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                  <!-- Center Cell of Chart -->
+                  <div class="chart-center-cell">
+                    <div class="center-content">
+                      <i class="bi bi-stars text-gold"></i>
+                      <h4>{{ 'exams.chartCenter' | translate }}</h4>
+                      <span class="center-sub">South Indian Chart</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          }
+
+          <!-- OPTION 2: DIRECT CHART IMAGE UPLOAD -->
+          @if (chartMode === 'upload') {
+            <div class="chart-upload-box">
+              <div class="upload-dropzone-card">
+                <div class="dropzone-inner">
+                  <i class="bi bi-image text-gold upload-main-icon"></i>
+                  <h5 class="upload-heading">{{ 'exams.uploadChartImageTitle' | translate }}</h5>
+                  <p class="upload-subtext">{{ 'exams.uploadChartImageSub' | translate }}</p>
+
+                  <div class="upload-actions-row">
+                    <label class="btn-choose-chart-img">
+                      <i class="bi bi-folder2-open"></i> {{ 'exams.chooseChartFile' | translate }}
+                      <input type="file" (change)="onChartImageFileSelected($event)" accept="image/*,application/pdf" style="display: none;" />
+                    </label>
+
+                    @if (isUploadingChart) {
+                      <span class="uploading-spinner-text">
+                        <i class="bi bi-arrow-repeat spin-icon"></i> Uploading...
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Image Preview Card -->
+                @if (activeExamWizard.chart_image_url) {
+                  <div class="chart-preview-card">
+                    <div class="preview-header">
+                      <span class="preview-badge"><i class="bi bi-check-circle-fill text-emerald"></i> Chart Image Ready</span>
+                      <button type="button" (click)="removeUploadedChart()" class="btn-remove-preview" title="Remove">
+                        <i class="bi bi-trash-fill"></i> {{ 'exams.removeChartImage' | translate }}
+                      </button>
+                    </div>
+                    <div class="preview-img-container">
+                      <img [src]="activeExamWizard.chart_image_url" alt="Uploaded Rasi Chart" class="chart-preview-img" />
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Generated Prompt Preview -->
+          <div class="mt-3">
+            <label class="form-label font-bold text-slate-800">
+              {{ 'exams.promptLabel' | translate }}
+            </label>
+            <textarea [(ngModel)]="activeExamWizard.practical_prompt" name="exPracticalPrompt" rows="3" class="ctrl w-full font-mono"></textarea>
           </div>
         </div>
 
         <!-- SAVE FOOTER -->
-        <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 18px;">
-          <button type="button" (click)="activeView = 'list'" class="btn-cancel" style="padding: 10px 20px; border-radius: 8px;">
+        <div class="wizard-footer">
+          <button type="button" (click)="activeView = 'list'" class="btn-cancel">
             {{ 'exams.cancelBtn' | translate }}
           </button>
-          <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #4A0E17, #7A1C28); border: 1px solid #D4AF37; color: #ECC876; padding: 10px 24px; font-weight: 800; font-size: 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-            <i class="bi bi-check2-circle" style="font-size: 18px;"></i> {{ 'exams.saveBtn' | translate }}
+          <button type="submit" class="btn-primary-gold">
+            <i class="bi bi-check2-circle"></i> {{ 'exams.saveBtn' | translate }}
           </button>
         </div>
 
@@ -254,159 +510,301 @@
     </div>
   }
 
-  <!-- VIEW 3: STUDENT SUBMISSIONS & EVALUATION -->
+  <!-- VIEW 3: STUDENT SUBMISSIONS & 1-CLICK CERTIFICATE EVALUATION -->
   @if (activeView === 'evaluation') {
-    <div class="card-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #fff;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+    <div class="card-box-table">
+      <div class="table-header-flex">
         <div>
-          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #0f172a;">
-            <i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626;"></i> {{ 'exams.evaluateTitle' | translate }}
+          <h3 class="table-title">
+            <i class="bi bi-file-earmark-pdf-fill text-rose"></i> {{ 'exams.evaluateTitle' | translate }}
           </h3>
+          <p class="table-sub">{{ 'exams.evaluateSub' | translate }}</p>
         </div>
 
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-          <select [(ngModel)]="selectedBatchId" (change)="loadSubmissions()" class="ctrl" style="font-weight: 700;">
+        <div class="table-filter-group">
+          <select [(ngModel)]="selectedBatchId" (change)="loadSubmissions()" class="ctrl font-bold">
             <option value="">{{ 'exams.allBatches' | translate }}</option>
             @for (b of batches; track b.id) {
               <option [value]="b.id">{{ b.name }} ({{ b.batch_code }})</option>
             }
           </select>
 
-          <button (click)="publishBatchResults()" style="background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <button (click)="publishBatchResults()" class="btn-publish-batch">
             <i class="bi bi-send-check-fill"></i> {{ 'exams.publishBatch' | translate }}
           </button>
         </div>
       </div>
 
-      <table class="table-styled" style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background: #4A0E17; color: #ECC876; text-align: left;">
-            <th style="padding: 12px;">Student Name</th>
-            <th style="padding: 12px;">Course / Batch</th>
-            <th style="padding: 12px;">Type</th>
-            <th style="padding: 12px;">PDF Answer Sheet</th>
-            <th style="padding: 12px;">MCQ / Practical Marks</th>
-            <th style="padding: 12px;">Total Marks</th>
-            <th style="padding: 12px;">Status</th>
-            <th style="padding: 12px;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (s of submissions; track s.id) {
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 12px;">
-                <div style="font-weight: 700; color: #0f172a;">{{ s.student_name }}</div>
-                <div style="font-size: 11px; color: #64748b;">{{ s.student_email }}</div>
-              </td>
-              <td style="padding: 12px;">
-                <div style="font-weight: 600; font-size: 13px;">{{ s.course_title }}</div>
-                <div style="font-size: 11px; color: #94a3b8;">{{ s.batch_name || 'General Batch' }}</div>
-              </td>
-              <td style="padding: 12px; font-size: 12px; font-weight: 700; color: #475569;">
-                {{ s.submission_type }}
-              </td>
-              <td style="padding: 12px;">
-                @if (s.pdf_url) {
-                  <a [href]="s.pdf_url" target="_blank" style="color: #dc2626; font-weight: 700; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 4px;">
-                    <i class="bi bi-file-earmark-pdf-fill"></i> View PDF
-                  </a>
-                } @else {
-                  <span style="color: #94a3b8; font-size: 12px;">N/A</span>
-                }
-              </td>
-              <td style="padding: 12px; font-size: 12px;">
-                <div>MCQ: <strong>{{ s.mcq_score !== null ? s.mcq_score : '-' }}</strong></div>
-                <div>Practical: <strong>{{ s.practical_score !== null ? s.practical_score : '-' }}</strong></div>
-              </td>
-              <td style="padding: 12px; font-weight: 800; font-size: 15px; color: #4A0E17;">
-                {{ s.score !== null ? s.score : '-' }} / 100
-              </td>
-              <td style="padding: 12px;">
-                <span [style.background]="s.status === 'Approved' ? '#dcfce7' : '#fee2e2'"
-                      [style.color]="s.status === 'Approved' ? '#166534' : '#991b1b'"
-                      style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800;">
-                  {{ s.status === 'Approved' ? 'PASS' : 'PENDING / REJECTED' }}
-                </span>
-                @if (s.is_published) {
-                  <span style="display: block; font-size: 10px; color: #16a34a; font-weight: 700; margin-top: 2px;">
-                    <i class="bi bi-globe"></i> Published
+      <div class="table-responsive">
+        <table class="table-styled w-full">
+          <thead>
+            <tr class="thead-maroon">
+              <th>{{ 'exams.studentName' | translate }}</th>
+              <th>{{ 'exams.courseBatch' | translate }}</th>
+              <th>{{ 'exams.type' | translate }}</th>
+              <th>{{ 'exams.pdfAnswer' | translate }}</th>
+              <th>{{ 'exams.mcqPracMarks' | translate }}</th>
+              <th>{{ 'exams.totalScore' | translate }}</th>
+              <th>{{ 'exams.passStatus' | translate }}</th>
+              <th>{{ 'exams.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of submissions; track s.id) {
+              <tr>
+                <td>
+                  <div class="font-bold text-slate-900">{{ s.student_name }}</div>
+                  <div class="text-xs text-slate-500">{{ s.student_email }}</div>
+                </td>
+                <td>
+                  <div class="font-semibold text-sm">{{ s.course_title }}</div>
+                  <div class="text-xs text-slate-400">{{ s.batch_name || s.course_title }}</div>
+                </td>
+                <td>
+                  <span class="badge-type">{{ s.submission_type }}</span>
+                </td>
+                <td>
+                  @if (s.pdf_url) {
+                    <a [href]="s.pdf_url" target="_blank" class="link-pdf">
+                      <i class="bi bi-file-earmark-pdf-fill"></i> {{ 'exams.viewPdf' | translate }}
+                    </a>
+                  } @else {
+                    <span class="text-slate-400 text-xs">N/A</span>
+                  }
+                </td>
+                <td class="text-sm">
+                  <div>MCQ: <strong>{{ s.mcq_score !== null ? s.mcq_score : '-' }}</strong></div>
+                  <div>{{ 'exams.practicalMarks' | translate }}: <strong>{{ s.practical_score !== null ? s.practical_score : '-' }}</strong></div>
+                </td>
+                <td>
+                  <span class="score-badge">{{ s.score !== null ? s.score : '-' }} / 100</span>
+                </td>
+                <td>
+                  <span [class]="s.status === 'Approved' ? 'badge-pass' : 'badge-pending'">
+                    {{ s.status === 'Approved' ? ('exams.passBadge' | translate) : ('exams.pendingBadge' | translate) }}
                   </span>
-                }
-              </td>
-              <td style="padding: 12px;">
-                <button (click)="openGradingModal(s)" style="background: #4A0E17; color: #ECC876; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;">
-                  <i class="bi bi-check2-square"></i> Evaluate
-                </button>
-              </td>
+                  @if (s.is_published) {
+                    <span class="badge-published">
+                      <i class="bi bi-globe"></i> Published
+                    </span>
+                  }
+                </td>
+                <td>
+                  <div class="flex-actions-cell">
+                    <button (click)="openGradingModal(s)" class="btn-eval-action" [title]="'exams.evaluateBtn' | translate">
+                      <i class="bi bi-pencil-square"></i> {{ 'exams.evaluateBtn' | translate }}
+                    </button>
+                    @if (s.status === 'Approved' || (s.score && s.score >= 40)) {
+                      <button (click)="issueCertificateForStudent(s)" class="btn-cert-action" [title]="'exams.certificateBtn' | translate">
+                        <i class="bi bi-award-fill"></i> {{ 'exams.certificateBtn' | translate }}
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (submissions.length === 0) {
+              <tr>
+                <td colspan="8">
+                  <div class="table-empty-box">
+                    <i class="bi bi-file-earmark-excel text-slate-300" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;"></i>
+                    <p style="font-weight: 700; color: #64748b; margin: 0; font-size: 14px;">{{ 'exams.noSubmissionsFound' | translate }}</p>
+                    <span style="font-size: 12px; color: #94a3b8;">{{ 'exams.noSubmissionsSub' | translate }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- VIEW 4: TOP STUDENTS LEADERBOARD (தரவரிசைப் பட்டியல்) -->
+  @if (activeView === 'leaderboard') {
+    <div class="card-box-table">
+      <div class="table-header-flex">
+        <div>
+          <h3 class="table-title">
+            <i class="bi bi-trophy-fill text-gold"></i> {{ 'exams.leaderboardTitle' | translate }}
+          </h3>
+          <p class="table-sub">{{ 'exams.leaderboardSub' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table-styled w-full">
+          <thead>
+            <tr class="thead-gold">
+              <th style="width: 80px;">{{ 'exams.rank' | translate }}</th>
+              <th>{{ 'exams.studentName' | translate }}</th>
+              <th>{{ 'exams.courseBatch' | translate }}</th>
+              <th>{{ 'exams.mcqMarks' | translate }}</th>
+              <th>{{ 'exams.practicalMarks' | translate }}</th>
+              <th>{{ 'exams.totalScore' | translate }}</th>
+              <th>{{ 'exams.percentage' | translate }}</th>
+              <th>{{ 'exams.passStatus' | translate }}</th>
             </tr>
+          </thead>
+          <tbody>
+            @for (item of leaderboard; track item.id) {
+              <tr [class.row-top-rank]="item.rank <= 3">
+                <td class="font-bold text-center">
+                  <span class="rank-pill" [class.rank-1]="item.rank === 1" [class.rank-2]="item.rank === 2" [class.rank-3]="item.rank === 3">
+                    {{ item.rankBadge }}
+                  </span>
+                </td>
+                <td>
+                  <div class="font-bold text-slate-900">{{ item.student_name }}</div>
+                  <div class="text-xs text-slate-500">{{ item.student_email }}</div>
+                </td>
+                <td>
+                  <div class="font-semibold text-sm">{{ item.course_title }}</div>
+                  <div class="text-xs text-slate-400">{{ item.batch_name || item.course_title }}</div>
+                </td>
+                <td class="text-sm font-semibold">{{ item.mcq_score !== null ? item.mcq_score : '-' }} / 50</td>
+                <td class="text-sm font-semibold">{{ item.practical_score !== null ? item.practical_score : '-' }} / 50</td>
+                <td class="font-bold text-lg text-maroon">{{ item.score }} / 100</td>
+                <td>
+                  <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" [style.width.%]="item.percentage"></div>
+                  </div>
+                  <span class="text-xs font-bold text-slate-700">{{ item.percentage }}%</span>
+                </td>
+                <td>
+                  <span class="badge-pass">{{ 'exams.passBadge' | translate }}</span>
+                </td>
+              </tr>
+            }
+            @if (leaderboard.length === 0) {
+              <tr>
+                <td colspan="8">
+                  <div class="table-empty-box">
+                    <i class="bi bi-trophy text-slate-300" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;"></i>
+                    <p style="font-weight: 700; color: #64748b; margin: 0; font-size: 14px;">{{ 'exams.noLeaderboardFound' | translate }}</p>
+                    <span style="font-size: 12px; color: #94a3b8;">{{ 'exams.noLeaderboardSub' | translate }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- VIEW 5: TOPIC-WISE PERFORMANCE ANALYTICS (செயல்திறன் பகுப்பாய்வு) -->
+  @if (activeView === 'analytics') {
+    <div class="analytics-container">
+      <div class="card-box mb-4">
+        <h3 class="table-title mb-2">
+          <i class="bi bi-pie-chart-fill text-blue"></i> {{ 'exams.analyticsTitle' | translate }}
+        </h3>
+        <p class="table-sub mb-4">{{ 'exams.analyticsSub' | translate }}</p>
+
+        <div class="analytics-topics-list">
+          @for (topic of dynamicTopicAnalytics; track topic.name) {
+            <div class="topic-item-card">
+              <div class="topic-info-row">
+                <span class="topic-name">{{ topic.name }}</span>
+                <span class="topic-badge" [class]="topic.badgeClass">{{ topic.status }} ({{ topic.correctPercent }}%)</span>
+              </div>
+              <div class="progress-bar-bg-lg">
+                <div class="progress-bar-fill-lg" 
+                     [style.width.%]="topic.correctPercent"
+                     [class.fill-emerald]="topic.correctPercent >= 80"
+                     [class.fill-amber]="topic.correctPercent >= 70 && topic.correctPercent < 80"
+                     [class.fill-orange]="topic.correctPercent >= 60 && topic.correctPercent < 70"
+                     [class.fill-rose]="topic.correctPercent < 60"></div>
+              </div>
+            </div>
           }
-          @if (submissions.length === 0) {
-            <tr>
-              <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">No submissions found.</td>
-            </tr>
+          @if (dynamicTopicAnalytics.length === 0) {
+            <div class="empty-state-card" style="padding: 30px;">
+              <i class="bi bi-bar-chart-fill empty-icon"></i>
+              <p class="empty-text">{{ 'exams.noAnalyticsFound' | translate }}</p>
+              <span style="font-size: 12px; color: #94a3b8;">{{ 'exams.noAnalyticsSub' | translate }}</span>
+            </div>
           }
-        </tbody>
-      </table>
+        </div>
+      </div>
+
+      <!-- Actionable Advice Card for Instructor -->
+      @if (dynamicWeakestTopic) {
+        <div class="advice-card">
+          <div class="advice-icon">
+            <i class="bi bi-lightbulb-fill text-gold"></i>
+          </div>
+          <div class="advice-body">
+            <h4>{{ 'exams.teachingTip' | translate }}</h4>
+            @if (translationService.currentLanguage() === 'ta') {
+              <p>மாணவர்கள் <strong>"{{ dynamicWeakestTopic.name }}"</strong> பகுதியில் {{ dynamicWeakestTopic.correctPercent }}% மட்டுமே மதிப்பெண் பெற்றுள்ளனர். அடுத்த வார நேரலை வகுப்பில் (Live Class) இந்த தலைப்பு பற்றிய சந்தேகங்களை விளக்குவது ஒட்டுமொத்த தேர்ச்சி விகிதத்தை 85%-க்கு மேல் உயர்த்த உதவும்.</p>
+            } @else {
+              <p>Students scored {{ dynamicWeakestTopic.correctPercent }}% in <strong>"{{ dynamicWeakestTopic.name }}"</strong>. Focusing on this topic in the next live class will help elevate overall passing rates above 85%.</p>
+            }
+          </div>
+        </div>
+      }
     </div>
   }
 
   <!-- EVALUATION MODAL -->
   @if (selectedSubmissionForGrading) {
-    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-      <div style="background: #fff; border-radius: 14px; width: 90%; max-width: 540px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid #D4AF37;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
-          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #4A0E17;">
-            <i class="bi bi-award"></i> Student Submission Valuation
+    <div class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i class="bi bi-award-fill text-gold"></i> {{ 'exams.evaluateTitle' | translate }}
           </h3>
-          <button (click)="selectedSubmissionForGrading = null" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+          <button (click)="selectedSubmissionForGrading = null" class="btn-close-modal">&times;</button>
         </div>
 
-        <div style="margin-bottom: 14px; font-size: 13px; color: #334155;">
-          <div><strong>Student:</strong> {{ selectedSubmissionForGrading.student_name }}</div>
-          <div><strong>Course:</strong> {{ selectedSubmissionForGrading.course_title }}</div>
+        <div class="modal-student-info">
+          <div><strong>{{ 'exams.studentName' | translate }}:</strong> {{ selectedSubmissionForGrading.student_name }}</div>
+          <div><strong>{{ 'exams.courseBatch' | translate }}:</strong> {{ selectedSubmissionForGrading.course_title }}</div>
           @if (selectedSubmissionForGrading.pdf_url) {
-            <div style="margin-top: 6px;">
-              <a [href]="selectedSubmissionForGrading.pdf_url" target="_blank" style="color: #dc2626; font-weight: 700; text-decoration: none;">
-                <i class="bi bi-file-earmark-pdf-fill"></i> View Uploaded PDF Answer Sheet
+            <div class="mt-2">
+              <a [href]="selectedSubmissionForGrading.pdf_url" target="_blank" class="link-pdf-bold">
+                <i class="bi bi-file-earmark-pdf-fill"></i> {{ 'exams.viewPdf' | translate }}
               </a>
             </div>
           }
         </div>
 
         <form (ngSubmit)="saveGrading()">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div class="form-grid-2 mb-3">
             <div>
-              <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">MCQ Score (Max: 50)</label>
-              <input type="number" [(ngModel)]="gradingForm.mcq_score" name="gMcq" (input)="updateTotalScore()" class="ctrl" style="width: 100%; font-weight: 700;" />
+              <label class="form-label">{{ 'exams.mcqMax50' | translate }}</label>
+              <input type="number" [(ngModel)]="gradingForm.mcq_score" name="gMcq" (input)="updateTotalScore()" class="ctrl w-full font-bold" />
             </div>
             <div>
-              <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">Practical Score (Max: 50)</label>
-              <input type="number" [(ngModel)]="gradingForm.practical_score" name="gPrac" (input)="updateTotalScore()" class="ctrl" style="width: 100%; font-weight: 700;" />
+              <label class="form-label">{{ 'exams.practicalMax50' | translate }}</label>
+              <input type="number" [(ngModel)]="gradingForm.practical_score" name="gPrac" (input)="updateTotalScore()" class="ctrl w-full font-bold" />
             </div>
           </div>
 
-          <div style="margin-bottom: 14px; background: #fffdfa; border: 1px solid #fde68a; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 700; color: #4A0E17;">Total Score:</span>
-            <span style="font-size: 18px; font-weight: 800; color: #4A0E17;">{{ gradingForm.score }} / 100</span>
+          <div class="total-score-box">
+            <span class="total-score-label">{{ 'exams.totalScore' | translate }}:</span>
+            <span class="total-score-val">{{ gradingForm.score }} / 100</span>
           </div>
 
-          <div style="margin-bottom: 14px;">
-            <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">Result Status</label>
-            <select [(ngModel)]="gradingForm.status" name="gStatus" class="ctrl" style="width: 100%; font-weight: 700;">
-              <option value="Approved">Approved (Pass)</option>
-              <option value="Rejected">Rejected (Fail)</option>
+          <div class="mb-3">
+            <label class="form-label">{{ 'exams.passStatus' | translate }}</label>
+            <select [(ngModel)]="gradingForm.status" name="gStatus" class="ctrl w-full font-bold">
+              <option value="Approved">{{ 'exams.approvedPass' | translate }}</option>
+              <option value="Rejected">{{ 'exams.rejectedFail' | translate }}</option>
             </select>
           </div>
 
-          <div style="margin-bottom: 16px;">
-            <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">Evaluator Notes</label>
-            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gNotes" rows="2" class="ctrl" style="width: 100%;"></textarea>
+          <div class="mb-3">
+            <label class="form-label">{{ 'exams.feedbackNotes' | translate }}</label>
+            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gNotes" rows="2" class="ctrl w-full"></textarea>
           </div>
 
-          <div style="display: flex; justify-content: flex-end; gap: 10px;">
-            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel" style="padding: 8px 16px; border-radius: 6px; cursor: pointer;">Cancel</button>
-            <button type="submit" class="btn-primary" style="background: #4A0E17; color: #ECC876; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 800; cursor: pointer;">
-              Save Valuation
+          <div class="modal-footer">
+            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel">{{ 'exams.cancelBtn' | translate }}</button>
+            <button type="submit" class="btn-primary-gold">
+              <i class="bi bi-check2-circle"></i> {{ 'exams.saveValuation' | translate }}
             </button>
           </div>
         </form>

@@ -133,5 +133,14 @@ export class AuthService {
       }
     };
   }
+
+  getUploadHeaders() {
+    const token = this.getToken();
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+  }
 }
 
