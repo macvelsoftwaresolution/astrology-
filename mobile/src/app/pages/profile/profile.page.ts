@@ -209,6 +209,74 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
         </div>
       }
 
+      <!-- TAB: EXAM RESULTS -->
+      @if (activeTab === 'results') {
+        <div class="tab-content">
+          <div class="section-title">
+            <h3><i class="bi bi-journal-check me-1 text-warning"></i> {{ currentLang === 'ta' ? 'தேர்வு முடிவுகள்' : 'Exam Results & Marksheets' }}</h3>
+            <p>{{ currentLang === 'ta' ? 'உங்கள் ஆன்லைன் மற்றும் ஜாதகக் கட்ட நடைமுறைத் தேர்வு மதிப்பெண்கள்' : 'Your MCQ and Practical Jadhagam Exam Breakdown & Certificates' }}</p>
+          </div>
+
+          @if (loadingResults) {
+            <ion-spinner name="crescent" color="warning"></ion-spinner>
+          } @else {
+            <div>
+              @if (results.length === 0) {
+                <div class="empty-state">
+                  <i class="bi bi-journal-x" style="font-size: 36px; color: #8a8ab0;"></i>
+                  <p>{{ currentLang === 'ta' ? 'தேர்வு முடிவுகள் எதுவும் வெளியிடப்படவில்லை.' : 'No published exam results found yet.' }}</p>
+                </div>
+              }
+              @for (r of results; track r.id) {
+                <div class="result-card" style="background: linear-gradient(135deg, #160f33, #1e1342); border: 1px solid rgba(212,175,55,0.3); border-radius: 14px; padding: 16px; margin-bottom: 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <div>
+                      <h4 style="color: #fff; margin: 0 0 4px 0; font-size: 15px; font-weight: 700;">{{ r.course_title }}</h4>
+                      <span style="font-size: 11px; color: #ffd700; font-weight: 600;">{{ r.batch_name || 'பொது பேட்ச் (Batch)' }}</span>
+                    </div>
+                    <span [style.background]="(r.status === 'Approved' || r.score >= 40) ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'"
+                          [style.color]="(r.status === 'Approved' || r.score >= 40) ? '#4ade80' : '#f87171'"
+                          style="padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800;">
+                      {{ (r.status === 'Approved' || r.score >= 40) ? (currentLang === 'ta' ? 'தேர்ச்சி (PASS)' : 'PASS') : (currentLang === 'ta' ? 'மறுதேர்வு (FAIL)' : 'FAIL') }}
+                    </span>
+                  </div>
+
+                  <!-- Scores Breakdown Grid -->
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin-bottom: 12px; text-align: center;">
+                    <div>
+                      <span style="display: block; font-size: 10px; color: #8a8ab0;">MCQ Score</span>
+                      <strong style="color: #60a5fa; font-size: 14px;">{{ r.mcq_score !== null ? r.mcq_score : '-' }}</strong>
+                    </div>
+                    <div>
+                      <span style="display: block; font-size: 10px; color: #8a8ab0;">Practical</span>
+                      <strong style="color: #c084fc; font-size: 14px;">{{ r.practical_score !== null ? r.practical_score : '-' }}</strong>
+                    </div>
+                    <div>
+                      <span style="display: block; font-size: 10px; color: #8a8ab0;">Total Marks</span>
+                      <strong style="color: #ffd700; font-size: 15px;">{{ r.score !== null ? r.score : (r.total_score || '-') }} / 100</strong>
+                    </div>
+                  </div>
+
+                  <!-- PDF Download Links -->
+                  <div style="display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+                    @if (r.marksheet_download_url) {
+                      <a [href]="r.marksheet_download_url" target="_blank" style="background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.3); color: #60a5fa; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                        <i class="bi bi-file-earmark-spreadsheet-fill"></i> {{ currentLang === 'ta' ? 'மதிப்பெண் தாள்' : 'Marksheet' }}
+                      </a>
+                    }
+                    @if (r.cert_pdf_url || r.certificate_number) {
+                      <a [href]="r.cert_pdf_url || ('/api/certificates/' + r.certificate_number + '/download')" target="_blank" style="background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.3); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                        <i class="bi bi-trophy-fill"></i> {{ currentLang === 'ta' ? 'சான்றிதழ்' : 'Certificate' }}
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
       <!-- TAB: NOTIFICATION PREFERENCES & LANGUAGE SETTING -->
       @if (activeTab === 'preferences') {
         <div class="tab-content">
@@ -402,6 +470,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
 export class ProfilePage implements OnInit {
   tabs = [
     { key: 'profile', icon: 'bi bi-person-fill', labelKey: 'profile.tabProfile' },
+    { key: 'results', icon: 'bi bi-journal-check', labelKey: 'profile.tabResults' },
     { key: 'history', icon: 'bi bi-clock-history', labelKey: 'profile.tabHistory' },
     { key: 'payments', icon: 'bi bi-credit-card-fill', labelKey: 'profile.tabPayments' },
     { key: 'notifications', icon: 'bi bi-bell-fill', labelKey: 'profile.tabNotifs' },
@@ -417,6 +486,9 @@ export class ProfilePage implements OnInit {
   savingProfile = false;
   profileMsg = '';
   profileSuccess = false;
+
+  results: any[] = [];
+  loadingResults = false;
 
   bookings: any[] = [];
   loadingHistory = false;
@@ -475,10 +547,24 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     this.loadProfile();
+    this.loadExamResults();
     this.loadHistory();
     this.loadPayments();
     this.loadNotifications();
     this.loadPreferences();
+  }
+
+  loadExamResults() {
+    this.loadingResults = true;
+    this.http.get<any>(`${environment.apiUrl}/user/certificates`, this.headers).subscribe({
+      next: (res: any) => {
+        this.results = res?.results || [];
+        this.loadingResults = false;
+      },
+      error: () => {
+        this.loadingResults = false;
+      }
+    });
   }
 
   get token(): string { return this.authService.getToken() || ''; }

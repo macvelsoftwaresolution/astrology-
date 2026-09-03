@@ -177,9 +177,13 @@
               <i class="bi bi-gear-fill nav-icon"></i>
               <span>{{ 'nav.lmsSettings' | translate }}</span>
             </button>
-            <button [class.active]="currentTab === 'grading'" (click)="selectTab('grading')">
+            <button [class.active]="currentTab === 'exams-eval'" (click)="selectTab('exams-eval')">
+              <i class="bi bi-journal-check nav-icon"></i>
+              <span>{{ 'nav.exams' | translate }}</span>
+            </button>
+            <button [class.active]="currentTab === 'certificates'" (click)="selectTab('certificates')">
               <i class="bi bi-award-fill nav-icon"></i>
-              <span>{{ 'nav.grading' | translate }}</span>
+              <span>{{ 'nav.certificates' | translate }}</span>
             </button>
           </div>
         }
@@ -249,6 +253,14 @@
 
     @if (currentTab === 'courier') {
       <app-courier-tab></app-courier-tab>
+    }
+
+    @if (currentTab === 'exams-eval') {
+      <app-exams-eval-tab></app-exams-eval-tab>
+    }
+
+    @if (currentTab === 'certificates') {
+      <app-certificates-tab></app-certificates-tab>
     }
 
     @if (currentTab === 'grading') {

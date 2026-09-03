@@ -20,6 +20,7 @@ interface Order {
 
 import { BackButtonService } from '../services/back-button.service';
 import { ExitModalService } from '../services/exit-modal.service';
+import { RazorpayNativeService } from '../services/razorpay-native.service';
 
 declare var Razorpay: any;
 
@@ -112,7 +113,8 @@ export class HomePage implements OnInit {
     private authService: AuthService,
     private backButtonService: BackButtonService,
     private exitModalService: ExitModalService,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private razorpayService: RazorpayNativeService
   ) { }
 
   // Navigation History Stack for step-by-step ("line by line") back navigation
@@ -814,7 +816,11 @@ export class HomePage implements OnInit {
     // Create Razorpay Test Order via Backend
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }, { headers }).subscribe({
       next: (orderRes) => {
+<<<<<<< HEAD
         if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+=======
+        if (orderRes && orderRes.success && orderRes.key_id) {
+>>>>>>> a60be1c76ce808c3fed009b4aec1cbb811742415
           const options = {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
@@ -829,28 +835,20 @@ export class HomePage implements OnInit {
             },
             theme: {
               color: '#4A0E17'
-            },
-            handler: (response: any) => {
-              this.completeBooking(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
-            },
-            modal: {
-              ondismiss: () => {
-                this.isProcessingPayment = false;
-              }
             }
           };
 
-          try {
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', (resp: any) => {
+          this.razorpayService.open(options)
+            .then((res) => {
+              this.completeBooking(res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature);
+            })
+            .catch((err) => {
               this.isProcessingPayment = false;
-              alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+              }
             });
-            rzp.open();
-          } catch (e: any) {
-            this.isProcessingPayment = false;
-            alert('Razorpay popup பிழை: ' + (e?.message || e));
-          }
         } else {
           this.isProcessingPayment = false;
           alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');

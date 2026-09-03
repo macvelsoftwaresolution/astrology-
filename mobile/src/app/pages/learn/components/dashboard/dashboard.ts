@@ -104,16 +104,21 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   }
 
   loadStudentCurriculum() {
-    if (!this.authService.isLoggedIn()) return;
-    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders()).subscribe({
+    if (!this.authService.isLoggedIn('education')) return;
+    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders('education')).subscribe({
       next: (res) => {
         if (res && res.curriculum) {
           this.curriculumDays = res.curriculum || [];
           this.activeBatch = res.active_batch || null;
+          if (this.curriculumDays.length === 0) {
+            this.showToast('Curriculum is empty for batch ' + (this.activeBatch?.id || 'none'), 'warning');
+          }
           this.cdr.detectChanges();
         }
       },
-      error: () => { }
+      error: (err) => { 
+        this.showToast('Error loading curriculum: ' + err.message, 'danger');
+      }
     });
   }
 

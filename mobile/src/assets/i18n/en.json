@@ -99,6 +99,7 @@
   "profile": {
     "title": "Profile",
     "tabProfile": "Profile",
+    "tabResults": "Exam Results",
     "tabHistory": "History",
     "tabPayments": "Payments",
     "tabNotifs": "Notifications",

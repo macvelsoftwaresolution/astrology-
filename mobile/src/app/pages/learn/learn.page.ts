@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { BackButtonService } from '../../services/back-button.service';
 import { ExitModalService } from '../../services/exit-modal.service';
 import { TranslationService } from '../../services/translation.service';
+import { RazorpayNativeService } from '../../services/razorpay-native.service';
 import { environment } from '../../../environments/environment';
 import { LearnDashboardComponent } from './components/dashboard/dashboard';
 
@@ -107,7 +108,8 @@ export class LearnPage implements OnInit {
     private backButtonService: BackButtonService,
     private exitModalService: ExitModalService,
     private http: HttpClient,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private razorpayService: RazorpayNativeService
   ) { }
 
   ngOnInit() {
@@ -332,7 +334,7 @@ export class LearnPage implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount }).subscribe({
       next: (orderRes) => {
-        if (orderRes && orderRes.success && typeof Razorpay !== 'undefined' && orderRes.key_id) {
+        if (orderRes && orderRes.success && orderRes.key_id) {
           const options = {
             key: orderRes.key_id,
             amount: (orderRes.amount || amount) * 100,
@@ -347,34 +349,20 @@ export class LearnPage implements OnInit {
             },
             theme: {
               color: '#4A0E17'
-            },
-            handler: (response: any) => {
-              this.ngZone.run(() => {
-                this.handlePaymentSuccess(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
-              });
-            },
-            modal: {
-              ondismiss: () => {
-                this.ngZone.run(() => {
-                  this.isProcessingPayment = false;
-                });
-              }
             }
           };
 
-          try {
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', (resp: any) => {
-              this.ngZone.run(() => {
-                this.isProcessingPayment = false;
-                alert('கட்டணம் செலுத்துவதில் பிழை: ' + (resp.error?.description || 'தோல்வியடைந்தது'));
-              });
+          this.razorpayService.open(options)
+            .then((res) => {
+              this.handlePaymentSuccess(res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature);
+            })
+            .catch((err) => {
+              this.isProcessingPayment = false;
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+              }
             });
-            rzp.open();
-          } catch (e: any) {
-            this.isProcessingPayment = false;
-            alert('Razorpay popup பிழை: ' + (e?.message || e));
-          }
         } else {
           this.isProcessingPayment = false;
           alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');

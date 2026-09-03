@@ -1,0 +1,225 @@
+<div class="certificates-container">
+
+  <!-- HEADER -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-award-fill" style="color: #D4AF37;"></i> {{ 'certificates.title' | translate }}
+      </h2>
+      <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+        {{ 'certificates.subtitle' | translate }}
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button (click)="toggleUploadForm('certificate')" style="background: linear-gradient(135deg, #4A0E17, #7A1C28); border: 1px solid #D4AF37; padding: 8px 16px; border-radius: 8px; font-weight: 700; color: #fef3c7; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i class="bi bi-award-fill"></i> {{ 'certificates.issueCertBtn' | translate }}
+      </button>
+      <button (click)="toggleUploadForm('marksheet')" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); border: 1px solid #93c5fd; padding: 8px 16px; border-radius: 8px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i> {{ 'certificates.issueMarksheetBtn' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- DIRECT CERTIFICATE FORM -->
+  @if (showUploadForm && uploadType === 'certificate') {
+    <div style="margin-bottom: 24px; border: 2px solid #D4AF37; background: #fffdfa; border-radius: 12px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #4A0E17;">
+          <i class="bi bi-award-fill" style="color: #D4AF37;"></i> {{ 'certificates.certFormTitle' | translate }}
+        </h3>
+        <button (click)="showUploadForm = false" style="background: none; border: none; font-size: 18px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <form (ngSubmit)="submitDirectCertificate()">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px;">
+          <div>
+            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectStudent' | translate }}</label>
+            <select [(ngModel)]="directCertForm.student_id" name="cStudent" required class="ctrl" style="width: 100%;">
+              @for (st of studentsList; track st.id) {
+                <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectCourse' | translate }}</label>
+            <select [(ngModel)]="directCertForm.course_id" name="cCourse" required class="ctrl" style="width: 100%;">
+              @for (c of coursesList; track c.id) {
+                <option [value]="c.id">{{ c.title }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.certNumber' | translate }}</label>
+            <input type="text" [(ngModel)]="directCertForm.certificate_number" name="cNum" class="ctrl" style="width: 100%;" placeholder="ASTRO-CERT-2026-XXXX" />
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.issueDate' | translate }}</label>
+            <input type="date" [(ngModel)]="directCertForm.issue_date" name="cDate" class="ctrl" style="width: 100%;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.certFile' | translate }}</label>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <input type="file" (change)="onCertificateFileSelected($event)" accept="application/pdf,image/*" class="ctrl" style="flex: 1;" />
+            @if (isUploadingFile) {
+              <span style="color: #d97706; font-size: 13px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> {{ 'certificates.uploading' | translate }}</span>
+            }
+            @if (directCertForm.pdf_download_url) {
+              <a [href]="directCertForm.pdf_download_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 13px; text-decoration: none;">
+                <i class="bi bi-check-circle-fill"></i> {{ 'certificates.viewPdf' | translate }}
+              </a>
+            }
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" (click)="showUploadForm = false" class="btn-cancel">{{ 'certificates.cancelBtn' | translate }}</button>
+          <button type="submit" [disabled]="isUploadingFile || !directCertForm.pdf_download_url" class="btn-primary" style="background: #4A0E17; color: #ECC876; font-weight: 800;">
+            {{ 'certificates.submitCertBtn' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- DIRECT MARKSHEET FORM -->
+  @if (showUploadForm && uploadType === 'marksheet') {
+    <div style="margin-bottom: 24px; border: 2px solid #2563eb; background: #f0f9ff; border-radius: 12px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #1e3a8a;">
+          <i class="bi bi-file-earmark-spreadsheet-fill" style="color: #2563eb;"></i> {{ 'certificates.marksheetFormTitle' | translate }}
+        </h3>
+        <button (click)="showUploadForm = false" style="background: none; border: none; font-size: 18px; color: #64748b; cursor: pointer;">&times;</button>
+      </div>
+
+      <form (ngSubmit)="submitDirectMarksheet()">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px;">
+          <div>
+            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectStudent' | translate }}</label>
+            <select [(ngModel)]="directMarksheetForm.student_id" name="mStudent" required class="ctrl" style="width: 100%;">
+              @for (st of studentsList; track st.id) {
+                <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectCourse' | translate }}</label>
+            <select [(ngModel)]="directMarksheetForm.course_id" name="mCourse" required class="ctrl" style="width: 100%;">
+              @for (c of coursesList; track c.id) {
+                <option [value]="c.id">{{ c.title }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.marksheetNumber' | translate }}</label>
+            <input type="text" [(ngModel)]="directMarksheetForm.marksheet_number" name="mNum" class="ctrl" style="width: 100%;" placeholder="ASTRO-MRK-2026-XXXX" />
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.totalScore' | translate }}</label>
+            <input type="number" [(ngModel)]="directMarksheetForm.score" name="mScore" class="ctrl" style="width: 100%; font-weight: 700;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.marksheetFile' | translate }}</label>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <input type="file" (change)="onMarksheetFileSelected($event)" accept="application/pdf,image/*" class="ctrl" style="flex: 1;" />
+            @if (isUploadingFile) {
+              <span style="color: #d97706; font-size: 13px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> {{ 'certificates.uploading' | translate }}</span>
+            }
+            @if (directMarksheetForm.marksheet_download_url) {
+              <a [href]="directMarksheetForm.marksheet_download_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 13px; text-decoration: none;">
+                <i class="bi bi-check-circle-fill"></i> {{ 'certificates.viewPdf' | translate }}
+              </a>
+            }
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" (click)="showUploadForm = false" class="btn-cancel">{{ 'certificates.cancelBtn' | translate }}</button>
+          <button type="submit" [disabled]="isUploadingFile || !directMarksheetForm.marksheet_download_url" class="btn-primary" style="background: #1e3a8a; color: #fff; font-weight: 800;">
+            {{ 'certificates.submitMarksheetBtn' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- ISSUED CERTIFICATES & MARKSHEETS TABLE -->
+  <div class="card-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #fff;">
+    <h3 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 800; color: #0f172a;">
+      <i class="bi bi-award" style="color: #D4AF37;"></i> {{ 'certificates.issuedTitle' | translate }}
+    </h3>
+
+    <table class="table-styled" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background: #4A0E17; color: #ECC876; text-align: left;">
+          <th style="padding: 12px;">{{ 'certificates.studentNameReg' | translate }}</th>
+          <th style="padding: 12px;">{{ 'certificates.courseCol' | translate }}</th>
+          <th style="padding: 12px;">{{ 'certificates.certNumCol' | translate }}</th>
+          <th style="padding: 12px;">{{ 'certificates.marksheetNumCol' | translate }}</th>
+          <th style="padding: 12px;">{{ 'certificates.scoreGradeCol' | translate }}</th>
+          <th style="padding: 12px;">{{ 'certificates.filesCol' | translate }}</th>
+          <th style="padding: 12px;">{{ 'certificates.actionCol' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of issuedCertificates; track c.id) {
+          <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 12px;">
+              <div style="font-weight: 800; color: #0f172a;">{{ c.student_name }}</div>
+              <div style="font-size: 11px; color: #D4AF37; font-weight: 700;">ID: {{ c.student_reg_id || c.student_phone || '-' }}</div>
+            </td>
+            <td style="padding: 12px; font-weight: 600; font-size: 13px;">
+              {{ c.course_title }}
+            </td>
+            <td style="padding: 12px; font-family: monospace; font-weight: 700; color: #4A0E17;">
+              {{ c.certificate_number || '-' }}
+            </td>
+            <td style="padding: 12px; font-family: monospace; font-weight: 700; color: #1e3a8a;">
+              {{ c.marksheet_number || '-' }}
+            </td>
+            <td style="padding: 12px;">
+              <span style="font-weight: 800; font-size: 14px; color: #166534;">{{ c.score }} / 100</span>
+              <div style="font-size: 11px; color: #64748b;">{{ c.grade }}</div>
+            </td>
+            <td style="padding: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                @if (c.pdf_download_url) {
+                  <a [href]="c.pdf_download_url" target="_blank" style="color: #4A0E17; font-weight: 700; text-decoration: none; font-size: 12px;">
+                    <i class="bi bi-award-fill" style="color: #D4AF37;"></i> PDF
+                  </a>
+                }
+                @if (c.marksheet_download_url) {
+                  <a [href]="c.marksheet_download_url" target="_blank" style="color: #1e3a8a; font-weight: 700; text-decoration: none; font-size: 12px;">
+                    <i class="bi bi-file-earmark-spreadsheet-fill" style="color: #2563eb;"></i> PDF
+                  </a>
+                }
+              </div>
+            </td>
+            <td style="padding: 12px;">
+              <button (click)="deleteRecord(c.id)" style="background: #fee2e2; color: #991b1b; border: none; padding: 6px 10px; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </td>
+          </tr>
+        }
+        @if (issuedCertificates.length === 0) {
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px; color: #94a3b8;">{{ 'certificates.noRecords' | translate }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+</div>

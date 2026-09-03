@@ -7,8 +7,14 @@
 **/bazel-out/
 **/www/
 **/platforms/
-**/plugins/
-**/android/
+# Android build outputs & local config (Track source code, ignore build cache)
+**/android/.gradle/
+**/android/.idea/
+**/android/build/
+**/android/app/build/
+**/android/local.properties
+**/android/app/src/main/assets/public/
+**/android/capacitor-cordova-android-plugins/build/
 **/ios/
 
 # Node & Package Managers

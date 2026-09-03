@@ -52,6 +52,9 @@ class ExamController extends Controller
             'duration' => 'required|integer',
             'total_marks' => 'required|integer',
             'pass_mark' => 'required|integer',
+            'practical_prompt' => 'nullable|string',
+            'chart_image_url' => 'nullable|string',
+            'batch_id' => 'nullable|integer',
         ]);
 
         $examId = DB::table('exams')->insertGetId([
@@ -60,6 +63,9 @@ class ExamController extends Controller
             'duration' => $request->duration,
             'total_marks' => $request->total_marks,
             'pass_mark' => $request->pass_mark,
+            'practical_prompt' => $request->practical_prompt,
+            'chart_image_url' => $request->chart_image_url,
+            'batch_id' => $request->batch_id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -81,6 +87,9 @@ class ExamController extends Controller
             'duration' => 'required|integer',
             'total_marks' => 'required|integer',
             'pass_mark' => 'required|integer',
+            'practical_prompt' => 'nullable|string',
+            'chart_image_url' => 'nullable|string',
+            'batch_id' => 'nullable|integer',
         ]);
 
         DB::table('exams')->where('id', $id)->update([
@@ -88,6 +97,9 @@ class ExamController extends Controller
             'duration' => $request->duration,
             'total_marks' => $request->total_marks,
             'pass_mark' => $request->pass_mark,
+            'practical_prompt' => $request->practical_prompt,
+            'chart_image_url' => $request->chart_image_url,
+            'batch_id' => $request->batch_id,
             'updated_at' => now(),
         ]);
 

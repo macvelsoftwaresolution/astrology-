@@ -1,0 +1,38 @@
+.exams-eval-container {
+  padding: 10px;
+}
+
+.btn-tab {
+  background: #f8fafc;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+
+.btn-tab.active {
+  background: #4A0E17 !important;
+  color: #ECC876 !important;
+  border-color: #D4AF37 !important;
+}
+
+.ctrl {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.ctrl:focus {
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.table-styled th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-styled td {
+  font-size: 13px;
+}

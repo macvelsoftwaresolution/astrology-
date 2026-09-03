@@ -1,0 +1,417 @@
+<div class="exams-eval-container">
+
+  <!-- HEADER NAVIGATION -->
+  <div class="header-box" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-journal-check" style="color: #D4AF37;"></i> {{ 'exams.title' | translate }}
+      </h2>
+      <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+        {{ 'exams.subtitle' | translate }}
+      </p>
+    </div>
+
+    <!-- Category Filter & Views -->
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <select [(ngModel)]="selectedCategory" (change)="loadExams()" class="ctrl" style="font-weight: 700; background: #fffdfa; border: 1px solid #D4AF37;">
+        <option value="ILANILAI">இளநிலை (ILANILAI)</option>
+        <option value="MUTHUNILAI">முதுநிலை (MUTHUNILAI)</option>
+        <option value="RESEARCH">ஆராய்ச்சி (RESEARCH)</option>
+      </select>
+
+      <button [class.active]="activeView === 'list'" (click)="activeView = 'list'" class="btn-tab" style="padding: 8px 14px; border-radius: 8px; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+        <i class="bi bi-list-task"></i> {{ 'exams.listTab' | translate }}
+      </button>
+
+      <button [class.active]="activeView === 'evaluation'" (click)="activeView = 'evaluation'; loadSubmissions()" class="btn-tab" style="padding: 8px 14px; border-radius: 8px; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer; background: #1e3a8a; color: #fff;">
+        <i class="bi bi-person-check-fill"></i> {{ 'exams.evalTab' | translate }}
+      </button>
+
+      <button (click)="openCreateExam()" class="btn-primary" style="background: linear-gradient(135deg, #4A0E17, #7A1C28); border: 1px solid #D4AF37; padding: 8px 16px; border-radius: 8px; font-weight: 700; color: #fef3c7; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i class="bi bi-plus-circle-fill"></i> {{ 'exams.createBtn' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 1: EXAMS LIST -->
+  @if (activeView === 'list') {
+    <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+      @for (ex of exams; track ex.id) {
+        <div class="card-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
+              {{ ex.level }}
+            </span>
+            <span style="font-size: 12px; color: #64748b; font-weight: 600;">
+              <i class="bi bi-clock-history"></i> {{ ex.duration }} Mins
+            </span>
+          </div>
+
+          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 800; color: #0f172a;">{{ ex.title }}</h3>
+          
+          <div style="font-size: 13px; color: #475569; margin-bottom: 14px; display: flex; gap: 16px;">
+            <span><strong>{{ 'exams.totalMarks' | translate }}:</strong> {{ ex.total_marks }}</span>
+            <span><strong>{{ 'exams.passMark' | translate }}:</strong> {{ ex.pass_mark }}</span>
+          </div>
+
+          @if (ex.practical_prompt) {
+            <div style="font-size: 12px; background: #f8fafc; border-left: 3px solid #D4AF37; padding: 8px 10px; margin-bottom: 14px; border-radius: 4px; color: #334155;">
+              <i class="bi bi-diagram-3-fill" style="color: #4A0E17;"></i> {{ ex.practical_prompt | slice:0:60 }}...
+            </div>
+          }
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 12px;">
+            <button (click)="editExam(ex)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #1e293b; cursor: pointer;">
+              <i class="bi bi-pencil-square"></i> {{ 'exams.editTitle' | translate }}
+            </button>
+            <button (click)="deleteExam(ex.id)" style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: #991b1b; cursor: pointer;">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (exams.length === 0) {
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; color: #64748b;">
+          <i class="bi bi-journal-x" style="font-size: 32px; color: #94a3b8;"></i>
+          <p style="margin-top: 8px; font-weight: 600;">{{ 'exams.noQuestions' | translate }}</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- VIEW 2: EXAM WIZARD (CLEAN 2-PHASE LAYOUT) -->
+  @if (activeView === 'exam-wizard' && activeExamWizard) {
+    <div class="card-box" style="border: 2px solid #D4AF37; border-radius: 14px; padding: 22px; background: #fff;">
+      
+      <!-- Wizard Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-gear-wide-connected" style="color: #D4AF37;"></i> 
+          {{ activeExamWizard.id ? ('exams.editTitle' | translate) : ('exams.createTitle' | translate) }}
+        </h3>
+        <button (click)="activeView = 'list'" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 14px; font-weight: 700; cursor: pointer;">
+          <i class="bi bi-arrow-left"></i> {{ 'exams.backBtn' | translate }}
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveExam()">
+        
+        <!-- SECTION 1: GENERAL DETAILS -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 24px;">
+          <h4 style="margin: 0 0 14px 0; font-size: 15px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-info-circle-fill" style="color: #2563eb;"></i> {{ 'exams.step1' | translate }}
+          </h4>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <div>
+              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.examTitle' | translate }}</label>
+              <input type="text" [(ngModel)]="activeExamWizard.title" name="exTitle" required class="ctrl" style="width: 100%; font-weight: 600;" />
+            </div>
+
+            <div>
+              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.duration' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.duration" name="exDuration" class="ctrl" style="width: 100%;" />
+            </div>
+
+            <div>
+              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.totalMarks' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.total_marks" name="exTotal" class="ctrl" style="width: 100%;" />
+            </div>
+
+            <div>
+              <label style="font-weight: 700; color: #334155; font-size: 13px; margin-bottom: 4px; display: block;">{{ 'exams.passMark' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.pass_mark" name="exPass" class="ctrl" style="width: 100%;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2 / PHASE 1: MCQ QUESTIONS & CSV UPLOAD -->
+        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h4 style="margin: 0; font-size: 16px; font-weight: 800; color: #14532d; display: flex; align-items: center; gap: 8px;">
+                <i class="bi bi-file-earmark-spreadsheet-fill" style="color: #16a34a; font-size: 20px;"></i> 
+                {{ 'exams.phase1' | translate }}
+              </h4>
+              <span style="font-size: 12px; color: #166534; font-weight: 600;">
+                {{ 'exams.phase1Desc' | translate }}
+              </span>
+            </div>
+
+            <!-- CSV Controls -->
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button (click)="downloadSampleCsv()" type="button" style="background: #ffffff; color: #1e3a8a; border: 1px solid #93c5fd; padding: 7px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-download" style="color: #2563eb;"></i> {{ 'exams.downloadSample' | translate }}
+              </button>
+
+              <input type="file" (change)="onCsvFileSelected($event)" accept=".csv" class="ctrl" style="padding: 5px; font-size: 12px; background: #fff;" />
+              
+              <button (click)="uploadCsvQuestions()" type="button" style="background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-upload"></i> {{ 'exams.uploadCsv' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Manual Question Form -->
+          <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+            <h5 style="margin: 0 0 10px 0; font-weight: 800; color: #14532d; font-size: 13px;">
+              <i class="bi bi-plus-circle"></i> {{ 'exams.manualAdd' | translate }}:
+            </h5>
+            <div style="display: grid; grid-template-columns: 2fr 3fr 1fr 1fr; gap: 10px; margin-bottom: 6px;">
+              <input type="text" [(ngModel)]="newQuestion.question_text" name="nqText" [placeholder]="'exams.questionLabel' | translate" class="ctrl" />
+              <input type="text" [(ngModel)]="newQuestion.optionsStr" name="nqOptions" [placeholder]="'exams.optionsLabel' | translate" class="ctrl" />
+              <input type="text" [(ngModel)]="newQuestion.correct_answer" name="nqAns" [placeholder]="'exams.answerLabel' | translate" class="ctrl" />
+              <button (click)="addQuestion()" type="button" style="background: #2563eb; color: #fff; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">
+                {{ 'exams.addBtn' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Questions Table -->
+          <div style="background: #fff; border: 1px solid #bbf7d0; border-radius: 10px; overflow: hidden;">
+            <table class="table-styled" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #dcfce7; color: #14532d; text-align: left;">
+                  <th style="padding: 10px;">#</th>
+                  <th style="padding: 10px;">{{ 'exams.questionLabel' | translate }}</th>
+                  <th style="padding: 10px;">{{ 'exams.optionsLabel' | translate }}</th>
+                  <th style="padding: 10px;">{{ 'exams.answerLabel' | translate }}</th>
+                  <th style="padding: 10px;">-</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (q of activeExamWizard.questions; track q.id; let i = $index) {
+                  <tr style="border-bottom: 1px solid #f0fdf4;">
+                    <td style="padding: 10px; font-weight: 700;">{{ i + 1 }}</td>
+                    <td style="padding: 10px; font-weight: 600; color: #0f172a;">{{ q.question_text }}</td>
+                    <td style="padding: 10px; font-size: 12px; color: #475569;">
+                      {{ q.options ? (q.options.join ? q.options.join(', ') : q.options) : '-' }}
+                    </td>
+                    <td style="padding: 10px; color: #16a34a; font-weight: 800;">{{ q.correct_answer }}</td>
+                    <td style="padding: 10px;">
+                      <button (click)="deleteQuestion(q.id, i)" type="button" style="background: #fee2e2; color: #b91c1c; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+                @if (!activeExamWizard.questions || activeExamWizard.questions.length === 0) {
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #64748b; font-size: 13px;">
+                      {{ 'exams.noQuestions' | translate }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3 / PHASE 2: PRACTICAL CHART SOLVING -->
+        <div style="background: #fffdfa; border: 2px solid #fde68a; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+          <h4 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-diagram-3-fill" style="color: #D4AF37; font-size: 20px;"></i> 
+            {{ 'exams.phase2' | translate }}
+          </h4>
+          
+          <div style="margin-bottom: 14px;">
+            <label style="font-weight: 700; color: #475569; font-size: 13px; margin-bottom: 4px; display: block;">
+              {{ 'exams.promptLabel' | translate }}
+            </label>
+            <textarea [(ngModel)]="activeExamWizard.practical_prompt" name="exPracticalPrompt" rows="3" class="ctrl" style="width: 100%; font-family: inherit;"></textarea>
+          </div>
+
+          <div>
+            <label style="font-weight: 700; color: #475569; font-size: 13px; margin-bottom: 4px; display: block;">
+              {{ 'exams.chartImageLabel' | translate }}
+            </label>
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <input type="file" (change)="onChartImageSelected($event)" accept="image/*" class="ctrl" style="flex: 1; background: #fff;" />
+              @if (isUploadingChart) {
+                <span style="color: #d97706; font-size: 13px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> Uploading...</span>
+              }
+              @if (activeExamWizard.chart_image_url) {
+                <a [href]="activeExamWizard.chart_image_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 13px; text-decoration: none;">
+                  <i class="bi bi-check-circle-fill"></i> View Chart Image
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- SAVE FOOTER -->
+        <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 18px;">
+          <button type="button" (click)="activeView = 'list'" class="btn-cancel" style="padding: 10px 20px; border-radius: 8px;">
+            {{ 'exams.cancelBtn' | translate }}
+          </button>
+          <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #4A0E17, #7A1C28); border: 1px solid #D4AF37; color: #ECC876; padding: 10px 24px; font-weight: 800; font-size: 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-check2-circle" style="font-size: 18px;"></i> {{ 'exams.saveBtn' | translate }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+
+  <!-- VIEW 3: STUDENT SUBMISSIONS & EVALUATION -->
+  @if (activeView === 'evaluation') {
+    <div class="card-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #fff;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #0f172a;">
+            <i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626;"></i> {{ 'exams.evaluateTitle' | translate }}
+          </h3>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <select [(ngModel)]="selectedBatchId" (change)="loadSubmissions()" class="ctrl" style="font-weight: 700;">
+            <option value="">{{ 'exams.allBatches' | translate }}</option>
+            @for (b of batches; track b.id) {
+              <option [value]="b.id">{{ b.name }} ({{ b.batch_code }})</option>
+            }
+          </select>
+
+          <button (click)="publishBatchResults()" style="background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <i class="bi bi-send-check-fill"></i> {{ 'exams.publishBatch' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <table class="table-styled" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #4A0E17; color: #ECC876; text-align: left;">
+            <th style="padding: 12px;">Student Name</th>
+            <th style="padding: 12px;">Course / Batch</th>
+            <th style="padding: 12px;">Type</th>
+            <th style="padding: 12px;">PDF Answer Sheet</th>
+            <th style="padding: 12px;">MCQ / Practical Marks</th>
+            <th style="padding: 12px;">Total Marks</th>
+            <th style="padding: 12px;">Status</th>
+            <th style="padding: 12px;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of submissions; track s.id) {
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 12px;">
+                <div style="font-weight: 700; color: #0f172a;">{{ s.student_name }}</div>
+                <div style="font-size: 11px; color: #64748b;">{{ s.student_email }}</div>
+              </td>
+              <td style="padding: 12px;">
+                <div style="font-weight: 600; font-size: 13px;">{{ s.course_title }}</div>
+                <div style="font-size: 11px; color: #94a3b8;">{{ s.batch_name || 'General Batch' }}</div>
+              </td>
+              <td style="padding: 12px; font-size: 12px; font-weight: 700; color: #475569;">
+                {{ s.submission_type }}
+              </td>
+              <td style="padding: 12px;">
+                @if (s.pdf_url) {
+                  <a [href]="s.pdf_url" target="_blank" style="color: #dc2626; font-weight: 700; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> View PDF
+                  </a>
+                } @else {
+                  <span style="color: #94a3b8; font-size: 12px;">N/A</span>
+                }
+              </td>
+              <td style="padding: 12px; font-size: 12px;">
+                <div>MCQ: <strong>{{ s.mcq_score !== null ? s.mcq_score : '-' }}</strong></div>
+                <div>Practical: <strong>{{ s.practical_score !== null ? s.practical_score : '-' }}</strong></div>
+              </td>
+              <td style="padding: 12px; font-weight: 800; font-size: 15px; color: #4A0E17;">
+                {{ s.score !== null ? s.score : '-' }} / 100
+              </td>
+              <td style="padding: 12px;">
+                <span [style.background]="s.status === 'Approved' ? '#dcfce7' : '#fee2e2'"
+                      [style.color]="s.status === 'Approved' ? '#166534' : '#991b1b'"
+                      style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800;">
+                  {{ s.status === 'Approved' ? 'PASS' : 'PENDING / REJECTED' }}
+                </span>
+                @if (s.is_published) {
+                  <span style="display: block; font-size: 10px; color: #16a34a; font-weight: 700; margin-top: 2px;">
+                    <i class="bi bi-globe"></i> Published
+                  </span>
+                }
+              </td>
+              <td style="padding: 12px;">
+                <button (click)="openGradingModal(s)" style="background: #4A0E17; color: #ECC876; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;">
+                  <i class="bi bi-check2-square"></i> Evaluate
+                </button>
+              </td>
+            </tr>
+          }
+          @if (submissions.length === 0) {
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">No submissions found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- EVALUATION MODAL -->
+  @if (selectedSubmissionForGrading) {
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+      <div style="background: #fff; border-radius: 14px; width: 90%; max-width: 540px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid #D4AF37;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #4A0E17;">
+            <i class="bi bi-award"></i> Student Submission Valuation
+          </h3>
+          <button (click)="selectedSubmissionForGrading = null" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+        </div>
+
+        <div style="margin-bottom: 14px; font-size: 13px; color: #334155;">
+          <div><strong>Student:</strong> {{ selectedSubmissionForGrading.student_name }}</div>
+          <div><strong>Course:</strong> {{ selectedSubmissionForGrading.course_title }}</div>
+          @if (selectedSubmissionForGrading.pdf_url) {
+            <div style="margin-top: 6px;">
+              <a [href]="selectedSubmissionForGrading.pdf_url" target="_blank" style="color: #dc2626; font-weight: 700; text-decoration: none;">
+                <i class="bi bi-file-earmark-pdf-fill"></i> View Uploaded PDF Answer Sheet
+              </a>
+            </div>
+          }
+        </div>
+
+        <form (ngSubmit)="saveGrading()">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">MCQ Score (Max: 50)</label>
+              <input type="number" [(ngModel)]="gradingForm.mcq_score" name="gMcq" (input)="updateTotalScore()" class="ctrl" style="width: 100%; font-weight: 700;" />
+            </div>
+            <div>
+              <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">Practical Score (Max: 50)</label>
+              <input type="number" [(ngModel)]="gradingForm.practical_score" name="gPrac" (input)="updateTotalScore()" class="ctrl" style="width: 100%; font-weight: 700;" />
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px; background: #fffdfa; border: 1px solid #fde68a; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; color: #4A0E17;">Total Score:</span>
+            <span style="font-size: 18px; font-weight: 800; color: #4A0E17;">{{ gradingForm.score }} / 100</span>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">Result Status</label>
+            <select [(ngModel)]="gradingForm.status" name="gStatus" class="ctrl" style="width: 100%; font-weight: 700;">
+              <option value="Approved">Approved (Pass)</option>
+              <option value="Rejected">Rejected (Fail)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="font-weight: 700; font-size: 12px; color: #475569; margin-bottom: 4px; display: block;">Evaluator Notes</label>
+            <textarea [(ngModel)]="gradingForm.evaluator_notes" name="gNotes" rows="2" class="ctrl" style="width: 100%;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" (click)="selectedSubmissionForGrading = null" class="btn-cancel" style="padding: 8px 16px; border-radius: 6px; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn-primary" style="background: #4A0E17; color: #ECC876; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 800; cursor: pointer;">
+              Save Valuation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>
