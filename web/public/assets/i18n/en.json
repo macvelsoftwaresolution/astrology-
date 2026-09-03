@@ -483,7 +483,7 @@
     "addBook": "Add Book",
     "bookTitle": "Title",
     "author": "Author",
-    "price": "Price (₹)",
+    "price": "Price",
     "addedOn": "Added On",
     "buyers": "Buyers",
     "noBooks": "No books found.",

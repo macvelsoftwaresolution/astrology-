@@ -27,7 +27,7 @@ const NAKSHATRAS = [
   template: `
     <div class="my-jathagam-wrapper">
       <div class="section-header">
-        <h2>📜 என் ஜாதகம்</h2>
+        <h2><i class="bi bi-journal-text me-1"></i> {{ 'astrology.title' | translate }}</h2>
         <p>உங்கள் பிறப்பு விவரங்களை சேமியுங்கள்</p>
       </div>
 
@@ -36,7 +36,7 @@ const NAKSHATRAS = [
         <div class="saved-card">
           <div class="saved-header">
             <span class="rasi-badge">{{ saved.rasi || 'ராசி' }}</span>
-            <button class="edit-btn" (click)="startEdit()">✏️ திருத்தம்</button>
+            <button class="edit-btn" (click)="startEdit()"><i class="bi bi-pencil-fill me-1"></i> திருத்தம்</button>
           </div>
           <div class="info-grid">
             <div class="info-item">
@@ -131,7 +131,7 @@ const NAKSHATRAS = [
               @if (saving) {
                 <ion-spinner name="crescent" style="width:16px;height:16px"></ion-spinner>
               } @else {
-                <span>💾 சேமி</span>
+                <span><i class="bi bi-floppy-fill me-1"></i> சேமி</span>
               }
             </button>
           </div>
@@ -140,7 +140,7 @@ const NAKSHATRAS = [
             <p class="error-msg">{{ errorMsg | translate }}</p>
           }
           @if (successMsg) {
-            <p class="success-msg">✅ {{ successMsg }}</p>
+            <p class="success-msg"><i class="bi bi-check-circle-fill me-1 text-success"></i> {{ successMsg }}</p>
           }
         </div>
       }

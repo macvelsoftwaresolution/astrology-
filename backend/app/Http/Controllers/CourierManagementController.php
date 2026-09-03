@@ -252,6 +252,10 @@ class CourierManagementController extends Controller
                 'title' => $request->title,
                 'author' => $request->author ?? '',
                 'price' => (float)$request->price,
+                'original_price' => $request->filled('original_price') ? (float)$request->original_price : null,
+                'is_bestseller' => filter_var($request->is_bestseller, FILTER_VALIDATE_BOOLEAN),
+                'rating' => $request->filled('rating') ? (float)$request->rating : 5.0,
+                'format_label' => $request->format_label ?? null,
                 'description' => $request->description ?? '',
                 'updated_at' => now(),
             ];

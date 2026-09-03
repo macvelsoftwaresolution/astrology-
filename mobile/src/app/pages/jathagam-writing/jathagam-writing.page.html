@@ -98,7 +98,7 @@
         @if (isProcessingPayment) {
         <span>{{ 'jathagamWriting.processing' | translate }}</span>
         } @else {
-        <span>₹{{ price }} {{ 'jathagamWriting.submitBtn' | translate }} 🔒</span>
+        <span>₹{{ price }} {{ 'jathagamWriting.submitBtn' | translate }} <i class="bi bi-lock-fill ms-1"></i></span>
         }
       </button>
     </form>

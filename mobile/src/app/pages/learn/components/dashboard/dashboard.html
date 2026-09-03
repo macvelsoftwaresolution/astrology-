@@ -43,29 +43,29 @@
     <img [src]="lc.banner_image_url || 'assets/images/astro_service_bg.png'" alt="Live Class" class="lc-img">
     <div class="lc-info">
       @if (lc.is_live_now && lc.is_active) {
-        <div class="live-badge" style="background: #dc2626; color: #fff;"><i class="bi bi-record-fill text-white me-1"></i> 🔴 நேரலை (LIVE NOW)</div>
+        <div class="live-badge" style="background: #dc2626; color: #fff;"><i class="bi bi-record-fill text-white me-1"></i> {{ 'learn.liveNow' | translate }}</div>
       } @else if (lc.is_expired) {
-        <div class="live-badge" style="background: #64748b; color: #fff;"><i class="bi bi-check-circle-fill me-1"></i> வகுப்பு நிறைவடைந்தது</div>
+        <div class="live-badge" style="background: #64748b; color: #fff;"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.classFinished' | translate }}</div>
       } @else if (lc.is_upcoming) {
-        <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> இன்று • {{ lc.time_text || 'மாலை 06:00' }}</div>
+        <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> {{ 'learn.todayPrefix' | translate }} {{ lc.time_text || 'மாலை 06:00' }}</div>
       } @else {
-        <div class="live-badge" style="background: #d97706; color: #fff;"><i class="bi bi-calendar-event me-1"></i> {{ lc.time_text || 'அட்டவணை நேரலை' }}</div>
+        <div class="live-badge" style="background: #d97706; color: #fff;"><i class="bi bi-calendar-event me-1"></i> {{ lc.time_text || ('learn.scheduledLive' | translate) }}</div>
       }
       <h3 style="margin-top: 6px;">{{ lc.title }}</h3>
       <p style="margin-bottom: 8px;">
-        {{ (lc.description && lc.description !== lc.time_text) ? lc.description : 'இன்றைய நேரடி வகுப்பு மற்றும் ஆன்லைன் வழிகாட்டுதல்' }}
+        {{ (lc.description && lc.description !== lc.time_text) ? lc.description : ('learn.defaultLiveDesc' | translate) }}
       </p>
       @if (lc.is_live_now && lc.is_active) {
         <button class="lc-btn" style="background: linear-gradient(135deg, #dc2626, #991b1b); font-weight: 800;" (click)="playLiveClass(lc.link); $event.stopPropagation()">
-          <i class="bi bi-box-arrow-in-right"></i> நேரலையில் இணை (Join Live)
+          <i class="bi bi-box-arrow-in-right"></i> {{ 'learn.joinLiveBtn' | translate }}
         </button>
       } @else if (lc.is_expired) {
         <button class="lc-btn" disabled style="background: #64748b; color: #f1f5f9; cursor: not-allowed; opacity: 0.8;" (click)="$event.stopPropagation()">
-          <i class="bi bi-lock-fill"></i> வகுப்பு முடிந்தது (Meeting Ended)
+          <i class="bi bi-lock-fill"></i> {{ 'learn.classEndedBtn' | translate }}
         </button>
       } @else {
         <button class="lc-btn" (click)="playLiveClass(lc.link); $event.stopPropagation()">
-          <i class="bi bi-play-circle-fill"></i> வகுப்பைக் காண்க
+          <i class="bi bi-play-circle-fill"></i> {{ 'learn.watchClassBtn' | translate }}
         </button>
       }
     </div>
@@ -141,7 +141,7 @@
         <h3>{{ 'learn.webinars' | translate }}</h3>
       </div>
       @if (seminars.length > 1) {
-        <span class="header-subtitle-tag">{{ seminars.length }} வகுப்புகள்</span>
+        <span class="header-subtitle-tag">{{ seminars.length }} {{ 'learn.classesTag' | translate }}</span>
       }
     </div>
     <div class="home-card-body p-0">
@@ -150,13 +150,13 @@
         <div class="webinar-card-item" [class.is-live]="s.status === 'live'" (click)="openMeeting(s.join_url, s.status, s)">
           <div class="sem-badge-row">
             @if (s.status === 'live') {
-              <span class="sem-status-pill live"><i class="bi bi-broadcast me-1"></i> நேரலை</span>
+              <span class="sem-status-pill live"><i class="bi bi-broadcast me-1"></i> {{ 'learn.liveTag' | translate }}</span>
             } @else if (s.status === 'past') {
-              <span class="sem-status-pill ended"><i class="bi bi-check-circle-fill me-1"></i> முடிந்தது</span>
+              <span class="sem-status-pill ended"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.endedTag' | translate }}</span>
             } @else {
-              <span class="sem-status-pill upcoming"><i class="bi bi-clock-fill me-1"></i> அட்டவணை</span>
+              <span class="sem-status-pill upcoming"><i class="bi bi-clock-fill me-1"></i> {{ 'learn.scheduledTag' | translate }}</span>
             }
-            <span class="sem-type-tag">சிறப்பு வகுப்பு</span>
+            <span class="sem-type-tag">{{ 'learn.specialClassTag' | translate }}</span>
           </div>
 
           <div class="sem-content-wrap">
@@ -164,11 +164,11 @@
             <div class="sem-meta-group">
               <div class="sem-meta-line">
                 <i class="bi bi-person-circle"></i>
-                <span>{{ s.speaker || 'ஆருத்ரா குரு' }}</span>
+                <span>{{ s.speaker || ('learn.defaultSpeaker' | translate) }}</span>
               </div>
               <div class="sem-meta-line">
                 <i class="bi bi-calendar3"></i>
-                <span>{{ s.date_text || s.date || 'இன்று' }} • {{ s.time_text || s.time }}</span>
+                <span>{{ s.date_text || s.date || ('learn.todayText' | translate) }} • {{ s.time_text || s.time }}</span>
               </div>
             </div>
           </div>
@@ -176,15 +176,15 @@
           <div class="sem-action-row">
             @if (s.status === 'live') {
               <button class="sem-btn live-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
-                <i class="bi bi-play-circle-fill me-1"></i> நேரலையில் இணை
+                <i class="bi bi-play-circle-fill me-1"></i> {{ 'learn.joinLive' | translate }}
               </button>
             } @else if (s.status === 'past') {
               <button class="sem-btn past-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
-                <i class="bi bi-file-earmark-play me-1"></i> பதிவு காண்க
+                <i class="bi bi-file-earmark-play me-1"></i> {{ 'learn.watchRecording' | translate }}
               </button>
             } @else {
               <button class="sem-btn upcoming-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
-                <i class="bi bi-bell-fill me-1"></i> நினைவூட்டல்
+                <i class="bi bi-bell-fill me-1"></i> {{ 'learn.setReminder' | translate }}
               </button>
             }
           </div>
@@ -202,7 +202,7 @@
         <h3>{{ 'learn.pdfNotes' | translate }}</h3>
       </div>
       @if (pdfNotes.length > 0) {
-        <span class="header-subtitle-tag">{{ pdfNotes.length }} குறிப்புகள்</span>
+        <span class="header-subtitle-tag">{{ pdfNotes.length }} {{ 'learn.notesTag' | translate }}</span>
       }
     </div>
     <div class="home-card-body p-2">
@@ -214,11 +214,11 @@
           </div>
           <div class="pdf-row-info">
             <strong class="pdf-row-title">{{ p.title }}</strong>
-            <span class="pdf-row-meta"><i class="bi bi-file-text me-1"></i> {{ p.pages || 'PDF குறிப்பு' }}</span>
+            <span class="pdf-row-meta"><i class="bi bi-file-text me-1"></i> {{ p.pages || ('learn.pdfNoteTag' | translate) }}</span>
           </div>
           <button class="pdf-row-btn" (click)="downloadPDF(p.title, p.url); $event.stopPropagation()">
             <i class="bi bi-cloud-arrow-down-fill me-1"></i>
-            <span>பதிவிறக்கு</span>
+            <span>{{ 'common.download' | translate }}</span>
           </button>
         </div>
         }
@@ -286,7 +286,7 @@
   <div
     style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; border: 1px dashed #ccc; margin-bottom: 20px;">
     <i class="bi bi-journal-x" style="font-size: 2.5rem; color: #ccc; margin-bottom: 10px; display: block;"></i>
-    <p style="color: #7E716A; font-family: 'Noto Serif Tamil', serif;">பாடங்கள் இன்னும் சேர்க்கப்படவில்லை.</p>
+    <p style="color: #7E716A;">{{ 'learn.noLessons' | translate }}</p>
     <p style="font-size: 0.8rem; color: #999;">Batch: {{ activeBatch?.name || 'No Active Batch' }}</p>
   </div>
   }
@@ -308,7 +308,7 @@
       </div>
       <div class="video-info">
         <h2>{{ selectedLesson?.title }}</h2>
-        <span class="v-stats"><i class="bi bi-play-circle-fill me-1" style="color: #dc2626;"></i> வீடியோ பாடம் • {{
+        <span class="v-stats"><i class="bi bi-play-circle-fill me-1" style="color: #dc2626;"></i> {{ 'learn.videoLesson' | translate }} • {{
           selectedLesson?.duration || '15:00' }}</span>
       </div>
     </div>
@@ -324,7 +324,7 @@
       </div>
       <div class="video-info">
         <h2>{{ selectedLesson?.title }}</h2>
-        <span class="v-stats"><i class="bi bi-image-fill me-1" style="color: #0284c7;"></i> புகைப்படப் பாடம்</span>
+        <span class="v-stats"><i class="bi bi-image-fill me-1" style="color: #0284c7;"></i> {{ 'learn.imageLesson' | translate }}</span>
       </div>
     </div>
     }
@@ -349,13 +349,13 @@
     <!-- Download Notes (If PDF Type) -->
     @if (selectedLesson?.type === 'pdf') {
     <div class="study-documents-box">
-      <h3><i class="bi bi-file-earmark-pdf-fill me-2" style="color: #dc2626;"></i>பாடக்குறிப்புகள் (PDF)</h3>
+      <h3><i class="bi bi-file-earmark-pdf-fill me-2" style="color: #dc2626;"></i>{{ 'learn.pdfNotes' | translate }}</h3>
       <div class="doc-download-item" (click)="downloadPDF(selectedLesson?.title, selectedLesson?.url)">
         <div class="doc-left">
           <span class="doc-icon"><i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626;"></i></span>
           <div>
             <strong>{{ selectedLesson?.title }}</strong>
-            <span>PDF ஆவணம் • பதிவிறக்கம் செய்ய கிளிக் செய்க</span>
+            <span>{{ 'learn.clickToDownloadPdf' | translate }}</span>
           </div>
         </div>
         <button class="download-btn"><i class="bi bi-download"></i></button>
@@ -366,13 +366,13 @@
     <!-- Live Class Link (If Live Type) -->
     @if (selectedLesson?.type === 'live') {
     <div class="study-documents-box">
-      <h3><i class="bi bi-broadcast me-2" style="color: #16a34a;"></i>நேரலை வகுப்பு</h3>
+      <h3><i class="bi bi-broadcast me-2" style="color: #16a34a;"></i>{{ 'learn.liveClassTitle' | translate }}</h3>
       <div class="doc-download-item" (click)="openMeeting(selectedLesson?.url)">
         <div class="doc-left">
           <span class="doc-icon"><i class="bi bi-broadcast" style="color: #16a34a;"></i></span>
           <div>
             <strong>{{ selectedLesson?.title }}</strong>
-            <span>நேரலை வகுப்பில் இணைய கிளிக் செய்க</span>
+            <span>{{ 'learn.clickToJoinLive' | translate }}</span>
           </div>
         </div>
         <button class="download-btn" style="color: #16a34a;"><i class="bi bi-box-arrow-up-right"></i></button>
@@ -386,14 +386,14 @@
       <h3 style="color: #0f172a; font-size: 18px; margin-bottom: 16px;"><i class="bi bi-card-text me-2"
           style="color: #0284c7;"></i>{{ selectedLesson?.title }}</h3>
       <div style="font-size:15px; color:#334155; line-height:1.7; white-space: pre-wrap;">{{ selectedLesson?.description
-        || 'உரை தரவு எதுவும் இல்லை.' }}</div>
+        || ('learn.noTextContent' | translate) }}</div>
     </div>
     }
 
     <!-- Description (Dynamic from DB) -->
     @if (selectedLesson?.description && selectedLesson?.type !== 'text' && selectedLesson?.type !== 'document') {
     <div class="lesson-desc-box">
-      <h3><i class="bi bi-lightbulb-fill me-2" style="color: #f59e0b;"></i>விளக்கவுரை</h3>
+      <h3><i class="bi bi-lightbulb-fill me-2" style="color: #f59e0b;"></i>{{ 'learn.vilakkavuraiTitle' | translate }}</h3>
       <p>{{ selectedLesson?.description }}</p>
     </div>
     }
@@ -405,38 +405,101 @@
 
 <!-- ================= SUB-TAB 3: LIBRARY ================= -->
 @if (dashboardTab === 'library') {
-<div class="dashboard-tab-content">
-  <!-- Search -->
-  <div class="lib-search-bar">
-    <input type="text" [placeholder]="'learn.searchBooks' | translate">
-    <span class="search-btn-icon"><i class="bi bi-search"></i></span>
+<div class="dashboard-tab-content lib-tab-wrap">
+  
+  <!-- 1. LUXURY HERO BANNER -->
+  <div class="lib-hero-banner">
+    <div class="lib-hero-badge">
+      <i class="bi bi-book-half me-1"></i> {{ 'learn.libBadge' | translate }}
+    </div>
+    <h2 class="lib-hero-title">{{ 'learn.libHeroTitle' | translate }}</h2>
+    <p class="lib-hero-sub">{{ 'learn.libHeroSub' | translate }}</p>
   </div>
 
-  <!-- Book Lists -->
-  <div class="books-grid">
-    @for (b of books; track b) {
-    <div class="book-card">
-      <div class="book-cover-wrapper">
-        <img [src]="b.coverImage" alt="Book Cover" class="book-cover">
-      </div>
-      <div class="book-info">
-        @if (b.price === 499) {
-        <span class="best-seller-badge">BESTSELLER</span>
-        }
-        <h3>{{ b.title }}</h3>
-        <span class="author-name">{{ 'learn.author' | translate }} {{ b.author }}</span>
-        <span class="book-price">₹{{ b.price }}</span>
-        @if (!b.bought) {
-        <button class="buy-book-btn" (click)="initiateBuyBook(b)">{{ 'learn.buyNow' | translate }}</button>
-        }
-        @if (b.bought) {
-        <button class="buy-book-btn" style="background-color: #f59e0b; color: white; border-color: #f59e0b;"
-          (click)="viewOrderStatus(b.order)">{{ 'learn.viewStatus' | translate }}</button>
-        }
-      </div>
+  <!-- 2. SEARCH & FILTER CONTROLS BAR -->
+  <div class="lib-controls-bar">
+    <div class="lib-search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" [(ngModel)]="bookSearchQuery" [placeholder]="'learn.searchBooks' | translate">
+      @if (bookSearchQuery) {
+        <button class="clear-search-btn" (click)="bookSearchQuery = ''">
+          <i class="bi bi-x-circle-fill"></i>
+        </button>
+      }
     </div>
-    }
+
+    <!-- Filter Pills -->
+    <div class="lib-filter-pills">
+      <button class="lib-pill" [class.active]="bookFilterTab === 'all'" (click)="bookFilterTab = 'all'">
+        <i class="bi bi-grid-fill me-1"></i> {{ 'learn.allBooks' | translate }} ({{ books.length }})
+      </button>
+      <button class="lib-pill" [class.active]="bookFilterTab === 'bought'" (click)="bookFilterTab = 'bought'">
+        <i class="bi bi-bag-check-fill me-1"></i> {{ 'learn.myBooks' | translate }}
+      </button>
+    </div>
   </div>
+
+  <!-- 3. BOOKS GRID -->
+  @if (filteredBooks.length > 0) {
+    <div class="books-grid-luxury">
+      @for (b of filteredBooks; track b.id) {
+      <div class="luxury-book-card" [class.is-bought]="b.bought">
+        <div class="book-cover-container">
+          <img [src]="b.coverImage || 'assets/images/astro_service_bg.png'" alt="Book Cover" class="book-cover-img" (error)="$event.target.src='assets/images/astro_service_bg.png'">
+          <div class="book-spine-shadow"></div>
+          
+          @if (b.bought) {
+            <span class="bought-ribbon"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.purchasedTag' | translate }}</span>
+          } @else if (b.isBestseller) {
+            <span class="bestseller-ribbon"><i class="bi bi-star-fill me-1"></i> BESTSELLER</span>
+          }
+        </div>
+
+        <div class="book-details-box">
+          <h3 class="book-main-title">{{ b.title }}</h3>
+          
+          <div class="book-author-meta">
+            <i class="bi bi-pen-fill me-1"></i>
+            <span>{{ b.author }}</span>
+          </div>
+
+          <div class="book-price-bar">
+            <div class="price-wrap">
+              <span class="current-price">₹{{ b.price }}</span>
+              @if (b.originalPrice && b.originalPrice > b.price) {
+                <span class="original-price">₹{{ b.originalPrice }}</span>
+              }
+            </div>
+            @if (b.originalPrice && b.originalPrice > b.price) {
+              <span class="discount-badge">SAVE ₹{{ b.originalPrice - b.price }}</span>
+            }
+          </div>
+
+          <div class="book-action-row">
+            @if (!b.bought) {
+              <button class="buy-now-btn" (click)="initiateBuyBook(b)">
+                <i class="bi bi-bag-plus-fill me-1"></i> {{ 'learn.buyNow' | translate }}
+              </button>
+            } @else {
+              <button class="status-btn" (click)="viewOrderStatus(b.order)">
+                <i class="bi bi-truck me-1"></i> {{ 'learn.viewStatus' | translate }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-books-state">
+      <i class="bi bi-journal-x empty-icon"></i>
+      <h4>{{ 'learn.noBooksFound' | translate }}</h4>
+      <p>{{ 'learn.noBooksSub' | translate }}</p>
+      <button class="reset-filter-btn" (click)="bookSearchQuery = ''; bookFilterTab = 'all'">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> {{ 'learn.showAllBooksBtn' | translate }}
+      </button>
+    </div>
+  }
 </div>
 }
 
@@ -483,11 +546,6 @@
     <div class="modern-option-tile" (click)="openMyOrders()">
       <span class="tile-icon"><i class="bi bi-box-seam-fill"></i></span>
       <span class="tile-text">{{ 'learn.bookOrders' | translate }}</span>
-      <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
-    </div>
-    <div class="modern-option-tile" (click)="openDiary()">
-      <span class="tile-icon"><i class="bi bi-journal-bookmark-fill"></i></span>
-      <span class="tile-text">{{ 'learn.spiritualDiary' | translate }}</span>
       <span class="tile-arrow"><i class="bi bi-chevron-right"></i></span>
     </div>
     <!-- App Language Toggle Option -->
@@ -799,6 +857,8 @@
   </div>
 </div>
 }
+
+
 
 
 
