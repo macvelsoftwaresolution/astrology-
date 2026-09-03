@@ -97,10 +97,10 @@ $color-orange: #F49320;
 }
 
 .dashboard-tab-content {
-  overflow-y: auto;
+  display: block;
   padding: 1.25rem;
   box-sizing: border-box;
-  padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 140px) !important;
 }
 
 /* SUB-TAB 1: HOME */
