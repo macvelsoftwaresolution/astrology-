@@ -83,6 +83,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   selectedOrderDetails: any = null;
   showOrderStatusModal = false;
 
+  // Book Order Success Notification Modal State
+  showBookOrderSuccessModal = false;
+  orderSuccessNotification: any = null;
+
   // Notifications & Announcements State
   notifications: any[] = [];
   unreadCount: number = 0;
@@ -812,14 +816,38 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
           this.selectedCheckoutBook.bought = true;
           this.selectedCheckoutBook.order = res.order || {
             book_title: orderPayload.book_title,
-            order_number: res.order_number,
+            order_number: res.order_number || res?.order?.order_number,
             status: 'Processing',
             created_at: new Date().toISOString()
           };
         }
         this.activeBookCheckout = false;
         this.loadMyBookOrders();
-        this.showToast(`${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`, 'success');
+
+        const orderNum = res.order_number || res?.order?.order_number || ('#ORD-' + Math.floor(100000 + Math.random() * 900000));
+
+        // Create In-App Notification Alert Modal Data
+        this.orderSuccessNotification = {
+          order_number: orderNum,
+          book_title: orderPayload.book_title,
+          price: orderPayload.price,
+          shipping_address: orderPayload.shipping_address,
+          phone: orderPayload.phone,
+          name: this.checkoutForm.name || 'பயனர்',
+          created_at: new Date().toLocaleDateString('ta-IN')
+        };
+        this.showBookOrderSuccessModal = true;
+
+        // Save into In-App Notifications List
+        this.notifications.unshift({
+          id: Date.now(),
+          title: `புத்தக ஆர்டர் உறுதியானது - ${orderPayload.book_title}`,
+          message: `வணக்கம் ${this.checkoutForm.name || 'பயனர்'}, "${orderPayload.book_title}" புத்தகம் வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது. (ஆர்டர் எண்: ${orderNum})`,
+          created_at: 'இன்று',
+          is_read: false
+        });
+        this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+
         this.selectedCheckoutBook = null;
       },
       error: (err) => {
@@ -828,6 +856,14 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
         this.showToast('ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.', 'warning');
       }
     });
+  }
+
+  closeOrderSuccessModal(openOrders: boolean = false) {
+    this.showBookOrderSuccessModal = false;
+    this.orderSuccessNotification = null;
+    if (openOrders) {
+      this.openMyOrders();
+    }
   }
 
   closeCheckout() {
