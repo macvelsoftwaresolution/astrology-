@@ -72,9 +72,9 @@
         </div>
 
         <div style="font-size:12px; color:#475569; display:flex; align-items:center; gap:8px;">
-          <span>👦 {{ m.boy_name }}</span>
+          <span><i class="bi bi-gender-male me-1 text-primary"></i> {{ m.boy_name }}</span>
           <i class="bi bi-arrow-left-right text-muted" style="font-size:10px;"></i>
-          <span>👧 {{ m.girl_name }}</span>
+          <span><i class="bi bi-gender-female me-1 text-danger"></i> {{ m.girl_name }}</span>
         </div>
 
         <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
@@ -462,7 +462,11 @@
       <strong>{{ regForm.name }}</strong>
     </div>
     <button class="btn-app-gold btn-pay-now" (click)="payForRegistration()" [disabled]="isProcessingPayment">
-      {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
+      @if (isProcessingPayment) {
+        <span>காத்திருக்கவும்...</span>
+      } @else {
+        <span>இப்போதே செலுத்தவும் <i class="bi bi-lock-fill ms-1"></i></span>
+      }
     </button>
   </div>
 </div>
@@ -636,7 +640,7 @@
   }
 
   <button type="submit" class="btn-app-gold" style="margin-top: 1.5rem; width: 100%;">
-    <span>{{ 'matching.calculate10Porutham' | translate }} ➔</span>
+    <span>{{ 'matching.calculate10Porutham' | translate }} <i class="bi bi-arrow-right ms-1"></i></span>
   </button>
 </form>
 }
@@ -682,7 +686,7 @@
 @if (serviceStep === 6) {
 <div class="match-result-container">
   <div class="overlay-header-inline">
-    <button class="btn-back" (click)="goBack()">◀</button>
+    <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
     <h2>கட்டண விவரம்</h2>
   </div>
   <div class="payment-card" style="margin-top: 1rem;">
@@ -695,7 +699,11 @@
       <strong>{{ matchingForm.boyName }} & {{ matchingForm.girlName }}</strong>
     </div>
     <button class="btn-app-gold btn-pay-now" (click)="payForMatching()" [disabled]="isProcessingPayment">
-      {{ isProcessingPayment ? 'காத்திருக்கவும்...' : 'இப்போதே செலுத்தவும் 🔒' }}
+      @if (isProcessingPayment) {
+        <span>காத்திருக்கவும்...</span>
+      } @else {
+        <span>இப்போதே செலுத்தவும் <i class="bi bi-lock-fill ms-1"></i></span>
+      }
     </button>
   </div>
 </div>

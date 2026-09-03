@@ -21,7 +21,9 @@ import { AuthService } from '../../services/auth.service';
           <!-- Error / Warning Alert -->
           @if (errorMessage) {
             <div [class]="isStudentError ? 'alert warning' : 'alert error'">
-              <span class="alert-icon">{{ isStudentError ? '📱' : '⚠️' }}</span>
+              <span class="alert-icon">
+                <i class="bi" [class.bi-phone-fill]="isStudentError" [class.bi-exclamation-triangle-fill]="!isStudentError"></i>
+              </span>
               <div class="alert-content">
                 <strong>{{ isStudentError ? 'Student Account Notice' : 'Authentication Error' }}</strong>
                 <p>{{ errorMessage }}</p>
@@ -57,7 +59,7 @@ import { AuthService } from '../../services/auth.service';
 
           <button type="submit" [disabled]="loading" class="btn-submit">
             @if (!loading) {
-              <span>Sign In to Admin Dashboard ➔</span>
+              <span>Sign In to Admin Dashboard <i class="bi bi-arrow-right ms-1"></i></span>
             } @else {
               <span>Authenticating...</span>
             }

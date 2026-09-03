@@ -232,7 +232,13 @@ const NAKSHATRAS = [
                 <span class="score-max">/10</span>
               </div>
               <div class="result-info">
-                <h2>{{ result.match_status === 'Match' ? '✅ நல்ல பொருத்தம்!' : '❌ பொருத்தம் இல்லை' }}</h2>
+                <h2>
+                  @if (result.match_status === 'Match') {
+                    <span><i class="bi bi-check-circle-fill text-success me-1"></i> நல்ல பொருத்தம்!</span>
+                  } @else {
+                    <span><i class="bi bi-x-circle-fill text-danger me-1"></i> பொருத்தம் இல்லை</span>
+                  }
+                </h2>
                 <p>{{ result.boy_name }} ↔ {{ result.girl_name }}</p>
                 <p class="result-msg">{{ result.message }}</p>
               </div>
@@ -245,7 +251,7 @@ const NAKSHATRAS = [
                 <div class="porutham-row">
                   <span class="porutham-name">{{ d.name }}</span>
                   <span class="porutham-result" [class.match]="d.result === 'Match'" [class.nomatch]="d.result !== 'Match'">
-                    {{ d.result === 'Match' ? '✅' : '❌' }} {{ d.result }}
+                    <i class="bi" [class.bi-check-circle-fill]="d.result === 'Match'" [class.bi-x-circle-fill]="d.result !== 'Match'"></i> {{ d.result }}
                   </span>
                 </div>
               }
@@ -255,7 +261,7 @@ const NAKSHATRAS = [
           <!-- Book Detailed Consultation -->
           <div class="consultation-cta no-print">
             <p>மேலும் விவரமான ஜாதக ஆலோசனை வேண்டுமா?</p>
-            <button class="cta-btn">📅 Appointment Book செய்யுங்கள்</button>
+            <button class="cta-btn"><i class="bi bi-calendar-event-fill me-1"></i> Appointment Book செய்யுங்கள்</button>
           </div>
 
           <button class="reset-btn no-print" (click)="reset()">← மீண்டும் தேட</button>

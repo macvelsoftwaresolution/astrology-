@@ -416,7 +416,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       if (todayLives.length > 0) {
         this.currentDisplayedLives = todayLives;
         const lc = todayLives[0];
-        const dayPrefix = lc.is_today ? '🔴 இன்றைய நேரலை வகுப்பு' : `📅 நேரலை வகுப்பு (${lc.date_text || ''})`;
+        const dayPrefix = lc.is_today ? 'இன்றைய நேரலை வகுப்பு' : `நேரலை வகுப்பு (${lc.date_text || ''})`;
         parts.push(`${dayPrefix}: ${lc.title} • ${lc.time_text || ''} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
       }
     }
@@ -434,7 +434,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       if (todayUnreadNotes.length > 0) {
         this.currentDisplayedNotifs = todayUnreadNotes;
         todayUnreadNotes.slice(0, 2).forEach((n: any) => {
-          parts.push(`🔔 ${n.title}: ${n.body || n.message || ''}`);
+          parts.push(`${n.title}: ${n.body || n.message || ''}`);
         });
       }
     }

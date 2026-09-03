@@ -68,8 +68,9 @@ import { HttpClient } from '@angular/common/http';
                       <span>{{ astro.specialty }}</span>
                     </div>
                     <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
-                      <span style="font-size:11px;color:#15803d;font-weight:700;">
-                        {{ astro.status === 'Available' ? '🟢 முன்பதிவுக்கு கிடைக்கும்' : '🔴 விடுப்பில் உள்ளார்' }}
+                      <span style="font-size:11px;font-weight:700;" [style.color]="astro.status === 'Available' ? '#15803d' : '#b91c1c'">
+                        <i class="bi me-1" [class.bi-circle-fill]="true" [style.color]="astro.status === 'Available' ? '#22c55e' : '#ef4444'"></i>
+                        {{ astro.status === 'Available' ? 'முன்பதிவுக்கு கிடைக்கும்' : 'விடுப்பில் உள்ளார்' }}
                       </span>
                       <a [routerLink]="['/']" fragment="download" class="btn-astro-consult">
                         ஆலோசனை முன்பதிவு <i class="bi bi-arrow-right-short ms-2"></i>

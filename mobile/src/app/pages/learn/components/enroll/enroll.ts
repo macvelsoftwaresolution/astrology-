@@ -235,7 +235,7 @@ export class LearnEnrollComponent implements OnInit {
           this.localForm.prevCertificate = s.prevCertificate || this.localForm.prevCertificate;
 
           this.calculateAge();
-          this.fetchSuccessMsg = '✅ இளநிலை மாணவர் விவரங்கள் வெற்றிகரமாக மீட்டெடுக்கப்பட்டு படிவத்தில் நிரப்பப்பட்டன!';
+          this.fetchSuccessMsg = 'இளநிலை மாணவர் விவரங்கள் வெற்றிகரமாக மீட்டெடுக்கப்பட்டு படிவத்தில் நிரப்பப்பட்டன!';
         } else {
           this.fetchErrorMsg = 'விவரங்கள் எதுவும் கிடைக்கவில்லை. கைமுறையாக உள்ளிடலாம்.';
         }
