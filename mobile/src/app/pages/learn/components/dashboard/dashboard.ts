@@ -980,10 +980,29 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   activeToast: { message: string, icon: string, type: string, isClosing?: boolean } | null = null;
   private toastTimer: any = null;
 
+  showSeminarVideoModal = false;
+  activeSeminarVideo: any = null;
+
+  closeSeminarVideoModal() {
+    this.showSeminarVideoModal = false;
+    this.activeSeminarVideo = null;
+  }
+
   openMeeting(url?: string, status?: string, seminar?: any) {
     if (status === 'past') {
-      this.showToast('இந்தக் கருத்தரங்க நேரம் முடிந்துவிட்டது.', 'warning');
-      return;
+      const videoUrl = seminar?.recording_video_url || seminar?.video_url || url;
+      if (videoUrl) {
+        this.activeSeminarVideo = {
+          ...seminar,
+          recording_video_url: videoUrl
+        };
+        this.showSeminarVideoModal = true;
+        this.showToast('பதிவு செய்யப்பட்ட கருத்தரங்க வீடியோ திறக்கப்படுகிறது...', 'success');
+        return;
+      } else {
+        this.showToast('இந்த கருத்தரங்கிற்கான பதிவு செய்யப்பட்ட வீடியோ விரைவில் பதிவேற்றப்படும்.', 'info');
+        return;
+      }
     }
     if (status === 'upcoming' || (!status && !url)) {
       const timeInfo = seminar ? `${seminar.date_text || seminar.date || ''} ${seminar.time_text || seminar.time || ''}`.trim() : '';

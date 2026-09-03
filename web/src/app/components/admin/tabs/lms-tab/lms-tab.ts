@@ -908,6 +908,7 @@ export class LmsTabComponent implements OnInit {
       time_text: 'மாலை 06:00 - 07:30',
       status: 'upcoming',
       join_url: '',
+      recording_video_url: '',
       category: this.selectedCategory
     };
     this.formValidationError = '';
@@ -918,6 +919,36 @@ export class LmsTabComponent implements OnInit {
     this.editingSeminar = { ...seminar };
     this.formValidationError = '';
     this.activeView = 'seminar-studio';
+  }
+
+  isUploadingSeminarVideo = false;
+
+  uploadSeminarVideo(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingSeminarVideo = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'seminar_videos');
+
+    const headers = this.authService.getUploadHeaders();
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
+      next: (res) => {
+        if (res && (res.url || res.path)) {
+          if (!this.editingSeminar) this.editingSeminar = {};
+          this.editingSeminar.recording_video_url = res.url || res.path;
+        }
+        this.isUploadingSeminarVideo = false;
+        this.toastService.success('கருத்தரங்க வீடியோ வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toastService.error('வீடியோ பதிவேற்றுவதில் பிழை ஏற்பட்டது.', 'பிழை');
+        this.isUploadingSeminarVideo = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   saveSeminar(): void {

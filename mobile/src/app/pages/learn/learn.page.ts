@@ -54,6 +54,7 @@ export interface Seminar {
   time_text?: string;
   status: 'live' | 'upcoming' | 'past';
   join_url?: string;
+  recording_video_url?: string;
   level?: string;
   reminderSet?: boolean;
 }
