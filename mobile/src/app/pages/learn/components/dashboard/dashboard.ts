@@ -5,6 +5,9 @@ import { Chapter, Book, Seminar } from '../../learn.page';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
+import { RazorpayNativeService } from '../../../../services/razorpay-native.service';
+
+declare var Razorpay: any;
 
 @Component({
   selector: 'app-learn-dashboard',
@@ -27,6 +30,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
 
   @Input() initialOption: string | null = null;
   @Input() orderNumber: string | null = null;
+
+  isProcessingPayment = false;
 
   // Syllabus details (Dynamic from DB courses/modules/lessons)
   chapters: Chapter[] = [];
@@ -92,7 +97,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private razorpayService: RazorpayNativeService
   ) { }
 
   // 60-Day Curriculum State
@@ -654,18 +660,23 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     this.http.get<any>(`${environment.apiUrl}/public/books`).subscribe({
       next: (res) => {
         if (res && res.books && Array.isArray(res.books)) {
-          this.books = res.books.map((b: any) => ({
-            id: String(b.id),
-            title: b.title,
-            author: b.author || 'ஆருத்ரா பதிப்பகம்',
-            price: Number(b.price) || 499,
-            originalPrice: b.original_price ? Number(b.original_price) : (Number(b.price) ? Number(b.price) + 200 : 699),
-            isBestseller: b.is_bestseller !== undefined ? Boolean(b.is_bestseller) : (Number(b.price) === 499),
-            rating: b.rating ? Number(b.rating) : 5.0,
-            formatLabel: b.format_label || '',
-            coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
-            bought: false
-          }));
+          this.books = res.books.map((b: any) => {
+            const price = Number(b.price) || 499;
+            const rawOrig = b.original_price ? Number(b.original_price) : 0;
+            const originalPrice = (rawOrig > price) ? rawOrig : (price + 200);
+            return {
+              id: String(b.id),
+              title: b.title,
+              author: b.author || 'ஆருத்ரா பதிப்பகம்',
+              price: price,
+              originalPrice: originalPrice,
+              isBestseller: b.is_bestseller !== undefined ? Boolean(b.is_bestseller) : false,
+              rating: b.rating ? Number(b.rating) : 5.0,
+              formatLabel: b.format_label || '',
+              coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
+              bought: false
+            };
+          });
           this.syncBooksWithOrders();
         }
       },
@@ -709,42 +720,114 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   }
 
   async confirmCheckoutPayment() {
-    if (this.selectedCheckoutBook) {
-      if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
-        this.showToast(this.translationService.currentLanguage() === 'en' ? 'Please fill in all details (Name, Phone, Address).' : 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).', 'warning');
-        return;
-      }
+    if (!this.selectedCheckoutBook) return;
 
-      const orderPayload = {
-        book_title: this.selectedCheckoutBook.title,
-        price: this.selectedCheckoutBook.price,
-        shipping_address: this.checkoutForm.address,
-        phone: this.checkoutForm.phone
-      };
-
-      const authHeaders = this.authService.getAuthHeaders('education').headers;
-      this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
-        next: (res) => {
-          if (this.selectedCheckoutBook) {
-            this.selectedCheckoutBook.bought = true;
-            this.selectedCheckoutBook.order = res.order || {
-              book_title: orderPayload.book_title,
-              order_number: res.order_number,
-              status: 'Processing',
-              created_at: new Date().toISOString()
-            };
-          }
-          this.activeBookCheckout = false;
-          this.loadMyBookOrders();
-          this.showToast(`${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`, 'success');
-          this.selectedCheckoutBook = null;
-        },
-        error: (err) => {
-          console.error('Error placing book order:', err);
-          this.showToast('ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.', 'warning');
-        }
-      });
+    if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
+      this.showToast(
+        this.translationService.currentLanguage() === 'en'
+          ? 'Please fill in all details (Name, Phone, Address).'
+          : 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).',
+        'warning'
+      );
+      return;
     }
+
+    this.isProcessingPayment = true;
+    const price = this.selectedCheckoutBook.price;
+    const bookTitle = this.selectedCheckoutBook.title;
+    const currentUser = this.authService.getCurrentUser('education') || this.authService.getCurrentUser('astrology') || this.authService.getCurrentUser();
+    const token = this.authService.getToken();
+
+    const headers: any = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Step 1: Create Razorpay Order via Backend
+    this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: price }, { headers }).subscribe({
+      next: (orderRes) => {
+        if (orderRes && orderRes.success && orderRes.key_id) {
+          const options = {
+            key: orderRes.key_id,
+            amount: (orderRes.amount || price) * 100,
+            currency: orderRes.currency || 'INR',
+            name: 'ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்',
+            description: `புத்தகம்: ${bookTitle}`,
+            order_id: orderRes.order_id,
+            prefill: {
+              name: this.checkoutForm.name || currentUser?.name || 'பயனர்',
+              contact: this.checkoutForm.phone || currentUser?.phone || '9876543210',
+              email: currentUser?.email || 'user@astrology.com'
+            },
+            theme: {
+              color: '#4A0E17'
+            }
+          };
+
+          // Step 2: Launch Razorpay Popup
+          this.razorpayService.open(options)
+            .then((rzpRes) => {
+              this.fulfillBookOrder(rzpRes.razorpay_payment_id, rzpRes.razorpay_order_id, rzpRes.razorpay_signature);
+            })
+            .catch((err) => {
+              this.isProcessingPayment = false;
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+              }
+            });
+        } else {
+          // Fallback if Razorpay credentials not configured
+          this.fulfillBookOrder();
+        }
+      },
+      error: (err) => {
+        console.warn('Razorpay order creation fallback to direct order:', err);
+        this.fulfillBookOrder();
+      }
+    });
+  }
+
+  fulfillBookOrder(paymentId?: string, orderId?: string, signature?: string) {
+    if (!this.selectedCheckoutBook) {
+      this.isProcessingPayment = false;
+      return;
+    }
+
+    const orderPayload = {
+      book_title: this.selectedCheckoutBook.title,
+      price: this.selectedCheckoutBook.price,
+      shipping_address: this.checkoutForm.address,
+      phone: this.checkoutForm.phone,
+      razorpay_payment_id: paymentId || null,
+      razorpay_order_id: orderId || null,
+      razorpay_signature: signature || null
+    };
+
+    const authHeaders = this.authService.getAuthHeaders('education').headers;
+    this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
+      next: (res) => {
+        this.isProcessingPayment = false;
+        if (this.selectedCheckoutBook) {
+          this.selectedCheckoutBook.bought = true;
+          this.selectedCheckoutBook.order = res.order || {
+            book_title: orderPayload.book_title,
+            order_number: res.order_number,
+            status: 'Processing',
+            created_at: new Date().toISOString()
+          };
+        }
+        this.activeBookCheckout = false;
+        this.loadMyBookOrders();
+        this.showToast(`${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`, 'success');
+        this.selectedCheckoutBook = null;
+      },
+      error: (err) => {
+        this.isProcessingPayment = false;
+        console.error('Error placing book order:', err);
+        this.showToast('ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.', 'warning');
+      }
+    });
   }
 
   closeCheckout() {
