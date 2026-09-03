@@ -37,6 +37,8 @@ export class LmsTabComponent implements OnInit {
   curriculumMonthFilter: 'all' | 'm1' | 'm2' | 'm3' = 'all';
 
   editingDayLesson: any = null;
+  formValidationError: string = '';
+
   openDayEditorModal = false;
   copyFromBatchId: number | null = null;
   openCopyBatchModal = false;
@@ -838,12 +840,20 @@ export class LmsTabComponent implements OnInit {
   }
 
   saveLiveClass(): void {
-    if (!this.editingLiveClass.title || !this.editingLiveClass.link) {
-      alert('Title and Link are required.');
+    this.formValidationError = '';
+    if (!this.editingLiveClass.title?.trim()) {
+      this.formValidationError = 'தயவுசெய்து நேரடி வகுப்பின் தலைப்பை (Title) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.editingLiveClass.link?.trim()) {
+      this.formValidationError = 'தயவுசெய்து நேரலை மீட்டிங் இணைப்பை (Meeting Link) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
     if (!this.editingLiveClass.days_of_week || this.editingLiveClass.days_of_week.length === 0) {
-      alert('தயவுசெய்து நேரடி வகுப்பிற்கான வார நாட்களைத் தேர்வு செய்யவும்.');
+      this.formValidationError = 'தயவுசெய்து நேரடி வகுப்பிற்கான வார நாட்களைத் தேர்வு செய்யவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
     this.editingLiveClass.level = this.selectedCategory || 'ILANILAI';
@@ -856,10 +866,15 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
+        this.toastService.success('நேரலை வகுப்பு வெற்றிகரமாக சேமிக்கப்பட்டது!', 'வெற்றி');
         this.activeView = 'dashboard';
+        this.formValidationError = '';
         this.loadLiveClasses();
       },
-      error: () => alert('Failed to save Live Class.')
+      error: (err) => {
+        this.formValidationError = err?.error?.message || 'நேரலை வகுப்பைச் சேமிப்பதில் பிழை ஏற்பட்டது.';
+        this.toastService.error(this.formValidationError, 'பிழை');
+      }
     });
   }
 
@@ -893,19 +908,28 @@ export class LmsTabComponent implements OnInit {
       time_text: 'மாலை 06:00 - 07:30',
       status: 'upcoming',
       join_url: '',
-      category: this.selectedCategory // Optional if backend supports it
+      category: this.selectedCategory
     };
+    this.formValidationError = '';
     this.activeView = 'seminar-studio';
   }
 
   editSeminar(seminar: any): void {
     this.editingSeminar = { ...seminar };
+    this.formValidationError = '';
     this.activeView = 'seminar-studio';
   }
 
   saveSeminar(): void {
-    if (!this.editingSeminar.title || !this.editingSeminar.speaker) {
-      alert('Title and Speaker are required.');
+    this.formValidationError = '';
+    if (!this.editingSeminar.title?.trim()) {
+      this.formValidationError = 'தயவுசெய்து கருத்தரங்கின் தலைப்பை (Seminar Title) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.editingSeminar.speaker?.trim()) {
+      this.formValidationError = 'தயவுசெய்து உரையாற்றுபவரின் பெயரை (Speaker Name) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
     this.editingSeminar.level = this.selectedCategory || 'ILANILAI';
@@ -920,10 +944,15 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
+        this.toastService.success('கருத்தரங்கம் வெற்றிகரமாக சேமிக்கப்பட்டது!', 'வெற்றி');
         this.activeView = 'dashboard';
+        this.formValidationError = '';
         this.loadSeminars();
       },
-      error: () => alert('Failed to save seminar.')
+      error: (err) => {
+        this.formValidationError = err?.error?.message || 'கருத்தரங்கை சேமிப்பதில் பிழை ஏற்பட்டது.';
+        this.toastService.error(this.formValidationError, 'பிழை');
+      }
     });
   }
 

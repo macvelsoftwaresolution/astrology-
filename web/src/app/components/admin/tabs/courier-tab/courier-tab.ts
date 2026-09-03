@@ -204,9 +204,18 @@ export class CourierTabComponent implements OnInit {
     }
   }
 
+  formValidationError: string = '';
+
   saveBook(): void {
-    if (!this.newBookForm.title || !this.newBookForm.price) {
-      this.toastService.error('Title and Price are required.', 'விவரங்கள் தேவை');
+    this.formValidationError = '';
+    if (!this.newBookForm.title?.trim()) {
+      this.formValidationError = 'தயவுசெய்து புத்தகத்தின் தலைப்பை (Book Title) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.newBookForm.price || Number(this.newBookForm.price) <= 0) {
+      this.formValidationError = 'தயவுசெய்து சரியான புத்தக விற்பனை விலையை (Price) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
 

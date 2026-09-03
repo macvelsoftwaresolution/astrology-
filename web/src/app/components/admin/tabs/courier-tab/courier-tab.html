@@ -158,6 +158,13 @@
             <textarea [(ngModel)]="newBookForm.description" name="bdesc" class="ctrl" rows="4" placeholder="Brief description of the book..." style="width:100%; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; font-size: 14px; line-height: 1.5;"></textarea>
           </div>
 
+          @if (formValidationError) {
+            <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>{{ formValidationError }}</span>
+            </div>
+          }
+
           <!-- Action Buttons -->
           <div style="display:flex; justify-content: flex-end; gap:14px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
             <button type="button" (click)="showAddBookModal = false" class="btn-cancel" style="padding:10px 24px; font-weight:700; border-radius:8px; cursor:pointer; font-size: 14px;">
