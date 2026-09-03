@@ -35,6 +35,10 @@ export interface Book {
   title: string;
   author: string;
   price: number;
+  originalPrice?: number;
+  isBestseller?: boolean;
+  rating?: number;
+  formatLabel?: string;
   coverImage: string;
   bought: boolean;
   order?: any;

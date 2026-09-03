@@ -9,107 +9,152 @@
 
   <div class="cert-body-scroll">
 
-    <!-- Top Document Toggle Switcher -->
-    <div
-      style="display: flex; gap: 8px; margin: 12px 0 16px 0; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; border: 1px solid rgba(236,200,118,0.3);">
-      <button (click)="activeDocumentTab = 'certificate'"
-        [style.background]="activeDocumentTab === 'certificate' ? 'linear-gradient(135deg, #D4AF37, #AA7C11)' : 'transparent'"
-        [style.color]="activeDocumentTab === 'certificate' ? '#4A0E17' : '#FFFFFF'"
-        style="flex: 1; border: none; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-        <i class="bi bi-award-fill"></i> பட்டயச் சான்றிதழ்
+    <!-- Luxury Segmented Tab Switcher (Certificates vs Marksheets) -->
+    <div class="luxury-cert-segmented-bar">
+      <button class="segmented-tab-btn" 
+        [class.active]="activeDocumentTab === 'certificate'" 
+        (click)="activeDocumentTab = 'certificate'">
+        <i class="bi bi-award-fill"></i>
+        <span>{{ 'profile.tabDiplomaCert' | translate }}</span>
       </button>
-      <button (click)="activeDocumentTab = 'marksheet'"
-        [style.background]="activeDocumentTab === 'marksheet' ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' : 'transparent'"
-        [style.color]="activeDocumentTab === 'marksheet' ? '#FFFFFF' : '#FFFFFF'"
-        style="flex: 1; border: none; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-        <i class="bi bi-file-earmark-spreadsheet-fill"></i> மதிப்பெண் பட்டியல்
+
+      <button class="segmented-tab-btn" 
+        [class.active]="activeDocumentTab === 'marksheet'" 
+        (click)="activeDocumentTab = 'marksheet'">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+        <span>{{ 'profile.tabMarksheet' | translate }}</span>
       </button>
     </div>
 
     @if (isLoading) {
-      <div style="text-align: center; padding: 40px; color: #ECC876; font-weight: 700;">
+      <div class="cert-loading-box">
         <i class="bi bi-hourglass-split me-1"></i> {{ 'common.loading' | translate }}
       </div>
-    } @else if (certificates.length > 0) {
-      <div class="cert-message-banner">
-        <h3><i class="bi bi-award-fill text-gold me-1"></i>{{ 'profile.yourCert' | translate }}</h3>
-        <p>{{ 'profile.certCongrats' | translate }}</p>
-      </div>
+    } @else {
 
-      <!-- Certificate Selector Tabs if multiple courses -->
+      <!-- Multiple Courses Selector Tabs if user enrolled in > 1 course -->
       @if (certificates.length > 1) {
-        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px;">
+        <div class="cert-course-chips-row">
           @for (c of certificates; track c.id) {
             <button (click)="selectCertificate(c)"
-              [style.background]="selectedCert?.id === c.id ? '#ECC876' : 'rgba(255,255,255,0.1)'"
-              [style.color]="selectedCert?.id === c.id ? '#4A0E17' : '#FFFFFF'"
-              style="border: 1px solid #ECC876; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+              [class.active]="selectedCert?.id === c.id"
+              class="course-chip">
               <i class="bi bi-mortarboard-fill me-1"></i> {{ c.course_title }}
             </button>
           }
         </div>
       }
 
-      <!-- Certificate Gold Card -->
-      <div class="cert-gold-card">
-        <div class="cert-border-outer">
-          <div class="cert-border-inner">
-            <h1 class="cert-academy-title">{{ 'profile.academyTitle' | translate }}</h1>
-            <p class="cert-cert-title">{{ 'profile.certTitle' | translate }}</p>
+      <!-- TAB 1: CERTIFICATE -->
+      @if (activeDocumentTab === 'certificate') {
+        @if (hasCertificateDoc) {
+          <div class="cert-message-banner">
+            <h3><i class="bi bi-award-fill text-gold me-1"></i>{{ 'profile.yourCert' | translate }}</h3>
+            <p>{{ 'profile.certCongrats' | translate }}</p>
+          </div>
 
-            <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
-            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</h2>
+          <!-- Certificate Gold Card -->
+          <div class="cert-gold-card">
+            <div class="cert-border-outer">
+              <div class="cert-border-inner">
+                <h1 class="cert-academy-title">{{ 'profile.academyTitle' | translate }}</h1>
+                <p class="cert-cert-title">{{ 'profile.certTitle' | translate }}</p>
 
-            <p class="cert-accomplishment">
-              <strong>{{ selectedCert?.course_title || ('profile.vedicCourseTitle' | translate) }}</strong>
-            </p>
+                <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
+                <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</h2>
 
-            <div style="text-align: center; margin: 10px 0; font-family: monospace; color: #7A3508; font-weight: 800; font-size: 12px;">
-              {{ 'profile.certNumber' | translate }} {{ selectedCert?.certificate_number }}
-            </div>
+                <p class="cert-accomplishment">
+                  <strong>{{ selectedCert?.course_title || ('profile.vedicCourseTitle' | translate) }}</strong>
+                </p>
 
-            <div class="cert-details-footer">
-              <div>
-                <span>{{ 'profile.issueDate' | translate }} {{ selectedCert?.issue_date }}</span>
-                <span>{{ 'profile.score' | translate }} {{ selectedCert?.score || 100 }}%</span>
+                @if (selectedCert?.certificate_number) {
+                  <div class="cert-num-badge">
+                    {{ 'profile.certNumber' | translate }} {{ selectedCert?.certificate_number }}
+                  </div>
+                }
+
+                <div class="cert-details-footer">
+                  <div>
+                    <span>{{ 'profile.issueDate' | translate }} {{ selectedCert?.issue_date || (selectedCert?.created_at | date:'mediumDate') }}</span>
+                    <span>{{ 'profile.score' | translate }} {{ selectedCert?.score || 100 }}%</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <button class="cert-action-btn pdf" (click)="downloadCertificate(selectedCert)">
-        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> {{ 'profile.downloadCert' | translate }}
-      </button>
-      <button class="cert-action-btn share" (click)="shareCertificate(selectedCert)">
-        <i class="bi bi-share-fill me-2"></i> {{ 'profile.shareCert' | translate }}
-      </button>
-
-    } @else {
-
-      <!-- Fallback when no certificate/marksheet uploaded by Admin yet -->
-      <div style="text-align: center; padding: 30px 15px; background: rgba(255,255,255,0.08); border-radius: 16px; border: 1px dashed rgba(236,200,118,0.4); margin-bottom: 20px;">
-        <i class="bi bi-award-fill" style="font-size: 3.5rem; color: #ECC876; display: block; margin-bottom: 12px;"></i>
-        <h3 style="color: #ECC876; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">{{ 'profile.certInPrep' | translate }}</h3>
-        <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; line-height: 1.5; margin-bottom: 0;">
-          {{ 'profile.certInPrepDesc' | translate }}
-        </p>
-      </div>
-
-      <!-- Dynamic Preview -->
-      <div class="cert-gold-card" style="opacity: 0.75;">
-        <div class="cert-border-outer">
-          <div class="cert-border-inner">
-            <h1 class="cert-academy-title">{{ 'profile.academyTitle' | translate }}</h1>
-            <p class="cert-cert-title">{{ 'profile.certPreview' | translate }}</p>
-            <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
-            <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</h2>
-            <p class="cert-accomplishment">
-              <strong>{{ 'profile.vedicCourseTitle' | translate }}</strong>
-            </p>
+          <div class="cert-actions-wrap">
+            <button class="cert-action-btn pdf" (click)="downloadCertificate(selectedCert)">
+              <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> {{ 'profile.downloadCert' | translate }}
+            </button>
+            <button class="cert-action-btn share" (click)="shareCertificate(selectedCert)">
+              <i class="bi bi-share-fill me-2"></i> {{ 'profile.shareCert' | translate }}
+            </button>
           </div>
-        </div>
-      </div>
+        } @else {
+          <!-- Empty State: Admin has not uploaded certificate yet -->
+          <div class="empty-doc-card">
+            <div class="empty-doc-icon-wrap gold">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <h3>{{ 'profile.noCertHeader' | translate }}</h3>
+            <p>{{ 'profile.noCertDesc' | translate }}</p>
+          </div>
+        }
+      }
+
+      <!-- TAB 2: MARKSHEET -->
+      @if (activeDocumentTab === 'marksheet') {
+        @if (hasMarksheetDoc) {
+          <div class="cert-message-banner">
+            <h3><i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i>{{ 'profile.marksheetBannerTitle' | translate }}</h3>
+            <p>{{ 'profile.marksheetBannerDesc' | translate }}</p>
+          </div>
+
+          <!-- Marksheet Card -->
+          <div class="marksheet-card">
+            <div class="marksheet-header">
+              <h3>{{ selectedCert?.course_title || ('profile.vedicCourseTitle' | translate) }}</h3>
+              <span class="marksheet-status-tag"><i class="bi bi-check-circle-fill me-1"></i> {{ 'profile.statusPassed' | translate }}</span>
+            </div>
+
+            <div class="marksheet-student-info">
+              <div class="info-row">
+                <span class="lbl">{{ 'profile.studentNameLbl' | translate }}</span>
+                <span class="val">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</span>
+              </div>
+              @if (selectedCert?.certificate_number) {
+                <div class="info-row">
+                  <span class="lbl">{{ 'profile.regNumLbl' | translate }}</span>
+                  <span class="val">{{ selectedCert?.certificate_number }}</span>
+                </div>
+              }
+              <div class="info-row">
+                <span class="lbl">{{ 'profile.totalScoreLbl' | translate }}</span>
+                <span class="val score-bold">{{ selectedCert?.score || 100 }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cert-actions-wrap">
+            <button class="cert-action-btn marksheet-dl" (click)="downloadMarksheet(selectedCert)">
+              <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> {{ 'profile.downloadMarksheet' | translate }}
+            </button>
+            <button class="cert-action-btn share" (click)="shareMarksheet(selectedCert)">
+              <i class="bi bi-share-fill me-2"></i> {{ 'profile.shareCert' | translate }}
+            </button>
+          </div>
+        } @else {
+          <!-- Empty State: Admin has not uploaded marksheet yet -->
+          <div class="empty-doc-card">
+            <div class="empty-doc-icon-wrap blue">
+              <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+            </div>
+            <h3>{{ 'profile.noMarksheetHeader' | translate }}</h3>
+            <p>{{ 'profile.noMarksheetDesc' | translate }}</p>
+          </div>
+        }
+      }
 
     }
 

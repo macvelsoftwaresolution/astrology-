@@ -15,10 +15,10 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
       <!-- Service Type Toggle -->
       <div class="service-toggle">
         <button [class.active]="serviceType === 'vastu'" (click)="serviceType = 'vastu'">
-          🏠 வாஸ்து சோதனை
+          <i class="bi bi-house-door-fill me-1"></i> வாஸ்து சோதனை
         </button>
         <button [class.active]="serviceType === 'kanitha'" (click)="serviceType = 'kanitha'">
-          🔢 கணித ஜோதிடம்
+          <i class="bi bi-calculator-fill me-1"></i> கணித ஜோதிடம்
         </button>
       </div>
 
@@ -26,7 +26,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
       @if (serviceType === 'vastu') {
         <div class="form-card">
           <div class="service-intro">
-            <h2>🏠 வாஸ்து சோதனை</h2>
+            <h2><i class="bi bi-house-door-fill me-1"></i> வாஸ்து சோதனை</h2>
             <p>உங்கள் வீடு / நிலம் / தொழில் இடத்தின் வாஸ்து நிலையை அறிந்துகொள்ளுங்கள்.</p>
             <div class="price-chip">₹999 / Consultation</div>
           </div>
@@ -91,7 +91,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
           </div>
 
           <button class="book-btn" (click)="bookService('Vastu Consultation', 999, vastuForm)">
-            📅 ₹999 செலுத்தி Appointment பதிவு செய்யுங்கள்
+            <i class="bi bi-calendar-check-fill me-1"></i> ₹999 செலுத்தி Appointment பதிவு செய்யுங்கள்
           </button>
         </div>
       }
@@ -100,7 +100,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
       @if (serviceType === 'kanitha') {
         <div class="form-card">
           <div class="service-intro">
-            <h2>🔢 கணித ஜோதிடம்</h2>
+            <h2><i class="bi bi-calculator-fill me-1"></i> கணித ஜோதிடம்</h2>
             <p>உங்கள் பெயர் எண் மற்றும் பிறந்த தேதி எண் கணித்து, வாழ்க்கை பலன் அறியுங்கள்.</p>
             <div class="price-chip">₹749 / Reading</div>
           </div>
@@ -147,7 +147,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
           }
 
           <button class="book-btn kanitha" (click)="bookService('Kanitha Jothidam Reading', 749, kanithaForm)">
-            📅 ₹749 செலுத்தி Numerology Reading பதிவு செய்யுங்கள்
+            <i class="bi bi-calendar-check-fill me-1"></i> ₹749 செலுத்தி Numerology Reading பதிவு செய்யுங்கள்
           </button>
         </div>
       }
@@ -155,7 +155,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
       <!-- Success State -->
       @if (booked) {
         <div class="success-card">
-          <div class="success-icon">✅</div>
+          <div class="success-icon"><i class="bi bi-check-circle-fill text-success"></i></div>
           <h2>Booking Confirmed!</h2>
           <p>Order ID: <strong>{{ bookedOrderId }}</strong></p>
           <p>உங்கள் appointment ஐ நாங்கள் உறுதிப்படுத்துவோம். 24 மணி நேரத்தில் தொடர்பு கொள்வோம்.</p>

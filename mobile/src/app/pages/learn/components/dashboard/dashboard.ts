@@ -39,6 +39,23 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
 
   // Book Library Store List (Dynamic from DB)
   books: Book[] = [];
+  bookSearchQuery = '';
+  bookFilterTab: 'all' | 'bought' = 'all';
+
+  get filteredBooks(): Book[] {
+    let result = this.books || [];
+    if (this.bookFilterTab === 'bought') {
+      result = result.filter(b => b.bought);
+    }
+    if (this.bookSearchQuery.trim()) {
+      const q = this.bookSearchQuery.toLowerCase().trim();
+      result = result.filter(b =>
+        (b.title && b.title.toLowerCase().includes(q)) ||
+        (b.author && b.author.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }
 
   // PDF Notes List (Dynamic from DB)
   pdfNotes: any[] = [];
@@ -642,6 +659,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
             title: b.title,
             author: b.author || 'ஆருத்ரா பதிப்பகம்',
             price: Number(b.price) || 499,
+            originalPrice: b.original_price ? Number(b.original_price) : (Number(b.price) ? Number(b.price) + 200 : 699),
+            isBestseller: b.is_bestseller !== undefined ? Boolean(b.is_bestseller) : (Number(b.price) === 499),
+            rating: b.rating ? Number(b.rating) : 5.0,
+            formatLabel: b.format_label || '',
             coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
             bought: false
           }));
@@ -859,9 +880,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     }
   }
 
-  async openDiary() {
-    this.showToast('ஆன்மீக நாட்குறிப்பு திறக்கப்பட்டது', 'info');
-  }
+
 
   playLiveClass(link: string) {
     if (link) {

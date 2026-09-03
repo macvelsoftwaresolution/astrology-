@@ -31,14 +31,14 @@ const NAKSHATRAS = [
       @if (step === 'form') {
         <div>
           <div class="section-title">
-            <h2>💑 திருமண பொருத்தம்</h2>
+            <h2><i class="bi bi-heart-fill me-1 text-danger"></i> திருமண பொருத்தம்</h2>
             <p>பையன் மற்றும் பெண் ஜாதக விவரங்களை உள்ளிடவும்</p>
           </div>
 
           <div class="two-panel">
             <!-- Boy Panel -->
             <div class="panel boy-panel">
-              <div class="panel-header boy">👦 பையன் விவரம்</div>
+              <div class="panel-header boy"><i class="bi bi-person-fill me-1"></i> பையன் விவரம்</div>
               <label>பெயர்</label>
               <input [(ngModel)]="form.boy_name" placeholder="பையன் பெயர்" class="field"/>
               <label>பிறந்த தேதி</label>
@@ -71,7 +71,7 @@ const NAKSHATRAS = [
 
             <!-- Girl Panel -->
             <div class="panel girl-panel">
-              <div class="panel-header girl">👧 பெண் விவரம்</div>
+              <div class="panel-header girl"><i class="bi bi-person-heart me-1"></i> பெண் விவரம்</div>
               <label>பெயர்</label>
               <input [(ngModel)]="form.girl_name" placeholder="பெண் பெயர்" class="field"/>
               <label>பிறந்த தேதி</label>
@@ -107,7 +107,7 @@ const NAKSHATRAS = [
             @if (loading) {
               <ion-spinner name="crescent" style="width:18px;height:18px"></ion-spinner>
             } @else {
-              <span>🔮 பொருத்தம் கண்டுபிடி</span>
+              <span><i class="bi bi-search me-1"></i> பொருத்தம் கண்டுபிடி</span>
             }
           </button>
 
@@ -135,7 +135,7 @@ const NAKSHATRAS = [
               <!-- Couple Info Table -->
               <div class="report-couple-grid">
                 <div class="couple-box girl">
-                  <h3>👧 பெண் ஜாதகி</h3>
+                  <h3><i class="bi bi-person-heart me-1"></i> பெண் ஜாதகி</h3>
                   <div class="row"><span>பெயர்:</span> <strong>{{ result.report_data.girl_name || result.girl_name }}</strong></div>
                   <div class="row"><span>நட்சத்திரம்:</span> <strong>{{ result.report_data.girl_star || result.girl_nakshatra }}</strong></div>
                   <div class="row"><span>ராசி:</span> <strong>{{ result.report_data.girl_rasi || result.girl_rasi }}</strong></div>
@@ -148,7 +148,7 @@ const NAKSHATRAS = [
                 </div>
 
                 <div class="couple-box boy">
-                  <h3>👦 ஆண் ஜாதகர்</h3>
+                  <h3><i class="bi bi-person-fill me-1"></i> ஆண் ஜாதகர்</h3>
                   <div class="row"><span>பெயர்:</span> <strong>{{ result.report_data.boy_name || result.boy_name }}</strong></div>
                   <div class="row"><span>நட்சத்திரம்:</span> <strong>{{ result.report_data.boy_star || result.boy_nakshatra }}</strong></div>
                   <div class="row"><span>ராசி:</span> <strong>{{ result.report_data.boy_rasi || result.boy_rasi }}</strong></div>
@@ -163,7 +163,7 @@ const NAKSHATRAS = [
 
               <!-- 11 Poruthangal Table -->
               <div class="porutham-table-wrap">
-                <h4>📋 11 திருமணப் பொருத்தங்கள் பட்டியல்</h4>
+                <h4><i class="bi bi-list-check me-1"></i> 11 திருமணப் பொருத்தங்கள் பட்டியல்</h4>
                 <div class="porutham-grid">
                   @for (p of result.report_data.poruthangal; track p.name) {
                     <div class="porutham-item">
@@ -179,7 +179,7 @@ const NAKSHATRAS = [
               <!-- Horoscope House Analysis -->
               @if (result.report_data.girl_house_2 || result.report_data.boy_house_2 || result.report_data.girl_analysis || result.report_data.boy_analysis) {
                 <div class="house-analysis-wrap">
-                  <h4>🪐 ஜாதகப் பொருத்தல் & தோஷ ஆய்வுகள்</h4>
+                  <h4><i class="bi bi-brightness-alt-high me-1"></i> ஜாதகப் பொருத்தல் & தோஷ ஆய்வுகள்</h4>
                   <div class="house-grid">
                     <div class="h-col girl-h">
                       <h5>பெண் ஜாதக ஆய்வு</h5>
@@ -220,7 +220,7 @@ const NAKSHATRAS = [
               <!-- Print / Download PDF Action Button -->
               <div class="print-action-bar no-print">
                 <button class="btn-print-pdf" (click)="printReport()">
-                  📥 அச்சிடுக / PDF ஆக பதிவிறக்குக (Print / Download PDF)
+                  <i class="bi bi-printer me-1"></i> அச்சிடுக / PDF ஆக பதிவிறக்குக (Print / Download PDF)
                 </button>
               </div>
             </div>

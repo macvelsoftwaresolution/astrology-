@@ -1449,150 +1449,377 @@ $color-orange: #F49320;
   }
 }
 
-/* SUB-TAB 3: LIBRARY */
-.lib-search-bar {
+/* SUB-TAB 3: LUXURY LIBRARY DESIGN */
+.lib-tab-wrap {
   display: flex;
-  background-color: $color-card-bg;
-  border-radius: 16px;
-  border: 1px solid rgba($color-gold, 0.25);
-  padding: 0.75rem 1rem;
-  align-items: center;
-  gap: 0.65rem;
-  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
-  margin-bottom: 1.25rem;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  input {
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    font-size: 0.9rem;
-    background: transparent;
-    color: $color-text-dark;
+.lib-hero-banner {
+  background: linear-gradient(135deg, #4A0E17 0%, #7A1929 100%);
+  border-radius: 18px;
+  padding: 20px;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(74, 14, 23, 0.2);
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    bottom: -30px;
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, rgba(236, 200, 118, 0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
-  .search-btn-icon {
-    font-size: 1.1rem;
-    color: $color-gold;
+  .lib-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(236, 200, 118, 0.18);
+    color: #ECC876;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(236, 200, 118, 0.3);
+    margin-bottom: 8px;
+  }
+
+  .lib-hero-title {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+  }
+
+  .lib-hero-sub {
+    font-size: 12px;
+    color: #ECC876;
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.4;
   }
 }
 
-.lib-categories-row {
+.lib-controls-bar {
   display: flex;
-  gap: 0.65rem;
-  margin-bottom: 1.25rem;
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-direction: column;
+  gap: 12px;
+}
 
-  &::-webkit-scrollbar {
-    display: none;
+.lib-search-box {
+  display: flex;
+  align-items: center;
+  background: #FBF9E7;
+  border: 1.5px solid rgba(162, 123, 56, 0.25);
+  border-radius: 14px;
+  padding: 0 14px;
+  height: 46px;
+  box-shadow: 0 2px 8px rgba(74, 14, 23, 0.03);
+
+  .search-icon {
+    font-size: 16px;
+    color: #A27B38;
+    margin-right: 10px;
+    flex-shrink: 0;
   }
 
-  .cat-pill {
-    background-color: $color-card-bg;
-    border: 1px solid rgba($color-gold, 0.25);
-    padding: 0.45rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: $color-maroon;
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13.5px;
+    color: #2A2421;
     font-weight: 600;
+
+    &::placeholder {
+      color: #94A3B8;
+      font-weight: 500;
+    }
+  }
+
+  .clear-search-btn {
+    background: transparent;
+    border: none;
+    color: #94A3B8;
+    font-size: 16px;
     cursor: pointer;
-    flex-shrink: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.lib-filter-pills {
+  display: flex;
+  gap: 8px;
+
+  .lib-pill {
+    background: #FBF9E7;
+    border: 1px solid rgba(162, 123, 56, 0.22);
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #4A0E17;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
 
     &.active {
-      background-color: $color-maroon;
-      color: #FFFFFF;
-      border-color: $color-maroon;
+      background: linear-gradient(135deg, #4A0E17, #7A1929);
+      color: #ECC876;
+      border-color: #4A0E17;
+      box-shadow: 0 3px 10px rgba(74, 14, 23, 0.2);
     }
   }
 }
 
-.books-grid {
+/* LUXURY BOOK CARDS STYLING */
+.books-grid-luxury {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 14px;
 }
 
-.book-card {
+.luxury-book-card {
   display: flex;
-  background-color: $color-card-bg;
+  background: #FBF9E7;
   border-radius: 16px;
-  border: 1px solid rgba($color-gold, 0.22);
-  padding: 1rem;
-  gap: 1rem;
-  box-shadow: 0 3px 10px rgba($color-maroon, 0.03);
+  border: 1px solid rgba(162, 123, 56, 0.22);
+  padding: 14px;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(74, 14, 23, 0.04);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 
-  .book-cover-wrapper {
+  &.is-bought {
+    border-color: #059669;
+    background: #F0FDF4;
+  }
+
+  .book-cover-container {
+    position: relative;
+    width: 105px;
+    height: 145px;
+    border-radius: 10px;
     flex-shrink: 0;
-    width: 95px;
-    height: 125px;
-    border-radius: 12px;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.12), 4px 6px 14px rgba(0, 0, 0, 0.15);
     overflow: hidden;
-    border: 1px solid rgba($color-gold, 0.3);
+    background: #334155;
 
-    .book-cover {
+    .book-cover-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
+    .book-spine-shadow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 8px;
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0.35) 0%, transparent 100%);
+    }
+
+    .bought-ribbon {
+      position: absolute;
+      top: 6px;
+      left: 0;
+      right: 0;
+      background: rgba(5, 150, 105, 0.95);
+      color: #FFFFFF;
+      font-size: 9.5px;
+      font-weight: 800;
+      text-align: center;
+      padding: 3px 0;
+    }
+
+    .bestseller-ribbon {
+      position: absolute;
+      top: 6px;
+      left: 0;
+      right: 0;
+      background: rgba(220, 38, 38, 0.95);
+      color: #FFFFFF;
+      font-size: 9px;
+      font-weight: 800;
+      text-align: center;
+      padding: 2px 0;
+    }
   }
 
-  .book-info {
+  .book-details-box {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+  }
 
-    .best-seller-badge {
-      align-self: flex-start;
-      background-color: $color-orange;
-      color: #3A080E;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
-      margin-bottom: 0.35rem;
+
+
+  .book-main-title {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #4A0E17;
+    margin: 0 0 4px 0;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .book-author-meta {
+    font-size: 11.5px;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+
+    i {
+      color: #A27B38;
+      font-size: 11px;
     }
 
-    h3 {
-      font-family: 'Noto Serif Tamil', serif;
-      color: $color-maroon;
-      font-size: 1.05rem;
-      font-weight: 800;
-      margin: 0;
-      line-height: 1.3;
+    span {
+      font-weight: 600;
+      color: #475569;
+    }
+  }
+
+
+
+  .book-price-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
     }
 
-    .author-name {
-      font-size: 0.78rem;
-      color: $color-text-muted;
-      margin: 0.25rem 0;
-    }
-
-    .book-price {
+    .current-price {
       font-size: 1.15rem;
       font-weight: 800;
-      color: $color-maroon;
-      margin: 0.25rem 0 0.5rem 0;
+      color: #4A0E17;
     }
 
-    .buy-book-btn {
-      background-color: $color-maroon;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 0.5rem 1.25rem;
+    .original-price {
       font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      align-self: flex-start;
+      color: #94A3B8;
+      text-decoration: line-through;
+    }
 
-      &.bought {
-        background-color: #E8F5E9;
-        color: #2E7D32;
-        cursor: default;
-        display: flex;
-        align-items: center;
+    .discount-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #059669;
+      background: #ECFDF5;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid #A7F3D0;
+    }
+  }
+
+  .book-action-row {
+    .buy-now-btn {
+      width: 100%;
+      height: 36px;
+      background: linear-gradient(135deg, #4A0E17, #7A1929);
+      color: #ECC876;
+      border: none;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(74, 14, 23, 0.2);
+
+      &:active {
+        transform: scale(0.98);
       }
     }
+
+    .status-btn {
+      width: 100%;
+      height: 36px;
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(5, 150, 105, 0.25);
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
+.empty-books-state {
+  text-align: center;
+  padding: 30px 16px;
+  background: #FBF9E7;
+  border-radius: 16px;
+  border: 1px dashed rgba(162, 123, 56, 0.3);
+
+  .empty-icon {
+    font-size: 40px;
+    color: #A27B38;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  h4 {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #4A0E17;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 12px;
+    color: #64748B;
+    margin: 0 0 14px 0;
+  }
+
+  .reset-filter-btn {
+    background: #4A0E17;
+    color: #ECC876;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
   }
 }
 
@@ -2787,4 +3014,6 @@ $color-orange: #F49320;
     transform: translate(-50%, 25px) scale(0.9);
   }
 }
+
+
 
