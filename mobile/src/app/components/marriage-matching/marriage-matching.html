@@ -41,9 +41,6 @@
     </div>
   </div>
 
-<<<<<<< HEAD
-
-=======
   @if ((myMatches && myMatches.length > 0) || (myProfiles && myProfiles.length > 0)) {
   <div class="option-card premium-card"
     style="margin-top:24px; padding: 14px; cursor: pointer; text-align: center; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"
@@ -133,7 +130,6 @@
   </div>
   }
   }
->>>>>>> 0ac353cc757c352f57ee016893ad566492d96e68
 </div>
 }
 
@@ -479,7 +475,9 @@
 @if (serviceStep === 3) {
 <div class="match-result-container">
   <div class="success-box">
-    <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
+    <div class="success-icon-ring">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
     <h3>பதிவு வெற்றியடைந்தது!</h3>
     <p>உங்கள் திருமண பதிவு வெற்றிகரமாக பெறப்பட்டது. எங்கள் மையம் உங்களை விரைவில் தொடர்பு கொள்ளும்.</p>
     <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>

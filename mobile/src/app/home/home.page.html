@@ -495,14 +495,16 @@
     <!-- Step 3: Success Screen with Confirmation Notification -->
     @if (serviceStep === 3) {
     <div class="success-box">
-      <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
+      <div class="success-icon-ring">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
       <h3>{{ 'home.bookingSuccessTitle' | translate }}</h3>
-      <span class="booking-ref-badge">{{ 'home.bookingRefBadge' | translate }} #{{ bookingRefCode }}</span>
+      <span class="booking-ref-badge"><i class="bi bi-receipt me-1"></i> {{ 'home.bookingRefBadge' | translate }} #{{ bookingRefCode }}</span>
 
       <!-- In-App Confirmation Notification Alert Box -->
       <div class="confirmation-notification-card">
         <div class="cnc-header">
-          <span class="cnc-bell"><i class="bi bi-bell-fill text-gold"></i></span>
+          <span class="cnc-bell"><i class="bi bi-bell-fill"></i></span>
           <strong>{{ 'home.notifTitle' | translate }}</strong>
         </div>
         <p class="cnc-msg">
