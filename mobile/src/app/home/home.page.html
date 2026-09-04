@@ -151,8 +151,7 @@
           <div class="cmc-footer">
             @if (hasBookedService(cat.title)) {
             <span
-              style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">முன்பதிவு
-              செய்யப்பட்டது (Booked)</span>
+              style="color: #059669; font-size: 11px; font-weight: 700; background: #d1fae5; padding: 2px 6px; border-radius: 4px; margin-right: auto; margin-left: 8px;">{{ 'home.bookedTag' | translate }}</span>
             }
             <span class="cmc-arrow"><i class="bi bi-chevron-right"></i></span>
           </div>
@@ -179,9 +178,7 @@
         </div>
         <div class="afp-title-box">
           <span class="afp-status-badge" [class.on-leave]="astro.status !== 'Available'">
-            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? ('home.expertConsultation' |
-            translate) :
-            (translationService.currentLanguage() === 'en' ? 'On Leave' : 'தற்காலிக விடுமுறை') }}
+            <i class="bi bi-circle-fill me-1"></i> {{ astro.status === 'Available' ? ('home.expertConsultation' | translate) : ('home.onLeave' | translate) }}
           </span>
           <h2>{{ astro.name }}</h2>
           <span class="afp-role">{{ astro.role_title }}</span>
@@ -193,16 +190,14 @@
         <div class="afp-stat-row">
           <div class="stat-icon-badge exp-bg"><i class="bi bi-trophy-fill" style="color: #b45309;"></i></div>
           <div class="stat-row-content">
-            <strong class="stat-value">{{ translationService.currentLanguage() === 'en' ? '15+ Years Exp' :
-              (astro.experience || '15+ ஆண்டுகள்') }}</strong>
+            <strong class="stat-value">{{ astro.experience || ('home.yearsExp' | translate) }}</strong>
           </div>
         </div>
 
         <div class="afp-stat-row">
           <div class="stat-icon-badge consult-bg"><i class="bi bi-people-fill text-primary"></i></div>
           <div class="stat-row-content">
-            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ {{ translationService.currentLanguage()
-              === 'en' ? 'Clients' : 'நபர்கள்' }}</strong>
+            <strong class="stat-value">{{ astro.consultation_count || 1000 }}+ {{ 'home.clients' | translate }}</strong>
           </div>
         </div>
       </div>
@@ -216,7 +211,7 @@
 
       <!-- Main Book Button CTA (No Amount) -->
       <button class="btn-book-full-cta" (click)="startAstrologerBooking(astro)">
-        <span>{{ translationService.currentLanguage() === 'en' ? 'Continue' : 'தொடர்க' }}</span>
+        <span>{{ 'home.continue' | translate }}</span>
         <span class="cta-arrow-circle"><i class="bi bi-arrow-right"></i></span>
       </button>
     </div>
@@ -276,12 +271,11 @@
       <!-- Vastu or Horoscope Specific Details -->
       @if (selectedCategory?.id === 'vasthu') {
       <div class="form-input-card">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Site / Building Address' : 'மனை / கட்டிடத்தின்
-          முகவரி' }}</label>
+        <label>{{ 'home.vastuAddressLabel' | translate }}</label>
         <div class="input-inner-wrap textarea-wrap">
           <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
           <textarea name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
-            [placeholder]="translationService.currentLanguage() === 'en' ? 'Address & City for Vastu Site Visit...' : 'வாஸ்து ஆய்வு செய்ய வேண்டிய முகவரி & ஊர்...'"
+            [placeholder]="'home.vastuAddressPlaceholder' | translate"
             rows="2"></textarea>
         </div>
       </div>
@@ -297,10 +291,7 @@
         </div>
         <div class="form-input-card">
           <label>{{ 'astrology.tob' | translate }}</label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-clock"></i></span>
-            <input type="time" name="bookingTob" [(ngModel)]="astrologerBookingForm.tob" class="custom-native-time">
-          </div>
+          <app-segmented-tob [(value)]="astrologerBookingForm.tob"></app-segmented-tob>
         </div>
       </div>
 
@@ -310,7 +301,7 @@
         <div class="input-inner-wrap">
           <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
           <input type="text" name="bookingPob" [(ngModel)]="astrologerBookingForm.pob"
-            [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Chennai, Madurai, Coimbatore' : 'எ.கா: சென்னை, மதுரை, கோவை'">
+            [placeholder]="'home.pobPlaceholder' | translate">
         </div>
       </div>
       }
@@ -327,15 +318,14 @@
             [class.blocked-chip]="dateItem.isBlocked" [disabled]="dateItem.isBlocked"
             (click)="!dateItem.isBlocked && (astrologerBookingForm.date = dateItem.dateStr)">
             <span class="chip-label">{{ dateItem.label }}</span>
-            <small class="chip-day">{{ dateItem.isBlocked ? (translationService.currentLanguage() === 'en' ? 'Blocked' : 'தடைப்பட்டது') : dateItem.dayName }}</small>
+            <small class="chip-day">{{ dateItem.isBlocked ? ('home.blockedDate' | translate) : dateItem.dayName }}</small>
           </button>
           }
         </div>
 
         <!-- Custom Native Date Picker -->
         <div class="custom-date-select-bar">
-          <span class="custom-date-label">{{ translationService.currentLanguage() === 'en' ? 'Select Other Date:' :
-            'வேறு தேதிக்கு:' }}</span>
+          <span class="custom-date-label">{{ 'home.selectOtherDate' | translate }}</span>
           <div class="input-inner-wrap compact-date-input" [class.input-error-border]="isCurrentDateBlocked">
             <span class="input-icon"><i class="bi"
                 [ngClass]="isCurrentDateBlocked ? 'bi-exclamation-circle-fill text-danger' : 'bi-calendar-range-fill'"></i></span>
@@ -372,7 +362,7 @@
 
       <!-- Call Option Selection -->
       <div class="form-input-card">
-        <label>{{ translationService.currentLanguage() === 'en' ? 'Call Type *' : 'அழைப்பு முறை (Call Type) *' }} <span
+        <label>{{ 'home.callType' | translate }} <span
             class="required-star">*</span></label>
         <div class="slots-pill-grid">
           @if (selectedAstrologer.is_phone_call_available) {
@@ -408,7 +398,7 @@
         <div class="input-inner-wrap textarea-wrap">
           <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
           <textarea [(ngModel)]="astrologerBookingForm.notes" rows="2"
-            [placeholder]="translationService.currentLanguage() === 'en' ? 'e.g. Career growth, Marriage matching...' : 'எ.கா: தொழில் முன்னேற்றம், திருமண யோகம்...'"></textarea>
+            [placeholder]="'home.notesPlaceholder' | translate"></textarea>
         </div>
       </div>
 
@@ -423,7 +413,7 @@
 
       <!-- Continue Button -->
       <button type="submit" class="btn-form-continue">
-        <span>{{ translationService.currentLanguage() === 'en' ? 'Continue' : 'தொடர்க' }}</span>
+        <span>{{ 'home.continue' | translate }}</span>
         <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
       </button>
     </form>
@@ -434,49 +424,49 @@
     <div class="payment-card">
       <div class="pm-header-box">
         <span class="pm-icon"><i class="bi bi-credit-card-fill text-gold"></i></span>
-        <h3>முன்பதிவு கட்டண விவரம்</h3>
-        <p>கீழ்க்கண்ட விவரங்களைச் சரிபார்த்து பாதுகாப்பாக கட்டணத்தைச் செலுத்தவும்</p>
+        <h3>{{ 'home.paymentSummaryTitle' | translate }}</h3>
+        <p>{{ 'home.paymentSummarySubtitle' | translate }}</p>
       </div>
 
       <div class="pm-details-list">
         <div class="pm-row">
-          <span>தலைமை ஜோதிடர்:</span>
+          <span>{{ 'home.chiefAstrologer' | translate }}</span>
           <strong>{{ selectedAstrologer.name }}</strong>
         </div>
         <div class="pm-row">
-          <span>சேவைப் பிரிவு:</span>
+          <span>{{ 'home.serviceCategory' | translate }}</span>
           <strong>{{ selectedAstrologer.role_title }}</strong>
         </div>
         <div class="pm-row">
-          <span>பதிவு செய்தவர்:</span>
-          <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong>
+          <span>{{ 'home.bookedBy' | translate }}</span>
+          <strong>{{ astrologerBookingForm.name || ('home.userFallback' | translate) }}</strong>
         </div>
         <div class="pm-row">
-          <span>தொடர்பு எண்:</span>
+          <span>{{ 'home.contactPhone' | translate }}</span>
           <strong>{{ astrologerBookingForm.phone }}</strong>
         </div>
         <div class="pm-row">
-          <span>முன்பதிவு தேதி:</span>
+          <span>{{ 'home.bookingDate' | translate }}</span>
           <strong>{{ astrologerBookingForm.date }}</strong>
         </div>
         <div class="pm-row">
-          <span>ஆலோசனை நேரம்:</span>
+          <span>{{ 'home.consultationTime' | translate }}</span>
           <strong>{{ astrologerBookingForm.slot }}</strong>
         </div>
         <div class="pm-row sub-row">
-          <span>ஆலோசனை முறை:</span>
+          <span>{{ 'home.consultationMethod' | translate }}</span>
           <span>{{ astrologerBookingForm.call_type }}</span>
         </div>
         <div class="pm-row sub-row">
-          <span>ஆலோசனை கட்டணம்:</span>
+          <span>{{ 'home.consultationFee' | translate }}</span>
           <span>₹{{ totalAstrologerFee }}</span>
         </div>
         <div class="pm-row sub-row">
-          <span>தளம் & சேவைக் கட்டணம்:</span>
-          <span style="color:#16a34a;font-weight:700;">₹0 (இலவசம்)</span>
+          <span>{{ 'home.platformFee' | translate }}</span>
+          <span style="color:#16a34a;font-weight:700;">{{ 'home.freeText' | translate }}</span>
         </div>
         <div class="pm-row total-highlight">
-          <span>செலுத்த வேண்டிய மொத்தத் தொகை:</span>
+          <span>{{ 'home.totalAmountToPay' | translate }}</span>
           <strong class="total-fee">₹{{ totalAstrologerFee }}</strong>
         </div>
       </div>
@@ -492,15 +482,15 @@
 
       <button class="btn-app-gold btn-pay-now" [disabled]="isProcessingPayment" (click)="payAndFulfillAstrologer()">
         @if (isProcessingPayment) {
-        <span>செயலாக்கப்படுகிறது...</span>
+        <span>{{ 'home.processingText' | translate }}</span>
         } @else {
-        <span>₹{{ totalAstrologerFee }} செலுத்தி முன்பதிவை உறுதிசெய்க <i class="bi bi-lock-fill ms-1"></i></span>
+        <span>₹{{ totalAstrologerFee }} {{ 'home.payAndConfirmBtn' | translate }} <i class="bi bi-lock-fill ms-1"></i></span>
         }
       </button>
 
       <div class="footer-safety-badge" style="margin-top: 14px;">
         <span class="shield-icon"><i class="bi bi-shield-check text-gold"></i></span>
-        <span class="safety-text">100% பாதுகாப்பான மற்றும் உறுதியான நேரடி ஆலோசனை</span>
+        <span class="safety-text">{{ 'home.safetyBadgeText' | translate }}</span>
       </div>
     </div>
     }
@@ -509,19 +499,19 @@
     @if (serviceStep === 3) {
     <div class="success-box">
       <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
-      <h3>முன்பதிவு வெற்றிகரமாக உறுதியானது!</h3>
-      <span class="booking-ref-badge">பதிவு எண்: #{{ bookingRefCode }}</span>
+      <h3>{{ 'home.bookingSuccessTitle' | translate }}</h3>
+      <span class="booking-ref-badge">{{ 'home.bookingRefBadge' | translate }} #{{ bookingRefCode }}</span>
 
       <!-- In-App Confirmation Notification Alert Box -->
       <div class="confirmation-notification-card">
         <div class="cnc-header">
           <span class="cnc-bell"><i class="bi bi-bell-fill text-gold"></i></span>
-          <strong>உறுதிப்படுத்தல் அறிவிப்பு (Notification)</strong>
+          <strong>{{ 'home.notifTitle' | translate }}</strong>
         </div>
         <p class="cnc-msg">
-          வணக்கம் <strong>{{ astrologerBookingForm.name || 'பயனர்' }}</strong> வெற்றிகரமாக பதிவு செய்யப்பட்டது. தலைமை
+          வணக்கம் <strong>{{ astrologerBookingForm.name || ('home.userFallback' | translate) }}</strong> வெற்றிகரமாக பதிவு செய்யப்பட்டது. தலைமை
           ஜோதிடர் <strong>{{ selectedAstrologer.name }}</strong> அவர்கள்
-          குறித்த நேரத்தில் உங்களை தொலைபேசியில் தொடர்பு கொள்வார்.
+          குறித்த நேரத்தில் உங்களை தொடர்பு கொள்வார்.
         </p>
         <div class="cnc-schedule-pill">
           <span><i class="bi bi-calendar-check-fill me-1"></i> {{ astrologerBookingForm.date }}</span>
@@ -529,7 +519,7 @@
         </div>
       </div>
 
-      <button class="btn-app-gold" (click)="closeServiceFlow()">முகப்பிற்குச் செல்க</button>
+      <button class="btn-app-gold" (click)="closeServiceFlow()">{{ 'home.backToHome' | translate }}</button>
     </div>
     }
 

@@ -447,13 +447,13 @@ export class MarriageMatchingComponent implements OnInit {
     this.matchResult.keyMatchesText = matchedKeyNames.join(', ') + ' பொருத்தங்கள் சுபமாக உள்ளன.';
 
     if (this.matchResult.totalMatches >= 7 && rajjuMatch) {
-      this.matchResult.verdictTitle = '🟢 மிக உன்னதமான பொருத்தம் (100% திருமணம் செய்யலாம்)';
+      this.matchResult.verdictTitle = 'மிக உன்னதமான பொருத்தம் (100% திருமணம் செய்யலாம்)';
       this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் உள்ளன. ரஜ்ஜு பொருத்தம் மிகச் சுபமாக உள்ளதால் தாராளமாகத் திருமணம் நிச்சயிக்கலாம்.';
     } else if (this.matchResult.totalMatches >= 5 && rajjuMatch) {
-      this.matchResult.verdictTitle = '🟢 நல்ல பொருத்தம் (திருமணம் செய்யலாம்)';
+      this.matchResult.verdictTitle = 'நல்ல பொருத்தம் (திருமணம் செய்யலாம்)';
       this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் உள்ளன. முக்கிய பொருத்தங்கள் உள்ளதால் திருமணம் செய்யலாம்.';
     } else {
-      this.matchResult.verdictTitle = '🟡 சுமாரான பொருத்தம் (ஜோதிட பரிகாரம் தேவை)';
+      this.matchResult.verdictTitle = 'சுமாரான பொருத்தம் (ஜோதிட பரிகாரம் தேவை)';
       this.matchResult.verdictNotes = '10-ல் ' + this.matchResult.totalMatches + ' பொருத்தங்கள் மட்டுமே உள்ளன. குலதெய்வப் பிரார்த்தனை செய்து முடிவெடுக்கலாம்.';
     }
 

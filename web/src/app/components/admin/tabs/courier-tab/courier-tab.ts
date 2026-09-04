@@ -31,11 +31,21 @@ export class CourierTabComponent implements OnInit {
 
   showAddBookModal = false;
   bookModalTitle = 'Add New Book';
-  newBookForm: { id: number | null, title: string, author: string, price: string, description: string } = {
+  newBookForm: {
+    id: number | null,
+    title: string,
+    author: string,
+    price: string,
+    original_price: string,
+    is_bestseller: boolean,
+    description: string
+  } = {
     id: null,
     title: '',
     author: '',
     price: '',
+    original_price: '',
+    is_bestseller: false,
     description: ''
   };
   selectedCoverImage: File | null = null;
@@ -135,7 +145,15 @@ export class CourierTabComponent implements OnInit {
 
   openAddBookModal(): void {
     this.bookModalTitle = 'Add New Book';
-    this.newBookForm = { id: null, title: '', author: '', price: '', description: '' };
+    this.newBookForm = {
+      id: null,
+      title: '',
+      author: '',
+      price: '',
+      original_price: '',
+      is_bestseller: false,
+      description: ''
+    };
     this.selectedCoverImage = null;
     this.selectedBookImages = [];
     this.showAddBookModal = true;
@@ -150,6 +168,8 @@ export class CourierTabComponent implements OnInit {
       title: book.title || '',
       author: book.author || '',
       price: book.price ? String(book.price) : '',
+      original_price: book.original_price ? String(book.original_price) : '',
+      is_bestseller: !!book.is_bestseller,
       description: book.description || ''
     };
     this.selectedCoverImage = null;
@@ -184,9 +204,18 @@ export class CourierTabComponent implements OnInit {
     }
   }
 
+  formValidationError: string = '';
+
   saveBook(): void {
-    if (!this.newBookForm.title || !this.newBookForm.price) {
-      this.toastService.error('Title and Price are required.', 'விவரங்கள் தேவை');
+    this.formValidationError = '';
+    if (!this.newBookForm.title?.trim()) {
+      this.formValidationError = 'தயவுசெய்து புத்தகத்தின் தலைப்பை (Book Title) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.newBookForm.price || Number(this.newBookForm.price) <= 0) {
+      this.formValidationError = 'தயவுசெய்து சரியான புத்தக விற்பனை விலையை (Price) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
 
@@ -197,6 +226,8 @@ export class CourierTabComponent implements OnInit {
     formData.append('title', this.newBookForm.title);
     formData.append('author', this.newBookForm.author || '');
     formData.append('price', this.newBookForm.price);
+    formData.append('original_price', this.newBookForm.original_price || '');
+    formData.append('is_bestseller', this.newBookForm.is_bestseller ? '1' : '0');
     formData.append('description', this.newBookForm.description || '');
     if (this.selectedCoverImage) {
       formData.append('cover_image', this.selectedCoverImage);
@@ -215,7 +246,15 @@ export class CourierTabComponent implements OnInit {
       next: (res) => {
         this.toastService.success(res.message || 'Book saved successfully!', 'புத்தகம் சேமிக்கப்பட்டது');
         this.showAddBookModal = false;
-        this.newBookForm = { id: null, title: '', author: '', price: '', description: '' };
+        this.newBookForm = {
+          id: null,
+          title: '',
+          author: '',
+          price: '',
+          original_price: '',
+          is_bestseller: false,
+          description: ''
+        };
         this.selectedCoverImage = null;
         this.selectedBookImages = [];
         this.loadBooks();

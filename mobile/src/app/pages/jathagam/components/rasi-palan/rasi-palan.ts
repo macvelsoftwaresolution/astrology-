@@ -66,7 +66,7 @@ const RASI_SYMBOLS: Record<string, string> = {
                 <h2>{{ expanded.rasi_name }}</h2>
                 <span class="type-pill">{{ activeType | titlecase }} பலன்</span>
               </div>
-              <button class="close-x" (click)="expanded = null">✕</button>
+              <button class="close-x" (click)="expanded = null"><i class="bi bi-x-lg"></i></button>
             </div>
             <p class="full-text">{{ expanded.prediction_text }}</p>
             @if (expanded.audio_url) {

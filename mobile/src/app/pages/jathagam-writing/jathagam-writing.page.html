@@ -13,111 +13,110 @@
 
 <ion-content class="astrology-app-content" [fullscreen]="true">
   <div class="tab-content consultation-booking-content">
-    
+
     @if (!isSuccess) {
-      <form ngNoForm (submit)="$event.preventDefault(); payAndSubmit()" class="booking-form-box">
-        
-        <div class="form-input-card">
-          <label>{{ 'jathagamWriting.name' | translate }} <span class="required-star">*</span></label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-person-fill"></i></span>
-            <input type="text" name="jwName" [(ngModel)]="form.name" placeholder="Full Name">
-          </div>
+    <form ngNoForm (submit)="$event.preventDefault(); payAndSubmit()" class="booking-form-box">
+
+      <div class="form-input-card">
+        <label>{{ 'jathagamWriting.name' | translate }} <span class="required-star">*</span></label>
+        <div class="input-inner-wrap">
+          <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+          <input type="text" name="jwName" [(ngModel)]="form.name" placeholder="Full Name">
         </div>
-
-        <div class="form-input-card">
-          <label>{{ 'jathagamWriting.phone' | translate }} <span class="required-star">*</span></label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
-            <input type="tel" name="jwPhone" [(ngModel)]="form.phone" placeholder="9876543210">
-          </div>
-        </div>
-
-        <div class="form-dual-grid">
-          <div class="form-input-card" style="grid-column: span 2;">
-            <label>{{ 'jathagamWriting.dob' | translate }} <span class="required-star">*</span></label>
-            <app-segmented-dob [(value)]="form.dob"></app-segmented-dob>
-          </div>
-          <div class="form-input-card" style="grid-column: span 2;">
-            <label>{{ 'jathagamWriting.tob' | translate }} <span class="required-star">*</span></label>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <div class="input-inner-wrap" style="flex: 1; min-width: 120px;">
-                <span class="input-icon"><i class="bi bi-clock"></i></span>
-                <input type="tel" name="jwTob" [(ngModel)]="tobDisplay" (input)="formatTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1;">
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0; background: #fff; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(81, 23, 23, 0.4);">
-                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="AM" name="jwAmPm" id="jwAM"><label for="jwAM">AM</label>
-                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="PM" name="jwAmPm" id="jwPM"><label for="jwPM">PM</label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-input-card">
-          <label>{{ 'jathagamWriting.pob' | translate }} <span class="required-star">*</span></label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <input type="text" name="jwPob" [(ngModel)]="form.pob" placeholder="e.g. Chennai">
-          </div>
-        </div>
-
-        <div class="form-input-card">
-          <label>{{ 'jathagamWriting.gender' | translate }} <span class="required-star">*</span></label>
-          <div class="slots-pill-grid">
-            <button type="button" class="slot-pill" [class.active]="form.gender === 'Male'" (click)="form.gender = 'Male'">
-              <i class="bi" [ngClass]="form.gender === 'Male' ? 'bi-check-circle-fill' : 'bi-gender-male'"></i>
-              <span>{{ 'jathagamWriting.male' | translate }}</span>
-            </button>
-            <button type="button" class="slot-pill" [class.active]="form.gender === 'Female'" (click)="form.gender = 'Female'">
-              <i class="bi" [ngClass]="form.gender === 'Female' ? 'bi-check-circle-fill' : 'bi-gender-female'"></i>
-              <span>{{ 'jathagamWriting.female' | translate }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="form-input-card">
-          <label>கூரியர் டெலிவரி முகவரி (Delivery Address) <span class="required-star">*</span></label>
-          <div class="input-inner-wrap textarea-wrap">
-            <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
-            <textarea [(ngModel)]="form.address" name="jwAddress" rows="2" placeholder="கதவு எண், தெரு, ஊர், பின்கோடு (Door No, Street, City, Pincode)"></textarea>
-          </div>
-        </div>
-
-        <div class="form-input-card">
-          <label>{{ 'jathagamWriting.notes' | translate }}</label>
-          <div class="input-inner-wrap textarea-wrap">
-            <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
-            <textarea [(ngModel)]="form.notes" rows="2" placeholder="Any specific details..."></textarea>
-          </div>
-        </div>
-
-        @if (validationError) {
-          <div class="blocked-date-alert-banner" style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>{{ validationError | translate }}</span>
-          </div>
-        }
-
-        <button type="submit" class="btn-app-gold" style="margin-top:20px; width:100%; border-radius:12px;" [disabled]="isProcessingPayment">
-          @if (isProcessingPayment) {
-            <span>{{ 'jathagamWriting.processing' | translate }}</span>
-          } @else {
-            <span>₹{{ price }} {{ 'jathagamWriting.submitBtn' | translate }} 🔒</span>
-          }
-        </button>
-      </form>
-    } @else {
-      <div class="success-box" style="margin-top: 40px; text-align: center; padding: 20px;">
-        <i class="bi bi-check-circle-fill text-success" style="font-size: 48px; display: block; margin-bottom: 20px;"></i>
-        <h3 style="color: #059669; margin-bottom: 10px;">{{ 'jathagamWriting.successTitle' | translate }}</h3>
-        <span class="booking-ref-badge" style="background: #ecfdf5; color: #065f46; padding: 5px 10px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px;">பதிவு எண்: #{{ bookingRefCode }}</span>
-        
-        <p style="color: #475569; line-height: 1.5; margin-bottom: 30px;">
-          {{ 'jathagamWriting.successDesc' | translate }}
-        </p>
-
-        <button class="btn-app-gold" (click)="goBack()" style="border-radius: 20px; padding: 10px 30px;">{{ 'common.back' | translate }}</button>
       </div>
+
+      <div class="form-input-card">
+        <label>{{ 'jathagamWriting.phone' | translate }} <span class="required-star">*</span></label>
+        <div class="input-inner-wrap">
+          <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
+          <input type="tel" name="jwPhone" [(ngModel)]="form.phone" placeholder="9876543210">
+        </div>
+      </div>
+
+      <div class="form-dual-grid">
+        <div class="form-input-card" style="grid-column: span 2;">
+          <label>{{ 'jathagamWriting.dob' | translate }} <span class="required-star">*</span></label>
+          <app-segmented-dob [(value)]="form.dob"></app-segmented-dob>
+        </div>
+        <div class="form-input-card" style="grid-column: span 2;">
+          <label>{{ 'jathagamWriting.tob' | translate }} <span class="required-star">*</span></label>
+          <app-segmented-tob [(value)]="form.tob"></app-segmented-tob>
+        </div>
+      </div>
+
+      <div class="form-input-card">
+        <label>{{ 'jathagamWriting.pob' | translate }} <span class="required-star">*</span></label>
+        <div class="input-inner-wrap">
+          <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+          <input type="text" name="jwPob" [(ngModel)]="form.pob" placeholder="e.g. Chennai">
+        </div>
+      </div>
+
+      <div class="form-input-card">
+        <label>{{ 'jathagamWriting.gender' | translate }} <span class="required-star">*</span></label>
+        <div class="slots-pill-grid">
+          <button type="button" class="slot-pill" [class.active]="form.gender === 'Male'"
+            (click)="form.gender = 'Male'">
+            <i class="bi" [ngClass]="form.gender === 'Male' ? 'bi-check-circle-fill' : 'bi-gender-male'"></i>
+            <span>{{ 'jathagamWriting.male' | translate }}</span>
+          </button>
+          <button type="button" class="slot-pill" [class.active]="form.gender === 'Female'"
+            (click)="form.gender = 'Female'">
+            <i class="bi" [ngClass]="form.gender === 'Female' ? 'bi-check-circle-fill' : 'bi-gender-female'"></i>
+            <span>{{ 'jathagamWriting.female' | translate }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-input-card">
+        <label>{{ 'jathagamWriting.deliveryAddress' | translate }} <span class="required-star">*</span></label>
+        <div class="input-inner-wrap textarea-wrap">
+          <span class="input-icon"><i class="bi bi-geo-alt-fill"></i></span>
+          <textarea [(ngModel)]="form.address" name="jwAddress" rows="2"
+            placeholder="கதவு எண், தெரு, ஊர், பின்கோடு"></textarea>
+        </div>
+      </div>
+
+      <div class="form-input-card">
+        <label>{{ 'jathagamWriting.notes' | translate }}</label>
+        <div class="input-inner-wrap textarea-wrap">
+          <span class="input-icon"><i class="bi bi-chat-text-fill"></i></span>
+          <textarea [(ngModel)]="form.notes" rows="2" placeholder="Any specific details..."></textarea>
+        </div>
+      </div>
+
+      @if (validationError) {
+      <div class="blocked-date-alert-banner"
+        style="margin-top: 1rem; background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.4); color: #dc3545; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ validationError | translate }}</span>
+      </div>
+      }
+
+      <button type="submit" class="btn-app-gold" style="margin-top:20px; width:100%; border-radius:12px;"
+        [disabled]="isProcessingPayment">
+        @if (isProcessingPayment) {
+        <span>{{ 'jathagamWriting.processing' | translate }}</span>
+        } @else {
+        <span>₹{{ price }} {{ 'jathagamWriting.submitBtn' | translate }} <i class="bi bi-lock-fill ms-1"></i></span>
+        }
+      </button>
+    </form>
+    } @else {
+    <div class="success-box" style="margin-top: 40px; text-align: center; padding: 20px;">
+      <i class="bi bi-check-circle-fill text-success" style="font-size: 48px; display: block; margin-bottom: 20px;"></i>
+      <h3 style="color: #059669; margin-bottom: 10px;">{{ 'jathagamWriting.successTitle' | translate }}</h3>
+      <span class="booking-ref-badge"
+        style="background: #ecfdf5; color: #065f46; padding: 5px 10px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px;">பதிவு
+        எண்: #{{ bookingRefCode }}</span>
+
+      <p style="color: #475569; line-height: 1.5; margin-bottom: 30px;">
+        {{ 'jathagamWriting.successDesc' | translate }}
+      </p>
+
+      <button class="btn-app-gold" (click)="goBack()" style="border-radius: 20px; padding: 10px 30px;">{{ 'common.back'
+        | translate }}</button>
+    </div>
     }
 
   </div>

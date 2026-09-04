@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
+import { SegmentedTobComponent } from '../../../../components/segmented-tob/segmented-tob.component';
 
 const RASIS = [
   'மேஷம்', 'ரிஷபம்', 'மிதுனம்', 'கடகம்', 'சிம்மம்', 'கன்னி',
@@ -22,11 +23,11 @@ const NAKSHATRAS = [
 @Component({
   selector: 'app-my-jathagam',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent],
+  imports: [CommonModule, FormsModule, IonSpinner, TranslatePipe, SegmentedDobComponent, SegmentedTobComponent],
   template: `
     <div class="my-jathagam-wrapper">
       <div class="section-header">
-        <h2>📜 என் ஜாதகம்</h2>
+        <h2><i class="bi bi-journal-text me-1"></i> {{ 'astrology.title' | translate }}</h2>
         <p>உங்கள் பிறப்பு விவரங்களை சேமியுங்கள்</p>
       </div>
 
@@ -35,7 +36,7 @@ const NAKSHATRAS = [
         <div class="saved-card">
           <div class="saved-header">
             <span class="rasi-badge">{{ saved.rasi || 'ராசி' }}</span>
-            <button class="edit-btn" (click)="startEdit()">✏️ திருத்தம்</button>
+            <button class="edit-btn" (click)="startEdit()"><i class="bi bi-pencil-fill me-1"></i> திருத்தம்</button>
           </div>
           <div class="info-grid">
             <div class="info-item">
@@ -80,13 +81,7 @@ const NAKSHATRAS = [
 
           <div class="input-row">
             <label>{{ 'astrology.tob' | translate }}</label>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <input type="tel" [(ngModel)]="tobDisplay" (input)="formatTobDisplay($event)" placeholder="HH:MM" maxlength="5" style="flex: 1; min-width: 80px;" class="field">
-              <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; flex-shrink: 0;">
-                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="AM" name="mAmPm" id="mAM"><label for="mAM">AM</label>
-                <input type="radio" [(ngModel)]="tobAmPm" (change)="updateTobBackend()" value="PM" name="mAmPm" id="mPM"><label for="mPM">PM</label>
-              </div>
-            </div>
+            <app-segmented-tob [(value)]="form.tob"></app-segmented-tob>
           </div>
 
           <div class="form-group">
@@ -136,7 +131,7 @@ const NAKSHATRAS = [
               @if (saving) {
                 <ion-spinner name="crescent" style="width:16px;height:16px"></ion-spinner>
               } @else {
-                <span>💾 சேமி</span>
+                <span><i class="bi bi-floppy-fill me-1"></i> சேமி</span>
               }
             </button>
           </div>
@@ -145,7 +140,7 @@ const NAKSHATRAS = [
             <p class="error-msg">{{ errorMsg | translate }}</p>
           }
           @if (successMsg) {
-            <p class="success-msg">✅ {{ successMsg }}</p>
+            <p class="success-msg"><i class="bi bi-check-circle-fill me-1 text-success"></i> {{ successMsg }}</p>
           }
         </div>
       }

@@ -37,6 +37,8 @@ export class LmsTabComponent implements OnInit {
   curriculumMonthFilter: 'all' | 'm1' | 'm2' | 'm3' = 'all';
 
   editingDayLesson: any = null;
+  formValidationError: string = '';
+
   openDayEditorModal = false;
   copyFromBatchId: number | null = null;
   openCopyBatchModal = false;
@@ -226,13 +228,19 @@ export class LmsTabComponent implements OnInit {
   }
 
   openEditDay(day: any): void {
-    const audios = Array.isArray(day.audios_json) && day.audios_json.length > 0
-      ? [...day.audios_json]
-      : (day.audio_url ? [{ title: 'குரல் பதிவு 1', url: day.audio_url }] : []);
+    let audios: any[] = [];
+    if (day.audios_json !== undefined && day.audios_json !== null) {
+      audios = Array.isArray(day.audios_json) ? [...day.audios_json] : [];
+    } else if (day.audio_url) {
+      audios = [{ title: 'குரல் பதிவு 1', url: day.audio_url }];
+    }
 
-    const pdfs = Array.isArray(day.pdfs_json) && day.pdfs_json.length > 0
-      ? [...day.pdfs_json]
-      : (day.pdf_material_url ? [{ title: 'பாடக் குறிப்பு PDF 1', url: day.pdf_material_url }] : []);
+    let pdfs: any[] = [];
+    if (day.pdfs_json !== undefined && day.pdfs_json !== null) {
+      pdfs = Array.isArray(day.pdfs_json) ? [...day.pdfs_json] : [];
+    } else if (day.pdf_material_url) {
+      pdfs = [{ title: 'பாடக் குறிப்பு PDF 1', url: day.pdf_material_url }];
+    }
 
     this.editingDayLesson = {
       batch_id: this.selectedBatchId,
@@ -271,6 +279,12 @@ export class LmsTabComponent implements OnInit {
   removeAudioItem(index: number): void {
     if (this.editingDayLesson && Array.isArray(this.editingDayLesson.audios_json)) {
       this.editingDayLesson.audios_json.splice(index, 1);
+      if (this.editingDayLesson.audios_json.length === 0) {
+        this.editingDayLesson.audio_url = '';
+      } else {
+        this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url || '';
+      }
+      this.cdr.detectChanges();
     }
   }
 
@@ -314,6 +328,12 @@ export class LmsTabComponent implements OnInit {
   removePdfItem(index: number): void {
     if (this.editingDayLesson && Array.isArray(this.editingDayLesson.pdfs_json)) {
       this.editingDayLesson.pdfs_json.splice(index, 1);
+      if (this.editingDayLesson.pdfs_json.length === 0) {
+        this.editingDayLesson.pdf_material_url = '';
+      } else {
+        this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url || '';
+      }
+      this.cdr.detectChanges();
     }
   }
 
@@ -371,6 +391,7 @@ export class LmsTabComponent implements OnInit {
   removeDayImage(index: number): void {
     if (this.editingDayLesson && Array.isArray(this.editingDayLesson.images_json)) {
       this.editingDayLesson.images_json.splice(index, 1);
+      this.cdr.detectChanges();
     }
   }
 
@@ -380,12 +401,17 @@ export class LmsTabComponent implements OnInit {
       return;
     }
 
-    // Legacy sync
+    // Sync legacy single URL columns with the current arrays
     if (Array.isArray(this.editingDayLesson.audios_json) && this.editingDayLesson.audios_json.length > 0) {
-      this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url;
+      this.editingDayLesson.audio_url = this.editingDayLesson.audios_json[0].url || '';
+    } else {
+      this.editingDayLesson.audio_url = '';
     }
+
     if (Array.isArray(this.editingDayLesson.pdfs_json) && this.editingDayLesson.pdfs_json.length > 0) {
-      this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url;
+      this.editingDayLesson.pdf_material_url = this.editingDayLesson.pdfs_json[0].url || '';
+    } else {
+      this.editingDayLesson.pdf_material_url = '';
     }
 
     const dayNum = this.editingDayLesson.day_number;
@@ -698,11 +724,11 @@ export class LmsTabComponent implements OnInit {
   ];
 
   timePresets = [
-    { label: '🌅 காலை 06:00 - 07:30', start: '06:00', end: '07:30', text: 'காலை 06:00 - 07:30' },
-    { label: '☀️ காலை 10:00 - 11:30', start: '10:00', end: '11:30', text: 'காலை 10:00 - 11:30' },
-    { label: '🌆 மாலை 06:00 - 07:30', start: '18:00', end: '19:30', text: 'மாலை 06:00 - 07:30' },
-    { label: '🌙 இரவு 07:30 - 09:00', start: '19:30', end: '21:00', text: 'இரவு 07:30 - 09:00' },
-    { label: '🌙 இரவு 08:00 - 09:30', start: '20:00', end: '21:30', text: 'இரவு 08:00 - 09:30' }
+    { label: 'காலை 06:00 - 07:30', start: '06:00', end: '07:30', text: 'காலை 06:00 - 07:30' },
+    { label: 'காலை 10:00 - 11:30', start: '10:00', end: '11:30', text: 'காலை 10:00 - 11:30' },
+    { label: 'மாலை 06:00 - 07:30', start: '18:00', end: '19:30', text: 'மாலை 06:00 - 07:30' },
+    { label: 'இரவு 07:30 - 09:00', start: '19:30', end: '21:00', text: 'இரவு 07:30 - 09:00' },
+    { label: 'இரவு 08:00 - 09:30', start: '20:00', end: '21:30', text: 'இரவு 08:00 - 09:30' }
   ];
 
   openNewLiveClass(): void {
@@ -814,12 +840,20 @@ export class LmsTabComponent implements OnInit {
   }
 
   saveLiveClass(): void {
-    if (!this.editingLiveClass.title || !this.editingLiveClass.link) {
-      alert('Title and Link are required.');
+    this.formValidationError = '';
+    if (!this.editingLiveClass.title?.trim()) {
+      this.formValidationError = 'தயவுசெய்து நேரடி வகுப்பின் தலைப்பை (Title) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.editingLiveClass.link?.trim()) {
+      this.formValidationError = 'தயவுசெய்து நேரலை மீட்டிங் இணைப்பை (Meeting Link) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
     if (!this.editingLiveClass.days_of_week || this.editingLiveClass.days_of_week.length === 0) {
-      alert('தயவுசெய்து நேரடி வகுப்பிற்கான வார நாட்களைத் தேர்வு செய்யவும்.');
+      this.formValidationError = 'தயவுசெய்து நேரடி வகுப்பிற்கான வார நாட்களைத் தேர்வு செய்யவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
     this.editingLiveClass.level = this.selectedCategory || 'ILANILAI';
@@ -832,10 +866,15 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
+        this.toastService.success('நேரலை வகுப்பு வெற்றிகரமாக சேமிக்கப்பட்டது!', 'வெற்றி');
         this.activeView = 'dashboard';
+        this.formValidationError = '';
         this.loadLiveClasses();
       },
-      error: () => alert('Failed to save Live Class.')
+      error: (err) => {
+        this.formValidationError = err?.error?.message || 'நேரலை வகுப்பைச் சேமிப்பதில் பிழை ஏற்பட்டது.';
+        this.toastService.error(this.formValidationError, 'பிழை');
+      }
     });
   }
 
@@ -869,19 +908,59 @@ export class LmsTabComponent implements OnInit {
       time_text: 'மாலை 06:00 - 07:30',
       status: 'upcoming',
       join_url: '',
-      category: this.selectedCategory // Optional if backend supports it
+      recording_video_url: '',
+      category: this.selectedCategory
     };
+    this.formValidationError = '';
     this.activeView = 'seminar-studio';
   }
 
   editSeminar(seminar: any): void {
     this.editingSeminar = { ...seminar };
+    this.formValidationError = '';
     this.activeView = 'seminar-studio';
   }
 
+  isUploadingSeminarVideo = false;
+
+  uploadSeminarVideo(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingSeminarVideo = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'seminar_videos');
+
+    const headers = this.authService.getUploadHeaders();
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
+      next: (res) => {
+        if (res && (res.url || res.path)) {
+          if (!this.editingSeminar) this.editingSeminar = {};
+          this.editingSeminar.recording_video_url = res.url || res.path;
+        }
+        this.isUploadingSeminarVideo = false;
+        this.toastService.success('கருத்தரங்க வீடியோ வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toastService.error('வீடியோ பதிவேற்றுவதில் பிழை ஏற்பட்டது.', 'பிழை');
+        this.isUploadingSeminarVideo = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   saveSeminar(): void {
-    if (!this.editingSeminar.title || !this.editingSeminar.speaker) {
-      alert('Title and Speaker are required.');
+    this.formValidationError = '';
+    if (!this.editingSeminar.title?.trim()) {
+      this.formValidationError = 'தயவுசெய்து கருத்தரங்கின் தலைப்பை (Seminar Title) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.editingSeminar.speaker?.trim()) {
+      this.formValidationError = 'தயவுசெய்து உரையாற்றுபவரின் பெயரை (Speaker Name) உள்ளிடவும்.';
+      this.toastService.warning(this.formValidationError, 'விவரங்கள் தேவை');
       return;
     }
     this.editingSeminar.level = this.selectedCategory || 'ILANILAI';
@@ -896,10 +975,15 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
+        this.toastService.success('கருத்தரங்கம் வெற்றிகரமாக சேமிக்கப்பட்டது!', 'வெற்றி');
         this.activeView = 'dashboard';
+        this.formValidationError = '';
         this.loadSeminars();
       },
-      error: () => alert('Failed to save seminar.')
+      error: (err) => {
+        this.formValidationError = err?.error?.message || 'கருத்தரங்கை சேமிப்பதில் பிழை ஏற்பட்டது.';
+        this.toastService.error(this.formValidationError, 'பிழை');
+      }
     });
   }
 
@@ -948,6 +1032,35 @@ export class LmsTabComponent implements OnInit {
       error: () => {
         alert('Thumbnail upload failed.');
         this.isUploadingThumbnail = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  isUploadingLiveBanner = false;
+
+  onLiveBannerSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    this.isUploadingLiveBanner = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'live_banners');
+
+    const headers = this.authService.getUploadHeaders();
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
+      next: (res) => {
+        if (res && res.url) {
+          if (!this.editingLiveClass) this.editingLiveClass = {};
+          this.editingLiveClass.banner_image_url = res.url;
+        }
+        this.isUploadingLiveBanner = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert('பேனர் படம் பதிவேற்றுவதில் பிழைப்பட்டது.');
+        this.isUploadingLiveBanner = false;
         this.cdr.detectChanges();
       }
     });

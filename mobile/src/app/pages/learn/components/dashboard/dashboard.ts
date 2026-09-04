@@ -1,10 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, OnChanges, SimpleChanges, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, Output, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
+import { RazorpayNativeService } from '../../../../services/razorpay-native.service';
+
+declare var Razorpay: any;
 
 @Component({
   selector: 'app-learn-dashboard',
@@ -12,7 +15,7 @@ import { TranslationService } from '../../../../services/translation.service';
   styleUrls: ['./dashboard.scss'],
   standalone: false
 })
-export class LearnDashboardComponent implements OnInit, OnChanges {
+export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   @Input() enrollForm: any;
   @Output() back = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
@@ -28,6 +31,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   @Input() initialOption: string | null = null;
   @Input() orderNumber: string | null = null;
 
+  isProcessingPayment = false;
+
   // Syllabus details (Dynamic from DB courses/modules/lessons)
   chapters: Chapter[] = [];
 
@@ -39,6 +44,23 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
 
   // Book Library Store List (Dynamic from DB)
   books: Book[] = [];
+  bookSearchQuery = '';
+  bookFilterTab: 'all' | 'bought' = 'all';
+
+  get filteredBooks(): Book[] {
+    let result = this.books || [];
+    if (this.bookFilterTab === 'bought') {
+      result = result.filter(b => b.bought);
+    }
+    if (this.bookSearchQuery.trim()) {
+      const q = this.bookSearchQuery.toLowerCase().trim();
+      result = result.filter(b =>
+        (b.title && b.title.toLowerCase().includes(q)) ||
+        (b.author && b.author.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }
 
   // PDF Notes List (Dynamic from DB)
   pdfNotes: any[] = [];
@@ -61,6 +83,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   selectedOrderDetails: any = null;
   showOrderStatusModal = false;
 
+  // Book Order Success Notification Modal State
+  showBookOrderSuccessModal = false;
+  orderSuccessNotification: any = null;
+
   // Notifications & Announcements State
   notifications: any[] = [];
   unreadCount: number = 0;
@@ -75,7 +101,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private razorpayService: RazorpayNativeService
   ) { }
 
   // 60-Day Curriculum State
@@ -99,8 +126,86 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     this.loadLiveClass();
     this.loadMaterials();
     this.loadExams();
+    this.loadMySubmissions();
     this.loadNotifications();
     this.checkInitialOption();
+  }
+
+  currentLiveIndex = 0;
+  private liveSliderInterval: any = null;
+
+  currentWebinarIndex = 0;
+  private webinarSliderInterval: any = null;
+
+  ngOnDestroy() {
+    this.stopLiveSlider();
+    this.stopWebinarSlider();
+  }
+
+  startLiveSlider() {
+    this.stopLiveSlider();
+    if (!this.liveClasses || this.liveClasses.length <= 1) return;
+    this.liveSliderInterval = setInterval(() => {
+      this.currentLiveIndex = (this.currentLiveIndex + 1) % this.liveClasses.length;
+      this.scrollToLiveCard(this.currentLiveIndex);
+      this.cdr.detectChanges();
+    }, 4000);
+  }
+
+  stopLiveSlider() {
+    if (this.liveSliderInterval) {
+      clearInterval(this.liveSliderInterval);
+      this.liveSliderInterval = null;
+    }
+  }
+
+  setLiveIndex(index: number) {
+    this.currentLiveIndex = index;
+    this.scrollToLiveCard(index);
+    this.startLiveSlider();
+  }
+
+  scrollToLiveCard(index: number) {
+    if (typeof document !== 'undefined') {
+      const container = document.querySelector('.live-classes-slider-track');
+      const cards = container?.querySelectorAll('.live-class-card');
+      if (container && cards && cards[index]) {
+        (cards[index] as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }
+    }
+  }
+
+  startWebinarSlider() {
+    this.stopWebinarSlider();
+    if (!this.seminars || this.seminars.length <= 1) return;
+    this.webinarSliderInterval = setInterval(() => {
+      this.currentWebinarIndex = (this.currentWebinarIndex + 1) % this.seminars.length;
+      this.scrollToWebinarCard(this.currentWebinarIndex);
+      this.cdr.detectChanges();
+    }, 4500);
+  }
+
+  stopWebinarSlider() {
+    if (this.webinarSliderInterval) {
+      clearInterval(this.webinarSliderInterval);
+      this.webinarSliderInterval = null;
+    }
+  }
+
+  setWebinarIndex(index: number) {
+    this.currentWebinarIndex = index;
+    this.scrollToWebinarCard(index);
+    this.startWebinarSlider();
+  }
+
+  scrollToWebinarCard(index: number) {
+    if (typeof document !== 'undefined') {
+      const container = document.querySelector('.webinar-slider-wrap');
+      const cards = container?.querySelectorAll('.webinar-card-item');
+      if (container && cards && cards[index]) {
+        (cards[index] as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }
+    }
   }
 
   loadStudentCurriculum() {
@@ -110,9 +215,6 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
         if (res && res.curriculum) {
           this.curriculumDays = res.curriculum || [];
           this.activeBatch = res.active_batch || null;
-          if (this.curriculumDays.length === 0) {
-            this.showToast('Curriculum is empty for batch ' + (this.activeBatch?.id || 'none'), 'warning');
-          }
           this.cdr.detectChanges();
         }
       },
@@ -290,6 +392,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
         if (res && res.data && Array.isArray(res.data)) {
           this.liveClasses = res.data.filter((lc: any) => lc.is_active);
           this.updateMarqueeMessage();
+          this.startLiveSlider();
         }
       },
       error: () => { }
@@ -392,7 +495,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       if (todayLives.length > 0) {
         this.currentDisplayedLives = todayLives;
         const lc = todayLives[0];
-        const dayPrefix = lc.is_today ? '🔴 இன்றைய நேரலை வகுப்பு' : `📅 நேரலை வகுப்பு (${lc.date_text || ''})`;
+        const dayPrefix = lc.is_today ? 'இன்றைய நேரலை வகுப்பு' : `நேரலை வகுப்பு (${lc.date_text || ''})`;
         parts.push(`${dayPrefix}: ${lc.title} • ${lc.time_text || ''} - ${lc.description || 'இப்போதே இணைந்திடுங்கள்'}`);
       }
     }
@@ -410,7 +513,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
       if (todayUnreadNotes.length > 0) {
         this.currentDisplayedNotifs = todayUnreadNotes;
         todayUnreadNotes.slice(0, 2).forEach((n: any) => {
-          parts.push(`🔔 ${n.title}: ${n.body || n.message || ''}`);
+          parts.push(`${n.title}: ${n.body || n.message || ''}`);
         });
       }
     }
@@ -553,6 +656,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
 
   // Exams List (Dynamic from DB)
   exams: any[] = [];
+  mySubmissions: any[] = [];
 
   loadExams() {
     const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
@@ -566,6 +670,38 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     });
   }
 
+  loadMySubmissions() {
+    if (this.authService.isLoggedIn()) {
+      this.http.get<any>(`${environment.apiUrl}/user/my-submissions`, this.authService.getAuthHeaders()).subscribe({
+        next: (res) => {
+          if (res && res.submissions) {
+            this.mySubmissions = res.submissions;
+            this.cdr.detectChanges();
+          }
+        },
+        error: () => {}
+      });
+    }
+  }
+
+  isExamSubmitted(examId: number): boolean {
+    return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId));
+  }
+
+  getExamScore(examId: number): number {
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    return sub ? (sub.score || 0) : 0;
+  }
+
+  handleExamClick(ex: any) {
+    if (this.isExamSubmitted(ex.id)) {
+      const score = this.getExamScore(ex.id);
+      alert(`நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள்.\nஉங்கள் மதிப்பெண்: ${score}%\n(You have already submitted this exam. Only one attempt is permitted.)`);
+      return;
+    }
+    this.startQuiz.emit(ex);
+  }
+
   loadSeminars() {
     const userLevel = this.enrollForm?.courseLevel?.toUpperCase() || 'ILANILAI';
     this.http.get<any>(`${environment.apiUrl}/public/seminars/${userLevel}`).subscribe({
@@ -577,8 +713,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
             date: s.date_text,
             time: s.time_text,
             status: s.status || 'upcoming',
-            join_url: s.join_url
+            join_url: s.join_url,
+            recording_video_url: s.recording_video_url || s.video_url
           }));
+          this.startWebinarSlider();
         }
       },
       error: () => { }
@@ -640,14 +778,23 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     this.http.get<any>(`${environment.apiUrl}/public/books`).subscribe({
       next: (res) => {
         if (res && res.books && Array.isArray(res.books)) {
-          this.books = res.books.map((b: any) => ({
-            id: String(b.id),
-            title: b.title,
-            author: b.author || 'ஆருத்ரா பதிப்பகம்',
-            price: Number(b.price) || 499,
-            coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
-            bought: false
-          }));
+          this.books = res.books.map((b: any) => {
+            const price = Number(b.price) || 499;
+            const rawOrig = b.original_price ? Number(b.original_price) : 0;
+            const originalPrice = (rawOrig > price) ? rawOrig : (price + 200);
+            return {
+              id: String(b.id),
+              title: b.title,
+              author: b.author || 'ஆருத்ரா பதிப்பகம்',
+              price: price,
+              originalPrice: originalPrice,
+              isBestseller: b.is_bestseller !== undefined ? Boolean(b.is_bestseller) : false,
+              rating: b.rating ? Number(b.rating) : 5.0,
+              formatLabel: b.format_label || '',
+              coverImage: b.cover_image || 'assets/images/astro_service_bg.png',
+              bought: false
+            };
+          });
           this.syncBooksWithOrders();
         }
       },
@@ -691,41 +838,145 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   }
 
   async confirmCheckoutPayment() {
-    if (this.selectedCheckoutBook) {
-      if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
-        this.showToast(this.translationService.currentLanguage() === 'en' ? 'Please fill in all details (Name, Phone, Address).' : 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).', 'warning');
-        return;
-      }
+    if (!this.selectedCheckoutBook) return;
 
-      const orderPayload = {
-        book_title: this.selectedCheckoutBook.title,
-        price: this.selectedCheckoutBook.price,
-        shipping_address: this.checkoutForm.address,
-        phone: this.checkoutForm.phone
-      };
+    if (!this.checkoutForm.name?.trim() || !this.checkoutForm.phone?.trim() || !this.checkoutForm.address?.trim()) {
+      this.showToast(
+        this.translationService.currentLanguage() === 'en'
+          ? 'Please fill in all details (Name, Phone, Address).'
+          : 'தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (பெயர், எண், முகவரி).',
+        'warning'
+      );
+      return;
+    }
 
-      const authHeaders = this.authService.getAuthHeaders('education').headers;
-      this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
-        next: (res) => {
-          if (this.selectedCheckoutBook) {
-            this.selectedCheckoutBook.bought = true;
-            this.selectedCheckoutBook.order = res.order || {
-              book_title: orderPayload.book_title,
-              order_number: res.order_number,
-              status: 'Processing',
-              created_at: new Date().toISOString()
-            };
-          }
-          this.activeBookCheckout = false;
-          this.loadMyBookOrders();
-          this.showToast(`${orderPayload.book_title} வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது! (Order: ${res.order_number || ''})`, 'success');
-          this.selectedCheckoutBook = null;
-        },
-        error: (err) => {
-          console.error('Error placing book order:', err);
-          this.showToast('ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.', 'warning');
+    this.isProcessingPayment = true;
+    const price = this.selectedCheckoutBook.price;
+    const bookTitle = this.selectedCheckoutBook.title;
+    const currentUser = this.authService.getCurrentUser('education') || this.authService.getCurrentUser('astrology') || this.authService.getCurrentUser();
+    const token = this.authService.getToken();
+
+    const headers: any = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Step 1: Create Razorpay Order via Backend
+    this.http.post<any>(`${environment.apiUrl}/payments/create-order`, { amount: price }, { headers }).subscribe({
+      next: (orderRes) => {
+        if (orderRes && orderRes.success && orderRes.key_id) {
+          const options = {
+            key: orderRes.key_id,
+            amount: (orderRes.amount || price) * 100,
+            currency: orderRes.currency || 'INR',
+            name: 'ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்',
+            description: `புத்தகம்: ${bookTitle}`,
+            order_id: orderRes.order_id,
+            prefill: {
+              name: this.checkoutForm.name || currentUser?.name || 'பயனர்',
+              contact: this.checkoutForm.phone || currentUser?.phone || '9876543210',
+              email: currentUser?.email || 'user@astrology.com'
+            },
+            theme: {
+              color: '#4A0E17'
+            }
+          };
+
+          // Step 2: Launch Razorpay Popup
+          this.razorpayService.open(options)
+            .then((rzpRes) => {
+              this.fulfillBookOrder(rzpRes.razorpay_payment_id, rzpRes.razorpay_order_id, rzpRes.razorpay_signature);
+            })
+            .catch((err) => {
+              this.isProcessingPayment = false;
+              const msg = err?.message || (typeof err === 'string' ? err : '');
+              if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
+                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+              }
+            });
+        } else {
+          // Fallback if Razorpay credentials not configured
+          this.fulfillBookOrder();
         }
-      });
+      },
+      error: (err) => {
+        console.warn('Razorpay order creation fallback to direct order:', err);
+        this.fulfillBookOrder();
+      }
+    });
+  }
+
+  fulfillBookOrder(paymentId?: string, orderId?: string, signature?: string) {
+    if (!this.selectedCheckoutBook) {
+      this.isProcessingPayment = false;
+      return;
+    }
+
+    const orderPayload = {
+      book_title: this.selectedCheckoutBook.title,
+      price: this.selectedCheckoutBook.price,
+      shipping_address: this.checkoutForm.address,
+      phone: this.checkoutForm.phone,
+      razorpay_payment_id: paymentId || null,
+      razorpay_order_id: orderId || null,
+      razorpay_signature: signature || null
+    };
+
+    const authHeaders = this.authService.getAuthHeaders('education').headers;
+    this.http.post<any>(`${environment.apiUrl}/user/book-orders`, orderPayload, { headers: authHeaders }).subscribe({
+      next: (res) => {
+        this.isProcessingPayment = false;
+        if (this.selectedCheckoutBook) {
+          this.selectedCheckoutBook.bought = true;
+          this.selectedCheckoutBook.order = res.order || {
+            book_title: orderPayload.book_title,
+            order_number: res.order_number || res?.order?.order_number,
+            status: 'Processing',
+            created_at: new Date().toISOString()
+          };
+        }
+        this.activeBookCheckout = false;
+        this.loadMyBookOrders();
+
+        const orderNum = res.order_number || res?.order?.order_number || ('#ORD-' + Math.floor(100000 + Math.random() * 900000));
+
+        // Create In-App Notification Alert Modal Data
+        this.orderSuccessNotification = {
+          order_number: orderNum,
+          book_title: orderPayload.book_title,
+          price: orderPayload.price,
+          shipping_address: orderPayload.shipping_address,
+          phone: orderPayload.phone,
+          name: this.checkoutForm.name || 'பயனர்',
+          created_at: new Date().toLocaleDateString('ta-IN')
+        };
+        this.showBookOrderSuccessModal = true;
+
+        // Save into In-App Notifications List
+        this.notifications.unshift({
+          id: Date.now(),
+          title: `புத்தக ஆர்டர் உறுதியானது - ${orderPayload.book_title}`,
+          message: `வணக்கம் ${this.checkoutForm.name || 'பயனர்'}, "${orderPayload.book_title}" புத்தகம் வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது. (ஆர்டர் எண்: ${orderNum})`,
+          created_at: 'இன்று',
+          is_read: false
+        });
+        this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+
+        this.selectedCheckoutBook = null;
+      },
+      error: (err) => {
+        this.isProcessingPayment = false;
+        console.error('Error placing book order:', err);
+        this.showToast('ஆர்டர் செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.', 'warning');
+      }
+    });
+  }
+
+  closeOrderSuccessModal(openOrders: boolean = false) {
+    this.showBookOrderSuccessModal = false;
+    this.orderSuccessNotification = null;
+    if (openOrders) {
+      this.openMyOrders();
     }
   }
 
@@ -843,15 +1094,53 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
   activeToast: { message: string, icon: string, type: string, isClosing?: boolean } | null = null;
   private toastTimer: any = null;
 
+  showSeminarVideoModal = false;
+  activeSeminarVideo: any = null;
+
+  closeSeminarVideoModal() {
+    this.showSeminarVideoModal = false;
+    this.activeSeminarVideo = null;
+  }
+
   openMeeting(url?: string, status?: string, seminar?: any) {
     if (status === 'past') {
-      this.showToast('இந்தக் கருத்தரங்க நேரம் முடிந்துவிட்டது.', 'warning');
-      return;
+      const videoUrl = seminar?.recording_video_url || seminar?.video_url || url;
+      if (videoUrl) {
+        this.activeSeminarVideo = {
+          ...seminar,
+          recording_video_url: videoUrl
+        };
+        this.showSeminarVideoModal = true;
+        this.showToast('பதிவு செய்யப்பட்ட கருத்தரங்க வீடியோ திறக்கப்படுகிறது...', 'success');
+        return;
+      } else {
+        this.showToast('இந்த கருத்தரங்கிற்கான பதிவு செய்யப்பட்ட வீடியோ விரைவில் பதிவேற்றப்படும்.', 'info');
+        return;
+      }
     }
     if (status === 'upcoming' || (!status && !url)) {
       const timeInfo = seminar ? `${seminar.date_text || seminar.date || ''} ${seminar.time_text || seminar.time || ''}`.trim() : '';
-      const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
-      this.showToast(msg, 'info');
+      if (seminar) {
+        seminar.reminderSet = !seminar.reminderSet;
+        if (seminar.reminderSet) {
+          const msg = timeInfo ? `நினைவூட்டல் அமைந்தது! 🔔 (${timeInfo}) தொடங்கும் போது உங்களுக்கு அறிவிக்கப்படும்.` : 'நினைவூட்டல் வெற்றிகரமாக அமைந்தது! 🔔';
+          this.showToast(msg, 'success');
+          this.notifications.unshift({
+            id: Date.now(),
+            title: `🔔 நினைவூட்டல்: ${seminar.title || 'கருத்தரங்கம்'}`,
+            message: `கருத்தரங்கம் நேரம்: ${timeInfo}`,
+            created_at: new Date().toISOString(),
+            is_read: false
+          });
+          this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+          this.cdr.detectChanges();
+        } else {
+          this.showToast('கருத்தரங்க நினைவூட்டல் ரத்து செய்யப்பட்டது.', 'info');
+        }
+      } else {
+        const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
+        this.showToast(msg, 'info');
+      }
       return;
     }
     if (url) {
@@ -862,9 +1151,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges {
     }
   }
 
-  async openDiary() {
-    this.showToast('ஆன்மீக நாட்குறிப்பு திறக்கப்பட்டது', 'info');
-  }
+
 
   playLiveClass(link: string) {
     if (link) {

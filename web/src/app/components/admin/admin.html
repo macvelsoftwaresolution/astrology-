@@ -399,7 +399,7 @@
         
         @if (selectedBooking.status === 'Completed') {
           <div class="fulfillment-section">
-            <p class="completed-msg">✅ இந்த முன்பதிவு வெற்றிகரமாக நிறைவேற்றப்பட்டுள்ளது.</p>
+            <p class="completed-msg"><i class="bi bi-check-circle-fill text-success me-1"></i> இந்த முன்பதிவு வெற்றிகரமாக நிறைவேற்றப்பட்டுள்ளது.</p>
             @if (selectedBooking.chartUrl) {
               <p><strong>கோப்பு (Uploaded File):</strong> {{ selectedBooking.chartUrl }}</p>
             }

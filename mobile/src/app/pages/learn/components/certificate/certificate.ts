@@ -56,17 +56,43 @@ export class LearnCertificateComponent implements OnInit {
     this.selectedCert = cert;
   }
 
+  get hasCertificateDoc(): boolean {
+    if (!this.selectedCert) return false;
+    const cert = this.selectedCert;
+    return !!(cert.pdf_download_url || cert.cert_pdf_url || cert.pdf_url || cert.file_url || cert.url || cert.certificate_number);
+  }
+
+  get hasMarksheetDoc(): boolean {
+    if (!this.selectedCert) return false;
+    const cert = this.selectedCert;
+    return !!(cert.marksheet_download_url || cert.marksheet_url);
+  }
+
   downloadCertificate(cert?: any) {
     const target = cert || this.selectedCert;
-    const fileUrl = target?.pdf_url || target?.file_url || target?.url || '';
+    const fileUrl = target?.pdf_download_url || target?.cert_pdf_url || target?.pdf_url || target?.file_url || target?.url || '';
     const name = target?.course_title || 'Certificate';
     this.downloadDocument(fileUrl, name);
   }
 
   shareCertificate(cert?: any) {
     const target = cert || this.selectedCert;
-    const fileUrl = target?.pdf_url || target?.file_url || target?.url || '';
+    const fileUrl = target?.pdf_download_url || target?.cert_pdf_url || target?.pdf_url || target?.file_url || target?.url || '';
     const name = target?.course_title || 'Certificate';
+    this.shareDocument(fileUrl, name);
+  }
+
+  downloadMarksheet(cert?: any) {
+    const target = cert || this.selectedCert;
+    const fileUrl = target?.marksheet_download_url || target?.marksheet_url || '';
+    const name = (target?.course_title || 'Marksheet') + ' Marksheet';
+    this.downloadDocument(fileUrl, name);
+  }
+
+  shareMarksheet(cert?: any) {
+    const target = cert || this.selectedCert;
+    const fileUrl = target?.marksheet_download_url || target?.marksheet_url || '';
+    const name = (target?.course_title || 'Marksheet') + ' Marksheet';
     this.shareDocument(fileUrl, name);
   }
 

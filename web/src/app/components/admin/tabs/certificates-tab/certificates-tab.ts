@@ -28,8 +28,8 @@ export class CertificatesTabComponent implements OnInit {
     student_id: '',
     course_id: '',
     pdf_download_url: '',
-    score: 100,
-    grade: 'Distinction',
+    score: null as number | null,
+    grade: '',
     issue_date: new Date().toISOString().split('T')[0],
     certificate_number: ''
   };
@@ -38,8 +38,8 @@ export class CertificatesTabComponent implements OnInit {
     student_id: '',
     course_id: '',
     marksheet_download_url: '',
-    score: 85,
-    grade: 'First Class',
+    score: null as number | null,
+    grade: '',
     issue_date: new Date().toISOString().split('T')[0],
     marksheet_number: ''
   };
@@ -122,7 +122,7 @@ export class CertificatesTabComponent implements OnInit {
     this.isUploadingFile = true;
     const formData = new FormData();
     formData.append('file', file);
-    const headers = this.authService.getAuthHeaders();
+    const headers = this.authService.getUploadHeaders();
 
     this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
       next: (res) => {
@@ -146,7 +146,7 @@ export class CertificatesTabComponent implements OnInit {
     this.isUploadingFile = true;
     const formData = new FormData();
     formData.append('file', file);
-    const headers = this.authService.getAuthHeaders();
+    const headers = this.authService.getUploadHeaders();
 
     this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
       next: (res) => {

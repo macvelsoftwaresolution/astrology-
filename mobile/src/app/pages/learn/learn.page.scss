@@ -11,6 +11,7 @@ $color-purple-dark: #200438;
 .edu-content {
   --background: #{$color-beige};
   --color: #{$color-text-dark};
+  --padding-bottom: 0px !important;
 }
 
 /* ================= FIXED TOP NAVBAR ================= */

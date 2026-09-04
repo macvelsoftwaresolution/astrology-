@@ -99,7 +99,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/payments', [UserProfileController::class, 'getPaymentHistory']);
 
     // Certificates & Submissions
-    Route::get('/user/certificates', [GradingController::class, 'getMyCertificates']);
+    Route::get('/user/certificates',    [GradingController::class, 'getMyCertificates']);
+    Route::get('/user/my-submissions',  [GradingController::class, 'getMySubmissions']);
 
     // Notifications
     Route::get('/user/notifications',                    [NotificationController::class, 'getMyNotifications']);
@@ -158,6 +159,8 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
 
     // Student Exam Submissions & Certificates
     Route::get('/submissions',                      [GradingController::class, 'getSubmissions']);
+    Route::delete('/submissions/{id}',              [GradingController::class, 'deleteSubmission']);
+    Route::get('/exam-analytics',                   [GradingController::class, 'getExamAnalytics']);
     Route::post('/submissions/publish-batch',       [GradingController::class, 'publishBatchResults']);
     Route::post('/submissions/{id}/evaluate',       [GradingController::class, 'evaluateSubmission']);
     Route::get('/certificates',                     [GradingController::class, 'adminGetCertificates']);

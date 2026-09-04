@@ -35,6 +35,10 @@ export interface Book {
   title: string;
   author: string;
   price: number;
+  originalPrice?: number;
+  isBestseller?: boolean;
+  rating?: number;
+  formatLabel?: string;
   coverImage: string;
   bought: boolean;
   order?: any;
@@ -50,7 +54,9 @@ export interface Seminar {
   time_text?: string;
   status: 'live' | 'upcoming' | 'past';
   join_url?: string;
+  recording_video_url?: string;
   level?: string;
+  reminderSet?: boolean;
 }
 
 @Component({

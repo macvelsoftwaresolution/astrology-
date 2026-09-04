@@ -173,6 +173,27 @@ ion-header.app-top-navbar,
   font-weight: 600;
 }
 
+/* TOB Segmented Inputs */
+.tob-segmented-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.tob-segments-group {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid rgba(81, 23, 23, 0.4);
+  border-radius: 8px;
+  height: 48px;
+  padding: 0 12px;
+  flex: 1;
+  min-width: 130px;
+}
+
 ion-footer.app-footer-tabs,
 .app-footer-tabs {
   position: fixed !important;
@@ -250,5 +271,52 @@ button[type="submit"] {
   font-weight: 700 !important;
 }
 
-/* ================= SEGMENTED DATE/TIME INPUTS ================= */
+/* Universal Icon & Text Alignment Spacing Fix */
+i.bi, [class^="bi-"], [class*=" bi-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  vertical-align: -0.1em;
+
+  &.me-1 {
+    margin-right: 6px !important;
+  }
+  &.me-2 {
+    margin-right: 10px !important;
+  }
+  &.ms-1 {
+    margin-left: 6px !important;
+    margin-right: 0 !important;
+  }
+}
+
+button, .btn, a, h1, h2, h3, h4, h5, h6, .card-title, .badge, .status-pill {
+  i.bi, [class^="bi-"], [class*=" bi-"] {
+    margin-right: 6px;
+  }
+}
+
+.section-header h2,
+.header-title,
+.official-report-card h3,
+.official-report-card h4,
+.live-badge,
+.sem-status-pill,
+.sem-meta-line,
+.pdf-row-info,
+.pdf-row-btn,
+.edit-btn,
+.save-btn,
+.book-btn,
+.cta-btn,
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  i.bi, [class^="bi-"], [class*=" bi-"] {
+    margin-right: 0 !important;
+  }
+}
 

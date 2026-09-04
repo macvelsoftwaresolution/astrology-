@@ -157,7 +157,7 @@
       <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
           <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
-            📄 {{ 'lms.pdfMaterialsTitle' | translate }}
+            <i class="bi bi-file-earmark-pdf-fill text-danger"></i> {{ 'lms.pdfMaterialsTitle' | translate }}
           </h3>
           <button (click)="addPdfItem()" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
             <i class="bi bi-file-earmark-pdf-fill"></i> {{ 'lms.addPdfBtn' | translate }}
@@ -689,10 +689,27 @@
         </select>
       </div>
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet /
-          Zoom URL)</label>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet / Zoom URL)</label>
         <input type="text" [(ngModel)]="editingSeminar.join_url" class="ctrl"
           placeholder="https://meet.google.com/..." />
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">
+          பதிவுசெய்யப்பட்ட வீடியோ (Recorded Video Link / Upload)
+        </label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" [(ngModel)]="editingSeminar.recording_video_url" class="ctrl" style="flex:1;"
+            placeholder="https://... அல்லது MP4 Video URL / Cloudinary Link" />
+          <input type="file" #seminarVideoFile (change)="uploadSeminarVideo($event)" accept="video/*" style="display:none;" />
+          <button type="button" class="btn-cancel" style="padding:6px 12px;font-size:12px;display:flex;align-items:center;gap:4px;" (click)="seminarVideoFile.click()">
+            <i class="bi bi-upload"></i> {{ isUploadingSeminarVideo ? 'பதிவேற்றுகிறது...' : 'வீடியோ தேர்வு' }}
+          </button>
+        </div>
+        @if (editingSeminar.recording_video_url) {
+          <div style="margin-top:4px;font-size:11px;color:#16a34a;display:flex;align-items:center;gap:4px;">
+            <i class="bi bi-check-circle-fill"></i> பதிவு செய்யப்பட்ட வீடியோ சேர்க்கப்பட்டுவிட்டது!
+          </div>
+        }
       </div>
     </div>
     <div class="modal-btns">
@@ -836,6 +853,24 @@
         </div>
       </div>
 
+      <!-- Banner Image Upload (Optional) -->
+      <div>
+        <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
+          பேனர் படம் (Banner Image - Optional)
+        </label>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <input type="file" (change)="onLiveBannerSelected($event)" accept="image/*" class="ctrl" style="flex: 1; font-size: 12px;" />
+          @if (isUploadingLiveBanner) {
+            <span style="color: #d97706; font-size: 12px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> படம் பதிவேறுகிறது...</span>
+          }
+          @if (editingLiveClass.banner_image_url) {
+            <a [href]="editingLiveClass.banner_image_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 12px; text-decoration: none;">
+              <i class="bi bi-check-circle-fill"></i> படத்தை காண்க
+            </a>
+          }
+        </div>
+      </div>
+
       <!-- Meet Link -->
       <div>
         <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
@@ -861,7 +896,14 @@
       </div>
     </div>
 
-    <div class="modal-btns" style="border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 4px;">
+    @if (formValidationError) {
+      <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-top: 14px; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ formValidationError }}</span>
+      </div>
+    }
+
+    <div class="modal-btns" style="border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 14px;">
       <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">ரத்து</button>
       <button type="button" class="btn-primary"
         style="background: #4f46e5; border: none; border-radius: 8px; padding: 9px 18px; font-weight: 600; display: flex; align-items: center; gap: 6px;"
@@ -1395,7 +1437,7 @@
 
               <div
                 style="margin-top:12px;font-size:13px;color:#059669;font-weight:700; background: #ecfdf5; padding: 8px 12px; border-radius: 6px; display: inline-block;">
-                ✓ விடை: {{ q.correct_answer }} ({{ q.marks }} Marks)
+                <i class="bi bi-check-lg me-1"></i> விடை: {{ q.correct_answer }} ({{ q.marks }} Marks)
               </div>
             </div>
             }

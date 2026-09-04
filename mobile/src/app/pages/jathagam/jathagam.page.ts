@@ -13,10 +13,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     <ion-header class="ion-no-border">
       <ion-toolbar color="dark">
         <div style="display: flex; align-items: center; padding: 0 8px;">
-          <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 22px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
-            ←
+          <button type="button" (click)="goBack()" style="background: transparent; border: none; color: #ffd700; font-size: 20px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center;">
+            <i class="bi bi-arrow-left"></i>
           </button>
-          <span class="brand" style="font-size: 18px; margin-left: 4px;">✨ {{ 'astrology.title' | translate }}</span>
+          <span class="brand" style="font-size: 18px; margin-left: 4px;"><i class="bi bi-stars me-1"></i> {{ 'astrology.title' | translate }}</span>
         </div>
       </ion-toolbar>
     </ion-header>
@@ -25,27 +25,27 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       <!-- Sub-navigation cards -->
       <div class="sub-nav-grid">
         <div class="sub-card" [class.active]="activeTab === 'rasi-palan'" (click)="navigate('rasi-palan')">
-          <span class="card-icon">🌟</span>
+          <span class="card-icon"><i class="bi bi-brightness-high-fill"></i></span>
           <span class="card-title">{{ 'astrology.rasiPalan' | translate }}</span>
           <span class="card-sub">Daily Rasi Palan</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'matching'" (click)="navigate('matching')">
-          <span class="card-icon">💑</span>
+          <span class="card-icon"><i class="bi bi-heart-fill"></i></span>
           <span class="card-title">{{ 'astrology.matching' | translate }}</span>
           <span class="card-sub">Marriage Matching</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'my-jathagam'" (click)="navigate('my-jathagam')">
-          <span class="card-icon">📜</span>
+          <span class="card-icon"><i class="bi bi-file-earmark-text-fill"></i></span>
           <span class="card-title">{{ 'astrology.myJathagam' | translate }}</span>
           <span class="card-sub">My Birth Chart</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'para-jathagam'" (click)="navigate('para-jathagam')">
-          <span class="card-icon">🔭</span>
+          <span class="card-icon"><i class="bi bi-compass-fill"></i></span>
           <span class="card-title">{{ 'astrology.paraJathagam' | translate }}</span>
           <span class="card-sub">Para Jathagam</span>
         </div>
         <div class="sub-card" [class.active]="activeTab === 'vastu-kanitha'" (click)="navigate('vastu-kanitha')">
-          <span class="card-icon">🏠</span>
+          <span class="card-icon"><i class="bi bi-house-door-fill"></i></span>
           <span class="card-title">{{ 'astrology.vastu' | translate }}</span>
           <span class="card-sub">Vastu & Numerology</span>
         </div>
@@ -87,7 +87,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       transform: scale(0.97);
     }
 
-    .card-icon { font-size: 24px; }
+    .card-icon { font-size: 24px; color: #ffd700; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
     .card-title { font-size: 11px; color: #ffd700; font-weight: 700; }
     .card-sub { font-size: 9px; color: #8a8ab0; }
   `]

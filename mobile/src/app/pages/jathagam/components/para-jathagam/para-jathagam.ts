@@ -25,7 +25,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
   template: `
     <div class="para-wrapper">
       <div class="section-header">
-        <h2>🔭 பரஜாதகம்</h2>
+        <h2><i class="bi bi-compass me-1"></i> பரஜாதகம்</h2>
         <p>வேறொருவரின் பிறப்பு விவரங்களை உள்ளிட்டு அவர் ராசி பலன் தெரிந்துகொள்ளுங்கள்</p>
       </div>
 
@@ -71,7 +71,7 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
             @if (loading) {
               <ion-spinner name="crescent" style="width:16px;height:16px"></ion-spinner>
             } @else {
-              <span>🔮 பலன் காண்</span>
+              <span><i class="bi bi-magic me-1"></i> பலன் காண்</span>
             }
           </button>
           @if (errorMsg) {
@@ -100,16 +100,16 @@ import { SegmentedDobComponent } from '../../../../components/segmented-dob/segm
           </div>
 
           <div class="meta-row">
-            <span>📅 பிறந்த தேதி: {{ result.dob | date:'dd MMM yyyy' }}</span>
+            <span><i class="bi bi-calendar-date me-1"></i> பிறந்த தேதி: {{ result.dob | date:'dd MMM yyyy' }}</span>
           </div>
 
           <!-- CTA to book detailed reading -->
           <div class="consult-cta">
             <p>முழு ஜாதக பலன் வேண்டுமா?</p>
-            <button class="book-btn">📅 விரிவான ஆலோசனை பதிவு செய்யுங்கள்</button>
+            <button class="book-btn"><i class="bi bi-calendar-event me-1"></i> விரிவான ஆலோசனை பதிவு செய்யுங்கள்</button>
           </div>
 
-          <button class="reset-btn" (click)="result = null">← மீண்டும் தேட</button>
+          <button class="reset-btn" (click)="result = null"><i class="bi bi-arrow-left me-1"></i> மீண்டும் தேட</button>
         </div>
       }
     </div>
