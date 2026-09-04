@@ -1155,10 +1155,16 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   showSeminarVideoModal = false;
   activeSeminarVideo: any = null;
+  videoLoadError = false;
 
   closeSeminarVideoModal() {
     this.showSeminarVideoModal = false;
     this.activeSeminarVideo = null;
+    this.videoLoadError = false;
+  }
+
+  onSeminarVideoError() {
+    this.videoLoadError = true;
   }
 
   isYouTubeUrl(url?: string): boolean {
@@ -1250,6 +1256,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     if (isPast) {
       const videoUrl = seminar?.recording_video_url || seminar?.video_url || url;
       if (videoUrl) {
+        this.videoLoadError = false;
         this.activeSeminarVideo = {
           ...seminar,
           recording_video_url: videoUrl

@@ -201,10 +201,27 @@ export class NotificationsPage implements OnInit {
     return result;
   }
 
-  deleteNotification(n: any, event?: Event) {
+  showClearAllModal = false;
+  showDeleteSingleModal = false;
+  selectedNotifToDelete: any = null;
+
+  openDeleteSingleModal(n: any, event?: Event) {
     if (event) {
       event.stopPropagation();
     }
+    this.selectedNotifToDelete = n;
+    this.showDeleteSingleModal = true;
+  }
+
+  cancelDeleteModal() {
+    this.showDeleteSingleModal = false;
+    this.selectedNotifToDelete = null;
+    this.showClearAllModal = false;
+  }
+
+  confirmDeleteSingle() {
+    if (!this.selectedNotifToDelete) return;
+    const n = this.selectedNotifToDelete;
     const idx = this.notifications.findIndex(item => item.id === n.id);
     if (idx !== -1) {
       if (!n.is_read) {
@@ -217,6 +234,7 @@ export class NotificationsPage implements OnInit {
       try {
         localStorage.setItem('dismissed_live_' + n.id, 'true');
       } catch {}
+      this.cancelDeleteModal();
       return;
     }
 
@@ -224,13 +242,20 @@ export class NotificationsPage implements OnInit {
       next: () => {},
       error: () => {}
     });
+    this.cancelDeleteModal();
+  }
+
+  deleteNotification(n: any, event?: Event) {
+    this.openDeleteSingleModal(n, event);
   }
 
   clearAll() {
     if (this.notifications.length === 0) return;
-    if (!confirm('அனைத்து அறிவிப்புகளையும் நீக்க விரும்புகிறீர்களா?')) {
-      return;
-    }
+    this.showClearAllModal = true;
+  }
+
+  confirmClearAll() {
+    this.showClearAllModal = false;
     this.notifications = [];
     this.unreadCount = 0;
     this.http.delete<any>(`${environment.apiUrl}/user/notifications`, this.headers).subscribe({

@@ -3472,3 +3472,242 @@ $color-orange: #F49320;
     }
   }
 }
+
+/* ================= VIDEO THEATRE MODAL ================= */
+.video-theatre-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: modalFadeIn 0.25s ease-out;
+
+  .video-theatre-card {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 540px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(236, 200, 118, 0.35);
+    display: flex;
+    flex-direction: column;
+    animation: modalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .video-theatre-header {
+      background: linear-gradient(135deg, #4A0E17 0%, #2A080C 100%);
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ECC876;
+
+      .vth-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        overflow: hidden;
+
+        .vth-icon-box {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          background: rgba(236, 200, 118, 0.15);
+          border: 1px solid rgba(236, 200, 118, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ECC876;
+          font-size: 1.15rem;
+          flex-shrink: 0;
+        }
+
+        .vth-text-box {
+          overflow: hidden;
+
+          .vth-title {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: 'Noto Serif Tamil', serif;
+          }
+
+          .vth-subtitle {
+            font-size: 0.76rem;
+            color: #ECC876;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      .vth-close-btn {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        transition: background 0.2s, transform 0.15s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.22);
+          transform: scale(1.05);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+
+    .video-cinema-frame {
+      background: #000000;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+
+      .video-cinema-player {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border: none;
+        outline: none;
+      }
+
+      .video-placeholder-luxury {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px 20px;
+        background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%);
+        width: 100%;
+        height: 100%;
+
+        .vpl-icon-halo {
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          background: rgba(236, 200, 118, 0.12);
+          border: 1.5px solid rgba(236, 200, 118, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ECC876;
+          font-size: 1.5rem;
+          margin-bottom: 10px;
+        }
+
+        .vpl-title {
+          margin: 0 0 6px 0;
+          font-size: 0.92rem;
+          font-weight: 800;
+          color: #FFFFFF;
+          font-family: 'Noto Serif Tamil', serif;
+        }
+
+        .vpl-subtitle {
+          margin: 0;
+          font-size: 0.76rem;
+          color: #94A3B8;
+          max-width: 320px;
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .video-meta-bar {
+      padding: 12px 16px;
+      background: #FDFBF0;
+      border-top: 1px solid rgba(162, 123, 56, 0.15);
+      border-bottom: 1px solid rgba(162, 123, 56, 0.12);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .vmb-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #FFFFFF;
+        border: 1px solid rgba(162, 123, 56, 0.22);
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: #4A0E17;
+
+        i {
+          color: #A27B38;
+        }
+
+        &.status-badge {
+          background: #F0FDF4;
+          border-color: #86EFAC;
+          color: #166534;
+
+          i {
+            color: #16A34A;
+          }
+        }
+      }
+    }
+
+    .video-theatre-footer {
+      padding: 12px 16px;
+      background: #FFFFFF;
+      display: flex;
+      justify-content: flex-end;
+
+      .video-theatre-close-btn {
+        background: #4A0E17;
+        color: #FFFFFF;
+        border: none;
+        padding: 9px 20px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(74, 14, 23, 0.2);
+        transition: transform 0.15s ease, background 0.15s ease;
+
+        &:hover {
+          background: #5E1420;
+        }
+
+        &:active {
+          transform: scale(0.97);
+        }
+      }
+    }
+  }
+}

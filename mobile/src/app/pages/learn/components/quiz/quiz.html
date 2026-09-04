@@ -179,4 +179,27 @@
       <button class="submit-quiz-btn" (click)="close.emit()">{{ 'common.close' | translate }}</button>
     </div>
   }
+
+  <!-- Custom Luxury Exit Confirmation Dialog Modal -->
+  @if (showExitConfirmModal) {
+    <div class="custom-modal-backdrop" (click)="cancelExitExam()">
+      <div class="custom-dialog-card" (click)="$event.stopPropagation()">
+        <div class="dialog-icon-glow amber">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h3 class="dialog-title">தேர்விலிருந்து வெளியேற வேண்டுமா?</h3>
+        <p class="dialog-description">
+          தேர்வை இடையில் நிறுத்தினால் அது முடிவுற்றதாகவே (Completed) கருதப்பட்டு தானாக சமர்ப்பிக்கப்படும். மீண்டும் எழுத இயலாது.
+        </p>
+        <div class="dialog-actions-row">
+          <button type="button" class="dialog-btn btn-cancel" (click)="cancelExitExam()">
+            <i class="bi bi-x-lg me-1"></i> தேர்வைத் தொடர்க
+          </button>
+          <button type="button" class="dialog-btn btn-danger" (click)="confirmExitExam()">
+            <i class="bi bi-box-arrow-right me-1"></i> ஆம், வெளியேறு
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>
