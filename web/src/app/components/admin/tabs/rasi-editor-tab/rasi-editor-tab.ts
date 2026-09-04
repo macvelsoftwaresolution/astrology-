@@ -379,6 +379,14 @@ export class RasiEditorTabComponent implements OnInit {
     const file = event.target?.files?.[0];
     if (!file || index === null || !this.rasiPredictions[index]) return;
 
+    // Client-side file size check (Max 10 MB)
+    const maxAudioSize = 10 * 1024 * 1024; // 10 MB
+    if (file.size > maxAudioSize) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      alert(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும். (Audio file exceeds 10 MB limit)`);
+      return;
+    }
+
     this.isUploadingRasiAudio = true;
     const formData = new FormData();
     formData.append('file', file);
@@ -392,8 +400,12 @@ export class RasiEditorTabComponent implements OnInit {
         this.isUploadingRasiAudio = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        alert('Audio upload failed.');
+      error: (err) => {
+        if (err?.status === 413) {
+          alert('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!');
+        } else {
+          alert('Audio upload failed.');
+        }
         this.isUploadingRasiAudio = false;
         this.cdr.detectChanges();
       }
@@ -403,6 +415,14 @@ export class RasiEditorTabComponent implements OnInit {
   uploadRasiVideo(event: any, index: number): void {
     const file = event.target?.files?.[0];
     if (!file || index === null || !this.rasiPredictions[index]) return;
+
+    // Client-side file size check (Max 25 MB)
+    const maxVideoSize = 25 * 1024 * 1024; // 25 MB
+    if (file.size > maxVideoSize) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      alert(`தேர்ந்தெடுக்கப்பட்ட வீடியோ கோப்பு ${sizeMb} MB உள்ளது! 25 MB-க்குள் இருக்கும் வீடியோ கோப்பைத் தேர்ந்தெடுக்கவும். (Video file exceeds 25 MB limit)`);
+      return;
+    }
 
     this.isUploadingRasiVideo = true;
     const formData = new FormData();
@@ -417,8 +437,12 @@ export class RasiEditorTabComponent implements OnInit {
         this.isUploadingRasiVideo = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        alert('Video upload failed.');
+      error: (err) => {
+        if (err?.status === 413) {
+          alert('413 Request Entity Too Large: வீடியோ கோப்பின் அளவு சேவையக எல்லைக்கு அதிகமாக உள்ளது! சிறிய வீடியோவை முயற்சி செய்யவும்.');
+        } else {
+          alert('Video upload failed.');
+        }
         this.isUploadingRasiVideo = false;
         this.cdr.detectChanges();
       }

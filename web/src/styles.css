@@ -25,3 +25,40 @@ textarea {
 *:after {
   box-sizing: inherit;
 }
+
+/* Enforce Bootstrap Icon Centering */
+i.bi, [class^="bi-"], [class*=" bi-"], .bi {
+  font-family: "bootstrap-icons" !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icons inside circular/square containers, icon boxes, badges, or standalone wrappers */
+i.bi:only-child,
+[class^="bi-"]:only-child,
+[class*=" bi-"]:only-child,
+.banner-icon-box i,
+.top-nav-action-btn i,
+.icon-box i,
+.circle-icon i,
+.round-icon i,
+.icon-badge i {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Icons followed by text (Icon + Text layout) */
+i.bi:not(:last-child),
+[class^="bi-"]:not(:last-child),
+[class*=" bi-"]:not(:last-child) {
+  margin-right: 6px;
+}

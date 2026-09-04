@@ -166,6 +166,7 @@
     "topicDescPlaceholder": "Topic Description...",
     "noTopics": "No topics added yet...",
     "rulesTitle": "Rules & Regulations",
+    "rulesPlaceholder": "Enter rules & regulations here...",
     "addRule": "Add New Rule",
     "ruleTitlePlaceholder": "Rule Title (e.g. Punctuality)",
     "ruleDescPlaceholder": "Rule Description...",

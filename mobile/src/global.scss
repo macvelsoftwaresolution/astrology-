@@ -59,7 +59,7 @@ h1, h2, h3, h4, h5, h6, .app-brand-name, .tamil-title, .section-heading, .user-n
   line-height: 1.35;
 }
 
-/* Enforce Icon Fonts */
+/* Enforce Icon Fonts & Universal Centering */
 i.bi, [class^="bi-"], [class*=" bi-"], .bi {
   font-family: "bootstrap-icons" !important;
   font-style: normal;
@@ -67,10 +67,13 @@ i.bi, [class^="bi-"], [class*=" bi-"], .bi {
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-  vertical-align: -0.125em;
+  vertical-align: middle;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
 }
 
 ion-icon {
@@ -272,13 +275,15 @@ button[type="submit"] {
 }
 
 /* Universal Icon & Text Alignment Spacing Fix */
-i.bi, [class^="bi-"], [class*=" bi-"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* 1. Add right margin ONLY when an icon is followed by another element or text node (Icon on left, Text on right) */
+i.bi:not(:last-child),
+[class^="bi-"]:not(:last-child),
+[class*=" bi-"]:not(:last-child) {
   margin-right: 6px;
-  vertical-align: -0.1em;
+}
 
+/* Specific spacing overrides */
+i.bi, [class^="bi-"], [class*=" bi-"] {
   &.me-1 {
     margin-right: 6px !important;
   }
@@ -291,8 +296,12 @@ i.bi, [class^="bi-"], [class*=" bi-"] {
   }
 }
 
-button, .btn, a, h1, h2, h3, h4, h5, h6, .card-title, .badge, .status-pill {
-  i.bi, [class^="bi-"], [class*=" bi-"] {
+button:not(:has(> i.bi:only-child)),
+.btn:not(:has(> i.bi:only-child)),
+a, h1, h2, h3, h4, h5, h6, .card-title, .badge, .status-pill {
+  > i.bi:not(:last-child),
+  > [class^="bi-"]:not(:last-child),
+  > [class*=" bi-"]:not(:last-child) {
     margin-right: 6px;
   }
 }
@@ -314,9 +323,66 @@ button, .btn, a, h1, h2, h3, h4, h5, h6, .card-title, .badge, .status-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
 
-  i.bi, [class^="bi-"], [class*=" bi-"] {
-    margin-right: 0 !important;
-  }
+/* 2. Absolute 0 margin for all icons inside circular/square containers, card icon badges, header buttons, or icon-only elements */
+i.bi:only-child,
+[class^="bi-"]:only-child,
+[class*=" bi-"]:only-child,
+.top-nav-action-btn i,
+.top-nav-back-btn i,
+.top-nav-brand-icon i,
+.banner-icon-box i,
+.icon-box i,
+.circle-icon i,
+.round-icon i,
+.icon-wrap i,
+.icon-avatar i,
+.avatar-box i,
+.card-icon i,
+.action-btn i,
+.icon-btn i,
+.notif-icon-badge i,
+.empty-icon-ring i,
+.rules-shield-icon i,
+.card-bg-icon i,
+.pay-icon i,
+.batch-icon-box i,
+.result-badge-icon i,
+.gopuram-icon i,
+.input-icon i,
+.card-delete-btn i,
+.close-quiz-btn i,
+.bell-icon i,
+.cnc-bell i,
+.banner-close-btn i {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Enforce flex centering on circular/square icon containers */
+.top-nav-action-btn,
+.top-nav-back-btn,
+.top-nav-brand-icon,
+.banner-icon-box,
+.notif-icon-badge,
+.empty-icon-ring,
+.rules-shield-icon,
+.card-bg-icon,
+.pay-icon,
+.batch-icon-box,
+.result-badge-icon,
+.gopuram-icon,
+.card-delete-btn,
+.close-quiz-btn,
+.bell-icon,
+.cnc-bell,
+.banner-close-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
 }
 
