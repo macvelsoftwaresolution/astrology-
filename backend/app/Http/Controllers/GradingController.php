@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class GradingController extends Controller
@@ -302,100 +304,163 @@ class GradingController extends Controller
     }
 
     /**
-     * User/Student: Submit Exam Answers (PDF or Courier Tracking)
+     * User/Student: Submit Exam Answers (PDF or Courier Tracking or Online Quiz/Practical)
      */
     public function submitExam(Request $request)
     {
-        $request->validate([
-            'course_id' => 'nullable',
-            'batch_id' => 'nullable',
-            'exam_id' => 'nullable',
-            'submission_type' => 'required|in:pdf_upload,physical_courier,online_quiz,hybrid_exam,practical_assignment',
-            'pdf_url' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'courier_tracking_no' => 'nullable|string',
-            'courier_name' => 'nullable|string',
-            'score' => 'nullable|integer',
-            'mcq_score' => 'nullable|integer',
-            'practical_score' => 'nullable|integer',
-        ]);
-
-        $user = $request->user();
-        $studentId = $user ? $user->id : 1;
-        $batchId = $request->batch_id;
-        if (!$batchId && $user && isset($user->batch_id)) {
-            $batchId = $user->batch_id;
-        }
-
-        // Prevent duplicate exam submissions (One-Time Exam Enforcement)
-        if ($request->exam_id) {
-            $alreadySubmitted = DB::table('student_submissions')
-                ->where('student_id', $studentId)
-                ->where('exam_id', $request->exam_id)
-                ->first();
-
-            if ($alreadySubmitted) {
-                return response()->json([
-                    'success' => false,
-                    'already_submitted' => true,
-                    'message' => 'நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள். ஒரு முறை மட்டுமே எழுத அனுமதிக்கப்படும்.'
-                ], 400);
-            }
-        }
-
-        $courseId = $request->course_id ?: (DB::table('courses')->value('id') ?: 1);
-
-        $mcqScore = $request->has('mcq_score') && $request->mcq_score !== null 
-            ? (int)$request->mcq_score 
-            : ($request->submission_type === 'online_quiz' ? (int)$request->score : null);
-
-        $practicalScore = $request->has('practical_score') && $request->practical_score !== null 
-            ? (int)$request->practical_score 
-            : ($request->submission_type === 'practical_assignment' ? (int)$request->score : null);
-
-        $totalScore = $request->score !== null 
-            ? (int)$request->score 
-            : (($mcqScore ?: 0) + ($practicalScore ?: 0));
-
-        $submissionId = DB::table('student_submissions')->insertGetId([
-            'student_id' => $studentId,
-            'course_id' => $courseId,
-            'batch_id' => $batchId,
-            'exam_id' => $request->exam_id ?: null,
-            'submission_type' => $request->submission_type,
-            'pdf_url' => $request->pdf_url,
-            'notes' => $request->notes,
-            'courier_tracking_no' => $request->courier_tracking_no,
-            'courier_name' => $request->courier_name,
-            'score' => $totalScore,
-            'mcq_score' => $mcqScore,
-            'practical_score' => $practicalScore,
-            'total_score' => $totalScore,
-            'status' => 'Pending',
-            'is_published' => false,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // Notification for student
         try {
-            DB::table('notifications')->insert([
-                'user_id'    => $studentId,
-                'title'      => 'தேர்வு சமர்ப்பிக்கப்பட்டது! (Exam Submitted)',
-                'body'       => 'உங்கள் தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது. விரைவில் மதிப்பீடு செய்யப்படும்.',
-                'type'       => 'submission',
-                'is_read'    => false,
-                'data'       => json_encode(['submission_id' => $submissionId]),
+            $request->validate([
+                'course_id' => 'nullable',
+                'batch_id' => 'nullable',
+                'exam_id' => 'nullable',
+                'submission_type' => 'required|in:pdf_upload,physical_courier,online_quiz,hybrid_exam,practical_assignment',
+                'pdf_url' => 'nullable|string',
+                'notes' => 'nullable|string',
+                'courier_tracking_no' => 'nullable|string',
+                'courier_name' => 'nullable|string',
+                'score' => 'nullable|numeric',
+                'mcq_score' => 'nullable|numeric',
+                'practical_score' => 'nullable|numeric',
+            ]);
+
+            $user = $request->user('sanctum') ?: auth('sanctum')->user() ?: $request->user();
+            $studentId = $user ? $user->id : null;
+
+            if (!$studentId) {
+                $studentId = DB::table('users')->where('id', 1)->value('id') 
+                    ?: DB::table('users')->value('id');
+                    
+                if (!$studentId) {
+                    $studentId = DB::table('users')->insertGetId([
+                        'name' => 'Student User',
+                        'email' => 'student_' . time() . '@sriaarudhraaastro.com',
+                        'password' => bcrypt('password123'),
+                        'role' => 'user',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+
+            $batchId = !empty($request->batch_id) ? (int)$request->batch_id : null;
+            if (!$batchId && $user && isset($user->batch_id) && !empty($user->batch_id)) {
+                $batchId = (int)$user->batch_id;
+            }
+
+            // Prevent duplicate exam submissions (One-Time Exam Enforcement)
+            if (!empty($request->exam_id) && Schema::hasColumn('student_submissions', 'exam_id')) {
+                $alreadySubmitted = DB::table('student_submissions')
+                    ->where('student_id', $studentId)
+                    ->where('exam_id', (int)$request->exam_id)
+                    ->first();
+
+                if ($alreadySubmitted) {
+                    return response()->json([
+                        'success' => false,
+                        'already_submitted' => true,
+                        'message' => 'நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள். ஒரு முறை மட்டுமே எழுத அனுமதிக்கப்படும்.'
+                    ], 400);
+                }
+            }
+
+            // Ensure valid course_id that exists in courses table
+            $courseId = null;
+            if (!empty($request->course_id) && DB::table('courses')->where('id', (int)$request->course_id)->exists()) {
+                $courseId = (int)$request->course_id;
+            } else {
+                $courseId = DB::table('courses')->value('id');
+                if (!$courseId) {
+                    $courseId = DB::table('courses')->insertGetId([
+                        'title' => 'இளநிலை ஜோதிடப் படிப்பு (Ilanilai)',
+                        'description' => 'ஜோதிட அடிப்படைகள் மற்றும் பலன்கள் அறிதல்',
+                        'level' => 'Beginner',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+
+            $mcqScore = $request->has('mcq_score') && $request->mcq_score !== null 
+                ? round((float)$request->mcq_score) 
+                : ($request->submission_type === 'online_quiz' && $request->has('score') && $request->score !== null ? round((float)$request->score) : null);
+
+            $practicalScore = $request->has('practical_score') && $request->practical_score !== null 
+                ? round((float)$request->practical_score) 
+                : ($request->submission_type === 'practical_assignment' && $request->has('score') && $request->score !== null ? round((float)$request->score) : null);
+
+            $totalScore = $request->has('score') && $request->score !== null 
+                ? round((float)$request->score) 
+                : (($mcqScore ?: 0) + ($practicalScore ?: 0));
+
+            $insertData = [
+                'student_id' => $studentId,
+                'course_id' => $courseId,
+                'submission_type' => $request->submission_type,
+                'pdf_url' => $request->pdf_url,
+                'courier_tracking_no' => $request->courier_tracking_no,
+                'courier_name' => $request->courier_name,
+                'score' => $totalScore,
+                'status' => 'Pending',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
-        } catch (\Throwable $e) {}
+            ];
 
-        return response()->json([
-            'success' => true,
-            'message' => 'தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.',
-            'submission_id' => $submissionId
-        ]);
+            if (Schema::hasColumn('student_submissions', 'batch_id')) {
+                $insertData['batch_id'] = $batchId;
+            }
+            if (Schema::hasColumn('student_submissions', 'exam_id')) {
+                $insertData['exam_id'] = !empty($request->exam_id) ? (int)$request->exam_id : null;
+            }
+            if (Schema::hasColumn('student_submissions', 'notes')) {
+                $insertData['notes'] = $request->notes;
+            }
+            if (Schema::hasColumn('student_submissions', 'mcq_score')) {
+                $insertData['mcq_score'] = $mcqScore;
+            }
+            if (Schema::hasColumn('student_submissions', 'practical_score')) {
+                $insertData['practical_score'] = $practicalScore;
+            }
+            if (Schema::hasColumn('student_submissions', 'total_score')) {
+                $insertData['total_score'] = $totalScore;
+            }
+            if (Schema::hasColumn('student_submissions', 'is_published')) {
+                $insertData['is_published'] = false;
+            }
+
+            $submissionId = DB::table('student_submissions')->insertGetId($insertData);
+
+            // Notification for student
+            try {
+                if (Schema::hasTable('notifications')) {
+                    DB::table('notifications')->insert([
+                        'user_id'    => $studentId,
+                        'title'      => 'தேர்வு சமர்ப்பிக்கப்பட்டது! (Exam Submitted)',
+                        'body'       => 'உங்கள் தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது. விரைவில் மதிப்பீடு செய்யப்படும்.',
+                        'type'       => 'submission',
+                        'is_read'    => false,
+                        'data'       => json_encode(['submission_id' => $submissionId]),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
+
+            return response()->json([
+                'success' => true,
+                'message' => 'தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது.',
+                'submission_id' => $submissionId
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Exam submission error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'payload' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'சமர்ப்பிப்பில் பிழை ஏற்பட்டது: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
