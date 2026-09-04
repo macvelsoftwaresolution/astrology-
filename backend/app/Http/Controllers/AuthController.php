@@ -83,8 +83,10 @@ class AuthController extends Controller
         // 1. LEARN / EDUCATION SECTION LOGIN (Student ID + Password ONLY)
         // =====================================================================
         if ($service === 'education') {
-            // Find student by Student ID (e.g. 26AR01)
-            $student = Student::where('student_id', $input)->first();
+            // Find student strictly by Student ID (e.g. 26AR01)
+            $student = Student::whereRaw('UPPER(student_id) = ?', [strtoupper($input)])
+                ->orWhere('student_id', $input)
+                ->first();
 
             if (!$student || !Hash::check($request->password, $student->password)) {
                 return response()->json([
@@ -293,8 +295,12 @@ class AuthController extends Controller
     {
         $fullName    = trim($request->input('fullName', $request->input('name', '')));
         $email       = trim($request->input('email', $request->input('emailAddress', '')));
-        $phone       = trim($request->input('phone', $request->input('mobileNumber', '')));
-        $courseLevel = $request->input('courseLevel', 'ilanilai');
+        $phone          = trim($request->input('phone', $request->input('mobileNumber', '')));
+        $rawCourseLevel = trim($request->input('courseLevel', 'ilanilai'));
+        $courseLevel    = strtolower($rawCourseLevel);
+        if ($courseLevel === 'mudhunilai') {
+            $courseLevel = 'muthunilai';
+        }
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json([
