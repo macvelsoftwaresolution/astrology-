@@ -53,14 +53,16 @@
           <div class="post-payment-login-container">
             @if (generatedLoginId) {
               <div class="success-card">
-                <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
+                <div class="success-icon-ring">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
                 <h2>{{ 'common.success' | translate }}</h2>
                 <p class="success-info-text">
-                  <i class="bi bi-envelope-fill me-1"></i> உங்களது மின்னஞ்சல் முகவரிக்கு <strong>({{ enrollForm.emailAddress || 'Gmail' }})</strong> மாணவர் ஐடி மற்றும் கடவுச்சொல் அனுப்பப்பட்டுள்ளது. தயவுசெய்து மின்னஞ்சலைச் சரிபார்த்து கீழே உள்ளிடவும்.
+                  <i class="bi bi-envelope-fill me-1" style="color: #d97706;"></i> உங்களது மின்னஞ்சல் முகவரிக்கு <strong>({{ enrollForm.emailAddress || 'Gmail' }})</strong> மாணவர் ஐடி மற்றும் கடவுச்சொல் அனுப்பப்பட்டுள்ளது. தயவுசெய்து மின்னஞ்சலைச் சரிபார்த்து கீழே உள்ளிடவும்.
                 </p>
               </div>
             } @else {
-              <div class="success-card" style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); color: #FFFFFF; text-align: center; padding: 1.5rem 1rem; border-radius: 16px; margin-bottom: 1.25rem;">
+              <div class="success-card header-style" style="background: linear-gradient(135deg, #4A0E17 0%, #200438 100%); color: #FFFFFF; text-align: center; padding: 1.5rem 1rem; border-radius: 16px; margin-bottom: 1.25rem;">
                 <div style="font-size: 2.2rem; margin-bottom: 0.5rem;"><i class="bi bi-mortarboard-fill text-warning"></i></div>
                 <h2 style="color: #FFD700; font-family: 'Noto Serif Tamil', serif; font-size: 1.3rem; margin: 0 0 0.4rem 0;">{{ 'learn.studentLogin' | translate }}</h2>
                 <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0;">{{ 'learn.studentLoginDesc' | translate }}</p>

@@ -699,42 +699,49 @@
 <!-- Book Order Success Confirmation Notification Modal -->
 @if (showBookOrderSuccessModal && orderSuccessNotification) {
 <div class="checkout-modal-overlay" style="z-index: 10500;">
-  <div class="checkout-modal-card" style="text-align: center; padding: 24px 20px;">
-    <div style="width: 64px; height: 64px; border-radius: 50%; background: #d1fae5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 12px auto; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);">
+  <div class="book-success-modal-card">
+    
+    <div class="bsm-icon-ring">
       <i class="bi bi-check-circle-fill"></i>
     </div>
     
-    <h3 style="font-family: 'Noto Serif Tamil', serif; font-size: 1.2rem; color: #4A0E17; margin: 0 0 6px 0; font-weight: 800;">
+    <h3 class="bsm-title">
       புத்தகம் வெற்றிகரமாக ஆர்டர் செய்யப்பட்டது!
     </h3>
     
-    <div style="display: inline-block; background: rgba(162,123,56,0.15); color: #A27B38; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; margin-bottom: 16px;">
-      {{ 'home.bookingRefBadge' | translate }} {{ orderSuccessNotification.order_number }}
+    <div class="bsm-ref-badge">
+      <i class="bi bi-receipt me-1"></i> {{ 'home.bookingRefBadge' | translate }} {{ orderSuccessNotification.order_number }}
     </div>
 
     <!-- In-App Confirmation Notification Alert Card -->
-    <div style="background: #FFFDF0; border: 1.5px solid rgba(162,123,56,0.3); border-radius: 14px; padding: 16px; text-align: left; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(74,14,23,0.05);">
-      <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: #4A0E17; font-size: 0.92rem; margin-bottom: 8px; border-bottom: 1px dashed rgba(162,123,56,0.25); padding-bottom: 8px;">
-        <i class="bi bi-bell-fill" style="color: #d97706;"></i>
+    <div class="bsm-notif-card">
+      <div class="bsm-notif-header">
+        <i class="bi bi-bell-fill"></i>
         <span>{{ 'home.notifTitle' | translate }}</span>
       </div>
       
-      <p style="font-size: 0.88rem; color: #334155; line-height: 1.6; margin: 0 0 10px 0;">
+      <p class="bsm-notif-msg">
         வணக்கம் <strong>{{ orderSuccessNotification.name }}</strong>, <strong>"{{ orderSuccessNotification.book_title }}"</strong> புத்தகம் வெற்றிகரமாக பதிவு செய்யப்பட்டது. உங்கள் தபால் முகவரிக்கு விரைவில் பேக் செய்யப்பட்டு அனுப்பி வைக்கப்படும்.
       </p>
 
-      <div style="background: rgba(162,123,56,0.08); padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; color: #7E716A; display: flex; flex-direction: column; gap: 4px;">
-        <div><strong style="color: #4A0E17;">தொகை:</strong> ₹{{ orderSuccessNotification.price }}</div>
-        <div><strong style="color: #4A0E17;">முகவரி:</strong> {{ orderSuccessNotification.shipping_address }}</div>
+      <div class="bsm-meta-box">
+        <div class="bsm-meta-row">
+          <span class="bsm-m-label"><i class="bi bi-currency-rupee"></i> தொகை:</span>
+          <span class="bsm-m-val">₹{{ orderSuccessNotification.price }}</span>
+        </div>
+        <div class="bsm-meta-row">
+          <span class="bsm-m-label"><i class="bi bi-geo-alt-fill"></i> முகவரி:</span>
+          <span class="bsm-m-val">{{ orderSuccessNotification.shipping_address }}</span>
+        </div>
       </div>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      <button class="confirm-pay-btn" style="background: linear-gradient(135deg, #4A0E17, #7A1827); margin: 0; width: 100%; font-size: 0.9rem;" (click)="closeOrderSuccessModal(true)">
+    <div class="bsm-actions">
+      <button type="button" class="bsm-primary-btn" (click)="closeOrderSuccessModal(true)">
         <i class="bi bi-bag-check-fill me-1"></i> என் ஆர்டர்கள் பட்டியலைக் காண்க
       </button>
-      <button class="confirm-pay-btn" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; margin: 0; width: 100%; font-size: 0.9rem;" (click)="closeOrderSuccessModal(false)">
-        நூலகத்திற்குச் செல்க
+      <button type="button" class="bsm-secondary-btn" (click)="closeOrderSuccessModal(false)">
+        <i class="bi bi-book-fill me-1"></i> நூலகத்திற்குச் செல்க
       </button>
     </div>
   </div>
@@ -1050,78 +1057,88 @@
     <!-- Modal Body Content -->
     <div class="esm-body">
       <!-- One-time attempt notice pill -->
-      <div class="esm-notice-pill">
-        <i class="bi bi-info-circle-fill"></i>
-        @if (selectedCompletedExam.isApproved) {
-          <span>நிர்வாகி உங்கள் விடைத்தாளை மதிப்பீடு செய்து முடிவுகளை வெளியிட்டுள்ளார்.</span>
-        } @else {
-          <span>உங்கள் தேர்வு சமர்ப்பிக்கப்பட்டது. நிர்வாகி மதிப்பீடு செய்து முடிவுகளை வெளியிடும் வரை காத்திருக்கவும்.</span>
-        }
+      <div class="esm-notice-pill" [class.approved]="selectedCompletedExam.isApproved">
+        <div class="esm-notice-icon">
+          <i class="bi bi-info-circle-fill"></i>
+        </div>
+        <div class="esm-notice-text">
+          @if (selectedCompletedExam.isApproved) {
+            நிர்வாகி உங்கள் விடைத்தாளை மதிப்பீடு செய்து முடிவுகளை வெளியிட்டுள்ளார்.
+          } @else {
+            உங்கள் தேர்வு சமர்ப்பிக்கப்பட்டது. நிர்வாகி மதிப்பீடு செய்து முடிவுகளை வெளியிடும் வரை காத்திருக்கவும்.
+          }
+        </div>
       </div>
 
       <!-- Key Stats Grid -->
       <div class="esm-stats-grid">
         <div class="esm-stat-card">
-          <span class="esm-stat-label">மதிப்பெண் (Score)</span>
-          @if (selectedCompletedExam.isApproved) {
-            <span class="esm-stat-value text-gold">{{ selectedCompletedExam.score }}%</span>
-          } @else {
-            <span class="esm-stat-value text-amber" style="font-size: 0.92rem; display: flex; align-items: center; justify-content: center; gap: 5px;">
-              <i class="bi bi-clock-history"></i> மதிப்பீட்டில்...
-            </span>
-          }
+          <span class="esm-stat-label">மதிப்பெண்</span>
+          <div class="esm-stat-value-container">
+            @if (selectedCompletedExam.isApproved) {
+              <span class="esm-stat-val-text text-gold">{{ selectedCompletedExam.score }}%</span>
+            } @else {
+              <span class="esm-status-pill pending">
+                <i class="bi bi-hourglass-split"></i> காத்திருப்பில்
+              </span>
+            }
+          </div>
         </div>
         <div class="esm-stat-card">
-          <span class="esm-stat-label">நிலை (Status)</span>
-          @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
-            <span class="esm-stat-value text-success">
-              <i class="bi bi-check-circle-fill me-1"></i>தேர்ச்சி (PASSED)
-            </span>
-          } @else if (selectedCompletedExam.isRejected) {
-            <span class="esm-stat-value text-danger">
-              <i class="bi bi-x-circle-fill me-1"></i>தோல்வி (Failed)
-            </span>
-          } @else {
-            <span class="esm-stat-value text-amber" style="font-size: 0.88rem;">
-              <i class="bi bi-clock-history me-1"></i>மதிப்பீட்டில் (Pending)
-            </span>
-          }
+          <span class="esm-stat-label">நிலை</span>
+          <div class="esm-stat-value-container">
+            @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
+              <span class="esm-status-pill passed">
+                <i class="bi bi-check-circle-fill"></i> தேர்ச்சி
+              </span>
+            } @else if (selectedCompletedExam.isRejected) {
+              <span class="esm-status-pill rejected">
+                <i class="bi bi-x-circle-fill"></i> தோல்வி
+              </span>
+            } @else {
+              <span class="esm-status-pill pending">
+                <i class="bi bi-clock-history"></i> மதிப்பீட்டில்
+              </span>
+            }
+          </div>
         </div>
       </div>
 
       <!-- Detail Info Rows -->
       <div class="esm-details-list">
         <div class="esm-detail-row">
-          <span class="esm-d-label"><i class="bi bi-calendar3 me-1"></i> சமர்ப்பித்த தேதி:</span>
+          <span class="esm-d-label"><i class="bi bi-calendar3"></i> சமர்ப்பித்த தேதி</span>
           <span class="esm-d-val">{{ (selectedCompletedExam.submittedAt | date:'dd MMM yyyy, hh:mm a') || 'சமீபத்தில்' }}</span>
         </div>
         <div class="esm-detail-row">
-          <span class="esm-d-label"><i class="bi bi-award me-1"></i> தேர்ச்சி வரம்பு:</span>
+          <span class="esm-d-label"><i class="bi bi-award"></i> தேர்ச்சி வரம்பு</span>
           <span class="esm-d-val">{{ selectedCompletedExam.passMark }}% மதிப்பெண்</span>
         </div>
         @if (selectedCompletedExam.isApproved) {
           @if (selectedCompletedExam.mcqScore !== null && selectedCompletedExam.mcqScore !== undefined) {
           <div class="esm-detail-row">
-            <span class="esm-d-label"><i class="bi bi-list-check me-1"></i> கொள்குறி மதிப்பெண் (MCQ):</span>
-            <span class="esm-d-val font-bold text-dark">{{ selectedCompletedExam.mcqScore }}%</span>
+            <span class="esm-d-label"><i class="bi bi-list-check"></i> கொள்குறி மதிப்பெண் (MCQ)</span>
+            <span class="esm-d-val highlight">{{ selectedCompletedExam.mcqScore }}%</span>
           </div>
           }
           @if (selectedCompletedExam.practicalScore !== null && selectedCompletedExam.practicalScore !== undefined) {
           <div class="esm-detail-row">
-            <span class="esm-d-label"><i class="bi bi-pencil-fill me-1"></i> செய்முறை மதிப்பெண்:</span>
-            <span class="esm-d-val font-bold text-dark">{{ selectedCompletedExam.practicalScore }}%</span>
+            <span class="esm-d-label"><i class="bi bi-pencil-fill"></i> செய்முறை மதிப்பெண்</span>
+            <span class="esm-d-val highlight">{{ selectedCompletedExam.practicalScore }}%</span>
           </div>
           }
         } @else {
           <div class="esm-detail-row">
-            <span class="esm-d-label"><i class="bi bi-shield-check me-1"></i> ஆசிரியர் மதிப்பீடு:</span>
-            <span class="esm-d-val font-bold text-amber">நடைபெற்று வருகிறது (In Progress)</span>
+            <span class="esm-d-label"><i class="bi bi-shield-check"></i> ஆசிரியர் மதிப்பீடு</span>
+            <span class="esm-d-val in-progress">
+              <span class="pulse-dot"></span> நடைபெற்று வருகிறது
+            </span>
           </div>
         }
         @if (selectedCompletedExam.notes) {
-        <div class="esm-detail-row" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-          <span class="esm-d-label"><i class="bi bi-chat-quote-fill me-1"></i> நிர்வாகி குறிப்பு:</span>
-          <span class="esm-d-val" style="font-size: 0.8rem; color: #475569;">{{ selectedCompletedExam.notes }}</span>
+        <div class="esm-detail-row notes-row">
+          <span class="esm-d-label"><i class="bi bi-chat-quote-fill"></i> நிர்வாகி குறிப்பு:</span>
+          <div class="esm-notes-box">{{ selectedCompletedExam.notes }}</div>
         </div>
         }
       </div>
@@ -1130,7 +1147,7 @@
       <div class="esm-actions">
         @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
           <button type="button" class="esm-cert-btn" (click)="closeCompletedExamModal(); setTab('profile')">
-            <i class="bi bi-award-fill me-1"></i> சான்றிதழ் காண்க (View Certificate)
+            <i class="bi bi-award-fill"></i> சான்றிதழ் காண்க (View Certificate)
           </button>
         }
         <button type="button" class="esm-ok-btn" (click)="closeCompletedExamModal()">
