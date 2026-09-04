@@ -41,6 +41,8 @@
     </div>
   </div>
 
+<<<<<<< HEAD
+=======
   @if ((myMatches && myMatches.length > 0) || (myProfiles && myProfiles.length > 0)) {
   <div class="option-card premium-card"
     style="margin-top:24px; padding: 14px; cursor: pointer; text-align: center; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"
@@ -131,6 +133,7 @@
   }
   }
 
+>>>>>>> b32a9f0b2cfa0b397291eaa7e1e11f67960f44cb
 </div>
 }
 
@@ -415,7 +418,7 @@
   <div class="input-grid">
     <div class="input-row">
       <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம் (Photo)' }}</label>
-      <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="image/*">
+      <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="*/*">
       @if (regForm.photoUrl) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
         'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
@@ -423,7 +426,7 @@
     </div>
     <div class="input-row">
       <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம் (Horoscope)' }}</label>
-      <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="image/*,application/pdf">
+      <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="*/*">
       @if (regForm.jadhagamUrl) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
         'en' ? 'Uploaded' : 'பதிவேற்றப்பட்டது' }}</small>
@@ -549,14 +552,14 @@
   <div class="input-grid">
     <div class="input-row">
       <label>{{ 'matching.photo' | translate }}</label>
-      <input type="file" (change)="uploadDocument($event, 'match', 'girlPhoto')" accept="image/*">
+      <input type="file" (change)="uploadDocument($event, 'match', 'girlPhoto')" accept="*/*">
       @if (matchingForm.girlPhoto) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
       }
     </div>
     <div class="input-row">
       <label>{{ 'matching.horoscopeChart' | translate }}</label>
-      <input type="file" (change)="uploadDocument($event, 'match', 'girlJadhagam')" accept="image/*,application/pdf">
+      <input type="file" (change)="uploadDocument($event, 'match', 'girlJadhagam')" accept="*/*">
       @if (matchingForm.girlJadhagam) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
       }
@@ -613,14 +616,14 @@
   <div class="input-grid">
     <div class="input-row">
       <label>{{ 'matching.photo' | translate }}</label>
-      <input type="file" (change)="uploadDocument($event, 'match', 'boyPhoto')" accept="image/*">
+      <input type="file" (change)="uploadDocument($event, 'match', 'boyPhoto')" accept="*/*">
       @if (matchingForm.boyPhoto) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
       }
     </div>
     <div class="input-row">
       <label>{{ 'matching.horoscopeChart' | translate }}</label>
-      <input type="file" (change)="uploadDocument($event, 'match', 'boyJadhagam')" accept="image/*,application/pdf">
+      <input type="file" (change)="uploadDocument($event, 'match', 'boyJadhagam')" accept="*/*">
       @if (matchingForm.boyJadhagam) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ 'matching.uploaded' | translate }}</small>
       }

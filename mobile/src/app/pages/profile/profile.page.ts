@@ -277,7 +277,104 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
         </div>
       }
 
-      <!-- TAB: NOTIFICATION PREFERENCES & LANGUAGE SETTING -->
+      
+      <!-- TAB: MARRIAGE -->
+      @if (activeTab === 'marriage') {
+        <div class="tab-content">
+          <div class="section-title">
+            <h3><i class="bi bi-suit-heart-fill me-1 text-rose"></i> {{ 'matching.matchRecords' | translate }}</h3>
+          </div>
+          @if (loadingMatches) {
+            <ion-spinner name="crescent" color="warning"></ion-spinner>
+          } @else {
+            @if (myMatches.length === 0 && myProfiles.length === 0) {
+              <div class="empty-state">
+                <i class="bi bi-suit-heart-fill" style="font-size: 36px; color: #8a8ab0;"></i>
+                <p>{{ currentLang === 'ta' ? 'பதிவுகள் எதுவும் இல்லை.' : 'No records found.' }}</p>
+              </div>
+            }
+            
+            @if (myMatches.length > 0) {
+              <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 24px;">
+                @for (m of myMatches; track m.id) {
+                  <div class="result-card" style="background: linear-gradient(135deg, #160f33, #1e1342); border: 1px solid rgba(212,175,55,0.3); border-radius: 14px; padding: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                      <strong style="color:#fff; font-size:13px;">
+                        <i class="bi bi-suit-heart-fill" style="color:#e11d48; margin-right:4px;"></i> {{ 'matching.porutham10Title' | translate }}
+                      </strong>
+                      <span style="font-size:10px; font-weight:700; background:rgba(212,175,55,0.2); color:#ffd700; padding:2px 6px; border-radius:4px;">{{ m.admin_status || m.consultation_status || 'Pending' }}</span>
+                    </div>
+
+                    <div style="font-size:12px; color:#cbd5e1; display:flex; align-items:center; gap:8px; margin-top: 8px;">
+                      <span>👦 {{ m.boy_name }}</span>
+                      <i class="bi bi-arrow-left-right text-muted" style="font-size:10px;"></i>
+                      <span>👧 {{ m.girl_name }}</span>
+                    </div>
+
+                    <div style="font-size:11px; color:#8a8ab0; display:flex; justify-content:space-between; margin-top:12px; align-items: center;">
+                      <span>{{ m.created_at | date:'dd MMM yyyy' }}</span>
+                      @if (m.result_document) {
+                        <a [href]="m.result_document" target="_blank" style="color:#10b981; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:4px; background:rgba(16,185,129,0.1); padding:4px 8px; border-radius:6px;">
+                          <i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF
+                        </a>
+                      }
+                    </div>
+
+                    @if (m.report_data) {
+                      <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size:11px; color:#8a8ab0; margin-bottom:4px;">{{ currentLang === 'ta' ? 'திருமணப் பொருத்த அறிக்கை:' : 'Marriage Match Report:' }}</div>
+                        @if (m.report_data.astrologer_title) {
+                          <div style="font-size:12px; color:#ffd700; margin-bottom:2px;">{{ m.report_data.astrologer_title }}</div>
+                        }
+                        @if (m.report_data.astrologer_name) {
+                          <div style="font-size:12px; color:#fff;">{{ m.report_data.astrologer_name }}</div>
+                        }
+                        @if (m.report_data.astrologer_opinion) {
+                          <div style="font-size:12px; color:#cbd5e1; margin-top:6px; font-style:italic;">"{{ m.report_data.astrologer_opinion }}"</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            @if (myProfiles.length > 0) {
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <h4 style="color:#fff; font-size:14px; margin:0 0 8px 0;"><i class="bi bi-file-earmark-person-fill text-gold me-1"></i> {{ 'matching.regRecords' | translate }}</h4>
+                @for (p of myProfiles; track p.id) {
+                  <div class="result-card" style="background: linear-gradient(135deg, #160f33, #1e1342); border: 1px solid rgba(212,175,55,0.3); border-radius: 14px; padding: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                      <strong style="color:#fff; font-size:13px;">
+                        <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> {{ 'matching.varanRegBadge' | translate }}
+                      </strong>
+                      <span style="font-size:10px; font-weight:700; background:rgba(212,175,55,0.2); color:#ffd700; padding:2px 6px; border-radius:4px;">{{ p.status || 'Pending' }}</span>
+                    </div>
+
+                    <div style="font-size:12px; color:#cbd5e1; display:flex; flex-direction:column; gap:4px; margin-top:8px;">
+                      <span style="font-weight:600; color:#fff;">{{ p.name }} <small style="color:#8a8ab0;">({{ p.gender === 'male' ? 'ஆண்' : 'பெண்' }})</small></span>
+                      <span><i class="bi bi-telephone-fill me-1" style="font-size:10px;"></i> {{ p.phone_number }}</span>
+                      @if(p.rasi || p.nakshatra) {
+                        <span><i class="bi bi-stars me-1" style="font-size:10px;"></i> {{ p.rasi }} - {{ p.nakshatra }}</span>
+                      }
+                    </div>
+
+                    <div style="font-size:11px; color:#8a8ab0; display:flex; justify-content:space-between; margin-top:12px; align-items: center;">
+                      <span>{{ p.created_at | date:'dd MMM yyyy' }}</span>
+                      @if (p.result_document) {
+                        <a [href]="p.result_document" target="_blank" style="color:#10b981; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:4px; background:rgba(16,185,129,0.1); padding:4px 8px; border-radius:6px;">
+                          <i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF
+                        </a>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      }
+<!-- TAB: NOTIFICATION PREFERENCES & LANGUAGE SETTING -->
       @if (activeTab === 'preferences') {
         <div class="tab-content">
           <div class="section-title">
@@ -475,6 +572,7 @@ export class ProfilePage implements OnInit {
     { key: 'payments', icon: 'bi bi-credit-card-fill', labelKey: 'profile.tabPayments' },
     { key: 'notifications', icon: 'bi bi-bell-fill', labelKey: 'profile.tabNotifs' },
     { key: 'preferences', icon: 'bi bi-gear-fill', labelKey: 'profile.tabSettings' },
+      { key: 'marriage', icon: 'bi bi-suit-heart-fill', labelKey: 'matching.matchRecords' },
   ];
   activeTab = 'profile';
 
@@ -498,6 +596,10 @@ export class ProfilePage implements OnInit {
 
   notifications: any[] = [];
   loadingNotifs = false;
+
+    myMatches: any[] = [];
+    myProfiles: any[] = [];
+    loadingMatches = false;
   unreadCount = 0;
 
   dailyNotifPref = true;
@@ -552,6 +654,8 @@ export class ProfilePage implements OnInit {
     this.loadPayments();
     this.loadNotifications();
     this.loadPreferences();
+      this.loadMyMatches();
+      this.loadMyProfiles();
   }
 
   loadExamResults() {
@@ -593,6 +697,21 @@ export class ProfilePage implements OnInit {
         this.savingProfile = false;
       },
       error: () => { this.profileMsg = this.translationService.translate('common.error', 'பிழை ஏற்பட்டது.'); this.profileSuccess = false; this.savingProfile = false; }
+    });
+  }
+
+  loadMyMatches() {
+    this.loadingMatches = true;
+    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, this.headers).subscribe({
+      next: (res: any) => { this.myMatches = res?.matches || []; this.loadingMatches = false; },
+      error: () => { this.loadingMatches = false; }
+    });
+  }
+
+  loadMyProfiles() {
+    this.http.get<any>(`${environment.apiUrl}/user/matrimony-profiles`, this.headers).subscribe({
+      next: (res: any) => { this.myProfiles = res?.profiles || []; },
+      error: () => { }
     });
   }
 

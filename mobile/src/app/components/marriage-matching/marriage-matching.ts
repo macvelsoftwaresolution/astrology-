@@ -26,40 +26,6 @@ export interface NakshatraData {
 })
 export class MarriageMatchingComponent implements OnInit {
   @Input() rasis: any[] = [];
-  myMatches: any[] = [];
-  myProfiles: any[] = [];
-  loadingHistory: boolean = false;
-  loadingProfiles: boolean = false;
-  showHistory: boolean = false;
-
-  loadMyMatches() {
-    if (!this.authService.isLoggedIn()) return;
-    this.loadingHistory = true;
-    const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, headers).subscribe({
-      next: (res) => {
-        this.myMatches = res.matches || [];
-        this.loadingHistory = false;
-      },
-      error: () => {
-        this.loadingHistory = false;
-      }
-    });
-  }
-
-  loadMyProfiles() {
-    this.loadingProfiles = true;
-    const headers = this.authService.getAuthHeaders();
-    this.http.get<any>(`${environment.apiUrl}/user/matrimony-profiles`, headers).subscribe({
-      next: (res) => {
-        this.myProfiles = res.profiles || [];
-        this.loadingProfiles = false;
-      },
-      error: () => {
-        this.loadingProfiles = false;
-      }
-    });
-  }
 
   // Flow State
   // 0: Options Screen
@@ -215,8 +181,6 @@ export class MarriageMatchingComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadMyMatches();
-    this.loadMyProfiles();
     const user = this.authService.getCurrentUser();
     if (user && user.phone) {
       this.matchingForm.requesterPhone = user.phone;
@@ -721,7 +685,5 @@ export class MarriageMatchingComponent implements OnInit {
     this.adminSubmittedSuccess = false;
     this.matchingForm.boyName = '';
     this.matchingForm.girlName = '';
-    this.loadMyMatches();
-    this.loadMyProfiles();
   }
 }
