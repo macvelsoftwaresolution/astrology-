@@ -3334,4 +3334,163 @@
   .mobile-topbar .brand h2 {
     font-size: 15px !important;
   }
+}
+
+/* =========================================================
+   GLOBAL ADMIN LUXURY CONFIRMATION MODAL
+   ========================================================= */
+.admin-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFadeIn 0.22s ease-out;
+}
+
+.admin-confirm-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px 24px 22px 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: modalCardPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-confirm-icon-halo {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+}
+
+.admin-confirm-icon-halo.danger {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1.5px solid #fecaca;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.15);
+}
+
+.admin-confirm-icon-halo.warning {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1.5px solid #fde68a;
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.15);
+}
+
+.admin-confirm-icon-halo.primary {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1.5px solid #bfdbfe;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.15);
+}
+
+.admin-confirm-title {
+  margin: 0 0 8px 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.admin-confirm-message {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 22px 0;
+  padding: 0 6px;
+}
+
+.admin-confirm-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-confirm-cancel {
+  flex: 1;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-confirm-cancel:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.btn-confirm-cancel:active {
+  transform: scale(0.97);
+}
+
+.btn-confirm-action {
+  flex: 1.2;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.btn-confirm-action.danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+}
+
+.btn-confirm-action.danger:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.btn-confirm-action.warning {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3);
+}
+
+.btn-confirm-action.primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+}
+
+.btn-confirm-action:active {
+  transform: scale(0.97);
+}
+
+@keyframes modalCardPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }

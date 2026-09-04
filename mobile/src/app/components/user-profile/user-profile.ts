@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { ToastService } from '../../services/toast.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -46,7 +47,8 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private toastService: ToastService
   ) {}
 
   get currentLang(): LanguageCode {
@@ -482,7 +484,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
 
   async downloadMatchPDF(match: any) {
     if (!match.report_data || match.report_data === 'null' || match.report_data === '{}') {
-      alert('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
+      this.toastService.warning('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
       return;
     }
 
@@ -510,41 +512,29 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
         document.body.appendChild(clone);
 
         try {
-<<<<<<< HEAD
-          const html2pdf = (await import('html2pdf.js')).default;
-          const opt: any = {
-            margin:       10,
-            filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
-          
-          await html2pdf().set(opt).from(clone).save();
-          document.body.removeChild(clone);
-=======
-          let html2pdf = (window as any).html2pdf;
-          if (!html2pdf) {
-            const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
-            html2pdf = mod?.default || mod;
-          }
+          const html2pdf = (window as any).html2pdf;
           if (html2pdf) {
             const opt: any = {
               margin:       10,
               filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true },
+              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            await html2pdf().set(opt).from(element).save();
+            await html2pdf().set(opt).from(clone).save();
+            this.toastService.success('PDF அறிக்கை பதிவிறக்கம் செய்யப்படுகிறது...');
           } else if (match.result_document) {
             window.open(match.result_document, '_blank');
           }
->>>>>>> 0ac353cc757c352f57ee016893ad566492d96e68
+          if (clone.parentNode) clone.parentNode.removeChild(clone);
         } catch (error) {
           console.error('Error generating PDF', error);
-          document.body.removeChild(clone);
-          alert('Error generating PDF.');
+          if (clone.parentNode) clone.parentNode.removeChild(clone);
+          if (match.result_document) {
+            window.open(match.result_document, '_blank');
+          } else {
+            this.toastService.error('Error generating PDF.');
+          }
         }
       }
     }, 150);

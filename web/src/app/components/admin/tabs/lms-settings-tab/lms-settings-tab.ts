@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 interface ListItem {
@@ -32,6 +33,7 @@ export class LmsSettingsTabComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -135,6 +137,7 @@ export class LmsSettingsTabComponent implements OnInit {
     Promise.all([pFee1, pFee2, p1, p2, p3, p4]).then(() => {
       this.isSaving = false;
       this.saveMsg = 'அமைப்புகள் வெற்றிகரமாக சேமிக்கப்பட்டன! (Settings saved successfully)';
+      this.toastService.success(this.saveMsg, 'வெற்றி');
       this.cdr.detectChanges();
       setTimeout(() => {
         this.saveMsg = '';
@@ -142,7 +145,7 @@ export class LmsSettingsTabComponent implements OnInit {
       }, 3000);
     }).catch(() => {
       this.isSaving = false;
-      alert('Failed to save settings.');
+      this.toastService.error('Failed to save settings.', 'பிழை');
       this.cdr.detectChanges();
     });
   }

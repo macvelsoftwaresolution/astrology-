@@ -6,6 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
+import { ConfirmService } from '../../../../services/confirm.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -29,6 +31,8 @@ export class RasiEditorTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     public translationService: TranslationService,
+    private confirmService: ConfirmService,
+    private toastService: ToastService,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef
   ) {}
@@ -122,9 +126,16 @@ export class RasiEditorTabComponent implements OnInit {
     return `${hh}:${m} ${ampm}`;
   }
 
-  toggleComingSoon(): void {
+  async toggleComingSoon(): Promise<void> {
     if (this.isComingSoon) {
-      if (confirm('Are you sure you want to mark all 12 Rasis as "Coming Soon" for this date?')) {
+      const ok = await this.confirmService.confirm({
+        title: 'விரைவில் வரும் என குறிக்கவா?',
+        message: 'இந்த தேதிக்கான அனைத்து 12 ராசிகளையும் "விரைவில் பதிவேற்றப்படும்" என குறிக்க விரும்புகிறீர்களா?',
+        confirmText: 'ஆம், குறிக்க',
+        type: 'warning',
+        icon: 'bi bi-clock-history'
+      });
+      if (ok) {
         this.backupPredictions = JSON.parse(JSON.stringify(this.rasiPredictions));
         this.rasiPredictions.forEach(r => {
           r.prediction_text = 'விரைவில் பதிவேற்றப்படும்...';
@@ -224,7 +235,7 @@ export class RasiEditorTabComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to upload rasi icon', err);
-        alert('Failed to upload icon.');
+        this.toastService.error('Failed to upload icon.');
       }
     });
   }
@@ -318,7 +329,7 @@ export class RasiEditorTabComponent implements OnInit {
           this.cdr.detectChanges();
         }, 3500);
       },
-      error: () => alert(`Failed to save ${item.rasi_name} prediction.`)
+      error: () => this.toastService.error(`Failed to save ${item.rasi_name} prediction.`)
     });
   }
 
@@ -337,6 +348,7 @@ export class RasiEditorTabComponent implements OnInit {
       next: (res) => {
         this.rasiPublishing = false;
         this.rasiSaveSuccessMsg = res.message || `அனைத்து 12 ராசிகளின் ${this.rasiEditorType} பலன்களும் வெளியிடப்பட்டது!`;
+        this.toastService.success(this.rasiSaveSuccessMsg, 'வெற்றிகரமாக வெளியிடப்பட்டது');
         setTimeout(() => {
           this.rasiSaveSuccessMsg = '';
           this.cdr.detectChanges();
@@ -345,7 +357,7 @@ export class RasiEditorTabComponent implements OnInit {
       },
       error: () => {
         this.rasiPublishing = false;
-        alert('Failed to publish all Rasi Palan predictions.');
+        this.toastService.error('Failed to publish all Rasi Palan predictions.');
         this.cdr.detectChanges();
       }
     });
@@ -367,8 +379,8 @@ export class RasiEditorTabComponent implements OnInit {
     };
 
     this.http.put<any>(`${environment.apiUrl}/admin/panchangam`, payload, headers).subscribe({
-      next: (res) => alert(res.message || 'Panchangam updated successfully!'),
-      error: () => alert('Failed to update Panchangam.')
+      next: (res) => this.toastService.success(res.message || 'Panchangam updated successfully!'),
+      error: () => this.toastService.error('Failed to update Panchangam.')
     });
   }
 
@@ -383,7 +395,7 @@ export class RasiEditorTabComponent implements OnInit {
     const maxAudioSize = 10 * 1024 * 1024; // 10 MB
     if (file.size > maxAudioSize) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      alert(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும். (Audio file exceeds 10 MB limit)`);
+      this.toastService.warning(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும். (Audio file exceeds 10 MB limit)`, 'கோப்பு அளவு அதிகம்');
       return;
     }
 
@@ -396,15 +408,16 @@ export class RasiEditorTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url && this.rasiPredictions[index]) {
           this.rasiPredictions[index].audio_url = res.url;
+          this.toastService.success('ஆடியோ கோப்பு பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingRasiAudio = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         if (err?.status === 413) {
-          alert('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!');
+          this.toastService.error('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!', 'பதிவேற்றப் பிழை');
         } else {
-          alert('Audio upload failed.');
+          this.toastService.error('Audio upload failed.', 'பதிவேற்றப் பிழை');
         }
         this.isUploadingRasiAudio = false;
         this.cdr.detectChanges();
@@ -420,7 +433,7 @@ export class RasiEditorTabComponent implements OnInit {
     const maxVideoSize = 25 * 1024 * 1024; // 25 MB
     if (file.size > maxVideoSize) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      alert(`தேர்ந்தெடுக்கப்பட்ட வீடியோ கோப்பு ${sizeMb} MB உள்ளது! 25 MB-க்குள் இருக்கும் வீடியோ கோப்பைத் தேர்ந்தெடுக்கவும். (Video file exceeds 25 MB limit)`);
+      this.toastService.warning(`தேர்ந்தெடுக்கப்பட்ட வீடியோ கோப்பு ${sizeMb} MB உள்ளது! 25 MB-க்குள் இருக்கும் வீடியோ கோப்பைத் தேர்ந்தெடுக்கவும். (Video file exceeds 25 MB limit)`, 'கோப்பு அளவு அதிகம்');
       return;
     }
 
@@ -433,15 +446,16 @@ export class RasiEditorTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url && this.rasiPredictions[index]) {
           this.rasiPredictions[index].video_url = res.url;
+          this.toastService.success('வீடியோ பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingRasiVideo = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         if (err?.status === 413) {
-          alert('413 Request Entity Too Large: வீடியோ கோப்பின் அளவு சேவையக எல்லைக்கு அதிகமாக உள்ளது! சிறிய வீடியோவை முயற்சி செய்யவும்.');
+          this.toastService.error('413 Request Entity Too Large: வீடியோ கோப்பின் அளவு சேவையக எல்லைக்கு அதிகமாக உள்ளது! சிறிய வீடியோவை முயற்சி செய்யவும்.', 'பதிவேற்றப் பிழை');
         } else {
-          alert('Video upload failed.');
+          this.toastService.error('Video upload failed.', 'பதிவேற்றப் பிழை');
         }
         this.isUploadingRasiVideo = false;
         this.cdr.detectChanges();
@@ -466,7 +480,7 @@ export class RasiEditorTabComponent implements OnInit {
   testAudio(url: string): void {
     if (!url) return;
     const audio = new Audio(url);
-    audio.play().catch(() => alert('Could not play audio from: ' + url));
+    audio.play().catch(() => this.toastService.warning('Could not play audio from: ' + url, 'ஆடியோ இயக்க முடியவில்லை'));
   }
 
   openVideoPreview(url: string, title: string): void {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
@@ -45,6 +46,7 @@ export class UsersTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
     public translationService: TranslationService,
     private cdr: ChangeDetectorRef
   ) { }
@@ -346,15 +348,23 @@ export class UsersTabComponent implements OnInit {
     return this.nonAdminUsers.length;
   }
 
-  deleteUser(id: number): void {
-    if (!confirm('Are you sure you want to delete this registered user?')) return;
+  async deleteUser(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'பயனரை நீக்கவா?',
+      message: 'இந்த பதிவு செய்த பயனர் கணக்கு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}`, headers).subscribe({
       next: () => {
-        this.toastService.success('User deleted successfully.', 'பயனர் நீக்கப்பட்டார்');
+        this.toastService.success('பயனர் வெற்றிகரமாக நீக்கப்பட்டார்.', 'பயனர் நீக்கப்பட்டார்');
         this.loadUsers();
       },
-      error: () => this.toastService.error('Failed to delete user.', 'பிழை ஏற்பட்டது')
+      error: () => this.toastService.error('பயனரை நீக்குவதில் பிழை ஏற்பட்டது.', 'பிழை ஏற்பட்டது')
     });
   }
 

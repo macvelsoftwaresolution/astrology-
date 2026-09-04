@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IonSpinner } from '@ionic/angular/standalone';
 import { SegmentedDobComponent } from '../../../../components/segmented-dob/segmented-dob.component';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-vastu-kanitha',
@@ -245,7 +246,7 @@ export class VastuKanithaComponent {
         this.isUploadingPlan = false;
       },
       error: () => {
-        alert('Plan upload failed.');
+        this.toastService.error('Plan upload failed.');
         this.isUploadingPlan = false;
       }
     });
@@ -255,7 +256,10 @@ export class VastuKanithaComponent {
   
   kanithaDobDisplay = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private toastService: ToastService
+  ) {}
 
   formatKanithaDobDisplay(event: any) {
     let val = event.target.value.replace(/\D/g, '');
@@ -287,7 +291,7 @@ export class VastuKanithaComponent {
 
   bookService(serviceType: string, price: number, formData: any) {
     if (!formData.name || !formData.phone) {
-      alert('பெயர் மற்றும் தொடர்பு எண் கட்டாயம்.');
+      this.toastService.warning('பெயர் மற்றும் தொடர்பு எண் கட்டாயம்.');
       return;
     }
     this.loading = true;
@@ -305,8 +309,12 @@ export class VastuKanithaComponent {
         this.bookedOrderId = res.order_id;
         this.booked = true;
         this.loading = false;
+        this.toastService.success('முன்பதிவு வெற்றிகரமாக பதிவு செய்யப்பட்டது!');
       },
-      error: () => { alert('பதிவு பிழை. மீண்டும் முயலவும்.'); this.loading = false; }
+      error: () => {
+        this.toastService.error('பதிவு பிழை. மீண்டும் முயலவும்.');
+        this.loading = false;
+      }
     });
   }
 }

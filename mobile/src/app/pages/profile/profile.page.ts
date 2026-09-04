@@ -7,9 +7,11 @@ import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { ToastService } from '../../services/toast.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
-import * as html2pdf from 'html2pdf.js';
+
+declare var html2pdf: any;
 
 @Component({
   selector: 'app-profile',
@@ -700,7 +702,8 @@ export class ProfilePage implements OnInit {
     private router: Router,
     private backButtonService: BackButtonService,
     private authService: AuthService,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private toastService: ToastService
   ) { }
 
   get currentLang(): LanguageCode {
@@ -921,12 +924,13 @@ export class ProfilePage implements OnInit {
 
     (html2pdf as any)().from(clone).set(opt).save().then(() => {
       this.isDownloadingPdf = false;
+      this.toastService.success('PDF வெற்றிகரமாக பதிவிறக்கப்பட்டது!');
       document.body.removeChild(clone);
     }).catch((err: any) => {
       console.error('PDF Generation Error:', err);
       this.isDownloadingPdf = false;
       document.body.removeChild(clone);
-      alert('Error generating PDF.');
+      this.toastService.error('Error generating PDF.');
     });
   }
 }

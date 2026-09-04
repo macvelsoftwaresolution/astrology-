@@ -21,6 +21,7 @@ interface Order {
 import { BackButtonService } from '../services/back-button.service';
 import { ExitModalService } from '../services/exit-modal.service';
 import { RazorpayNativeService } from '../services/razorpay-native.service';
+import { ToastService } from '../services/toast.service';
 
 declare var Razorpay: any;
 
@@ -114,7 +115,8 @@ export class HomePage implements OnInit {
     private backButtonService: BackButtonService,
     private exitModalService: ExitModalService,
     public translationService: TranslationService,
-    private razorpayService: RazorpayNativeService
+    private razorpayService: RazorpayNativeService,
+    private toastService: ToastService
   ) { }
 
   // Navigation History Stack for step-by-step ("line by line") back navigation
@@ -842,17 +844,17 @@ export class HomePage implements OnInit {
               this.isProcessingPayment = false;
               const msg = err?.message || (typeof err === 'string' ? err : '');
               if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
-                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+                this.toastService.error('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
               }
             });
         } else {
           this.isProcessingPayment = false;
-          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
+          this.toastService.error('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {
         this.isProcessingPayment = false;
-        alert('கட்டண சேவைக்கான ஆர்டரை உருவாக்க முடியவில்லை.');
+        this.toastService.error('கட்டண சேவைக்கான ஆர்டரை உருவாக்க முடியவில்லை.');
       }
     });
   }

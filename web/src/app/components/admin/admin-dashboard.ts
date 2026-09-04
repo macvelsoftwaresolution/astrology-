@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
 import { ToastService, ToastData } from '../../services/toast.service';
+import { ConfirmService, ConfirmDialogData } from '../../services/confirm.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { environment } from '../../../environments/environment';
 
@@ -61,6 +62,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   toastData: ToastData = { show: false, message: '', type: 'success', title: '' };
   private toastSub: any;
 
+  // Global Confirmation Modal State
+  confirmData: ConfirmDialogData = {
+    show: false,
+    title: '',
+    message: '',
+    confirmText: 'ஆம், தொடர்க',
+    cancelText: 'ரத்து',
+    type: 'danger',
+    icon: 'bi bi-trash3-fill'
+  };
+  private confirmSub: any;
+
   // Sidebar Category Dropdown States
   astrologyCategoryOpen = false;
   learnCategoryOpen = false;
@@ -94,6 +107,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public translationService: TranslationService,
     public toastService: ToastService,
+    public confirmService: ConfirmService,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -111,6 +125,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     // Subscribe to Global Toast
     this.toastSub = this.toastService.toast$.subscribe((data) => {
       this.toastData = data;
+      this.cdr.detectChanges();
+    });
+
+    // Subscribe to Global Confirm Dialog
+    this.confirmSub = this.confirmService.confirm$.subscribe((data) => {
+      this.confirmData = data;
       this.cdr.detectChanges();
     });
 
@@ -153,6 +173,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.toastSub) {
       this.toastSub.unsubscribe();
+    }
+    if (this.confirmSub) {
+      this.confirmSub.unsubscribe();
     }
     if (this.notifInterval) {
       clearInterval(this.notifInterval);

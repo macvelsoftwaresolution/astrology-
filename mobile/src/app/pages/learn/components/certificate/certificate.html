@@ -61,22 +61,30 @@
                 <p class="cert-cert-title">{{ 'profile.certTitle' | translate }}</p>
 
                 <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
-                <h2 class="cert-student-name">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</h2>
+                <h2 class="cert-student-name">{{ studentName }}</h2>
 
-                <p class="cert-accomplishment">
-                  <strong>{{ selectedCert?.course_title || ('profile.vedicCourseTitle' | translate) }}</strong>
-                </p>
+                @if (selectedCert?.course_title) {
+                  <p class="cert-accomplishment">
+                    <strong>{{ selectedCert.course_title }}</strong>
+                  </p>
+                }
 
                 @if (selectedCert?.certificate_number) {
                   <div class="cert-num-badge">
-                    {{ 'profile.certNumber' | translate }} {{ selectedCert?.certificate_number }}
+                    {{ 'profile.certNumber' | translate }} {{ selectedCert.certificate_number }}
                   </div>
                 }
 
                 <div class="cert-details-footer">
                   <div>
-                    <span>{{ 'profile.issueDate' | translate }} {{ selectedCert?.issue_date || (selectedCert?.created_at | date:'mediumDate') }}</span>
-                    <span>{{ 'profile.score' | translate }} {{ selectedCert?.score || 100 }}%</span>
+                    @if (selectedCert?.issue_date) {
+                      <span>{{ 'profile.issueDate' | translate }} {{ selectedCert.issue_date }}</span>
+                    } @else if (selectedCert?.created_at) {
+                      <span>{{ 'profile.issueDate' | translate }} {{ selectedCert.created_at | date:'mediumDate' }}</span>
+                    }
+                    @if (selectedCert?.score !== null && selectedCert?.score !== undefined) {
+                      <span>{{ 'profile.score' | translate }} {{ selectedCert.score }}%</span>
+                    }
                   </div>
                 </div>
               </div>
@@ -114,25 +122,33 @@
           <!-- Marksheet Card -->
           <div class="marksheet-card">
             <div class="marksheet-header">
-              <h3>{{ selectedCert?.course_title || ('profile.vedicCourseTitle' | translate) }}</h3>
+              <h3>{{ selectedCert?.course_title || '' }}</h3>
               <span class="marksheet-status-tag"><i class="bi bi-check-circle-fill me-1"></i> {{ 'profile.statusPassed' | translate }}</span>
             </div>
 
             <div class="marksheet-student-info">
               <div class="info-row">
                 <span class="lbl">{{ 'profile.studentNameLbl' | translate }}</span>
-                <span class="val">{{ currentUser?.fullName || currentUser?.name || enrollForm?.fullName || 'Student' }}</span>
+                <span class="val">{{ studentName }}</span>
               </div>
-              @if (selectedCert?.certificate_number) {
+              @if (selectedCert?.marksheet_number || selectedCert?.certificate_number) {
                 <div class="info-row">
                   <span class="lbl">{{ 'profile.regNumLbl' | translate }}</span>
-                  <span class="val">{{ selectedCert?.certificate_number }}</span>
+                  <span class="val">{{ selectedCert.marksheet_number || selectedCert.certificate_number }}</span>
                 </div>
               }
-              <div class="info-row">
-                <span class="lbl">{{ 'profile.totalScoreLbl' | translate }}</span>
-                <span class="val score-bold">{{ selectedCert?.score || 100 }}%</span>
-              </div>
+              @if (selectedCert?.score !== null && selectedCert?.score !== undefined) {
+                <div class="info-row">
+                  <span class="lbl">{{ 'profile.totalScoreLbl' | translate }}</span>
+                  <span class="val score-bold">{{ selectedCert.score }}%</span>
+                </div>
+              }
+              @if (selectedCert?.grade) {
+                <div class="info-row">
+                  <span class="lbl">Grade:</span>
+                  <span class="val">{{ selectedCert.grade }}</span>
+                </div>
+              }
             </div>
           </div>
 

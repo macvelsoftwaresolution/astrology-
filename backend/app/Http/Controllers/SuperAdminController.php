@@ -582,7 +582,7 @@ class SuperAdminController extends Controller
         // Automatic notification creation on active live class publish
         if ($liveClass && $liveClass->is_active) {
             NotificationController::broadcastToUsers(
-                "🔴 நேரலை வகுப்பு: " . $liveClass->title,
+                "நேரலை வகுப்பு: " . $liveClass->title,
                 ($liveClass->description ? "{$liveClass->description} | " : "") . "நேரம்: {$liveClass->date_text} {$liveClass->time_text}",
                 'course',
                 [

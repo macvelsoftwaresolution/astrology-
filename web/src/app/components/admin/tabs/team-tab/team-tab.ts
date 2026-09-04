@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
@@ -69,6 +70,7 @@ export class TeamTabComponent implements OnInit {
     private authService: AuthService,
     public translationService: TranslationService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -143,15 +145,23 @@ export class TeamTabComponent implements OnInit {
     });
   }
 
-  deleteTeamMember(id: number): void {
-    if (!confirm('Are you sure you want to delete this administrator / astrologer account?')) return;
+  async deleteTeamMember(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'கணக்கை நீக்கவா?',
+      message: 'இந்த நிர்வாகி / ஜோதிடர் கணக்கு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/team/${id}`, headers).subscribe({
       next: () => {
-        this.showToast('Administrator account deleted successfully.', 'success', 'கணக்கு நீக்கப்பட்டது');
+        this.showToast('நிர்வாகக் கணக்கு வெற்றிகரமாக நீக்கப்பட்டது.', 'success', 'கணக்கு நீக்கப்பட்டது');
         this.loadTeam();
       },
-      error: () => this.showToast('Failed to delete account.', 'error', 'பிழை ஏற்பட்டது')
+      error: () => this.showToast('கணக்கை நீக்குவதில் பிழை ஏற்பட்டது.', 'error', 'பிழை ஏற்பட்டது')
     });
   }
 
@@ -295,14 +305,20 @@ export class TeamTabComponent implements OnInit {
     });
   }
 
-  deleteAstrologer(astro: any, event?: Event): void {
+  async deleteAstrologer(astro: any, event?: Event): Promise<void> {
     if (event) {
       event.stopPropagation();
     }
     const name = astro.name || 'இந்த ஜோதிடரை';
-    if (!confirm(`"${name}" - இந்த ஜோதிடரை நிச்சயமாக நீக்க வேண்டுமா?`)) {
-      return;
-    }
+    const ok = await this.confirmService.confirm({
+      title: 'ஜோதிடரை நீக்கவா?',
+      message: `"${name}" - இந்த ஜோதிடர் கணக்கை நிச்சயமாக நீக்க வேண்டுமா?`,
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/astrologers/${astro.id}`, headers).subscribe({
       next: () => {

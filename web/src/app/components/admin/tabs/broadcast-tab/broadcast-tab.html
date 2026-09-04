@@ -95,12 +95,20 @@
                 {{ translationService.translateDynamic(item.target_display) }}
               </span>
             </td>
-            <td style="font-weight: 700; color: #0f172a;">{{ translationService.translateDynamic(item.title) }}</td>
+            <td style="font-weight: 700; color: #0f172a;">
+              <span style="display: inline-flex; align-items: center; gap: 8px;">
+                <i class="bi" [ngClass]="getNotificationIcon(item.type)" [style.color]="getNotificationColor(item.type)" style="font-size: 15px;"></i>
+                <span>{{ translationService.translateDynamic(formatNotificationTitle(item.title)) }}</span>
+              </span>
+            </td>
             <td style="max-width: 300px; font-size: 12.5px; color: #475569; line-height: 1.35;">
-              {{ translationService.translateDynamic(item.body || item.message) }}
+              {{ translationService.translateDynamic(formatNotificationBody(item.body || item.message)) }}
             </td>
             <td>
-              <span class="status-badge badge-pending">{{ translationService.translateDynamic(item.type) }}</span>
+              <span class="status-badge badge-pending" style="display: inline-flex; align-items: center; gap: 5px;">
+                <i class="bi" [ngClass]="getNotificationIcon(item.type)" style="font-size: 11px;"></i>
+                {{ translationService.translateDynamic(item.type) }}
+              </span>
             </td>
             <td style="font-size: 12px; color: #64748b; white-space: nowrap;">
               {{ formatDate(item.created_at) }}
