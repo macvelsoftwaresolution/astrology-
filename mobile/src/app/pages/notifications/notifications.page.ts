@@ -284,8 +284,14 @@ export class NotificationsPage implements OnInit {
     });
   }
 
+  cleanTitle(str: string): string {
+    if (!str) return '';
+    return str.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{FE00}-\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
+  }
+
   getNotifIcon(type: string): string {
     const icons: Record<string, string> = {
+      seminar: 'bi-mic-fill',
       booking: 'bi-calendar-check-fill',
       booking_confirmed: 'bi-check-circle-fill',
       booking_fulfilled: 'bi-patch-check-fill',
@@ -303,6 +309,7 @@ export class NotificationsPage implements OnInit {
 
   getNotifCategoryClass(type: string): string {
     const classes: Record<string, string> = {
+      seminar: 'cat-purple',
       booking: 'cat-booking',
       booking_confirmed: 'cat-success',
       booking_fulfilled: 'cat-success',

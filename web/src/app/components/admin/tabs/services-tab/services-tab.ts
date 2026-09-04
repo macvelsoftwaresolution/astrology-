@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
@@ -43,6 +44,7 @@ export class ServicesTabComponent implements OnInit {
     private authService: AuthService,
     public translationService: TranslationService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -214,8 +216,16 @@ export class ServicesTabComponent implements OnInit {
     });
   }
 
-  deleteBooking(id: any): void {
-    if (!confirm(`Are you sure you want to delete booking #${id}?`)) return;
+  async deleteBooking(id: any): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'முன்பதிவை நீக்கவா?',
+      message: `முன்பதிவு #${id}-ஐ நிச்சயமாக நீக்க விரும்புகிறீர்களா?`,
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/bookings/${id}`, headers).subscribe({
       next: (res) => {

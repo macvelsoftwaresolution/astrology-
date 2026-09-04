@@ -66,7 +66,7 @@
             <!-- Content Area -->
             <div class="notif-body">
               <div class="notif-top">
-                <h3 class="notif-title">{{ n.title }}</h3>
+                <h3 class="notif-title">{{ cleanTitle(n.title) }}</h3>
                 <div class="notif-top-actions">
                   @if (!n.is_read) {
                     <span class="unread-pill">புதியது</span>

@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -29,6 +31,8 @@ export class MatchesTabComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
+    private confirmService: ConfirmService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -153,7 +157,7 @@ export class MatchesTabComponent implements OnInit {
       next: (res) => {
         setTimeout(() => {
           this.isSavingReport = false;
-          alert('திருமணப் பொருத்த அறிக்கை வெற்றிகரமாக சேமிக்கப்பட்டு பயனருக்கு அனுப்பப்பட்டது!');
+          this.toastService.success('திருமணப் பொருத்த அறிக்கை வெற்றிகரமாக சேமிக்கப்பட்டு பயனருக்கு அனுப்பப்பட்டது!');
           this.activeView = 'list';
           this.reportingMatch = null;
           this.loadMatches();
@@ -162,7 +166,7 @@ export class MatchesTabComponent implements OnInit {
       error: () => {
         setTimeout(() => {
           this.isSavingReport = false;
-          alert('அறிக்கையைச் சேமிப்பதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+          this.toastService.error('அறிக்கையைச் சேமிப்பதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
         }, 0);
       }
     });
@@ -196,26 +200,35 @@ export class MatchesTabComponent implements OnInit {
           this.editingMatch.admin_status = payload.admin_status;
           this.editingMatch.admin_notes = payload.admin_notes;
           this.editingMatch = null;
+          this.toastService.success('Status updated successfully');
         }
       },
-      error: () => alert('Failed to update status')
+      error: () => this.toastService.error('Failed to update status')
     });
   }
 
-  deleteMatch(id: number): void {
-    if (!confirm('இந்த கோரிக்கையை நிச்சயமாக நீக்க விரும்புகிறீர்களா? (Are you sure you want to delete this?)')) return;
+  async deleteMatch(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'கோரிக்கையை நீக்கவா?',
+      message: 'இந்த திருமணப் பொருத்த கோரிக்கையை நிச்சயமாக நீக்க விரும்புகிறீர்களா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
     
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/marriage-matches/${id}`, headers).subscribe({
       next: (res) => {
         if (res.success) {
+          this.toastService.success('பொருத்த கோரிக்கை வெற்றிகரமாக நீக்கப்பட்டது.');
           this.marriageMatches = this.marriageMatches.filter(m => m.id !== id);
           if (this.selectedMatch && this.selectedMatch.id === id) {
             this.selectedMatch = null;
           }
         }
       },
-      error: () => alert('Failed to delete match')
+      error: () => this.toastService.error('நீக்குவதில் பிழை ஏற்பட்டது.')
     });
   }
 
@@ -246,7 +259,7 @@ export class MatchesTabComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
-        alert('File upload failed.');
+        this.toastService.error('File upload failed.');
       }
     });
   }
@@ -255,13 +268,13 @@ export class MatchesTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.put<any>(`${environment.apiUrl}/admin/marriage-matches/${matchId}`, { result_document: url }, headers).subscribe({
       next: () => {
-        alert('Result document uploaded successfully!');
+        this.toastService.success('Result document uploaded successfully!');
         this.uploadingMatchId = null;
         this.loadMatches();
       },
       error: () => {
         this.isLoading = false;
-        alert('Failed to save result document.');
+        this.toastService.error('Failed to save result document.');
       }
     });
   }

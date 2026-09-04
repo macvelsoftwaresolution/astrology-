@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { RazorpayNativeService } from '../../services/razorpay-native.service';
+import { ToastService } from '../../services/toast.service';
 import { environment } from '../../../environments/environment';
 
 declare var Razorpay: any;
@@ -38,7 +39,8 @@ export class JathagamWritingPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private authService: AuthService,
-    private razorpayService: RazorpayNativeService
+    private razorpayService: RazorpayNativeService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit() {
@@ -120,17 +122,17 @@ export class JathagamWritingPage implements OnInit {
               this.isProcessingPayment = false;
               const msg = err?.message || (typeof err === 'string' ? err : '');
               if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
-                alert('Payment Failed: ' + msg);
+                this.toastService.error('Payment Failed: ' + msg);
               }
             });
         } else {
           this.isProcessingPayment = false;
-          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
+          this.toastService.error('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {
         this.isProcessingPayment = false;
-        alert('Payment initialization failed.');
+        this.toastService.error('Payment initialization failed.');
       }
     });
   }
@@ -165,13 +167,14 @@ export class JathagamWritingPage implements OnInit {
         if (res && res.success) {
           this.bookingRefCode = res.booking_id;
           this.isSuccess = true;
+          this.toastService.success('ஜாதகம் எழுதுதல் பதிவு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது!');
         } else {
-          alert('Failed to save order.');
+          this.toastService.error('Failed to save order.');
         }
       },
       error: () => {
         this.isProcessingPayment = false;
-        alert('Error saving order.');
+        this.toastService.error('Error saving order.');
       }
     });
   }

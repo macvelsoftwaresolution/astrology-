@@ -249,10 +249,13 @@ export class ServicesPageComponent implements OnInit {
     this.selectedDateIsBlocked = astroBlocked.includes(curDate) || this.blockedDates.includes(curDate);
   }
 
+  bookingErrorMessage = '';
+
   submitUserBooking(): void {
     if (!this.selectedService) return;
+    this.bookingErrorMessage = '';
     if (this.selectedDateIsBlocked) {
-      alert('மன்னிக்கவும்! தேர்ந்தெடுக்கப்பட்ட தேதியில் ஜோதிடர் விடுப்பில் உள்ளார். மாற்று தேதியை தேர்வு செய்யவும்.');
+      this.bookingErrorMessage = 'மன்னிக்கவும்! தேர்ந்தெடுக்கப்பட்ட தேதியில் ஜோதிடர் விடுப்பில் உள்ளார். மாற்று தேதியை தேர்வு செய்யவும்.';
       return;
     }
 
@@ -287,7 +290,7 @@ export class ServicesPageComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        alert(err.error?.message || 'முன்பதிவு செய்ய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.');
+        this.bookingErrorMessage = err.error?.message || 'முன்பதிவு செய்ய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
       }
     });
   }

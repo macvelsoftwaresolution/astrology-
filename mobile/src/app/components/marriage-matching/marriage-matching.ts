@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
 import { RazorpayNativeService } from '../../services/razorpay-native.service';
+import { ToastService } from '../../services/toast.service';
 
 declare var Razorpay: any;
 
@@ -183,7 +184,8 @@ export class MarriageMatchingComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     public translationService: TranslationService,
-    private razorpayService: RazorpayNativeService
+    private razorpayService: RazorpayNativeService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit() {
@@ -255,7 +257,7 @@ export class MarriageMatchingComponent implements OnInit {
       },
       error: (err) => {
         console.error('File upload failed', err);
-        alert('Failed to upload file.');
+        this.toastService.error('Failed to upload file.');
       }
     });
   }
@@ -572,24 +574,24 @@ export class MarriageMatchingComponent implements OnInit {
               this.isProcessingPayment = false;
               const msg = err?.message || (typeof err === 'string' ? err : '');
               if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
-                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+                this.toastService.error('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
               }
             });
         } else {
           this.isProcessingPayment = false;
-          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
+          this.toastService.error('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
         }
       },
       error: () => {
         this.isProcessingPayment = false;
-        alert('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
+        this.toastService.error('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
       }
     });
   }
 
   downloadAdminResult() {
     if (!this.currentMatchId) {
-      alert('அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை. காத்திருக்கவும்.');
+      this.toastService.warning('அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை. காத்திருக்கவும்.');
       return;
     }
 
@@ -600,11 +602,11 @@ export class MarriageMatchingComponent implements OnInit {
           // Open the uploaded document
           window.open(res.match.result_document, '_blank');
         } else {
-          alert('அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை. காத்திருக்கவும்.');
+          this.toastService.warning('அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை. காத்திருக்கவும்.');
         }
       },
       error: () => {
-        alert('Server Error: அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை.');
+        this.toastService.error('Server Error: அட்மின் இன்னும் விவரங்களை பதிவேற்றவில்லை.');
       }
     });
   }
@@ -670,17 +672,17 @@ export class MarriageMatchingComponent implements OnInit {
               this.isProcessingPayment = false;
               const msg = err?.message || (typeof err === 'string' ? err : '');
               if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
-                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+                this.toastService.error('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
               }
             });
         } else {
           this.isProcessingPayment = false;
-          alert('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
+          this.toastService.error('Razorpay ஆர்டர் உருவாக்குவதில் பிழை');
         }
       },
       error: () => {
         this.isProcessingPayment = false;
-        alert('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
+        this.toastService.error('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
       }
     });
   }
@@ -693,13 +695,14 @@ export class MarriageMatchingComponent implements OnInit {
         this.submittingToAdmin = false;
         if (res.success) {
           this.serviceStep = 3;
+          this.toastService.success('வரன் பதிவு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது!');
         } else {
-          alert('பதிவு செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+          this.toastService.error('பதிவு செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
         }
       },
       error: () => {
         this.submittingToAdmin = false;
-        alert('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
+        this.toastService.error('நெட்வொர்க் பிழை. மீண்டும் முயற்சிக்கவும்.');
       }
     });
   }

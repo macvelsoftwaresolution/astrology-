@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 export interface Metrics {
@@ -51,6 +52,7 @@ export class OverviewTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -182,8 +184,16 @@ export class OverviewTabComponent implements OnInit {
     });
   }
 
-  deleteBanner(id: number): void {
-    if (!confirm('Are you sure you want to delete this banner?')) return;
+  async deleteBanner(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'பேனரை நீக்கவா?',
+      message: 'இந்த முகப்பு பேனர் விளம்பரம் நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/banners/${id}`, headers).subscribe({
       next: () => {

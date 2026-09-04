@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -58,6 +59,7 @@ export class CourierTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -179,8 +181,15 @@ export class CourierTabComponent implements OnInit {
     try { this.cdr.detectChanges(); } catch {}
   }
 
-  deleteBook(book: any): void {
-    if (!confirm(`Are you sure you want to delete the book "${book.title}"?`)) return;
+  async deleteBook(book: any): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'புத்தகத்தை நீக்கவா?',
+      message: `"${book.title}" என்ற புத்தகத்தை நிச்சயமாக நீக்க விரும்புகிறீர்களா?`,
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
 
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/books/${book.id}`, headers).subscribe({

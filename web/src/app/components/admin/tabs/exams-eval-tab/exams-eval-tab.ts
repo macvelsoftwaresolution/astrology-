@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
+import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
 
@@ -26,6 +28,8 @@ export class ExamsEvalTabComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   public translationService = inject(TranslationService);
+  private toastService = inject(ToastService);
+  private confirmService = inject(ConfirmService);
   private cdr = inject(ChangeDetectorRef);
 
   activeView: 'list' | 'exam-wizard' | 'evaluation' | 'leaderboard' | 'analytics' = 'list';
@@ -340,7 +344,7 @@ export class ExamsEvalTabComponent implements OnInit {
       },
       error: () => {
         this.isUploadingChart = false;
-        alert('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
+        this.toastService.error('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
         this.cdr?.markForCheck();
       }
     });
@@ -388,7 +392,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   saveExam(): void {
     if (!this.activeExamWizard.title) {
-      alert('தயவுசெய்து தேர்வின் தலைப்பை உள்ளிடவும்.');
+      this.toastService.warning('தயவுசெய்து தேர்வின் தலைப்பை உள்ளிடவும்.', 'விவரங்கள் தேவை');
       return;
     }
     const headers = this.authService.getAuthHeaders();
@@ -414,25 +418,34 @@ export class ExamsEvalTabComponent implements OnInit {
 
     request$.subscribe({
       next: (res: any) => {
-        alert(res?.message || 'தேர்வு வெற்றிகரமாக சேமிக்கப்பட்டது!');
+        this.toastService.success(res?.message || 'தேர்வு வெற்றிகரமாக சேமிக்கப்பட்டது!');
         if (!isEdit && res?.exam_id) {
           this.activeExamWizard.id = res.exam_id;
         }
         this.loadExams();
       },
-      error: (err) => alert(err?.error?.message || 'தேர்வை சேமிப்பதில் பிழை ஏற்பட்டது.')
+      error: (err) => this.toastService.error(err?.error?.message || 'தேர்வை சேமிப்பதில் பிழை ஏற்பட்டது.')
     });
   }
 
-  deleteExam(id: number): void {
-    if (!confirm('இந்த தேர்வை நீக்க விரும்புகிறீர்களா?')) return;
+  async deleteExam(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'தேர்வை நீக்கவா?',
+      message: 'இந்த தேர்வு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/exams/${id}`, headers).subscribe({
       next: () => {
+        this.toastService.success('தேர்வு நீக்கப்பட்டது.');
         this.loadExams();
         if (this.activeView === 'exam-wizard') this.activeView = 'list';
       },
-      error: () => alert('தேர்வை நீக்குவதில் பிழை ஏற்பட்டது.')
+      error: () => this.toastService.error('தேர்வை நீக்குவதில் பிழை ஏற்பட்டது.')
     });
   }
 
@@ -453,7 +466,7 @@ export class ExamsEvalTabComponent implements OnInit {
       },
       error: () => {
         this.isUploadingChart = false;
-        alert('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
+        this.toastService.error('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
         this.cdr?.markForCheck();
       }
     });
@@ -462,7 +475,7 @@ export class ExamsEvalTabComponent implements OnInit {
   async ensureExamSaved(): Promise<boolean> {
     if (this.activeExamWizard.id) return true;
     if (!this.activeExamWizard.title) {
-      alert('தயவுசெய்து தேர்வின் தலைப்பை (Title) உள்ளிடவும்.');
+      this.toastService.warning('தயவுசெய்து தேர்வின் தலைப்பை (Title) உள்ளிடவும்.', 'விவரங்கள் தேவை');
       return false;
     }
     const headers = this.authService.getAuthHeaders();
@@ -484,7 +497,7 @@ export class ExamsEvalTabComponent implements OnInit {
         return true;
       }
     } catch (e: any) {
-      alert(e?.error?.message || 'தேர்வை சேமிப்பதில் பிழை ஏற்பட்டது.');
+      this.toastService.error(e?.error?.message || 'தேர்வை சேமிப்பதில் பிழை ஏற்பட்டது.');
       return false;
     }
     return false;
@@ -492,7 +505,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   async addQuestion(): Promise<void> {
     if (!this.newQuestion.question_text.trim()) {
-      alert('தயவுசெய்து வினாவின் கேள்வியை உள்ளிடவும்.');
+      this.toastService.warning('தயவுசெய்து வினாவின் கேள்வியை உள்ளிடவும்.', 'விவரங்கள் தேவை');
       return;
     }
 
@@ -501,7 +514,7 @@ export class ExamsEvalTabComponent implements OnInit {
       .filter(t => t.length > 0);
 
     if (filledOptions.length < 2) {
-      alert('குறைந்தது 2 விருப்பங்களுக்கு (Options) விடையை உள்ளிடவும்.');
+      this.toastService.warning('குறைந்தது 2 விருப்பங்களுக்கு (Options) விடையை உள்ளிடவும்.', 'விவரங்கள் தேவை');
       return;
     }
 
@@ -524,6 +537,7 @@ export class ExamsEvalTabComponent implements OnInit {
       next: (res) => {
         if (!this.activeExamWizard.questions) this.activeExamWizard.questions = [];
         this.activeExamWizard.questions.push({ ...payload, id: res.question_id });
+        this.toastService.success('வினா சேர்க்கப்பட்டது!');
         this.newQuestion = {
           type: 'mcq',
           question_text: '',
@@ -537,13 +551,13 @@ export class ExamsEvalTabComponent implements OnInit {
         };
         this.cdr?.markForCheck();
       },
-      error: () => alert('வினாவை சேர்ப்பதில் பிழை.')
+      error: () => this.toastService.error('வினாவை சேர்ப்பதில் பிழை.')
     });
   }
 
   addDynamicOption(): void {
     if (this.newQuestion.optionsList.length >= 8) {
-      alert('அதிகபட்சம் 8 விருப்பங்கள் மட்டுமே சேர்க்க முடியும்.');
+      this.toastService.warning('அதிகபட்சம் 8 விருப்பங்கள் மட்டுமே சேர்க்க முடியும்.', 'வரம்பு');
       return;
     }
     this.newQuestion.optionsList.push({ text: '', is_correct: false });
@@ -551,7 +565,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   removeDynamicOption(index: number): void {
     if (this.newQuestion.optionsList.length <= 2) {
-      alert('குறைந்தது 2 விருப்பங்கள் (Options) இருக்க வேண்டும்.');
+      this.toastService.warning('குறைந்தது 2 விருப்பங்கள் (Options) இருக்க வேண்டும்.', 'வரம்பு');
       return;
     }
     const wasCorrect = this.newQuestion.optionsList[index].is_correct;
@@ -589,9 +603,10 @@ export class ExamsEvalTabComponent implements OnInit {
     this.http.delete<any>(`${environment.apiUrl}/questions/${id}`, headers).subscribe({
       next: () => {
         this.activeExamWizard.questions.splice(idx, 1);
+        this.toastService.success('வினா நீக்கப்பட்டது.');
         this.cdr?.markForCheck();
       },
-      error: () => alert('வினாவை நீக்குவதில் பிழை.')
+      error: () => this.toastService.error('வினாவை நீக்குவதில் பிழை.')
     });
   }
 
@@ -633,7 +648,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   async uploadCsvQuestions(): Promise<void> {
     if (!this.csvFileToUpload) {
-      alert('தயவுசெய்து CSV கோப்பை தேர்வு செய்யவும்.');
+      this.toastService.warning('தயவுசெய்து CSV கோப்பை தேர்வு செய்யவும்.', 'கோப்பு தேவை');
       return;
     }
     const saved = await this.ensureExamSaved();
@@ -644,10 +659,10 @@ export class ExamsEvalTabComponent implements OnInit {
     const headers = this.authService.getUploadHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/import-csv`, formData, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'CSV வினாக்கள் வெற்றிகரமாக பதிவேற்றப்பட்டன!');
+        this.toastService.success(res.message || 'CSV வினாக்கள் வெற்றிகரமாக பதிவேற்றப்பட்டன!');
         this.loadExams();
       },
-      error: (err) => alert(err?.error?.message || 'CSV பதிவேற்றுவதில் பிழை.')
+      error: (err) => this.toastService.error(err?.error?.message || 'CSV பதிவேற்றுவதில் பிழை.')
     });
   }
 
@@ -684,16 +699,23 @@ export class ExamsEvalTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/submissions/${this.selectedSubmissionForGrading.id}/evaluate`, this.gradingForm, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'மதிப்பீடு வெற்றிகரமாக சேமிக்கப்பட்டது!');
+        this.toastService.success(res.message || 'மதிப்பீடு வெற்றிகரமாக சேமிக்கப்பட்டது!');
         this.selectedSubmissionForGrading = null;
         this.loadSubmissions();
       },
-      error: () => alert('மதிப்பீட்டை சேமிப்பதில் பிழை.')
+      error: () => this.toastService.error('மதிப்பீட்டை சேமிப்பதில் பிழை.')
     });
   }
 
-  issueCertificateForStudent(sub: any): void {
-    if (!confirm(`${sub.student_name} அவர்களுக்கு டிஜிட்டல் சான்றிதழ் உருவாக்க விரும்புகிறீர்களா?`)) return;
+  async issueCertificateForStudent(sub: any): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'டிஜிட்டல் சான்றிதழ் உருவாக்கவா?',
+      message: `${sub.student_name} அவர்களுக்கு டிஜிட்டல் சான்றிதழ் உருவாக்க விரும்புகிறீர்களா?`,
+      confirmText: 'ஆம், உருவாக்கு',
+      type: 'primary',
+      icon: 'bi bi-award-fill'
+    });
+    if (!ok) return;
 
     const headers = this.authService.getAuthHeaders();
     const payload = {
@@ -708,34 +730,50 @@ export class ExamsEvalTabComponent implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/admin/certificates`, payload, headers).subscribe({
       next: (res) => {
-        alert(res.message || `சான்றிதழ் வெற்றிகரமாக உருவாக்கப்பட்டது! எண்: ${res.certificate?.certificate_number || 'ASTRO-CERT'}`);
+        this.toastService.success(res.message || `சான்றிதழ் வெற்றிகரமாக உருவாக்கப்பட்டது! எண்: ${res.certificate?.certificate_number || 'ASTRO-CERT'}`);
         this.loadSubmissions();
       },
-      error: () => alert('சான்றிதழ் உருவாக்குவதில் பிழை.')
+      error: () => this.toastService.error('சான்றிதழ் உருவாக்குவதில் பிழை.')
     });
   }
 
-  publishBatchResults(): void {
-    if (!confirm('இந்த பேட்ச் மாணவர்களுக்கான தேர்வு முடிவுகளை வெளியிட விரும்புகிறீர்களா? (Publish Batch Results)')) return;
+  async publishBatchResults(): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'முடிவுகளை வெளியிடவா?',
+      message: 'இந்த பேட்ச் மாணவர்களுக்கான தேர்வு முடிவுகளை வெளியிட விரும்புகிறீர்களா? (Publish Batch Results)',
+      confirmText: 'ஆம், வெளியிடு',
+      type: 'warning',
+      icon: 'bi bi-megaphone-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/submissions/publish-batch`, { batch_id: this.selectedBatchId }, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'தேர்வு முடிவுகள் வெற்றிகரமாக வெளியிடப்பட்டன!');
+        this.toastService.success(res.message || 'தேர்வு முடிவுகள் வெற்றிகரமாக வெளியிடப்பட்டன!');
         this.loadSubmissions();
       },
-      error: () => alert('முடிவுகளை வெளியிடுவதில் பிழை.')
+      error: () => this.toastService.error('முடிவுகளை வெளியிடுவதில் பிழை.')
     });
   }
 
-  deleteSubmission(id: number): void {
-    if (!confirm('இந்த தேர்வு சமர்ப்பிப்பை நீக்க விரும்புகிறீர்களா? (Delete this submission?)')) return;
+  async deleteSubmission(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'சமர்ப்பிப்பை நீக்கவா?',
+      message: 'இந்த தேர்வு சமர்ப்பிப்பை நீக்க விரும்புகிறீர்களா? (Delete this submission?)',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/submissions/${id}`, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'சமர்ப்பிப்பு நீக்கப்பட்டது.');
+        this.toastService.success(res.message || 'சமர்ப்பிப்பு நீக்கப்பட்டது.');
         this.loadSubmissions();
       },
-      error: () => alert('நீக்குவதில் பிழை.')
+      error: () => this.toastService.error('நீக்குவதில் பிழை.')
     });
   }
 }

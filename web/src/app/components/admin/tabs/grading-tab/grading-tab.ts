@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -51,6 +53,8 @@ export class GradingTabComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
+    private confirmService: ConfirmService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -137,12 +141,12 @@ export class GradingTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/submissions/${this.selectedSubmissionForGrading.id}/evaluate`, this.gradingForm, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Exam evaluated and certificate issued successfully!');
+        this.toastService.success(res.message || 'Exam evaluated and certificate issued successfully!');
         this.selectedSubmissionForGrading = null;
         this.loadSubmissions();
         this.loadIssuedCertificates();
       },
-      error: () => alert('Failed to evaluate exam.')
+      error: () => this.toastService.error('Failed to evaluate exam.')
     });
   }
 
@@ -193,12 +197,13 @@ export class GradingTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url) {
           this.directCertForm.pdf_download_url = res.url;
+          this.toastService.success('Certificate file uploaded successfully!');
         }
         this.isUploadingFile = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        alert('Upload failed: ' + (err.error?.message || 'Server error'));
+        this.toastService.error('Upload failed: ' + (err.error?.message || 'Server error'));
         this.isUploadingFile = false;
         this.cdr.markForCheck();
       }
@@ -218,12 +223,13 @@ export class GradingTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url) {
           this.directMarksheetForm.marksheet_download_url = res.url;
+          this.toastService.success('Mark sheet file uploaded successfully!');
         }
         this.isUploadingFile = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        alert('Upload failed: ' + (err.error?.message || 'Server error'));
+        this.toastService.error('Upload failed: ' + (err.error?.message || 'Server error'));
         this.isUploadingFile = false;
         this.cdr.markForCheck();
       }
@@ -232,46 +238,55 @@ export class GradingTabComponent implements OnInit {
 
   submitDirectCertificate(): void {
     if (!this.directCertForm.student_id || !this.directCertForm.pdf_download_url) {
-      alert('Please select a student and upload the Certificate PDF file.');
+      this.toastService.warning('Please select a student and upload the Certificate PDF file.', 'விவரங்கள் தேவை');
       return;
     }
 
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/certificates`, this.directCertForm, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Certificate issued and uploaded successfully!');
+        this.toastService.success(res.message || 'Certificate issued and uploaded successfully!');
         this.showUploadForm = false;
         this.loadIssuedCertificates();
       },
-      error: (err) => alert(err.error?.message || 'Failed to issue certificate.')
+      error: (err) => this.toastService.error(err.error?.message || 'Failed to issue certificate.')
     });
   }
 
   submitDirectMarksheet(): void {
     if (!this.directMarksheetForm.student_id || !this.directMarksheetForm.marksheet_download_url) {
-      alert('Please select a student and upload the Mark Sheet PDF file.');
+      this.toastService.warning('Please select a student and upload the Mark Sheet PDF file.', 'விவரங்கள் தேவை');
       return;
     }
 
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/marksheets`, this.directMarksheetForm, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Mark Sheet issued and uploaded successfully!');
+        this.toastService.success(res.message || 'Mark Sheet issued and uploaded successfully!');
         this.showUploadForm = false;
         this.loadIssuedCertificates();
       },
-      error: (err) => alert(err.error?.message || 'Failed to issue mark sheet.')
+      error: (err) => this.toastService.error(err.error?.message || 'Failed to issue mark sheet.')
     });
   }
 
-  deleteCertificate(id: number): void {
-    if (!confirm('Are you sure you want to delete this record?')) return;
+  async deleteCertificate(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'பதிவை நீக்கவா?',
+      message: 'இந்த சான்றிதழ் / மதிப்பெண் பதிவை நிச்சயமாக நீக்க விரும்புகிறீர்களா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/certificates/${id}`, headers).subscribe({
       next: () => {
+        this.toastService.success('பதிவு நீக்கப்பட்டது.');
         this.loadIssuedCertificates();
       },
-      error: () => alert('Failed to delete.')
+      error: () => this.toastService.error('நீக்குவதில் பிழை.')
     });
   }
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { ToastService } from '../../services/toast.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -46,8 +47,9 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    public translationService: TranslationService
-  ) {}
+    public translationService: TranslationService,
+    private toastService: ToastService
+  ) { }
 
   get currentLang(): LanguageCode {
     return this.translationService.currentLanguage();
@@ -76,10 +78,10 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     // Initial avatar preload from storage/user session immediately
-    const cachedAvatar = localStorage.getItem('astro_user_avatar') || 
-                         localStorage.getItem('astro_student_avatar') || 
-                         this.authService.getCurrentUser()?.profileImage || 
-                         (this.authService.getCurrentUser() as any)?.avatar_url || '';
+    const cachedAvatar = localStorage.getItem('astro_user_avatar') ||
+      localStorage.getItem('astro_student_avatar') ||
+      this.authService.getCurrentUser()?.profileImage ||
+      (this.authService.getCurrentUser() as any)?.avatar_url || '';
     if (cachedAvatar) {
       this.personDetails.profileImageUrl = cachedAvatar;
       this.editForm.profileImageUrl = cachedAvatar;
@@ -233,7 +235,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
             try {
               localStorage.setItem('astro_user_avatar', res.avatar_url);
               localStorage.setItem('astro_student_avatar', res.avatar_url);
-            } catch (err) {}
+            } catch (err) { }
             const u = this.authService.getCurrentUser();
             if (u) {
               u.profileImage = res.avatar_url;
@@ -294,7 +296,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
       try {
         localStorage.setItem('astro_user_avatar', e.target.result);
         localStorage.setItem('astro_student_avatar', e.target.result);
-      } catch (err) {}
+      } catch (err) { }
       if (this.currentUser) {
         this.currentUser.profileImage = e.target.result;
         (this.currentUser as any).avatar_url = e.target.result;
@@ -318,7 +320,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           try {
             localStorage.setItem('astro_user_avatar', res.url);
             localStorage.setItem('astro_student_avatar', res.url);
-          } catch (err) {}
+          } catch (err) { }
           if (this.currentUser) {
             this.currentUser.profileImage = res.url;
             (this.currentUser as any).avatar_url = res.url;
@@ -413,7 +415,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           sessionStorage.setItem('astro_auth_user', JSON.stringify(this.currentUser));
         }
       },
-      error: () => {}
+      error: () => { }
     });
 
     setTimeout(() => {
@@ -446,8 +448,8 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getHoroscopes(): any[] {
-    return this.bookingsList.filter(b => 
-      b.service?.toLowerCase().includes('jathagam') || 
+    return this.bookingsList.filter(b =>
+      b.service?.toLowerCase().includes('jathagam') ||
       b.service?.includes('ஜாதகம்') ||
       b.parigaram ||
       b.parigaram_document
@@ -482,17 +484,17 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
 
   async downloadMatchPDF(match: any) {
     if (!match.report_data || match.report_data === 'null' || match.report_data === '{}') {
-      alert('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
+      this.toastService.warning('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
       return;
     }
 
     if (typeof match.report_data === 'string') {
       match.report_data = this.safeJsonParse(match.report_data);
     }
-    
+
     this.pdfMatch = match;
     this.cdr.detectChanges();
-    
+
     setTimeout(async () => {
       const element = document.getElementById('hidden-pdf-report');
       if (element) {
@@ -512,27 +514,37 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
         try {
           let html2pdf = (window as any).html2pdf;
           if (!html2pdf) {
-            const mod: any = await import('html2pdf.js');
-            html2pdf = mod?.default || mod;
+            try {
+              const mod: any = await (Function('return import("html2pdf.js")')());
+              html2pdf = mod?.default || mod;
+            } catch {
+              html2pdf = null;
+            }
           }
           if (html2pdf) {
             const opt: any = {
-              margin:       10,
-              filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
-              image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+              margin: 10,
+              filename: `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             await html2pdf().set(opt).from(clone).save();
-            document.body.removeChild(clone);
+            this.toastService.success('PDF அறிக்கை பதிவிறக்கம் செய்யப்படுகிறது...');
+            if (clone.parentNode) clone.parentNode.removeChild(clone);
           } else if (match.result_document) {
-            document.body.removeChild(clone);
+            if (clone.parentNode) clone.parentNode.removeChild(clone);
             window.open(match.result_document, '_blank');
           }
+          if (clone.parentNode) clone.parentNode.removeChild(clone);
         } catch (error) {
           console.error('Error generating PDF', error);
-          document.body.removeChild(clone);
-          alert('Error generating PDF.');
+          if (clone.parentNode) clone.parentNode.removeChild(clone);
+          if (match.result_document) {
+            window.open(match.result_document, '_blank');
+          } else {
+            this.toastService.error('Error generating PDF.');
+          }
         }
       }
     }, 150);

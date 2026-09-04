@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -21,7 +22,8 @@ export class LearnCertificateComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -35,18 +37,26 @@ export class LearnCertificateComponent implements OnInit {
 
   loadCertificates() {
     this.isLoading = true;
-    const headers = { headers: { Authorization: `Bearer ${this.token}` } };
+    const token = this.token;
+    const headers = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
     this.http.get<any>(`${environment.apiUrl}/user/certificates`, headers).subscribe({
       next: (res) => {
         if (res && res.certificates && Array.isArray(res.certificates)) {
           this.certificates = res.certificates;
           if (this.certificates.length > 0) {
             this.selectedCert = this.certificates[0];
+          } else {
+            this.selectedCert = null;
           }
+        } else {
+          this.certificates = [];
+          this.selectedCert = null;
         }
         this.isLoading = false;
       },
       error: () => {
+        this.certificates = [];
+        this.selectedCert = null;
         this.isLoading = false;
       }
     });
@@ -54,6 +64,10 @@ export class LearnCertificateComponent implements OnInit {
 
   selectCertificate(cert: any) {
     this.selectedCert = cert;
+  }
+
+  get studentName(): string {
+    return this.selectedCert?.student_name || this.currentUser?.name || this.currentUser?.fullName || this.enrollForm?.fullName || '';
   }
 
   get hasCertificateDoc(): boolean {
@@ -65,42 +79,43 @@ export class LearnCertificateComponent implements OnInit {
   get hasMarksheetDoc(): boolean {
     if (!this.selectedCert) return false;
     const cert = this.selectedCert;
-    return !!(cert.marksheet_download_url || cert.marksheet_url);
+    return !!(cert.marksheet_download_url || cert.marksheet_url || cert.marksheet_number);
   }
 
   downloadCertificate(cert?: any) {
     const target = cert || this.selectedCert;
     const fileUrl = target?.pdf_download_url || target?.cert_pdf_url || target?.pdf_url || target?.file_url || target?.url || '';
-    const name = target?.course_title || 'Certificate';
+    const name = target?.course_title || '';
     this.downloadDocument(fileUrl, name);
   }
 
   shareCertificate(cert?: any) {
     const target = cert || this.selectedCert;
     const fileUrl = target?.pdf_download_url || target?.cert_pdf_url || target?.pdf_url || target?.file_url || target?.url || '';
-    const name = target?.course_title || 'Certificate';
+    const name = target?.course_title || '';
     this.shareDocument(fileUrl, name);
   }
 
   downloadMarksheet(cert?: any) {
     const target = cert || this.selectedCert;
     const fileUrl = target?.marksheet_download_url || target?.marksheet_url || '';
-    const name = (target?.course_title || 'Marksheet') + ' Marksheet';
+    const name = target?.course_title ? `${target.course_title} Marksheet` : '';
     this.downloadDocument(fileUrl, name);
   }
 
   shareMarksheet(cert?: any) {
     const target = cert || this.selectedCert;
     const fileUrl = target?.marksheet_download_url || target?.marksheet_url || '';
-    const name = (target?.course_title || 'Marksheet') + ' Marksheet';
+    const name = target?.course_title ? `${target.course_title} Marksheet` : '';
     this.shareDocument(fileUrl, name);
   }
 
-  downloadDocument(docUrl: string, fallbackName: string) {
+  downloadDocument(docUrl: string, docName: string) {
     if (docUrl) {
       window.open(docUrl, '_blank');
     } else {
-      alert(`${fallbackName} பதிவிறக்க இணைப்பு கிடைக்கவில்லை (Download link not available)`);
+      const prefix = docName ? `${docName} ` : '';
+      this.toastService.warning(`${prefix}பதிவிறக்க இணைப்பு கிடைக்கவில்லை (Download link not available)`);
     }
   }
 
@@ -115,10 +130,10 @@ export class LearnCertificateComponent implements OnInit {
     } else {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
-          alert('இணைப்பு நகலெடுக்கப்பட்டது (Link copied to clipboard)');
+          this.toastService.success('இணைப்பு நகலெடுக்கப்பட்டது (Link copied to clipboard)');
         });
       } else {
-        alert(url);
+        this.toastService.info(url);
       }
     }
   }

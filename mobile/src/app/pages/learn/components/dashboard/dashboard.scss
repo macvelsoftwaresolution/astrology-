@@ -3758,9 +3758,12 @@ $color-orange: #F49320;
       &:active {
         background: #E2E8F0;
       }
+    }
+  }
+}
 
-      /* ================= VIDEO THEATRE MODAL ================= */
-      .video-theatre-modal-backdrop {
+/* ================= VIDEO THEATRE MODAL ================= */
+.video-theatre-modal-backdrop {
         position: fixed;
         inset: 0;
         background: rgba(15, 23, 42, 0.82);
@@ -3997,6 +4000,3 @@ $color-orange: #F49320;
           }
         }
       }
-    }
-  }
-}

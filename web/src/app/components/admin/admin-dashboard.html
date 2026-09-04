@@ -87,7 +87,7 @@
         (click)="setLanguage('ta')"
         title="தமிழ் மொழி"
       >
-        🇮🇳 தமிழ்
+        <i class="bi bi-translate me-1"></i> தமிழ்
       </button>
       <button 
         type="button" 
@@ -96,7 +96,7 @@
         (click)="setLanguage('en')"
         title="English Language"
       >
-        🇬🇧 English
+        <i class="bi bi-globe2 me-1"></i> English
       </button>
     </div>
 
@@ -468,6 +468,36 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  }
+
+  <!-- =========================================================
+       GLOBAL LUXURY CONFIRMATION MODAL DIALOG (ALL ADMIN TABS)
+       ========================================================= -->
+  @if (confirmData.show) {
+    <div class="admin-confirm-overlay" (click)="confirmService.handleDecision(false)">
+      <div class="admin-confirm-card" (click)="$event.stopPropagation()">
+        <div class="admin-confirm-icon-halo" 
+          [class.danger]="confirmData.type === 'danger'" 
+          [class.warning]="confirmData.type === 'warning'" 
+          [class.primary]="confirmData.type === 'primary'">
+          <i [class]="confirmData.icon || 'bi bi-trash3-fill'"></i>
+        </div>
+        <h3 class="admin-confirm-title">{{ confirmData.title }}</h3>
+        <p class="admin-confirm-message">{{ confirmData.message }}</p>
+        <div class="admin-confirm-actions">
+          <button type="button" class="btn-confirm-cancel" (click)="confirmService.handleDecision(false)">
+            <i class="bi bi-x-lg me-1"></i> {{ confirmData.cancelText || 'ரத்து' }}
+          </button>
+          <button type="button" class="btn-confirm-action" 
+            [class.danger]="confirmData.type === 'danger'" 
+            [class.warning]="confirmData.type === 'warning'" 
+            [class.primary]="confirmData.type === 'primary'" 
+            (click)="confirmService.handleDecision(true)">
+            <i class="bi bi-check2 me-1"></i> {{ confirmData.confirmText || 'ஆம், தொடர்க' }}
+          </button>
+        </div>
       </div>
     </div>
   }
