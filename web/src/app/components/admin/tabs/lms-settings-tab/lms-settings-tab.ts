@@ -22,9 +22,9 @@ export class LmsSettingsTabComponent implements OnInit {
   ilanilaiFee: number = 2500;
   mudhunilaiFee: number = 3500;
   vilakaurai: string = '';
+  rulesText: string = '';
   
   topics: ListItem[] = [];
-  rules: ListItem[] = [];
 
   isSaving: boolean = false;
   saveMsg: string = '';
@@ -83,13 +83,30 @@ export class LmsSettingsTabComponent implements OnInit {
       }
     });
 
-    // Load Rules
-    this.http.get<any>(`${environment.apiUrl}/settings/lms_rules_list`, headers).subscribe({
+    // Load Rules Text
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_rules_text`, headers).subscribe({
       next: (res) => {
         if (res && res.value) {
-          try {
-            this.rules = JSON.parse(res.value);
-          } catch(e) {}
+          this.rulesText = res.value;
+        } else {
+          // Fallback to lms_rules_list if lms_rules_text not saved yet
+          this.http.get<any>(`${environment.apiUrl}/settings/lms_rules_list`, headers).subscribe({
+            next: (listRes) => {
+              if (listRes && listRes.value) {
+                try {
+                  const parsed = JSON.parse(listRes.value);
+                  if (Array.isArray(parsed) && parsed.length > 0) {
+                    this.rulesText = parsed.map((r: any) => r.title ? `${r.title}\n${r.desc || ''}` : (r.desc || '')).join('\n\n');
+                  } else if (typeof listRes.value === 'string') {
+                    this.rulesText = listRes.value;
+                  }
+                } catch(e) {
+                  this.rulesText = listRes.value;
+                }
+              }
+              this.cdr.detectChanges();
+            }
+          });
         }
         this.cdr.detectChanges();
       }
@@ -104,14 +121,6 @@ export class LmsSettingsTabComponent implements OnInit {
     this.topics.splice(index, 1);
   }
 
-  addRule() {
-    this.rules.push({ title: '', desc: '' });
-  }
-
-  removeRule(index: number) {
-    this.rules.splice(index, 1);
-  }
-
   saveSettings(): void {
     this.isSaving = true;
     const headers = this.authService.getAuthHeaders();
@@ -120,9 +129,10 @@ export class LmsSettingsTabComponent implements OnInit {
     const pFee2 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_mudhunilai_fee`, { value: String(this.mudhunilaiFee || 3500) }, headers).toPromise();
     const p1 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_vilakaurai`, { value: this.vilakaurai }, headers).toPromise();
     const p2 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_topics`, { value: JSON.stringify(this.topics) }, headers).toPromise();
-    const p3 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_list`, { value: JSON.stringify(this.rules) }, headers).toPromise();
+    const p3 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_text`, { value: this.rulesText }, headers).toPromise();
+    const p4 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_list`, { value: JSON.stringify([{ title: '', desc: this.rulesText }]) }, headers).toPromise();
 
-    Promise.all([pFee1, pFee2, p1, p2, p3]).then(() => {
+    Promise.all([pFee1, pFee2, p1, p2, p3, p4]).then(() => {
       this.isSaving = false;
       this.saveMsg = 'அமைப்புகள் வெற்றிகரமாக சேமிக்கப்பட்டன! (Settings saved successfully)';
       this.cdr.detectChanges();

@@ -5,10 +5,19 @@
     <p class="rules-subheading">{{ 'learn.rulesSubheading' | translate }}</p>
   </div>
 
-  <div class="rules-list" *ngIf="rules && rules.length > 0">
+  <!-- Single Rules Textarea display -->
+  <div class="rules-list" *ngIf="rulesText">
+    <div class="vilakkavurai-card" style="white-space: pre-line;">
+      <div class="card-bg-icon"><i class="bi bi-shield-check"></i></div>
+      <p class="vilakkavurai-text" style="margin: 0;">{{ rulesText }}</p>
+    </div>
+  </div>
+
+  <!-- Fallback Array Rules display -->
+  <div class="rules-list" *ngIf="!rulesText && rules && rules.length > 0">
     <div class="vilakkavurai-card" *ngFor="let rule of rules">
       <div class="card-bg-icon"><i class="bi bi-shield-check"></i></div>
-      <strong>{{ rule.title }}</strong>
+      <strong *ngIf="rule.title">{{ rule.title }}</strong>
       <p class="vilakkavurai-text">{{ rule.desc }}</p>
     </div>
   </div>

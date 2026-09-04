@@ -298,38 +298,68 @@ class LmsCurriculumController extends Controller
 
         $courseLevel = $jathagam['courseLevel'] ?? 'ilanilai';
 
-        // 1. Get assigned student batch from database
-        $activeBatch = null;
-        if ($student && $student->batch_id) {
-            $activeBatch = CourseBatch::find($student->batch_id);
-        }
-        if (!$activeBatch && $user && $user->batch_id) {
-            $activeBatch = CourseBatch::find($user->batch_id);
+        // Determine student's registration date
+        $regDate = $student?->created_at ?? $user?->created_at ?? now();
+        $year    = (int) $regDate->format('Y');
+        $month   = (int) $regDate->format('m');
+
+        // Determine Quarter based on registration month:
+        // Jan-Mar => Q1, Apr-Jun => Q2, Jul-Sep => Q3, Oct-Dec => Q4
+        if ($month >= 1 && $month <= 3) {
+            $quarter = 'Q1';
+        } elseif ($month >= 4 && $month <= 6) {
+            $quarter = 'Q2';
+        } elseif ($month >= 7 && $month <= 9) {
+            $quarter = 'Q3';
+        } else {
+            $quarter = 'Q4';
         }
 
-        // 2. Fallback to active batch for this course level
-        if (!$activeBatch) {
-            $activeBatch = CourseBatch::where('course_level', $courseLevel)
-                ->where('status', 'active')
-                ->orderBy('id', 'asc')
+        // 1. Strict Batch Resolution for Student
+        $studentBatch = null;
+
+        // If student already has explicit batch_id in DB, check if valid
+        if ($student && $student->batch_id) {
+            $studentBatch = CourseBatch::find($student->batch_id);
+        }
+        if (!$studentBatch && $user && $user->batch_id) {
+            $studentBatch = CourseBatch::find($user->batch_id);
+        }
+
+        // If no explicit batch assigned, find matching quarter batch by registration date & level
+        if (!$studentBatch) {
+            $studentBatch = CourseBatch::where('year', $year)
+                ->where('course_level', $courseLevel)
+                ->where('quarter', $quarter)
                 ->first();
         }
 
-        if (!$activeBatch) {
-            // Fallback to first available batch
-            $activeBatch = CourseBatch::where('course_level', $courseLevel)->first();
+        // If batch doesn't exist in DB yet, auto-seed and find it
+        if (!$studentBatch) {
+            $this->getAdminBatches(new Request(['year' => $year, 'level' => $courseLevel]));
+            $studentBatch = CourseBatch::where('year', $year)
+                ->where('course_level', $courseLevel)
+                ->where('quarter', $quarter)
+                ->first();
         }
 
-        if (!$activeBatch) {
-            // Auto seed if completely empty
-            $this->getAdminBatches(new Request(['year' => date('Y'), 'level' => $courseLevel]));
-            $activeBatch = CourseBatch::where('course_level', $courseLevel)->first();
+        // Auto-assign batch_id to student record so student stays locked to their batch
+        if ($studentBatch) {
+            if ($student && !$student->batch_id) {
+                $student->update(['batch_id' => $studentBatch->id]);
+            }
+            if ($user && !$user->batch_id) {
+                $user->update(['batch_id' => $studentBatch->id]);
+            }
         }
 
-        $curriculum = DailyCurriculum::where('batch_id', $activeBatch->id)
-            ->where('is_published', true)
-            ->orderBy('day_number', 'asc')
-            ->get();
+        // 2. Fetch ONLY published lessons created for THIS student's batch
+        $curriculum = $studentBatch
+            ? DailyCurriculum::where('batch_id', $studentBatch->id)
+                ->where('is_published', true)
+                ->orderBy('day_number', 'asc')
+                ->get()
+            : collect([]);
 
         // Get student completed day IDs
         $completedDayIds = [];

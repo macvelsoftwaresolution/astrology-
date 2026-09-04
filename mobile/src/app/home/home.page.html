@@ -284,10 +284,7 @@
       <div class="form-dual-grid">
         <div class="form-input-card">
           <label>{{ 'astrology.dob' | translate }}</label>
-          <div class="input-inner-wrap">
-            <span class="input-icon"><i class="bi bi-calendar-event"></i></span>
-            <input type="date" name="bookingDob" [(ngModel)]="astrologerBookingForm.dob" class="custom-native-date">
-          </div>
+          <app-segmented-dob [(value)]="astrologerBookingForm.dob"></app-segmented-dob>
         </div>
         <div class="form-input-card">
           <label>{{ 'astrology.tob' | translate }}</label>

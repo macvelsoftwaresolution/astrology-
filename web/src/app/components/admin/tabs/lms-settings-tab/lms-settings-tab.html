@@ -58,31 +58,16 @@
         [placeholder]="'lmsSettings.vilakauraiPlaceholder' | translate"></textarea>
     </div>
 
-    <!-- Rules Dynamic List -->
+    <!-- Rules & Regulations Textarea -->
     <div class="form-group" style="margin-bottom: 28px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <label style="font-weight: 700; color: #1e293b; display: block; font-size: 16px;">
-          <i class="bi bi-shield-check me-1" style="color: #d97706;"></i> {{ 'lmsSettings.rulesTitle' | translate }}
-        </label>
-        <button class="btn-primary" style="font-size: 13px; padding: 8px 16px; border-radius: 8px;" (click)="addRule()">
-          <i class="bi bi-plus-circle me-1"></i> {{ 'lmsSettings.addRule' | translate }}
-        </button>
-      </div>
-
-      @for (rule of rules; track $index) {
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px; margin-bottom: 14px; display: flex; gap: 14px; align-items: flex-start;">
-          <div style="flex: 1;">
-            <input type="text" [(ngModel)]="rule.title" [placeholder]="'lmsSettings.ruleTitlePlaceholder' | translate" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px; font-weight: 700; font-size: 14px;">
-            <textarea [(ngModel)]="rule.desc" rows="5" [placeholder]="'lmsSettings.ruleDescPlaceholder' | translate" style="width: 100%; min-height: 110px; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 14px; line-height: 1.5; font-family: inherit; resize: vertical;"></textarea>
-          </div>
-          <button (click)="removeRule($index)" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s;" title="Remove Rule">
-            <i class="bi bi-trash-fill"></i>
-          </button>
-        </div>
-      }
-      @if (rules.length === 0) {
-        <p style="color: #94a3b8; font-size: 13px; font-style: italic;">{{ 'lmsSettings.noRules' | translate }}</p>
-      }
+      <label style="font-weight: 700; color: #1e293b; display: block; margin-bottom: 10px; font-size: 16px;">
+        <i class="bi bi-shield-check me-1" style="color: #d97706;"></i> {{ 'lmsSettings.rulesTitle' | translate }}
+      </label>
+      <textarea 
+        [(ngModel)]="rulesText" 
+        rows="10" 
+        style="width: 100%; min-height: 220px; padding: 14px 16px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; line-height: 1.6; font-family: inherit; resize: vertical;" 
+        [placeholder]="'lmsSettings.rulesPlaceholder' | translate"></textarea>
     </div>
 
     <div style="text-align: right; border-top: 1px solid #e2e8f0; padding-top: 20px;">
