@@ -427,6 +427,12 @@ class JathagamController extends Controller
             $updateData['result_document'] = $request->input('result_document');
         }
 
+        if ($request->has('report_data')) {
+            $updateData['report_data'] = is_string($request->input('report_data')) 
+                ? $request->input('report_data') 
+                : json_encode($request->input('report_data'));
+        }
+
         DB::table('marriage_matches')
             ->where('id', $id)
             ->update($updateData);
