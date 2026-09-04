@@ -478,6 +478,47 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     return null;
   }
 
+  pdfMatch: any = null;
+
+  async downloadMatchPDF(match: any) {
+    if (!match.report_data || match.report_data === 'null' || match.report_data === '{}') {
+      if (match.result_document) {
+        window.open(match.result_document, '_blank');
+      } else {
+        alert('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
+      }
+      return;
+    }
+
+    if (typeof match.report_data === 'string') {
+      match.report_data = this.safeJsonParse(match.report_data);
+    }
+    
+    this.pdfMatch = match;
+    this.cdr.detectChanges();
+    
+    setTimeout(async () => {
+      const element = document.getElementById('hidden-pdf-report');
+      if (element) {
+        try {
+          const html2pdf = (await import('html2pdf.js')).default;
+          const opt: any = {
+            margin:       10,
+            filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          
+          await html2pdf().set(opt).from(element).save();
+        } catch (error) {
+          console.error('Error generating PDF', error);
+          if (match.result_document) window.open(match.result_document, '_blank');
+        }
+      }
+    }, 150);
+  }
+
   logout() {
     this.authService.logout('astrology');
     this.router.navigate(['/welcome'], { replaceUrl: true });

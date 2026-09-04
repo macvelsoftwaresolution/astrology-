@@ -14,12 +14,37 @@ class FileUploadController extends Controller
      */
     public function upload(Request $request)
     {
+        @ini_set('upload_max_filesize', '40M');
+        @ini_set('post_max_size', '40M');
+        @ini_set('memory_limit', '256M');
+
+        $file = $request->file('file');
+        if (!$file) {
+            return response()->json(['message' => 'No file uploaded.'], 400);
+        }
+
+        $mime = strtolower($file->getMimeType() ?: '');
+        $ext = strtolower($file->getClientOriginalExtension() ?: '');
+
+        // Dynamic file size limits according to requirements:
+        // Audio: Max 10MB (10240 KB)
+        // Video: Max 25MB (25600 KB)
+        // PDF: Max 15MB (15360 KB)
+        // Others: Max 10MB (10240 KB)
+        $maxKb = 10240; // Default 10MB
+        if (str_starts_with($mime, 'audio/') || in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg'])) {
+            $maxKb = 10240; // 10 MB for Audio
+        } elseif (str_starts_with($mime, 'video/') || in_array($ext, ['mp4', 'mkv', 'avi', 'mov', 'webm'])) {
+            $maxKb = 25600; // 25 MB for Video
+        } elseif ($mime === 'application/pdf' || $ext === 'pdf') {
+            $maxKb = 15360; // 15 MB for PDF
+        }
+
         $request->validate([
-            'file' => 'required|file|max:102400', // max 100MB
+            'file' => "required|file|max:{$maxKb}",
             'folder' => 'nullable|string'
         ]);
 
-        $file = $request->file('file');
         $folder = $request->input('folder', 'uploads');
         $folder = preg_replace('/[^a-zA-Z0-9_\-]/', '', $folder) ?: 'uploads';
 

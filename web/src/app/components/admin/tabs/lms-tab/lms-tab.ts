@@ -291,6 +291,15 @@ export class LmsTabComponent implements OnInit {
   uploadAudioItem(event: any, index: number): void {
     const file = event.target?.files?.[0];
     if (!file || !this.editingDayLesson) return;
+
+    // Audio max limit: 10 MB
+    const maxAudioSize = 10 * 1024 * 1024;
+    if (file.size > maxAudioSize) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      alert(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`);
+      return;
+    }
+
     this.isUploadingDayAudio = true;
     const formData = new FormData();
     formData.append('file', file);
@@ -304,8 +313,12 @@ export class LmsTabComponent implements OnInit {
         this.isUploadingDayAudio = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        alert('Audio upload failed.');
+      error: (err) => {
+        if (err?.status === 413) {
+          alert('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!');
+        } else {
+          alert('Audio upload failed.');
+        }
         this.isUploadingDayAudio = false;
         this.cdr.detectChanges();
       }
@@ -340,6 +353,15 @@ export class LmsTabComponent implements OnInit {
   uploadPdfItem(event: any, index: number): void {
     const file = event.target?.files?.[0];
     if (!file || !this.editingDayLesson) return;
+
+    // PDF max limit: 15 MB
+    const maxPdfSize = 15 * 1024 * 1024;
+    if (file.size > maxPdfSize) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      alert(`தேர்ந்தெடுக்கப்பட்ட PDF கோப்பு ${sizeMb} MB உள்ளது! 15 MB-க்குள் இருக்கும் PDF கோப்பைத் தேர்ந்தெடுக்கவும்.`);
+      return;
+    }
+
     this.isUploadingDayPdf = true;
     const formData = new FormData();
     formData.append('file', file);
@@ -353,8 +375,12 @@ export class LmsTabComponent implements OnInit {
         this.isUploadingDayPdf = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        alert('PDF upload failed.');
+      error: (err) => {
+        if (err?.status === 413) {
+          alert('413 Request Entity Too Large: PDF கோப்பின் அளவு சேவையக எல்லைக்கு (15 MB) அதிகமாக உள்ளது!');
+        } else {
+          alert('PDF upload failed.');
+        }
         this.isUploadingDayPdf = false;
         this.cdr.detectChanges();
       }
