@@ -246,7 +246,7 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
 
   submitPracticalExam() {
     if (!this.uploadedAnswerUrl) {
-      alert('தயவுசெய்து உங்கள் விடைத்தாளை (Image அல்லது PDF) பதிவேற்றவும்.');
+      this.uploadErrorMessage = 'தயவுசெய்து உங்கள் விடைத்தாளை (Image அல்லது PDF) பதிவேற்றவும்.';
       return;
     }
 

@@ -306,28 +306,82 @@ class SuperAdminController extends Controller
         $timeStr = $seminar->time_text ?? '';
         $dateStr = $seminar->date_text ?? '';
 
-        // Check if time range has end time, e.g. " - 07:30" or " - 19:30"
-        if (preg_match('/-\s*(\d{1,2}):(\d{2})\s*(AM|PM|மாலை|காலை|இரவு)?/ui', $timeStr, $matches)) {
-            $hour = (int)$matches[1];
-            $min = (int)$matches[2];
+        $today = now()->format('Y-m-d');
+        $isToday = str_contains(mb_strtolower($dateStr), 'இன்று') 
+            || str_contains(mb_strtolower($dateStr), 'today') 
+            || str_contains($dateStr, $today);
+
+        // Check for specific past date
+        if (!$isToday && preg_match('/(\d{4}-\d{2}-\d{2})|(\d{2}[-\/]\d{2}[-\/]\d{4})/', $dateStr, $dateMatches)) {
+            try {
+                $parsedDate = \Carbon\Carbon::parse($dateMatches[0]);
+                if ($parsedDate->isPast() && !$parsedDate->isToday()) {
+                    return 'past';
+                }
+            } catch (\Exception $e) {
+                // Ignore date parse errors and continue
+            }
+        }
+
+        // Parse Start Time and End Time e.g. "மாலை 06:00 - 07:30" or "18:00 - 19:30" or "06:00 PM - 07:30 PM"
+        if ($isToday && preg_match('/(?:(?:மாலை|காலை|இரவு|AM|PM)\s*)?(\d{1,2}):(\d{2})\s*(?:AM|PM|மாலை|காலை|இரவு)?\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM|மாலை|காலை|இரவு)?/ui', $timeStr, $matches)) {
+            $startHour = (int)$matches[1];
+            $startMin  = (int)$matches[2];
+            $endHour   = (int)$matches[3];
+            $endMin    = (int)$matches[4];
+            $meridiem  = mb_strtolower($matches[5] ?? '');
+
+            $isPm = str_contains($meridiem, 'pm') || str_contains($meridiem, 'மாலை') || str_contains($meridiem, 'இரவு')
+                || str_contains(mb_strtolower($timeStr), 'மாலை') || str_contains(mb_strtolower($timeStr), 'இரவு');
+
+            if ($isPm) {
+                if ($startHour < 12) $startHour += 12;
+                if ($endHour < 12)   $endHour += 12;
+            }
+
+            $now = now();
+            $nowMinutes = ((int)$now->format('H') * 60) + (int)$now->format('i');
+            $startMinutes = ($startHour * 60) + $startMin;
+            $endMinutes   = ($endHour * 60) + $endMin;
+
+            // Past: Meeting end time has passed
+            if ($nowMinutes >= $endMinutes) {
+                return 'past';
+            }
+
+            // Live: Current time is within 15 mins before start time up to end time
+            if ($nowMinutes >= ($startMinutes - 15) && $nowMinutes < $endMinutes) {
+                return 'live';
+            }
+
+            // If Admin explicitly marked status as 'live', honor it
+            if ($seminar->status === 'live') {
+                return 'live';
+            }
+
+            // Otherwise upcoming
+            return 'upcoming';
+        }
+
+        // Fallback for end time check
+        if ($isToday && preg_match('/-\s*(\d{1,2}):(\d{2})\s*(AM|PM|மாலை|காலை|இரவு)?/ui', $timeStr, $matches)) {
+            $endHour = (int)$matches[1];
+            $endMin = (int)$matches[2];
             $meridiem = mb_strtolower($matches[3] ?? '');
 
             $isPm = str_contains($meridiem, 'pm') || str_contains($meridiem, 'மாலை') || str_contains($meridiem, 'இரவு')
                 || str_contains(mb_strtolower($timeStr), 'மாலை') || str_contains(mb_strtolower($timeStr), 'இரவு');
 
-            if ($isPm && $hour < 12) {
-                $hour += 12;
+            if ($isPm && $endHour < 12) {
+                $endHour += 12;
             }
 
-            $today = now()->format('Y-m-d');
-            $isToday = str_contains(mb_strtolower($dateStr), 'இன்று') || str_contains(mb_strtolower($dateStr), 'today') || str_contains($dateStr, $today);
+            $now = now();
+            $nowMinutes = ((int)$now->format('H') * 60) + (int)$now->format('i');
+            $endMinutes = ($endHour * 60) + $endMin;
 
-            if ($isToday) {
-                $nowHour = (int)now()->format('H');
-                $nowMin = (int)now()->format('i');
-                if ($nowHour > $hour || ($nowHour === $hour && $nowMin > $min)) {
-                    return 'past';
-                }
+            if ($nowMinutes >= $endMinutes) {
+                return 'past';
             }
         }
 
@@ -360,7 +414,7 @@ class SuperAdminController extends Controller
         // Automatic notification creation on publish/save
         if ($seminar && $seminar->status !== 'past') {
             NotificationController::broadcastToUsers(
-                "🎙️ புதிய கருத்தரங்கம்: " . $seminar->title,
+                "புதிய கருத்தரங்கம்: " . $seminar->title,
                 ($seminar->speaker ? "வழங்குபவர்: {$seminar->speaker} | " : "") . "நேரம்: {$seminar->date_text} {$seminar->time_text}",
                 'seminar',
                 [

@@ -921,6 +921,44 @@ export class LmsTabComponent implements OnInit {
     this.activeView = 'seminar-studio';
   }
 
+  setSeminarDatePreset(preset: 'today' | 'tomorrow' | 'sunday' | 'next_sunday'): void {
+    if (!this.editingSeminar) return;
+    const now = new Date();
+    if (preset === 'today') {
+      this.editingSeminar.date_text = 'இன்று';
+    } else if (preset === 'tomorrow') {
+      this.editingSeminar.date_text = 'நாளை';
+    } else if (preset === 'sunday') {
+      const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
+      const sun = new Date(now.getTime() + daysUntilSunday * 24 * 60 * 60 * 1000);
+      const d = String(sun.getDate()).padStart(2, '0');
+      const m = String(sun.getMonth() + 1).padStart(2, '0');
+      this.editingSeminar.date_text = `${d}-${m}-${sun.getFullYear()} (ஞாயிறு)`;
+    } else if (preset === 'next_sunday') {
+      const daysUntilSunday = ((7 - now.getDay()) % 7 || 7) + 7;
+      const sun = new Date(now.getTime() + daysUntilSunday * 24 * 60 * 60 * 1000);
+      const d = String(sun.getDate()).padStart(2, '0');
+      const m = String(sun.getMonth() + 1).padStart(2, '0');
+      this.editingSeminar.date_text = `${d}-${m}-${sun.getFullYear()} (ஞாயிறு)`;
+    }
+  }
+
+  onSeminarDatePickerChange(event: any): void {
+    if (!this.editingSeminar || !event.target.value) return;
+    const selectedDate = new Date(event.target.value);
+    const dayNames = ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
+    const dayName = dayNames[selectedDate.getDay()];
+    const d = String(selectedDate.getDate()).padStart(2, '0');
+    const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const y = selectedDate.getFullYear();
+    this.editingSeminar.date_text = `${d}-${m}-${y} (${dayName})`;
+  }
+
+  setSeminarTimePreset(preset: string): void {
+    if (!this.editingSeminar) return;
+    this.editingSeminar.time_text = preset;
+  }
+
   isUploadingSeminarVideo = false;
 
   uploadSeminarVideo(event: any): void {

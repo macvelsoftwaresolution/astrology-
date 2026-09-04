@@ -140,9 +140,19 @@
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <strong>{{ ex.title }}</strong>
             @if (isExamSubmitted(ex.id)) {
-              <span style="background: #dcfce7; color: #166534; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #bbf7d0;">
-                ✓ முடிந்தது ({{ getExamScore(ex.id) }}%)
-              </span>
+              @if (isExamApproved(ex.id)) {
+                <span style="background: #dcfce7; color: #166534; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #bbf7d0; display: inline-flex; align-items: center; gap: 4px;">
+                  <i class="bi bi-check-circle-fill"></i> தேர்ச்சி ({{ getExamScore(ex.id) }}%)
+                </span>
+              } @else if (isExamRejected(ex.id)) {
+                <span style="background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #fecaca; display: inline-flex; align-items: center; gap: 4px;">
+                  <i class="bi bi-exclamation-circle-fill"></i> மறுமதிப்பீடு
+                </span>
+              } @else {
+                <span style="background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #fde68a; display: inline-flex; align-items: center; gap: 4px;">
+                  <i class="bi bi-clock-history"></i> மதிப்பீட்டில் (Under Review)
+                </span>
+              }
             }
           </div>
           <span>{{ ex.questions?.length || 0 }} Questions • {{ ex.duration }} Mins</span>
@@ -172,11 +182,11 @@
     <div class="home-card-body p-0">
       <div class="webinar-slider-wrap">
         @for (s of seminars; track s.title) {
-        <div class="webinar-card-item" [class.is-live]="s.status === 'live'" (click)="openMeeting(s.join_url, s.status, s)">
+        <div class="webinar-card-item" [class.is-live]="isSeminarLive(s)" (click)="openMeeting(s.join_url, s.status, s)">
           <div class="sem-badge-row">
-            @if (s.status === 'live') {
+            @if (isSeminarLive(s)) {
               <span class="sem-status-pill live"><i class="bi bi-broadcast me-1"></i> {{ 'learn.liveTag' | translate }}</span>
-            } @else if (s.status === 'past') {
+            } @else if (isSeminarPast(s)) {
               <span class="sem-status-pill ended"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.endedTag' | translate }}</span>
             } @else {
               <span class="sem-status-pill upcoming"><i class="bi bi-clock-fill me-1"></i> {{ 'learn.scheduledTag' | translate }}</span>
@@ -199,11 +209,11 @@
           </div>
 
           <div class="sem-action-row">
-            @if (s.status === 'live') {
+            @if (isSeminarLive(s)) {
               <button class="sem-btn live-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
                 <i class="bi bi-play-circle-fill me-1"></i> {{ 'learn.joinLive' | translate }}
               </button>
-            } @else if (s.status === 'past') {
+            } @else if (isSeminarPast(s)) {
               <button class="sem-btn past-btn" (click)="openMeeting(s.join_url, s.status, s); $event.stopPropagation()">
                 <i class="bi bi-file-earmark-play me-1"></i> {{ 'learn.watchRecording' | translate }}
               </button>
@@ -960,7 +970,19 @@
     </div>
     <div class="video-player-body">
       @if (activeSeminarVideo.recording_video_url) {
-        <video [src]="activeSeminarVideo.recording_video_url" controls autoplay style="width:100%; border-radius: 12px; max-height: 280px; background:#000; box-shadow: 0 4px 14px rgba(0,0,0,0.25);"></video>
+        @if (isYouTubeUrl(activeSeminarVideo.recording_video_url)) {
+          <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
+            <iframe 
+              [src]="getSafeVideoUrl(activeSeminarVideo.recording_video_url)" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen 
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;">
+            </iframe>
+          </div>
+        } @else {
+          <video [src]="activeSeminarVideo.recording_video_url" controls autoplay style="width:100%; border-radius: 12px; max-height: 280px; background:#000; box-shadow: 0 4px 14px rgba(0,0,0,0.25);"></video>
+        }
       } @else {
         <div class="no-video-placeholder" style="text-align: center; padding: 24px 12px; background: #f8fafc; border-radius: 12px;">
           <i class="bi bi-film" style="font-size: 2.5rem; color: #94a3b8; display: block; margin-bottom: 8px;"></i>
@@ -977,6 +999,210 @@
         {{ 'common.close' | translate }}
       </button>
     </div>
+  </div>
+</div>
+}
+
+<!-- ================= COMPLETED EXAM STATUS LUXURY MODAL ================= -->
+@if (showCompletedExamModal && selectedCompletedExam) {
+<div class="exam-status-modal-overlay" (click)="closeCompletedExamModal()">
+  <div class="exam-status-modal-card" (click)="$event.stopPropagation()">
+    
+    <!-- Top Decorative Header Banner -->
+    <div class="esm-top-banner" 
+         [class.passed]="selectedCompletedExam.isApproved && selectedCompletedExam.isPassed" 
+         [class.pending]="selectedCompletedExam.isPending"
+         [class.rejected]="selectedCompletedExam.isRejected">
+      <button class="esm-close-btn" (click)="closeCompletedExamModal()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="esm-badge-ring">
+        @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
+          <div class="esm-icon-circle passed">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+        } @else if (selectedCompletedExam.isRejected) {
+          <div class="esm-icon-circle rejected">
+            <i class="bi bi-x-circle-fill"></i>
+          </div>
+        } @else {
+          <div class="esm-icon-circle pending">
+            <i class="bi bi-clock-history"></i>
+          </div>
+        }
+      </div>
+
+      <h3 class="esm-title">
+        @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
+          தேர்வில் வெற்றி பெற்றுள்ளீர்கள்!
+        } @else if (selectedCompletedExam.isRejected) {
+          மறுமதிப்பீடு தேவை
+        } @else {
+          விடைத்தாள் சமர்ப்பிக்கப்பட்டது
+        }
+      </h3>
+      <p class="esm-subtitle">
+        {{ selectedCompletedExam.exam?.title || 'ஜோதிடத் தேர்வு' }}
+      </p>
+    </div>
+
+    <!-- Modal Body Content -->
+    <div class="esm-body">
+      <!-- One-time attempt notice pill -->
+      <div class="esm-notice-pill">
+        <i class="bi bi-info-circle-fill"></i>
+        @if (selectedCompletedExam.isApproved) {
+          <span>நிர்வாகி உங்கள் விடைத்தாளை மதிப்பீடு செய்து முடிவுகளை வெளியிட்டுள்ளார்.</span>
+        } @else {
+          <span>உங்கள் தேர்வு சமர்ப்பிக்கப்பட்டது. நிர்வாகி மதிப்பீடு செய்து முடிவுகளை வெளியிடும் வரை காத்திருக்கவும்.</span>
+        }
+      </div>
+
+      <!-- Key Stats Grid -->
+      <div class="esm-stats-grid">
+        <div class="esm-stat-card">
+          <span class="esm-stat-label">மதிப்பெண் (Score)</span>
+          @if (selectedCompletedExam.isApproved) {
+            <span class="esm-stat-value text-gold">{{ selectedCompletedExam.score }}%</span>
+          } @else {
+            <span class="esm-stat-value text-amber" style="font-size: 0.92rem; display: flex; align-items: center; justify-content: center; gap: 5px;">
+              <i class="bi bi-clock-history"></i> மதிப்பீட்டில்...
+            </span>
+          }
+        </div>
+        <div class="esm-stat-card">
+          <span class="esm-stat-label">நிலை (Status)</span>
+          @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
+            <span class="esm-stat-value text-success">
+              <i class="bi bi-check-circle-fill me-1"></i>தேர்ச்சி (PASSED)
+            </span>
+          } @else if (selectedCompletedExam.isRejected) {
+            <span class="esm-stat-value text-danger">
+              <i class="bi bi-x-circle-fill me-1"></i>தோல்வி (Failed)
+            </span>
+          } @else {
+            <span class="esm-stat-value text-amber" style="font-size: 0.88rem;">
+              <i class="bi bi-clock-history me-1"></i>மதிப்பீட்டில் (Pending)
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Detail Info Rows -->
+      <div class="esm-details-list">
+        <div class="esm-detail-row">
+          <span class="esm-d-label"><i class="bi bi-calendar3 me-1"></i> சமர்ப்பித்த தேதி:</span>
+          <span class="esm-d-val">{{ (selectedCompletedExam.submittedAt | date:'dd MMM yyyy, hh:mm a') || 'சமீபத்தில்' }}</span>
+        </div>
+        <div class="esm-detail-row">
+          <span class="esm-d-label"><i class="bi bi-award me-1"></i> தேர்ச்சி வரம்பு:</span>
+          <span class="esm-d-val">{{ selectedCompletedExam.passMark }}% மதிப்பெண்</span>
+        </div>
+        @if (selectedCompletedExam.isApproved) {
+          @if (selectedCompletedExam.mcqScore !== null && selectedCompletedExam.mcqScore !== undefined) {
+          <div class="esm-detail-row">
+            <span class="esm-d-label"><i class="bi bi-list-check me-1"></i> கொள்குறி மதிப்பெண் (MCQ):</span>
+            <span class="esm-d-val font-bold text-dark">{{ selectedCompletedExam.mcqScore }}%</span>
+          </div>
+          }
+          @if (selectedCompletedExam.practicalScore !== null && selectedCompletedExam.practicalScore !== undefined) {
+          <div class="esm-detail-row">
+            <span class="esm-d-label"><i class="bi bi-pencil-fill me-1"></i> செய்முறை மதிப்பெண்:</span>
+            <span class="esm-d-val font-bold text-dark">{{ selectedCompletedExam.practicalScore }}%</span>
+          </div>
+          }
+        } @else {
+          <div class="esm-detail-row">
+            <span class="esm-d-label"><i class="bi bi-shield-check me-1"></i> ஆசிரியர் மதிப்பீடு:</span>
+            <span class="esm-d-val font-bold text-amber">நடைபெற்று வருகிறது (In Progress)</span>
+          </div>
+        }
+        @if (selectedCompletedExam.notes) {
+        <div class="esm-detail-row" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+          <span class="esm-d-label"><i class="bi bi-chat-quote-fill me-1"></i> நிர்வாகி குறிப்பு:</span>
+          <span class="esm-d-val" style="font-size: 0.8rem; color: #475569;">{{ selectedCompletedExam.notes }}</span>
+        </div>
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="esm-actions">
+        @if (selectedCompletedExam.isApproved && selectedCompletedExam.isPassed) {
+          <button type="button" class="esm-cert-btn" (click)="closeCompletedExamModal(); setTab('profile')">
+            <i class="bi bi-award-fill me-1"></i> சான்றிதழ் காண்க (View Certificate)
+          </button>
+        }
+        <button type="button" class="esm-ok-btn" (click)="closeCompletedExamModal()">
+          சரி (OK)
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+}
+
+<!-- ================= RECORDED SEMINAR VIDEO PLAYER MODAL ================= -->
+@if (showSeminarVideoModal && activeSeminarVideo) {
+<div class="exam-submit-modal-backdrop" (click)="closeSeminarVideoModal()" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(6px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+  <div class="exam-submit-modal-card" (click)="$event.stopPropagation()" style="background: #ffffff; width: 100%; max-width: 520px; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid #e2e8f0; animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+    
+    <!-- Modal Header -->
+    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; color: #fff;">
+      <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(217, 119, 6, 0.2); border: 1px solid #d97706; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 1.1rem; flex-shrink: 0;">
+          <i class="bi bi-play-circle-fill"></i>
+        </div>
+        <div style="overflow: hidden;">
+          <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ activeSeminarVideo.title || 'கருத்தரங்க பதிவு' }}
+          </h3>
+          <span style="font-size: 0.75rem; color: #94a3b8; display: block;">
+            <i class="bi bi-person-fill me-1"></i> {{ activeSeminarVideo.speaker || ('learn.defaultSpeaker' | translate) }}
+          </span>
+        </div>
+      </div>
+      <button type="button" (click)="closeSeminarVideoModal()" style="background: rgba(255, 255, 255, 0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; flex-shrink: 0; transition: background 0.2s;">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Video Player Screen -->
+    <div style="background: #000; width: 100%; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center;">
+      @if (isYouTubeUrl(activeSeminarVideo.recording_video_url)) {
+        <iframe [src]="getSafeVideoUrl(activeSeminarVideo.recording_video_url)"
+                style="width: 100%; height: 100%; border: none;"
+                allowfullscreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+      } @else if (activeSeminarVideo.recording_video_url) {
+        <video [src]="activeSeminarVideo.recording_video_url"
+               controls
+               autoplay
+               playsinline
+               style="width: 100%; height: 100%; object-fit: contain; outline: none;">
+        </video>
+      } @else {
+        <div style="text-align: center; color: #94a3b8; padding: 20px;">
+          <i class="bi bi-film" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+          <span style="font-size: 0.85rem;">வீடியோ கிடைக்கவில்லை</span>
+        </div>
+      }
+    </div>
+
+    <!-- Video Info Footer -->
+    <div style="padding: 14px 18px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <div style="font-size: 0.78rem; color: #64748b; display: flex; align-items: center; gap: 6px;">
+        <i class="bi bi-check-circle-fill text-success"></i>
+        <span>வகுப்பு பதிவு (Class Recording)</span>
+      </div>
+      <button type="button" (click)="closeSeminarVideoModal()" style="background: #475569; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i class="bi bi-check2"></i> முடிந்தது (Close)
+      </button>
+    </div>
+
   </div>
 </div>
 }

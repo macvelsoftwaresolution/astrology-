@@ -429,7 +429,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.currentUser = res.user;
           this.authService.setUser(res.user);
         }
-        this.adminProfileSuccessMsg = '✅ சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!';
+        this.adminProfileSuccessMsg = 'சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!';
         this.cdr.detectChanges();
         setTimeout(() => {
           this.adminProfileModalOpen = false;
