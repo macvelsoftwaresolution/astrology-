@@ -64,8 +64,9 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   cleanTitle(title: string): string {
-    if (!title) return 'ஜோதிட ஆலோசனை';
-    return title.replace(/\(\(/g, '(').replace(/\)\)/g, ')').trim();
+    if (!title) return this.currentLang === 'en' ? 'Astrology Consultation' : 'ஜோதிட ஆலோசனை';
+    const normalized = title.replace(/\(\(/g, '(').replace(/\)\)/g, ')').trim();
+    return this.translationService.cleanText(normalized, this.currentLang);
   }
 
   get token() {

@@ -106,6 +106,20 @@ export class LandingComponent implements OnInit, AfterViewInit {
     }
   }
 
+  parseNallaSessions(val: string): { morning: string; evening: string } {
+    if (!val) return { morning: '', evening: '' };
+    const sessions = val.split('/');
+    let morning = '';
+    let evening = '';
+    if (sessions[0]) {
+      morning = sessions[0].replace(/\(.*?\)/g, '').trim();
+    }
+    if (sessions[1]) {
+      evening = sessions[1].replace(/\(.*?\)/g, '').trim();
+    }
+    return { morning, evening };
+  }
+
   loadLivePanchangam() {
     if (typeof window === 'undefined') return;
     this.http.get<any>(`${environment.apiUrl}/panchangam/today`).subscribe({
@@ -113,11 +127,16 @@ export class LandingComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
           if (res && res.panchangam) {
             const p = res.panchangam;
+            let nalla = p.nalla_neram || p.nallaNeram || '';
+            nalla = nalla.replace(/Morning/gi, 'காலை').replace(/Evening/gi, 'மாலை');
+            const sessions = this.parseNallaSessions(p.nalla_neram || p.nallaNeram || '');
             this.panchangam = {
               date: p.date ? this.formatDate(p.date) : '',
               thithi: p.thithi || '',
               star: p.star || '',
-              nallaNeram: p.nalla_neram || p.nallaNeram || '',
+              nallaNeram: nalla,
+              nallaMorning: sessions.morning,
+              nallaEvening: sessions.evening,
               rahukalam: p.rahukalam || '',
               yamagandam: p.yamagandam || '',
               sunrise: p.sunrise || '',
@@ -131,6 +150,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
               thithi: '',
               star: '',
               nallaNeram: '',
+              nallaMorning: '',
+              nallaEvening: '',
               rahukalam: '',
               yamagandam: ''
             };
@@ -217,6 +238,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
     thithi: '',
     star: '',
     nallaNeram: '',
+    nallaMorning: '',
+    nallaEvening: '',
     rahukalam: '',
     yamagandam: ''
   };

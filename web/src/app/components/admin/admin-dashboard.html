@@ -488,14 +488,14 @@
         <p class="admin-confirm-message">{{ confirmData.message }}</p>
         <div class="admin-confirm-actions">
           <button type="button" class="btn-confirm-cancel" (click)="confirmService.handleDecision(false)">
-            <i class="bi bi-x-lg me-1"></i> {{ confirmData.cancelText || 'ரத்து' }}
+            <i class="bi bi-x-lg me-1"></i> {{ confirmData.cancelText || (translationService.currentLanguage() === 'ta' ? 'ரத்து' : 'Cancel') }}
           </button>
           <button type="button" class="btn-confirm-action" 
             [class.danger]="confirmData.type === 'danger'" 
             [class.warning]="confirmData.type === 'warning'" 
             [class.primary]="confirmData.type === 'primary'" 
             (click)="confirmService.handleDecision(true)">
-            <i class="bi bi-check2 me-1"></i> {{ confirmData.confirmText || 'ஆம், தொடர்க' }}
+            <i class="bi bi-check2 me-1"></i> {{ confirmData.confirmText || (translationService.currentLanguage() === 'ta' ? 'ஆம், தொடர்க' : 'Yes, Continue') }}
           </button>
         </div>
       </div>

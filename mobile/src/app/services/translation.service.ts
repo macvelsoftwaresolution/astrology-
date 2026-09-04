@@ -78,7 +78,7 @@ export class TranslationService {
     }
 
     if (result !== undefined && typeof result === 'string') {
-      return result;
+      return this.cleanText(result, lang);
     }
 
     // Fallback to English if key missing in current language
@@ -93,11 +93,43 @@ export class TranslationService {
         }
       }
       if (enResult !== undefined && typeof enResult === 'string') {
-        return enResult;
+        return this.cleanText(enResult, lang);
       }
     }
 
-    return fallback !== undefined ? fallback : key;
+    // Fallback to Tamil if key missing in English
+    if (lang !== 'ta' && this.translations['ta']) {
+      let taResult: any = this.translations['ta'];
+      for (const k of keys) {
+        if (taResult && typeof taResult === 'object' && k in taResult) {
+          taResult = taResult[k];
+        } else {
+          taResult = undefined;
+          break;
+        }
+      }
+      if (taResult !== undefined && typeof taResult === 'string') {
+        return this.cleanText(taResult, lang);
+      }
+    }
+
+    const raw = fallback !== undefined ? fallback : key;
+    return this.cleanText(raw, lang);
+  }
+
+  public cleanText(text: string, lang: LanguageCode): string {
+    if (!text || typeof text !== 'string') return '';
+    if (lang === 'ta') {
+      // PURE TAMIL: strip any English inside brackets
+      return text.replace(/\s*\([A-Za-z\s0-9#\-_:.\/\\+*&]+\)/g, '').trim();
+    } else {
+      // PURE ENGLISH: if Tamil prefix with English brackets like "ரத்து (Cancel)" or "சேமி (Save)"
+      const match = text.match(/[\u0B80-\u0BFF]+[^(]*\(([^)]+)\)/);
+      if (match && match[1] && /[A-Za-z]/.test(match[1])) {
+        return match[1].trim();
+      }
+      return text;
+    }
   }
 
   public t(key: string, fallback?: string): string {

@@ -1,10 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ToastController } from '@ionic/angular';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToastService {
+  private translationService = inject(TranslationService, { optional: true });
+
   constructor(private toastCtrl: ToastController) {}
 
   async show(
@@ -13,8 +16,16 @@ export class ToastService {
     duration: number = 3500
   ) {
     try {
+      const isTa = this.translationService ? this.translationService.currentLanguage() === 'ta' : true;
+      let cleanMessage = message || '';
+
+      // Clean mixed language in brackets
+      if (this.translationService) {
+        cleanMessage = this.translationService.cleanText(cleanMessage, isTa ? 'ta' : 'en');
+      }
+
       const toast = await this.toastCtrl.create({
-        message,
+        message: cleanMessage,
         duration,
         position: 'bottom',
         cssClass: `luxury-app-toast toast-${type}`,

@@ -413,7 +413,7 @@
   </div>
   <div class="input-grid">
     <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம் (Photo)' }}</label>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம்' }}</label>
       <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="*/*">
       @if (regForm.photoUrl) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
@@ -421,7 +421,7 @@
       }
     </div>
     <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம் (Horoscope)' }}</label>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம்' }}</label>
       <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="*/*">
       @if (regForm.jadhagamUrl) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
@@ -666,18 +666,19 @@
   </div>
 
   <div style="text-align: center; padding: 30px 15px;">
-    <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #10b981;"></i>
-    <h3 style="margin-top: 15px; color: #064e3b;">கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!</h3>
+    <h3 style="margin-top: 15px; color: #064e3b;">{{ translationService.currentLanguage() === 'en' ? 'Request Sent Successfully!' : 'கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!' }}</h3>
     <p style="color: #475569; margin-top: 10px; line-height: 1.5;">
-      உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது.
-      முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் (Profile) -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை
-      பதிவிறக்கம் செய்து கொள்ளலாம்.
+      @if (translationService.currentLanguage() === 'en') {
+        Your marriage matching request has been submitted to the chief astrologer. Once ready, you can view and download the match report from your <strong>Profile -> Match Requests</strong> section.
+      } @else {
+        உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது. முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை பதிவிறக்கம் செய்து கொள்ளலாம்.
+      }
     </p>
   </div>
   <!-- Bottom Action buttons -->
   <div class="sheet-actions" style="margin-top: 15px;">
     <button class="btn-secondary-pill" (click)="serviceStep = 4">
-      <i class="bi bi-arrow-repeat me-1"></i> புதிய பொருத்தம்
+      <i class="bi bi-arrow-repeat me-1"></i> {{ translationService.currentLanguage() === 'en' ? 'New Matching' : 'புதிய பொருத்தம்' }}
     </button>
   </div>
 </div>

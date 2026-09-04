@@ -1357,13 +1357,13 @@
                   }
 
                   <div class="form-group" style="margin-bottom: 16px;">
-                    <label>கால அளவு (Duration - Optional)</label>
+                    <label>{{ translationService.currentLanguage() === 'ta' ? 'கால அளவு (விருப்பமானது)' : 'Duration (Optional)' }}</label>
                     <input [(ngModel)]="newInlineLesson.duration" class="ctrl" placeholder="e.g. 10 mins" />
                   </div>
 
                   <div style="display:flex;gap:8px;justify-content:flex-end;">
-                    <button class="btn-cancel" (click)="cancelInlineLessonForm()">ரத்து (Cancel)</button>
-                    <button class="btn-primary" (click)="submitInlineLesson()">சேமி (Save Content)</button>
+                    <button class="btn-cancel" (click)="cancelInlineLessonForm()">{{ 'common.cancel' | translate }}</button>
+                    <button class="btn-primary" (click)="submitInlineLesson()">{{ translationService.currentLanguage() === 'ta' ? 'சேமி' : 'Save Content' }}</button>
                   </div>
                 </div>
                 }

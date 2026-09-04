@@ -46,16 +46,6 @@ import { environment } from '../../../environments/environment';
               <div class="panch-left-hero">
                 <span class="panch-large-label">இன்றைய தேதி</span>
                 <h3 class="panch-large-date">{{ panchangam.date || '-' }}</h3>
-                <div class="panch-sun-grid">
-                  <div class="sun-item">
-                    <span class="sun-label"><i class="bi bi-sunrise-fill text-gold me-1"></i> சூரிய உதயம்</span>
-                    <strong class="sun-val">{{ panchangam.sunrise || '-' }}</strong>
-                  </div>
-                  <div class="sun-item">
-                    <span class="sun-label"><i class="bi bi-sunset-fill text-gold me-1"></i> சூரிய அஸ்தமனம்</span>
-                    <strong class="sun-val">{{ panchangam.sunset || '-' }}</strong>
-                  </div>
-                </div>
               </div>
 
               <div class="panch-right-slots">
@@ -70,10 +60,24 @@ import { environment } from '../../../environments/environment';
                   <span class="slot-value">{{ panchangam.star || '-' }}</span>
                 </div>
                 <div class="panch-slot-row">
-                  <span class="slot-title">நல்ல நேரம்</span>
-                  <div class="slot-divider"></div>
-                  <span class="slot-value text-green">{{ panchangam.nallaNeram || '-' }}</span>
-                </div>
+          <span class="slot-title">நல்ல நேரம்</span>
+          <div class="slot-divider"></div>
+          <div class="nalla-sessions-pills">
+            @if (panchangam.nallaMorning) {
+              <span class="nalla-pill morning">
+                <i class="bi bi-sun-fill"></i> காலை: {{ panchangam.nallaMorning }}
+              </span>
+            }
+            @if (panchangam.nallaEvening) {
+              <span class="nalla-pill evening">
+                <i class="bi bi-sunset-fill"></i> மாலை: {{ panchangam.nallaEvening }}
+              </span>
+            }
+            @if (!panchangam.nallaMorning && !panchangam.nallaEvening) {
+              <span class="slot-value text-green">{{ panchangam.nallaNeram || '-' }}</span>
+            }
+          </div>
+        </div>
                 <div class="panch-slot-row">
                   <span class="slot-title">இராகு காலம்</span>
                   <div class="slot-divider"></div>
@@ -168,6 +172,8 @@ export class PanchangamPageComponent implements OnInit {
     thithi: '',
     star: '',
     nallaNeram: '',
+    nallaMorning: '',
+    nallaEvening: '',
     rahukalam: '',
     yamagandam: ''
   };
@@ -179,6 +185,20 @@ export class PanchangamPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadLivePanchangam();
+  }
+
+  parseNallaSessions(val: string): { morning: string; evening: string } {
+    if (!val) return { morning: '', evening: '' };
+    const sessions = val.split('/');
+    let morning = '';
+    let evening = '';
+    if (sessions[0]) {
+      morning = sessions[0].replace(/\(.*?\)/g, '').trim();
+    }
+    if (sessions[1]) {
+      evening = sessions[1].replace(/\(.*?\)/g, '').trim();
+    }
+    return { morning, evening };
   }
 
   formatDate(dateStr: string): string {
@@ -204,11 +224,16 @@ export class PanchangamPageComponent implements OnInit {
       next: (res) => {
         if (res && res.panchangam) {
           const p = res.panchangam;
+          let nalla = p.nalla_neram || p.nallaNeram || '';
+          nalla = nalla.replace(/Morning/gi, 'காலை').replace(/Evening/gi, 'மாலை');
+          const sessions = this.parseNallaSessions(p.nalla_neram || p.nallaNeram || '');
           this.panchangam = {
             date: p.date ? this.formatDate(p.date) : '',
             thithi: p.thithi || '',
             star: p.star || '',
-            nallaNeram: p.nalla_neram || p.nallaNeram || '',
+            nallaNeram: nalla,
+            nallaMorning: sessions.morning,
+            nallaEvening: sessions.evening,
             rahukalam: p.rahukalam || '',
             yamagandam: p.yamagandam || '',
             sunrise: p.sunrise || '',
@@ -222,6 +247,8 @@ export class PanchangamPageComponent implements OnInit {
             thithi: '',
             star: '',
             nallaNeram: '',
+            nallaMorning: '',
+            nallaEvening: '',
             rahukalam: '',
             yamagandam: ''
           };

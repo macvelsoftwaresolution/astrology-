@@ -5,7 +5,7 @@
       <div class="header-back-btn" (click)="selectedRasi ? closeDetail() : closeFlow.emit()">
         <i class="bi bi-chevron-left text-maroon fs-4"></i>
       </div>
-      <h2 class="app-brand-name">ஆருத்ரா</h2>
+      <h2 class="app-brand-name">{{ currentLang === 'en' ? 'Arudra' : 'ஆருத்ரா' }}</h2>
     </div>
     <div class="header-right">
       <span class="bell-icon" (click)="openNotifications()"><i class="bi bi-bell-fill"></i></span>
@@ -105,7 +105,7 @@
       @if (isLoading) {
         <div class="section-title">
           <div class="title-bar"></div>
-          <h3>கணிப்பு ஏற்றப்படுகிறது... (Loading)</h3>
+          <h3>{{ (currentLang === 'en' ? 'Loading prediction...' : 'கணிப்பு ஏற்றப்படுகிறது...') }}</h3>
         </div>
       }
       @if (!isLoading && predictionData) {
@@ -116,7 +116,7 @@
       @if (!isLoading && (predictionData?.video_url || predictionData?.audio_url)) {
         <div class="section-title">
           <div class="title-bar"></div>
-          <h3>காணொளி & ஒலி</h3>
+          <h3>{{ (currentLang === 'en' ? 'Video & Audio' : 'காணொளி & ஒலி') }}</h3>
         </div>
       }
       <!-- Audio Player -->
@@ -125,8 +125,8 @@
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
             <div class="audio-icon-box" style="background: #eef2ff; color: #4f46e5; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-mic-fill"></i></div>
             <div class="audio-info">
-              <strong style="display: block; font-size: 14px; color: #1e293b;">ஒலிப் பதிவு (Audio)</strong>
-              <span style="font-size: 12px; color: #64748b;">இன்றைய ராசி பலன்</span>
+              <strong style="display: block; font-size: 14px; color: #1e293b;">{{ currentLang === 'en' ? 'Audio Forecast' : 'ஒலிப் பதிவு' }}</strong>
+              <span style="font-size: 12px; color: #64748b;">{{ currentLang === 'en' ? 'Daily Horoscope' : 'இன்றைய ராசி பலன்' }}</span>
             </div>
           </div>
           <audio controls [src]="predictionData.audio_url" style="width: 100%; height: 40px; border-radius: 8px;"></audio>

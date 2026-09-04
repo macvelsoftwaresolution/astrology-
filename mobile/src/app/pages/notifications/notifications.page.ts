@@ -6,6 +6,8 @@ import { BackButtonService } from '../../services/back-button.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 
+import { TranslationService } from '../../services/translation.service';
+
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.page.html',
@@ -25,8 +27,13 @@ export class NotificationsPage implements OnInit {
     private http: HttpClient,
     private backButtonService: BackButtonService,
     private authService: AuthService,
+    public translationService: TranslationService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  get currentLang() {
+    return this.translationService.currentLanguage();
+  }
 
   ngOnInit() {
     this.detectContext();
@@ -286,7 +293,8 @@ export class NotificationsPage implements OnInit {
 
   cleanTitle(str: string): string {
     if (!str) return '';
-    return str.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{FE00}-\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
+    const stripped = str.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{FE00}-\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
+    return this.translationService.cleanText(stripped, this.currentLang);
   }
 
   getNotifIcon(type: string): string {

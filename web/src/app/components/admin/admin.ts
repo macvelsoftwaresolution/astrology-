@@ -17,10 +17,13 @@ interface Booking {
   chartUrl?: string;
 }
 
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
+
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslatePipe],
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
@@ -35,7 +38,8 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private toastService: ToastService
+    private toastService: ToastService,
+    public translationService: TranslationService
   ) {}
 
   ngOnInit() {
