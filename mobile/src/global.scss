@@ -69,6 +69,38 @@ i.bi, [class^="bi-"], [class*=" bi-"], .bi {
   margin: 0;
 }
 
+/* ----------------------------------------------------------------------------
+ * Content & Media Anti-Copy / Anti-Download Protection
+ * ---------------------------------------------------------------------------- */
+.protected-content,
+.prediction-large-card,
+.overlay-panel.rasi-palan-page,
+.zodiac-card-main,
+.audio-player-detailed,
+.video-player-card,
+.lesson-card,
+.curriculum-content-box,
+.quiz-overlay,
+.quiz-content-body,
+.question-box,
+.exam-chart-card,
+.exam-prompt-card,
+.quiz-option-card,
+.q-text,
+.opt-text,
+.prompt-txt {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+img {
+  -webkit-user-drag: none !important;
+  -webkit-touch-callout: none !important;
+}
+
 ion-icon {
   font-family: inherit;
   display: inline-block;

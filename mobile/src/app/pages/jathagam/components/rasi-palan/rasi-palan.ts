@@ -59,7 +59,7 @@ const RASI_SYMBOLS: Record<string, string> = {
       <!-- Expanded Detail Modal -->
       @if (expanded) {
         <div class="detail-overlay" (click)="expanded = null">
-          <div class="detail-modal" (click)="$event.stopPropagation()">
+          <div class="detail-modal protected-content" (click)="$event.stopPropagation()" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
             <div class="detail-header">
               <span class="big-symbol">{{ getSymbol(expanded.rasi_name) }}</span>
               <div>
@@ -71,7 +71,7 @@ const RASI_SYMBOLS: Record<string, string> = {
             <p class="full-text">{{ expanded.prediction_text }}</p>
             @if (expanded.audio_url) {
               <div class="audio-section">
-                <audio [src]="expanded.audio_url" controls style="width:100%"></audio>
+                <audio [src]="expanded.audio_url" controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" style="width:100%"></audio>
               </div>
             }
           </div>

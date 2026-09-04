@@ -1,6 +1,7 @@
 package com.aruthra.astrology;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 import com.getcapacitor.BridgeActivity;
 import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultWithDataListener;
@@ -10,6 +11,8 @@ public class MainActivity extends BridgeActivity implements PaymentResultWithDat
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RazorpayPlugin.class);
         super.onCreate(savedInstanceState);
+        // Secure window: prevent screenshots, screen recording, and app switcher snooping
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
     }
 
     @Override
