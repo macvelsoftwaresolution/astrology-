@@ -336,18 +336,24 @@ class LmsCurriculumController extends Controller
                 $quarter = 'Q4';
             }
 
-            // 1. Strict Batch Resolution for Student (Case-Insensitive)
+            // 1. Strict Batch Resolution for Student (Case-Insensitive & Lesson-Aware)
             $studentBatch = null;
 
-            // If student already has explicit batch_id in DB, check if valid in course_batches
+            // Check explicit batch_id if valid and has lessons
             if ($student && $student->batch_id) {
-                $studentBatch = CourseBatch::find($student->batch_id);
+                $candidate = CourseBatch::find($student->batch_id);
+                if ($candidate && DailyCurriculum::where('batch_id', $candidate->id)->exists()) {
+                    $studentBatch = $candidate;
+                }
             }
             if (!$studentBatch && $user && $user->batch_id) {
-                $studentBatch = CourseBatch::find($user->batch_id);
+                $candidate = CourseBatch::find($user->batch_id);
+                if ($candidate && DailyCurriculum::where('batch_id', $candidate->id)->exists()) {
+                    $studentBatch = $candidate;
+                }
             }
 
-            // If no explicit batch assigned, find matching quarter batch by registration date & level
+            // Find matching quarter batch for this level (prioritizing the one with lessons)
             if (!$studentBatch) {
                 $studentBatch = CourseBatch::where('year', $year)
                     ->where(function ($q) use ($courseLevel, $rawLevel) {
@@ -357,6 +363,7 @@ class LmsCurriculumController extends Controller
                           ->orWhere('course_level', strtoupper($courseLevel));
                     })
                     ->where('quarter', $quarter)
+                    ->orderByRaw('(SELECT COUNT(*) FROM daily_curriculum WHERE daily_curriculum.batch_id = course_batches.id) DESC')
                     ->first();
             }
 
@@ -374,21 +381,24 @@ class LmsCurriculumController extends Controller
                           ->orWhere('course_level', strtoupper($courseLevel));
                     })
                     ->where('quarter', $quarter)
+                    ->orderByRaw('(SELECT COUNT(*) FROM daily_curriculum WHERE daily_curriculum.batch_id = course_batches.id) DESC')
                     ->first();
             }
 
-            // If still no batch, fallback to first available batch for this course level
+            // If still no batch, fallback to first available batch for this course level with lessons
             if (!$studentBatch) {
                 $studentBatch = CourseBatch::where(function ($q) use ($courseLevel, $rawLevel) {
                     $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
                       ->orWhere('course_level', $courseLevel)
                       ->orWhere('course_level', $rawLevel)
                       ->orWhere('course_level', strtoupper($courseLevel));
-                })->first();
+                })
+                ->orderByRaw('(SELECT COUNT(*) FROM daily_curriculum WHERE daily_curriculum.batch_id = course_batches.id) DESC')
+                ->first();
             }
 
-            // Auto-assign batch_id to student record safely
-            if ($studentBatch && $student && !$student->batch_id) {
+            // Auto-assign / sync correct batch_id to student record safely
+            if ($studentBatch && $student && $student->batch_id !== $studentBatch->id) {
                 try {
                     $student->batch_id = $studentBatch->id;
                     $student->save();
@@ -398,10 +408,47 @@ class LmsCurriculumController extends Controller
             // 2. Fetch published lessons created for this student's batch
             $curriculum = $studentBatch
                 ? DailyCurriculum::where('batch_id', $studentBatch->id)
-                    ->where('is_published', true)
+                    ->where(function ($q) {
+                        $q->where('is_published', true)
+                          ->orWhere('is_published', 1)
+                          ->orWhereNull('is_published');
+                    })
                     ->orderBy('day_number', 'asc')
                     ->get()
                 : collect([]);
+
+            // If student's batch returned 0 lessons, check if a sibling batch with same year & quarter has the lessons
+            if ($curriculum->isEmpty() && $studentBatch) {
+                $siblingBatch = CourseBatch::where('year', $studentBatch->year)
+                    ->where('quarter', $studentBatch->quarter)
+                    ->where(function ($q) use ($courseLevel, $rawLevel) {
+                        $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
+                          ->orWhere('course_level', $courseLevel)
+                          ->orWhere('course_level', $rawLevel)
+                          ->orWhere('course_level', strtoupper($courseLevel));
+                    })
+                    ->where('id', '!=', $studentBatch->id)
+                    ->whereHas('curriculum')
+                    ->first();
+
+                if ($siblingBatch) {
+                    $studentBatch = $siblingBatch;
+                    if ($student) {
+                        try {
+                            $student->batch_id = $siblingBatch->id;
+                            $student->save();
+                        } catch (\Throwable $e) {}
+                    }
+                    $curriculum = DailyCurriculum::where('batch_id', $siblingBatch->id)
+                        ->where(function ($q) {
+                            $q->where('is_published', true)
+                              ->orWhere('is_published', 1)
+                              ->orWhereNull('is_published');
+                        })
+                        ->orderBy('day_number', 'asc')
+                        ->get();
+                }
+            }
 
             // Get student completed day IDs
             $completedDayIds = [];
