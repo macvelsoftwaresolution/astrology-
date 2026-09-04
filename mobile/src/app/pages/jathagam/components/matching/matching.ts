@@ -493,17 +493,24 @@ export class MatchingComponent {
           const actionBars = element.querySelectorAll('.print-action-bar');
           actionBars.forEach((el: any) => el.style.display = 'none');
 
-          const html2pdf = (await import('html2pdf.js')).default;
-          
-          const opt: any = {
-            margin:       10,
-            filename:     `Jathagam-Match-${this.result?.girl_name || 'Girl'}-${this.result?.boy_name || 'Boy'}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
-          
-          await html2pdf().set(opt).from(element).save();
+          let html2pdf = (window as any).html2pdf;
+          if (!html2pdf) {
+            const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
+            html2pdf = mod?.default || mod;
+          }
+
+          if (html2pdf) {
+            const opt: any = {
+              margin:       10,
+              filename:     `Jathagam-Match-${this.result?.girl_name || 'Girl'}-${this.result?.boy_name || 'Boy'}.pdf`,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            await html2pdf().set(opt).from(element).save();
+          } else {
+            window.print();
+          }
           
           // Restore action bar
           actionBars.forEach((el: any) => el.style.display = '');
