@@ -115,7 +115,7 @@ export class BroadcastTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/notifications/broadcast`, this.broadcastForm, headers).subscribe({
       next: (res) => {
-        this.broadcastMsg = res.message || '✅ புஷ் அறிவிப்பு வெற்றிகரமாக அனுப்பப்பட்டது!';
+        this.broadcastMsg = res.message || 'புஷ் அறிவிப்பு வெற்றிகரமாக அனுப்பப்பட்டது!';
         this.broadcastForm.title = '';
         this.broadcastForm.body = '';
         this.loadBroadcastHistory();
@@ -127,7 +127,7 @@ export class BroadcastTabComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.broadcastMsg = '❌ அறிவிப்பை அனுப்புவதில் பிழை ஏற்பட்டது: ' + (err?.error?.message || 'Server error');
+        this.broadcastMsg = 'அறிவிப்பை அனுப்புவதில் பிழை ஏற்பட்டது: ' + (err?.error?.message || 'Server error');
         this.cdr.markForCheck();
       }
     });

@@ -513,14 +513,18 @@ class GradingController extends Controller
     public function adminGetCertificates()
     {
         $certificates = DB::table('certificates')
-            ->join('users', 'certificates.student_id', '=', 'users.id')
+            ->leftJoin('students', 'certificates.student_id', '=', 'students.id')
+            ->leftJoin('users', function($join) {
+                $join->on('certificates.student_id', '=', 'users.id')
+                     ->whereNull('students.id');
+            })
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
                 'certificates.*',
-                'users.name as student_name',
-                'users.email as student_email',
-                'users.phone as student_phone',
-                'users.student_id as student_reg_id',
+                DB::raw("COALESCE(students.name, users.name, 'மாணவர் (Student)') as student_name"),
+                DB::raw("COALESCE(students.email, users.email, '-') as student_email"),
+                DB::raw("COALESCE(students.phone, users.phone, '-') as student_phone"),
+                DB::raw("COALESCE(students.student_id, users.student_id, '') as student_reg_id"),
                 DB::raw("COALESCE(courses.title, 'இளநிலை ஜோதிட மணி') as course_title")
             )
             ->orderBy('certificates.created_at', 'desc')

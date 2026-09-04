@@ -669,24 +669,112 @@
           (Speaker) *</label>
         <input type="text" [(ngModel)]="editingSeminar.speaker" class="ctrl" placeholder="எ.கா. குரு சீனிவாசன்" />
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <!-- DATE & TIME ADVANCED CONTROL ROW -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;background:#f8fafc;padding:14px;border-radius:12px;border:1px solid #e2e8f0;">
+        <!-- Date Column -->
         <div>
-          <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">தேதி</label>
-          <input type="text" [(ngModel)]="editingSeminar.date_text" class="ctrl"
-            placeholder="இன்று / ஞாயிறு, செப் 24" />
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label style="font-size:12px;font-weight:700;color:#334155;display:flex;align-items:center;gap:5px;margin:0;">
+              <i class="bi bi-calendar-event-fill" style="color:#d97706;"></i> தேதி (Date) *
+            </label>
+            <span style="font-size:11px;color:#64748b;font-weight:600;">விரைவுத் தேர்வு</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;position:relative;">
+            <input type="text" [(ngModel)]="editingSeminar.date_text" class="ctrl" style="flex:1;font-weight:700;"
+              placeholder="இன்று / 25-08-2026 (ஞாயிறு)" />
+            <label style="background:#fff;border:1.5px solid #cbd5e1;padding:7px 10px;border-radius:8px;cursor:pointer;display:flex;align-items:center;color:#475569;margin:0;" title="காலெண்டர் தேர்வு">
+              <i class="bi bi-calendar3"></i>
+              <input type="date" (change)="onSeminarDatePickerChange($event)" style="position:absolute;opacity:0;width:0;height:0;" />
+            </label>
+          </div>
+          <!-- Quick Date Presets -->
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('today')">
+              <i class="bi bi-calendar-check me-1"></i> இன்று
+            </button>
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('tomorrow')">
+              நாளை
+            </button>
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('sunday')">
+              இந்த ஞாயிறு
+            </button>
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('next_sunday')">
+              அடுத்த ஞாயிறு
+            </button>
+          </div>
         </div>
+
+        <!-- Time Column -->
         <div>
-          <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">நேரம்</label>
-          <input type="text" [(ngModel)]="editingSeminar.time_text" class="ctrl" placeholder="மாலை 06:00 - 07:30" />
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label style="font-size:12px;font-weight:700;color:#334155;display:flex;align-items:center;gap:5px;margin:0;">
+              <i class="bi bi-clock-fill" style="color:#d97706;"></i> நேரம் (Time Range) *
+            </label>
+            <span style="font-size:11px;color:#64748b;font-weight:600;">விரைவுத் தேர்வு</span>
+          </div>
+          <input type="text" [(ngModel)]="editingSeminar.time_text" class="ctrl" style="width:100%;font-weight:700;" placeholder="மாலை 06:00 - 07:30" />
+          
+          <!-- Quick Time Presets -->
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('மாலை 06:00 - 07:30')">
+              <i class="bi bi-clock me-1"></i> மாலை 06:00 - 07:30
+            </button>
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('மாலை 05:00 - 06:30')">
+              மாலை 05:00 - 06:30
+            </button>
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('இரவு 07:00 - 08:30')">
+              இரவு 07:00 - 08:30
+            </button>
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('காலை 10:00 - 11:30')">
+              காலை 10:00 - 11:30
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- STATUS INTERACTIVE SEGMENTED SELECTOR -->
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Status</label>
-        <select [(ngModel)]="editingSeminar.status" class="ctrl">
-          <option value="live">நேரலை (Live)</option>
-          <option value="upcoming">வரவிருப்பது (Upcoming)</option>
-          <option value="past">முடிந்தது (Past)</option>
-        </select>
+        <label style="font-size:12px;font-weight:700;color:#334155;display:flex;align-items:center;gap:5px;margin-bottom:6px;">
+          <i class="bi bi-activity" style="color:#d97706;"></i> வகுப்பு நிலை (Class Status) *
+        </label>
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;">
+          <!-- Upcoming -->
+          <button type="button" (click)="editingSeminar.status = 'upcoming'" 
+                  [style.background]="editingSeminar.status === 'upcoming' ? '#fef3c7' : '#fff'"
+                  [style.border-color]="editingSeminar.status === 'upcoming' ? '#d97706' : '#cbd5e1'"
+                  [style.color]="editingSeminar.status === 'upcoming' ? '#92400e' : '#475569'"
+                  style="padding:10px 8px;border:1.5px solid #cbd5e1;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
+            <i class="bi bi-clock-history" style="font-size:14px;"></i>
+            <span>வரவிருப்பது (Upcoming)</span>
+          </button>
+          <!-- Live -->
+          <button type="button" (click)="editingSeminar.status = 'live'" 
+                  [style.background]="editingSeminar.status === 'live' ? '#fee2e2' : '#fff'"
+                  [style.border-color]="editingSeminar.status === 'live' ? '#dc2626' : '#cbd5e1'"
+                  [style.color]="editingSeminar.status === 'live' ? '#991b1b' : '#475569'"
+                  style="padding:10px 8px;border:1.5px solid #cbd5e1;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
+            <i class="bi bi-broadcast" style="font-size:14px;color:#dc2626;"></i>
+            <span>நேரலை (Live Now)</span>
+          </button>
+          <!-- Past -->
+          <button type="button" (click)="editingSeminar.status = 'past'" 
+                  [style.background]="editingSeminar.status === 'past' ? '#dcfce7' : '#fff'"
+                  [style.border-color]="editingSeminar.status === 'past' ? '#16a34a' : '#cbd5e1'"
+                  [style.color]="editingSeminar.status === 'past' ? '#166534' : '#475569'"
+                  style="padding:10px 8px;border:1.5px solid #cbd5e1;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
+            <i class="bi bi-check-circle-fill" style="font-size:14px;color:#16a34a;"></i>
+            <span>முடிந்தது (Past)</span>
+          </button>
+        </div>
+        <div style="margin-top:4px;font-size:11px;color:#64748b;padding-left:2px;">
+          @if (editingSeminar.status === 'upcoming') {
+            <span><i class="bi bi-info-circle me-1 text-amber"></i> மாணவர்கள் நினைவூட்டல் (Reminder) அமைக்கலாம். தொடங்குவதற்கு 15 நிமிடம் முன் நேரலை இணைப்பு தோன்றும்.</span>
+          } @else if (editingSeminar.status === 'live') {
+            <span><i class="bi bi-broadcast me-1 text-danger"></i> மாணவர்கள் இப்போது உடனடியாக Zoom / Meet இணைப்பில் இணையலாம்.</span>
+          } @else {
+            <span><i class="bi bi-play-circle-fill me-1 text-success"></i> வகுப்பு முடிந்தது. மாணவர்கள் பதிவு செய்யப்பட்ட வீடியோவை மட்டுமே பார்க்க முடியும்.</span>
+          }
+        </div>
       </div>
       <div>
         <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet / Zoom URL)</label>
@@ -1519,7 +1607,7 @@
     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
     <div
       style="background: #fff; border-radius: 20px; width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #e2e8f0;">
-      <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0;">📋 1-Click Copy Curriculum</h3>
+      <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center;"><i class="bi bi-clipboard-check-fill me-2" style="color: #4f46e5;"></i> 1-Click Copy Curriculum</h3>
       <p style="font-size: 13px; color: #64748b; margin: 0 0 20px 0;">ஒரு Batch-ன் 60 நாள் பாடங்களை அப்படியே தற்போதைய
         Batch-க்கு நகல் எடுக்க கீழே உள்ள மூல Batch-ஐத் தேர்வு செய்யவும்.</p>
 

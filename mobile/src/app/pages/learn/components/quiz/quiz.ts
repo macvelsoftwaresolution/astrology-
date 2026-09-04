@@ -91,14 +91,23 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
     this.timerDisplay = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
+  showExitConfirmModal: boolean = false;
+
   handleQuizClose() {
     if (!this.quizSubmitted) {
-      if (confirm('தேர்வை இடையில் நிறுத்தினால் அது முடிவுற்றதாகவே (Completed) கருதப்படும். மீண்டும் எழுத இயலாது.\nவெளியேற விரும்புகிறீர்களா? (If you close now, your exam will be auto-submitted and cannot be retaken. Are you sure?)')) {
-        this.autoSubmitOnExit();
-      }
+      this.showExitConfirmModal = true;
     } else {
       this.close.emit();
     }
+  }
+
+  confirmExitExam() {
+    this.showExitConfirmModal = false;
+    this.autoSubmitOnExit();
+  }
+
+  cancelExitExam() {
+    this.showExitConfirmModal = false;
   }
 
   autoSubmitOnExit() {
@@ -246,7 +255,7 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
 
   submitPracticalExam() {
     if (!this.uploadedAnswerUrl) {
-      alert('தயவுசெய்து உங்கள் விடைத்தாளை (Image அல்லது PDF) பதிவேற்றவும்.');
+      this.uploadErrorMessage = 'தயவுசெய்து உங்கள் விடைத்தாளை (Image அல்லது PDF) பதிவேற்றவும்.';
       return;
     }
 

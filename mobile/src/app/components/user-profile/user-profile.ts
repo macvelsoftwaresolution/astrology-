@@ -510,6 +510,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
         document.body.appendChild(clone);
 
         try {
+<<<<<<< HEAD
           const html2pdf = (await import('html2pdf.js')).default;
           const opt: any = {
             margin:       10,
@@ -521,6 +522,25 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           
           await html2pdf().set(opt).from(clone).save();
           document.body.removeChild(clone);
+=======
+          let html2pdf = (window as any).html2pdf;
+          if (!html2pdf) {
+            const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
+            html2pdf = mod?.default || mod;
+          }
+          if (html2pdf) {
+            const opt: any = {
+              margin:       10,
+              filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            await html2pdf().set(opt).from(element).save();
+          } else if (match.result_document) {
+            window.open(match.result_document, '_blank');
+          }
+>>>>>>> 0ac353cc757c352f57ee016893ad566492d96e68
         } catch (error) {
           console.error('Error generating PDF', error);
           document.body.removeChild(clone);

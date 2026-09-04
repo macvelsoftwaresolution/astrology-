@@ -13,7 +13,11 @@ export class LoadingService {
     this.activeRequests++;
 
     if (!this.isLoading$.value) {
-      this.isLoading$.next(true);
+      Promise.resolve().then(() => {
+        if (this.activeRequests > 0 && !this.isLoading$.value) {
+          this.isLoading$.next(true);
+        }
+      });
     }
 
     // Safety timeout (15s) only in case a request hangs indefinitely
@@ -30,7 +34,11 @@ export class LoadingService {
         clearTimeout(this.maxTimeoutTimer);
         this.maxTimeoutTimer = null;
       }
-      this.isLoading$.next(false);
+      Promise.resolve().then(() => {
+        if (this.activeRequests === 0 && this.isLoading$.value) {
+          this.isLoading$.next(false);
+        }
+      });
     }
   }
 
@@ -40,6 +48,10 @@ export class LoadingService {
       clearTimeout(this.maxTimeoutTimer);
       this.maxTimeoutTimer = null;
     }
-    this.isLoading$.next(false);
+    Promise.resolve().then(() => {
+      if (this.isLoading$.value) {
+        this.isLoading$.next(false);
+      }
+    });
   }
 }

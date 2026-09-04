@@ -173,6 +173,12 @@ export class MarriageMatchingComponent implements OnInit {
     }
   };
 
+  // History State
+  myMatches: any[] = [];
+  myProfiles: any[] = [];
+  showHistory: boolean = false;
+  loadingHistory: boolean = false;
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
@@ -186,6 +192,24 @@ export class MarriageMatchingComponent implements OnInit {
       this.matchingForm.requesterPhone = user.phone;
       this.regForm.phone1 = user.phone;
     }
+    this.loadMyMatches();
+    this.loadMyProfiles();
+  }
+
+  loadMyMatches() {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/jathagam/my-matches`, headers).subscribe({
+      next: (res: any) => { this.myMatches = res?.matches || []; },
+      error: () => {}
+    });
+  }
+
+  loadMyProfiles() {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/user/matrimony-profiles`, headers).subscribe({
+      next: (res: any) => { this.myProfiles = res?.profiles || []; },
+      error: () => {}
+    });
   }
 
   // Navigation Methods

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, Output, ChangeDetectorRef } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Chapter, Book, Seminar } from '../../learn.page';
@@ -87,6 +88,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   showBookOrderSuccessModal = false;
   orderSuccessNotification: any = null;
 
+  // Completed Exam Details Modal State
+  showCompletedExamModal = false;
+  selectedCompletedExam: any = null;
+
   // Notifications & Announcements State
   notifications: any[] = [];
   unreadCount: number = 0;
@@ -102,7 +107,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     public translationService: TranslationService,
-    private razorpayService: RazorpayNativeService
+    private razorpayService: RazorpayNativeService,
+    private sanitizer: DomSanitizer
   ) { }
 
   // 60-Day Curriculum State
@@ -209,8 +215,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadStudentCurriculum() {
-    if (!this.authService.isLoggedIn('education')) return;
-    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders('education')).subscribe({
+    if (!this.authService.isLoggedIn()) return;
+    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders()).subscribe({
       next: (res) => {
         if (res && res.curriculum) {
           this.curriculumDays = res.curriculum || [];
@@ -219,7 +225,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
         }
       },
       error: (err) => { 
-        this.showToast('Error loading curriculum: ' + err.message, 'danger');
+        console.error('Error loading student curriculum:', err);
       }
     });
   }
@@ -232,14 +238,14 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getFilteredStudentCurriculum(): any[] {
-    const completed = this.curriculumDays.filter(d => d.is_completed).length;
-    if (completed < 20) {
+    if (this.curriculumMonthFilter === 'm1') {
       return this.curriculumDays.filter(d => d.day_number >= 1 && d.day_number <= 20);
-    } else if (completed < 40) {
+    } else if (this.curriculumMonthFilter === 'm2') {
       return this.curriculumDays.filter(d => d.day_number >= 21 && d.day_number <= 40);
-    } else {
+    } else if (this.curriculumMonthFilter === 'm3') {
       return this.curriculumDays.filter(d => d.day_number >= 41 && d.day_number <= 60);
     }
+    return this.curriculumDays;
   }
 
   openDayDetail(day: any) {
@@ -688,18 +694,68 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId));
   }
 
+  isExamApproved(examId: number): boolean {
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    return sub ? (sub.status === 'Approved' || sub.is_published === true || sub.is_published === 1) : false;
+  }
+
+  isExamRejected(examId: number): boolean {
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    return sub ? sub.status === 'Rejected' : false;
+  }
+
   getExamScore(examId: number): number {
     const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
     return sub ? (sub.score || 0) : 0;
   }
 
+  getExamStatusText(examId: number): string {
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    if (!sub) return '';
+    if (sub.status === 'Approved' || sub.is_published) {
+      return `தேர்ச்சி (${sub.score || 0}%)`;
+    } else if (sub.status === 'Rejected') {
+      return `மறுமதிப்பீடு தேவை`;
+    } else {
+      return `மதிப்பீட்டில் உள்ளது`;
+    }
+  }
+
   handleExamClick(ex: any) {
     if (this.isExamSubmitted(ex.id)) {
-      const score = this.getExamScore(ex.id);
-      alert(`நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள்.\nஉங்கள் மதிப்பெண்: ${score}%\n(You have already submitted this exam. Only one attempt is permitted.)`);
+      const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(ex.id));
+      const isApproved = sub ? (sub.status === 'Approved' || sub.is_published === true || sub.is_published === 1) : false;
+      const isRejected = sub ? sub.status === 'Rejected' : false;
+      const isPending = !isApproved && !isRejected;
+      const score = sub ? (sub.score !== null && sub.score !== undefined ? sub.score : 0) : 0;
+      const passMark = ex.pass_mark || 40;
+      const isPassed = isApproved && score >= passMark;
+      
+      this.selectedCompletedExam = {
+        exam: ex,
+        submission: sub,
+        score: score,
+        passMark: passMark,
+        isApproved: isApproved,
+        isRejected: isRejected,
+        isPending: isPending,
+        isPassed: isPassed,
+        status: sub?.status || 'Pending',
+        submittedAt: sub?.created_at || null,
+        notes: sub?.evaluator_notes || sub?.notes || null,
+        mcqScore: sub?.mcq_score,
+        practicalScore: sub?.practical_score,
+        submissionType: sub?.submission_type
+      };
+      this.showCompletedExamModal = true;
       return;
     }
     this.startQuiz.emit(ex);
+  }
+
+  closeCompletedExamModal() {
+    this.showCompletedExamModal = false;
+    this.selectedCompletedExam = null;
   }
 
   loadSeminars() {
@@ -1002,6 +1058,9 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   setTab(tab: 'home' | 'lessons' | 'library' | 'profile') {
     this.dashboardTab = tab;
     this.dashboardTabChange.emit(tab);
+    if (tab === 'lessons') {
+      this.loadStudentCurriculum();
+    }
   }
 
   handleBackClick(): boolean {
@@ -1096,58 +1155,153 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   showSeminarVideoModal = false;
   activeSeminarVideo: any = null;
+  videoLoadError = false;
 
   closeSeminarVideoModal() {
     this.showSeminarVideoModal = false;
     this.activeSeminarVideo = null;
+    this.videoLoadError = false;
+  }
+
+  onSeminarVideoError() {
+    this.videoLoadError = true;
+  }
+
+  isYouTubeUrl(url?: string): boolean {
+    if (!url) return false;
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  }
+
+  getSafeVideoUrl(url?: string): SafeResourceUrl | null {
+    if (!url) return null;
+    let embedUrl = url;
+    if (this.isYouTubeUrl(url)) {
+      let videoId = '';
+      const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      if (ytMatch && ytMatch[1]) {
+        videoId = ytMatch[1];
+      }
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+      }
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+  }
+
+  isSeminarLive(s: any): boolean {
+    if (!s) return false;
+    if (s.status === 'live') return true;
+    if (s.status === 'past') return false;
+
+    // Client-side 15-min prior check
+    const timeStr = s.time_text || s.time || '';
+    const dateStr = s.date_text || s.date || '';
+    const isToday = dateStr.includes('இன்று') || dateStr.toLowerCase().includes('today') || dateStr.includes(new Date().toISOString().split('T')[0]);
+    if (isToday && timeStr) {
+      const match = timeStr.match(/(?:(?:மாலை|காலை|இரவு|AM|PM)\s*)?(\d{1,2}):(\d{2})\s*(?:AM|PM|மாலை|காலை|இரவு)?\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM|மாலை|காலை|இரவு)?/i);
+      if (match) {
+        let startH = parseInt(match[1], 10);
+        const startM = parseInt(match[2], 10);
+        let endH = parseInt(match[3], 10);
+        const endM = parseInt(match[4], 10);
+        const isPm = /pm|மாலை|இரவு/i.test(match[5] || timeStr);
+        if (isPm) {
+          if (startH < 12) startH += 12;
+          if (endH < 12) endH += 12;
+        }
+        const now = new Date();
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+        const startMins = startH * 60 + startM;
+        const endMins = endH * 60 + endM;
+
+        if (nowMins >= (startMins - 15) && nowMins < endMins) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isSeminarPast(s: any): boolean {
+    if (!s) return false;
+    if (s.status === 'past') return true;
+    if (s.status === 'live') return false;
+
+    const timeStr = s.time_text || s.time || '';
+    const dateStr = s.date_text || s.date || '';
+    const isToday = dateStr.includes('இன்று') || dateStr.toLowerCase().includes('today') || dateStr.includes(new Date().toISOString().split('T')[0]);
+    if (isToday && timeStr) {
+      const match = timeStr.match(/-\s*(\d{1,2}):(\d{2})\s*(AM|PM|மாலை|காலை|இரவு)?/i);
+      if (match) {
+        let endH = parseInt(match[1], 10);
+        const endM = parseInt(match[2], 10);
+        const isPm = /pm|மாலை|இரவு/i.test(match[3] || timeStr);
+        if (isPm && endH < 12) endH += 12;
+
+        const now = new Date();
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+        const endMins = endH * 60 + endM;
+        if (nowMins >= endMins) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   openMeeting(url?: string, status?: string, seminar?: any) {
-    if (status === 'past') {
+    const isPast = this.isSeminarPast(seminar) || status === 'past';
+    const isLive = this.isSeminarLive(seminar) || status === 'live';
+
+    if (isPast) {
       const videoUrl = seminar?.recording_video_url || seminar?.video_url || url;
       if (videoUrl) {
+        this.videoLoadError = false;
         this.activeSeminarVideo = {
           ...seminar,
           recording_video_url: videoUrl
         };
         this.showSeminarVideoModal = true;
         this.showToast('பதிவு செய்யப்பட்ட கருத்தரங்க வீடியோ திறக்கப்படுகிறது...', 'success');
-        return;
       } else {
         this.showToast('இந்த கருத்தரங்கிற்கான பதிவு செய்யப்பட்ட வீடியோ விரைவில் பதிவேற்றப்படும்.', 'info');
-        return;
-      }
-    }
-    if (status === 'upcoming' || (!status && !url)) {
-      const timeInfo = seminar ? `${seminar.date_text || seminar.date || ''} ${seminar.time_text || seminar.time || ''}`.trim() : '';
-      if (seminar) {
-        seminar.reminderSet = !seminar.reminderSet;
-        if (seminar.reminderSet) {
-          const msg = timeInfo ? `நினைவூட்டல் அமைந்தது! 🔔 (${timeInfo}) தொடங்கும் போது உங்களுக்கு அறிவிக்கப்படும்.` : 'நினைவூட்டல் வெற்றிகரமாக அமைந்தது! 🔔';
-          this.showToast(msg, 'success');
-          this.notifications.unshift({
-            id: Date.now(),
-            title: `🔔 நினைவூட்டல்: ${seminar.title || 'கருத்தரங்கம்'}`,
-            message: `கருத்தரங்கம் நேரம்: ${timeInfo}`,
-            created_at: new Date().toISOString(),
-            is_read: false
-          });
-          this.unreadCount = this.notifications.filter(n => !n.is_read).length;
-          this.cdr.detectChanges();
-        } else {
-          this.showToast('கருத்தரங்க நினைவூட்டல் ரத்து செய்யப்பட்டது.', 'info');
-        }
-      } else {
-        const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
-        this.showToast(msg, 'info');
       }
       return;
     }
-    if (url) {
-      window.open(url, '_blank');
-      this.showToast('நேரலை வகுப்பில் இணைகிறது...', 'success');
+
+    if (isLive) {
+      const joinUrl = url || seminar?.join_url;
+      if (joinUrl) {
+        window.open(joinUrl, '_blank');
+        this.showToast('நேரலை வகுப்பில் இணைகிறது...', 'success');
+      } else {
+        this.showToast('இந்த வகுப்பிற்கான நேரலை இணைப்பு இன்னும் நிர்வாகியால் பகிரப்படவில்லை.', 'warning');
+      }
+      return;
+    }
+
+    // Upcoming (> 15 mins before start)
+    const timeInfo = seminar ? `${seminar.date_text || seminar.date || ''} ${seminar.time_text || seminar.time || ''}`.trim() : '';
+    if (seminar) {
+      seminar.reminderSet = !seminar.reminderSet;
+      if (seminar.reminderSet) {
+        const msg = timeInfo ? `நினைவூட்டல் அமைந்தது! (${timeInfo}) தொடங்கும் போது உங்களுக்கு அறிவிக்கப்படும்.` : 'நினைவூட்டல் வெற்றிகரமாக அமைந்தது!';
+        this.showToast(msg, 'success', 'bi bi-bell-fill');
+        this.notifications.unshift({
+          id: Date.now(),
+          title: `நினைவூட்டல்: ${seminar.title || 'கருத்தரங்கம்'}`,
+          message: `கருத்தரங்கம் நேரம்: ${timeInfo}`,
+          created_at: new Date().toISOString(),
+          is_read: false
+        });
+        this.unreadCount = this.notifications.filter(n => !n.is_read).length;
+        this.cdr.detectChanges();
+      } else {
+        this.showToast('கருத்தரங்க நினைவூட்டல் ரத்து செய்யப்பட்டது.', 'info', 'bi bi-bell-slash-fill');
+      }
     } else {
-      this.showToast('இந்த வகுப்பிற்கான நேரலை இணைப்பு இன்னும் நிர்வாகியால் பகிரப்படவில்லை.', 'warning');
+      const msg = timeInfo ? `இந்தக் கருத்தரங்கம் (${timeInfo}) தொடங்கும்.` : 'இந்தக் கருத்தரங்கம் குறிப்பிட்ட நேரத்தில் தொடங்கும்.';
+      this.showToast(msg, 'info', 'bi bi-clock-history');
     }
   }
 
@@ -1156,27 +1310,32 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   playLiveClass(link: string) {
     if (link) {
       window.open(link, '_blank');
-      this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success');
+      this.showToast('நேரலை வகுப்பு திறக்கப்படுகிறது...', 'success', 'bi bi-broadcast');
     } else {
-      this.showToast('நேரலை வகுப்பு இணைப்பு இன்னும் கிடைக்கவில்லை.', 'warning');
+      this.showToast('நேரலை வகுப்பு இணைப்பு இன்னும் கிடைக்கவில்லை.', 'warning', 'bi bi-exclamation-triangle-fill');
     }
   }
 
   async playVideo() {
-    this.showToast('வீடியோ வகுப்பு பிளே செய்யப்படுகிறது...', 'success');
+    this.showToast('வீடியோ வகுப்பு பிளே செய்யப்படுகிறது...', 'success', 'bi bi-play-circle-fill');
   }
 
-  showToast(message: string, type: 'info' | 'success' | 'warning' | 'secondary' | string = 'info') {
+  showToast(message: string, type: 'info' | 'success' | 'warning' | 'secondary' | string = 'info', customIcon?: string) {
     if (this.toastTimer) {
       clearTimeout(this.toastTimer);
     }
-    let icon = 'bi bi-info-circle-fill';
-    if (type === 'success') icon = 'bi bi-check-circle-fill';
-    if (type === 'warning') icon = 'bi bi-clock-history';
-    if (message.includes('தொடங்கும்') || message.includes('நேரம்')) icon = 'bi bi-calendar-event-fill';
+    let icon = customIcon || 'bi bi-info-circle-fill';
+    if (!customIcon) {
+      if (type === 'success') icon = 'bi bi-check-circle-fill';
+      else if (type === 'warning') icon = 'bi bi-exclamation-triangle-fill';
+      else if (message.includes('நினைவூட்டல்') || message.includes('அமைந்தது')) icon = 'bi bi-bell-fill';
+      else if (message.includes('நேரலை') || message.includes('இணைகிறது')) icon = 'bi bi-broadcast';
+      else if (message.includes('வீடியோ') || message.includes('பதிவு')) icon = 'bi bi-play-circle-fill';
+      else if (message.includes('தொடங்கும்') || message.includes('நேரம்')) icon = 'bi bi-clock-history';
+    }
 
-    // Clean any leading emoji
-    const cleanMsg = message.replace(/^[📢⏳✅✨🔔]\s*/, '');
+    // Clean any emojis from message
+    const cleanMsg = message.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
 
     this.activeToast = {
       message: cleanMsg,

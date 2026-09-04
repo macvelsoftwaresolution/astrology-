@@ -273,7 +273,7 @@
                     <!-- Mark as Correct Answer Button / Radio -->
                     <button type="button" (click)="setCorrectOption(optIdx)" class="btn-correct-toggle" [class.active]="opt.is_correct" [title]="'exams.correctLabel' | translate">
                       <i [class]="opt.is_correct ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
-                      <span>{{ opt.is_correct ? ('exams.correctLabel' | translate) : ('exams.selectCorrect' | translate) }}</span>
+                      <span class="correct-toggle-text">{{ opt.is_correct ? ('exams.correctLabel' | translate) : ('exams.selectCorrect' | translate) }}</span>
                     </button>
 
                     <!-- Remove Option Button -->
@@ -672,11 +672,11 @@
                 <td class="font-bold text-center">
                   <span class="rank-pill" [class.rank-1]="item.rank === 1" [class.rank-2]="item.rank === 2" [class.rank-3]="item.rank === 3">
                     @if (item.rank === 1) {
-                      <i class="bi bi-trophy-fill text-amber-500 me-1"></i> #1
+                      <i class="bi bi-trophy-fill"></i> #1
                     } @else if (item.rank === 2) {
-                      <i class="bi bi-award-fill text-slate-400 me-1"></i> #2
+                      <i class="bi bi-award-fill"></i> #2
                     } @else if (item.rank === 3) {
-                      <i class="bi bi-award-fill text-amber-700 me-1"></i> #3
+                      <i class="bi bi-award-fill"></i> #3
                     } @else {
                       #{{ item.rank }}
                     }

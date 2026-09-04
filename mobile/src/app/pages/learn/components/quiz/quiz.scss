@@ -240,3 +240,124 @@ $color-purple-dark: #200438;
     }
   }
 }
+
+/* ================= CUSTOM LUXURY CONFIRMATION DIALOG ================= */
+.custom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+.custom-dialog-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 24px 20px 20px 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(236, 200, 118, 0.35);
+  text-align: center;
+  animation: modalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .dialog-icon-glow {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    margin-bottom: 16px;
+    position: relative;
+
+    &.amber {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      color: #D97706;
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.22);
+    }
+  }
+
+  .dialog-title {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #4A0E17;
+    margin: 0 0 10px 0;
+    line-height: 1.35;
+  }
+
+  .dialog-description {
+    font-size: 0.83rem;
+    color: #64748B;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+    padding: 0 4px;
+  }
+
+  .dialog-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+
+    .dialog-btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+
+      &.btn-cancel {
+        background: #F1F5F9;
+        color: #475569;
+
+        &:active {
+          background: #E2E8F0;
+          transform: scale(0.97);
+        }
+      }
+
+      &.btn-danger {
+        background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+        color: #FFFFFF;
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+
+        &:active {
+          transform: scale(0.97);
+          filter: brightness(0.95);
+        }
+      }
+    }
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

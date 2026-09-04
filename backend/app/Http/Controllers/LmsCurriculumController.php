@@ -18,7 +18,11 @@ class LmsCurriculumController extends Controller
     public function getAdminBatches(Request $request)
     {
         $year = (int) $request->input('year', date('Y'));
-        $level = $request->input('level', 'ilanilai');
+        $rawLevel = trim($request->input('level', 'ilanilai'));
+        $level = strtolower($rawLevel);
+        if ($level === 'mudhunilai') {
+            $level = 'muthunilai';
+        }
         $today = now()->format('Y-m-d');
 
         $defaultBatches = [
@@ -72,7 +76,12 @@ class LmsCurriculumController extends Controller
             }
 
             $existing = CourseBatch::where('year', $year)
-                ->where('course_level', $level)
+                ->where(function ($q) use ($level, $rawLevel) {
+                    $q->whereRaw('LOWER(course_level) = ?', [$level])
+                      ->orWhere('course_level', $level)
+                      ->orWhere('course_level', $rawLevel)
+                      ->orWhere('course_level', strtoupper($level));
+                })
                 ->where('quarter', $b['quarter'])
                 ->first();
 
@@ -82,6 +91,7 @@ class LmsCurriculumController extends Controller
                 $existing->update([
                     'name'         => $b['name'],
                     'batch_code'   => $b['batch_code'],
+                    'course_level' => $level,
                     'start_date'   => $b['start_date'],
                     'end_date'     => $b['end_date'],
                     'status'       => $computedStatus,
@@ -90,7 +100,12 @@ class LmsCurriculumController extends Controller
         }
 
         $batches = CourseBatch::where('year', $year)
-            ->where('course_level', $level)
+            ->where(function ($q) use ($level, $rawLevel) {
+                $q->whereRaw('LOWER(course_level) = ?', [$level])
+                  ->orWhere('course_level', $level)
+                  ->orWhere('course_level', $rawLevel)
+                  ->orWhere('course_level', strtoupper($level));
+            })
             ->orderByRaw("CASE WHEN status = 'active' THEN 1 WHEN status = 'upcoming' THEN 2 WHEN status = 'completed' THEN 3 ELSE 4 END")
             ->orderBy('start_date', 'asc')
             ->get();
@@ -281,115 +296,150 @@ class LmsCurriculumController extends Controller
      */
     public function getStudentCurriculum(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        // If authenticated as student or user
-        $student = null;
-        if ($user) {
-            $student = Student::where('email', $user->email)
-                ->orWhere('student_id', $user->student_id ?? '')
-                ->first();
-        }
-
-        // Get student details from jathagam_details or fallback
-        $jathagam = ($student && $student->jathagam_details)
-            ? (is_string($student->jathagam_details) ? json_decode($student->jathagam_details, true) : (array)$student->jathagam_details)
-            : [];
-
-        $courseLevel = $jathagam['courseLevel'] ?? 'ilanilai';
-
-        // Determine student's registration date
-        $regDate = $student?->created_at ?? $user?->created_at ?? now();
-        $year    = (int) $regDate->format('Y');
-        $month   = (int) $regDate->format('m');
-
-        // Determine Quarter based on registration month:
-        // Jan-Mar => Q1, Apr-Jun => Q2, Jul-Sep => Q3, Oct-Dec => Q4
-        if ($month >= 1 && $month <= 3) {
-            $quarter = 'Q1';
-        } elseif ($month >= 4 && $month <= 6) {
-            $quarter = 'Q2';
-        } elseif ($month >= 7 && $month <= 9) {
-            $quarter = 'Q3';
-        } else {
-            $quarter = 'Q4';
-        }
-
-        // 1. Strict Batch Resolution for Student
-        $studentBatch = null;
-
-        // If student already has explicit batch_id in DB, check if valid
-        if ($student && $student->batch_id) {
-            $studentBatch = CourseBatch::find($student->batch_id);
-        }
-        if (!$studentBatch && $user && $user->batch_id) {
-            $studentBatch = CourseBatch::find($user->batch_id);
-        }
-
-        // If no explicit batch assigned, find matching quarter batch by registration date & level
-        if (!$studentBatch) {
-            $studentBatch = CourseBatch::where('year', $year)
-                ->where('course_level', $courseLevel)
-                ->where('quarter', $quarter)
-                ->first();
-        }
-
-        // If batch doesn't exist in DB yet, auto-seed and find it
-        if (!$studentBatch) {
-            $this->getAdminBatches(new Request(['year' => $year, 'level' => $courseLevel]));
-            $studentBatch = CourseBatch::where('year', $year)
-                ->where('course_level', $courseLevel)
-                ->where('quarter', $quarter)
-                ->first();
-        }
-
-        // Auto-assign batch_id to student record so student stays locked to their batch
-        if ($studentBatch) {
-            if ($student && !$student->batch_id) {
-                $student->update(['batch_id' => $studentBatch->id]);
+            // If authenticated as student or user
+            $student = null;
+            if ($user) {
+                $student = Student::where('email', $user->email)
+                    ->orWhere('student_id', $user->student_id ?? '')
+                    ->first();
             }
-            if ($user && !$user->batch_id) {
-                $user->update(['batch_id' => $studentBatch->id]);
+
+            // Get student details from jathagam_details or fallback
+            $jathagam = ($student && $student->jathagam_details)
+                ? (is_string($student->jathagam_details) ? json_decode($student->jathagam_details, true) : (array)$student->jathagam_details)
+                : [];
+
+            $rawLevel = trim($jathagam['courseLevel'] ?? 'ilanilai');
+            $courseLevel = strtolower($rawLevel);
+            if ($courseLevel === 'mudhunilai') {
+                $courseLevel = 'muthunilai';
             }
+
+            // Determine student's registration date safely
+            $rawDate = $student?->created_at ?? $user?->created_at ?? null;
+            $regDate = $rawDate ? \Illuminate\Support\Carbon::parse($rawDate) : now();
+            $year    = (int) $regDate->format('Y');
+            $month   = (int) $regDate->format('m');
+
+            // Determine Quarter based on registration month:
+            // Jan-Mar => Q1, Apr-Jun => Q2, Jul-Sep => Q3, Oct-Dec => Q4
+            if ($month >= 1 && $month <= 3) {
+                $quarter = 'Q1';
+            } elseif ($month >= 4 && $month <= 6) {
+                $quarter = 'Q2';
+            } elseif ($month >= 7 && $month <= 9) {
+                $quarter = 'Q3';
+            } else {
+                $quarter = 'Q4';
+            }
+
+            // 1. Strict Batch Resolution for Student (Case-Insensitive for course_level)
+            $studentBatch = null;
+
+            if ($student && $student->batch_id) {
+                $studentBatch = CourseBatch::find($student->batch_id);
+            }
+            if (!$studentBatch && $user && $user->batch_id) {
+                $studentBatch = CourseBatch::find($user->batch_id);
+            }
+
+            // If no explicit batch assigned, find matching quarter batch by registration date & level
+            if (!$studentBatch) {
+                $studentBatch = CourseBatch::where('year', $year)
+                    ->where(function ($q) use ($courseLevel, $rawLevel) {
+                        $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
+                          ->orWhere('course_level', $courseLevel)
+                          ->orWhere('course_level', $rawLevel)
+                          ->orWhere('course_level', strtoupper($courseLevel));
+                    })
+                    ->where('quarter', $quarter)
+                    ->first();
+            }
+
+            // If batch doesn't exist in DB yet, auto-seed and find it
+            if (!$studentBatch) {
+                try {
+                    $this->getAdminBatches(new Request(['year' => $year, 'level' => $courseLevel]));
+                } catch (\Throwable $e) {}
+                
+                $studentBatch = CourseBatch::where('year', $year)
+                    ->where(function ($q) use ($courseLevel, $rawLevel) {
+                        $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
+                          ->orWhere('course_level', $courseLevel)
+                          ->orWhere('course_level', $rawLevel)
+                          ->orWhere('course_level', strtoupper($courseLevel));
+                    })
+                    ->where('quarter', $quarter)
+                    ->first();
+            }
+
+            // Auto-assign batch_id to student record safely
+            if ($studentBatch && $student && !$student->batch_id) {
+                try {
+                    $student->batch_id = $studentBatch->id;
+                    $student->save();
+                } catch (\Throwable $e) {}
+            }
+
+            // 2. Fetch published lessons strictly for THIS student's batch
+            $curriculum = $studentBatch
+                ? DailyCurriculum::where('batch_id', $studentBatch->id)
+                    ->where(function ($q) {
+                        $q->where('is_published', true)
+                          ->orWhere('is_published', 1)
+                          ->orWhereNull('is_published');
+                    })
+                    ->orderBy('day_number', 'asc')
+                    ->get()
+                : collect([]);
+
+            // Get student completed day IDs
+            $completedDayIds = [];
+            if ($student) {
+                try {
+                    $completedDayIds = StudentDailyProgress::where('student_id', $student->id)
+                        ->where('is_completed', true)
+                        ->pluck('curriculum_id')
+                        ->toArray();
+                } catch (\Throwable $e) {}
+            }
+
+            // Attach completion flag to each day
+            $curriculumData = $curriculum->map(function ($item) use ($completedDayIds) {
+                $arr = $item->toArray();
+                $arr['is_completed'] = in_array($item->id, $completedDayIds);
+                return $arr;
+            });
+
+            return response()->json([
+                'success'          => true,
+                'student'          => $student ? [
+                    'id'         => $student->id,
+                    'name'       => $student->name,
+                    'email'      => $student->email,
+                    'student_id' => $student->student_id,
+                    'batch_id'   => $studentBatch?->id,
+                ] : null,
+                'active_batch'     => $studentBatch,
+                'curriculum'       => $curriculumData,
+                'completed_count'  => count($completedDayIds),
+                'total_count'      => $curriculum->count(),
+            ]);
+
+        } catch (\Throwable $ex) {
+            Log::error('getStudentCurriculum Error: ' . $ex->getMessage());
+            return response()->json([
+                'success'         => false,
+                'message'         => 'Error fetching curriculum: ' . $ex->getMessage(),
+                'active_batch'    => null,
+                'curriculum'      => [],
+                'completed_count' => 0,
+                'total_count'     => 0,
+            ], 200);
         }
-
-        // 2. Fetch ONLY published lessons created for THIS student's batch
-        $curriculum = $studentBatch
-            ? DailyCurriculum::where('batch_id', $studentBatch->id)
-                ->where('is_published', true)
-                ->orderBy('day_number', 'asc')
-                ->get()
-            : collect([]);
-
-        // Get student completed day IDs
-        $completedDayIds = [];
-        if ($student) {
-            $completedDayIds = StudentDailyProgress::where('student_id', $student->id)
-                ->where('is_completed', true)
-                ->pluck('curriculum_id')
-                ->toArray();
-        }
-
-        // Attach completion flag to each day
-        $curriculumData = $curriculum->map(function ($item) use ($completedDayIds) {
-            $arr = $item->toArray();
-            $arr['is_completed'] = in_array($item->id, $completedDayIds);
-            return $arr;
-        });
-
-        return response()->json([
-            'success'          => true,
-            'student'          => $student ? [
-                'id'         => $student->id,
-                'name'       => $student->name,
-                'email'      => $student->email,
-                'student_id' => $student->student_id,
-            ] : null,
-            'active_batch'     => $activeBatch,
-            'curriculum'       => $curriculumData,
-            'completed_count'  => count($completedDayIds),
-            'total_count'      => $curriculum->count(),
-        ]);
     }
 
     /**

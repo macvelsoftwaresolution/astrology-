@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { LoadingService } from '../../services/loading.service';
 import { Subscription } from 'rxjs';
 
@@ -65,11 +65,15 @@ export class SpinnerLoaderComponent implements OnInit, OnDestroy {
   isLoading = false;
   private sub!: Subscription;
 
-  constructor(private loadingService: LoadingService) {}
+  constructor(
+    private loadingService: LoadingService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.sub = this.loadingService.isLoading$.subscribe(loading => {
       this.isLoading = loading;
+      this.cdr.detectChanges();
     });
   }
 
