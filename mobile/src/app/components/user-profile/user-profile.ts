@@ -482,11 +482,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
 
   async downloadMatchPDF(match: any) {
     if (!match.report_data || match.report_data === 'null' || match.report_data === '{}') {
-      if (match.result_document) {
-        window.open(match.result_document, '_blank');
-      } else {
-        alert('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
-      }
+      alert('பொருத்தம் அறிக்கை இன்னும் தயாராகவில்லை. (Report not available yet)');
       return;
     }
 
@@ -500,10 +496,23 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     setTimeout(async () => {
       const element = document.getElementById('hidden-pdf-report');
       if (element) {
+        // Create a clone for perfect A4 rendering without mobile layout constraints
+        const clone = element.cloneNode(true) as HTMLElement;
+        clone.style.width = '800px';
+        clone.style.maxWidth = 'none';
+        clone.style.padding = '40px';
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '0';
+        clone.style.overflow = 'visible';
+        clone.style.background = '#ffffff';
+        clone.style.boxSizing = 'border-box';
+        document.body.appendChild(clone);
+
         try {
           let html2pdf = (window as any).html2pdf;
           if (!html2pdf) {
-            const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
+            const mod: any = await import('html2pdf.js');
             html2pdf = mod?.default || mod;
           }
           if (html2pdf) {
@@ -511,16 +520,19 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
               margin:       10,
               filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true },
+              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            await html2pdf().set(opt).from(element).save();
+            await html2pdf().set(opt).from(clone).save();
+            document.body.removeChild(clone);
           } else if (match.result_document) {
+            document.body.removeChild(clone);
             window.open(match.result_document, '_blank');
           }
         } catch (error) {
           console.error('Error generating PDF', error);
-          if (match.result_document) window.open(match.result_document, '_blank');
+          document.body.removeChild(clone);
+          alert('Error generating PDF.');
         }
       }
     }, 150);

@@ -215,8 +215,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadStudentCurriculum() {
-    if (!this.authService.isLoggedIn('education')) return;
-    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders('education')).subscribe({
+    if (!this.authService.isLoggedIn()) return;
+    this.http.get<any>(`${environment.apiUrl}/student/curriculum`, this.authService.getAuthHeaders()).subscribe({
       next: (res) => {
         if (res && res.curriculum) {
           this.curriculumDays = res.curriculum || [];
@@ -225,7 +225,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
         }
       },
       error: (err) => { 
-        this.showToast('Error loading curriculum: ' + err.message, 'danger');
+        console.error('Error loading student curriculum:', err);
       }
     });
   }
@@ -238,14 +238,14 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getFilteredStudentCurriculum(): any[] {
-    const completed = this.curriculumDays.filter(d => d.is_completed).length;
-    if (completed < 20) {
+    if (this.curriculumMonthFilter === 'm1') {
       return this.curriculumDays.filter(d => d.day_number >= 1 && d.day_number <= 20);
-    } else if (completed < 40) {
+    } else if (this.curriculumMonthFilter === 'm2') {
       return this.curriculumDays.filter(d => d.day_number >= 21 && d.day_number <= 40);
-    } else {
+    } else if (this.curriculumMonthFilter === 'm3') {
       return this.curriculumDays.filter(d => d.day_number >= 41 && d.day_number <= 60);
     }
+    return this.curriculumDays;
   }
 
   openDayDetail(day: any) {
@@ -1058,6 +1058,9 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   setTab(tab: 'home' | 'lessons' | 'library' | 'profile') {
     this.dashboardTab = tab;
     this.dashboardTabChange.emit(tab);
+    if (tab === 'lessons') {
+      this.loadStudentCurriculum();
+    }
   }
 
   handleBackClick(): boolean {
@@ -1152,10 +1155,16 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   showSeminarVideoModal = false;
   activeSeminarVideo: any = null;
+  videoLoadError = false;
 
   closeSeminarVideoModal() {
     this.showSeminarVideoModal = false;
     this.activeSeminarVideo = null;
+    this.videoLoadError = false;
+  }
+
+  onSeminarVideoError() {
+    this.videoLoadError = true;
   }
 
   isYouTubeUrl(url?: string): boolean {
@@ -1247,6 +1256,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     if (isPast) {
       const videoUrl = seminar?.recording_video_url || seminar?.video_url || url;
       if (videoUrl) {
+        this.videoLoadError = false;
         this.activeSeminarVideo = {
           ...seminar,
           recording_video_url: videoUrl

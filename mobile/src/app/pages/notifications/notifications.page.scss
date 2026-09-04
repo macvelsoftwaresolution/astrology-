@@ -472,3 +472,131 @@ $color-text-muted: #64748b;
     transform: translateX(3px);
   }
 }
+
+/* ================= CUSTOM LUXURY CONFIRMATION DIALOG ================= */
+.custom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInBackdrop 0.2s ease-out;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialogPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.custom-dialog-card {
+  background: #FFFDF0;
+  border: 1.5px solid rgba(162, 123, 56, 0.35);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 380px;
+  padding: 26px 22px 22px 22px;
+  text-align: center;
+  box-shadow: 0 25px 60px -15px rgba(74, 14, 23, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  animation: dialogPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+
+  .dialog-icon-glow {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 16px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+
+    &.red {
+      background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+      color: #e11d48;
+      box-shadow: 0 8px 24px rgba(225, 29, 72, 0.25);
+      border: 2px solid #fda4af;
+    }
+
+    &.amber {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      color: #d97706;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.25);
+      border: 2px solid #fcd34d;
+    }
+  }
+
+  .dialog-title {
+    font-family: 'Noto Serif Tamil', 'Mukta Malar', serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #4A0E17;
+    margin: 0 0 8px 0;
+    line-height: 1.35;
+  }
+
+  .dialog-description {
+    font-size: 0.86rem;
+    color: #64748b;
+    line-height: 1.55;
+    margin: 0 0 22px 0;
+    font-weight: 500;
+  }
+
+  .dialog-actions-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    .dialog-btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      border: none;
+
+      &.btn-cancel {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+
+        &:active {
+          transform: scale(0.96);
+          background: #e2e8f0;
+        }
+      }
+
+      &.btn-danger {
+        background: linear-gradient(135deg, #4A0E17 0%, #881337 100%);
+        color: #FFFDF0;
+        box-shadow: 0 4px 14px rgba(74, 14, 23, 0.3);
+
+        &:active {
+          transform: scale(0.96);
+          opacity: 0.92;
+        }
+      }
+    }
+  }
+}

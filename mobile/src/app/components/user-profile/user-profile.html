@@ -497,10 +497,20 @@
             @if (m.result_document || (m.report_data && m.report_data !== 'null' && m.report_data !== '{}')) {
             <div class="mmc-footer-actions"
               style="margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 12px; text-align: center;">
-              <button (click)="downloadMatchPDF(m)" class="btn-download-chart"
-                style="display: inline-block; width: 100%; border: none; cursor: pointer; background: #fff; text-align: center; color: #2563eb;">
-                <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பொருத்தம் அறிக்கை பதிவிறக்கம் (Download)
-              </button>
+              
+              @if (m.result_document) {
+                <a [href]="m.result_document" target="_blank" class="btn-download-chart"
+                  style="display: inline-block; width: 100%; border: none; cursor: pointer; background: rgba(16,185,129,0.1); text-align: center; color: #10b981; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-weight: bold; text-decoration: none;">
+                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பதிவேற்றப்பட்ட அறிக்கை (Uploaded PDF)
+                </a>
+              }
+
+              @if (m.report_data && m.report_data !== 'null' && m.report_data !== '{}') {
+                <button (click)="downloadMatchPDF(m)" class="btn-download-chart"
+                  style="display: inline-block; width: 100%; border: none; cursor: pointer; background: rgba(37,99,235,0.1); text-align: center; color: #2563eb; padding: 10px; border-radius: 8px; font-weight: bold;">
+                  <i class="bi bi-file-earmark-text-fill me-1"></i> ஜோதிடர் விரிவான அறிக்கை (System Report)
+                </button>
+              }
             </div>
             }
           </div>

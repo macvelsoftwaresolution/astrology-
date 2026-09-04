@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
+import * as html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-profile',
@@ -326,12 +327,12 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
                         @if (m.report_data.astrologer_title) {
                           <div style="font-size:12px; color:#ffd700; margin-bottom:2px;">{{ m.report_data.astrologer_title }}</div>
                         }
-                        @if (m.report_data.astrologer_name) {
-                          <div style="font-size:12px; color:#fff;">{{ m.report_data.astrologer_name }}</div>
-                        }
                         @if (m.report_data.astrologer_opinion) {
                           <div style="font-size:12px; color:#cbd5e1; margin-top:6px; font-style:italic;">"{{ m.report_data.astrologer_opinion }}"</div>
                         }
+                        <button (click)="openReportModal(m)" style="margin-top: 10px; width: 100%; background: linear-gradient(135deg, #d4af37, #aa7c11); color: #000; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                          <i class="bi bi-eye-fill"></i> முழு அறிக்கையை காண்க (View Full Report)
+                        </button>
                       </div>
                     }
                   </div>
@@ -430,6 +431,82 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
           @if (prefMsg) {
             <p [class.success]="prefSuccess" class="msg">{{ prefMsg }}</p>
           }
+        </div>
+      }
+
+      <!-- FULL REPORT MODAL OVERLAY -->
+      @if (selectedReportMatch) {
+        <div class="modal-overlay">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>திருமணப் பொருத்த அறிக்கை</h3>
+              <button class="close-btn" (click)="closeReportModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body" id="report-pdf-content">
+              <!-- Report Header -->
+              <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #d4af37; padding-bottom: 15px;">
+                <h2 style="color: #d4af37; margin: 0; font-size: 20px; font-weight: 800;">{{ selectedReportMatch.report_data.astrologer_title || 'ஜோதிடாலயம்' }}</h2>
+                <p style="color: #000; margin: 5px 0; font-weight: bold; font-size: 14px;">{{ selectedReportMatch.report_data.astrologer_name }}</p>
+                <p style="color: #333; margin: 0; font-size: 12px;">{{ selectedReportMatch.report_data.astrologer_address }}</p>
+                <p style="color: #333; margin: 5px 0 0; font-size: 12px;">Contact: {{ selectedReportMatch.report_data.astrologer_phone }}</p>
+              </div>
+
+              <!-- Couple Details -->
+              <div style="display: flex; justify-content: space-between; margin-bottom: 20px; background: #fdfbf7; border: 1px solid #e2d3a3; padding: 10px; border-radius: 8px;">
+                <div style="width: 48%; color: #000;">
+                  <h4 style="color: #aa7c11; margin: 0 0 10px; border-bottom: 1px dashed #aa7c11; padding-bottom: 5px;">ஆண் விவரம்</h4>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>பெயர்:</strong> {{ selectedReportMatch.report_data.boy_name }}</p>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>ராசி:</strong> {{ selectedReportMatch.report_data.boy_rasi }}</p>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>நட்சத்திரம்:</strong> {{ selectedReportMatch.report_data.boy_star }}</p>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>வயது:</strong> {{ selectedReportMatch.report_data.boy_age }}</p>
+                </div>
+                <div style="width: 48%; color: #000;">
+                  <h4 style="color: #aa7c11; margin: 0 0 10px; border-bottom: 1px dashed #aa7c11; padding-bottom: 5px;">பெண் விவரம்</h4>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>பெயர்:</strong> {{ selectedReportMatch.report_data.girl_name }}</p>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>ராசி:</strong> {{ selectedReportMatch.report_data.girl_rasi }}</p>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>நட்சத்திரம்:</strong> {{ selectedReportMatch.report_data.girl_star }}</p>
+                  <p style="margin: 3px 0; font-size: 12px;"><strong>வயது:</strong> {{ selectedReportMatch.report_data.girl_age }}</p>
+                </div>
+              </div>
+
+              <!-- 11 Poruthangal Table -->
+              <h4 style="color: #000; margin-bottom: 10px;">11 பொருத்தங்கள்</h4>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; color: #000; font-size: 12px;">
+                <thead>
+                  <tr style="background: #f0e6d2;">
+                    <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">பொருத்தம்</th>
+                    <th style="border: 1px solid #ccc; padding: 6px; text-align: center;">நிலை (Status)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of selectedReportMatch.report_data.poruthangal; track p.name) {
+                    <tr>
+                      <td style="border: 1px solid #ccc; padding: 6px;">{{ p.name }}</td>
+                      <td style="border: 1px solid #ccc; padding: 6px; text-align: center; font-weight: bold;" [style.color]="p.status === 'உண்டு' ? 'green' : (p.status === 'இல்லை' ? 'red' : '#000')">{{ p.status || '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+              <!-- Summary -->
+              <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 8px; color: #000;">
+                <p style="margin: 5px 0; font-size: 13px;"><strong>மொத்த பொருத்தம்:</strong> <span style="color: #d4af37; font-size: 16px;">{{ selectedReportMatch.report_data.total_porutham }}</span></p>
+                <p style="margin: 5px 0; font-size: 13px;"><strong>முக்கிய பொருத்தம்:</strong> {{ selectedReportMatch.report_data.important_porutham }}</p>
+                <p style="margin: 10px 0 5px; font-size: 13px;"><strong>ஜோதிடர் குறிப்பு:</strong></p>
+                <p style="margin: 0; font-style: italic; color: #444; font-size: 13px;">"{{ selectedReportMatch.report_data.astrologer_opinion }}"</p>
+              </div>
+            </div>
+            
+            <div class="modal-footer">
+              <button class="download-btn" (click)="downloadPdf()" [disabled]="isDownloadingPdf">
+                @if (isDownloadingPdf) {
+                  <ion-spinner name="dots" style="width: 24px; color: #000;"></ion-spinner>
+                } @else {
+                  <i class="bi bi-file-earmark-pdf-fill"></i> Download PDF / Image
+                }
+              </button>
+            </div>
+          </div>
         </div>
       }
 
@@ -562,6 +639,15 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
     .toggle-slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
     .toggle-switch input:checked + .toggle-slider { background: linear-gradient(135deg, #d4af37, #aa7c11); }
     .toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+    .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .modal-header { padding: 15px 20px; background: #fdfbf7; border-bottom: 1px solid #e2d3a3; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { margin: 0; color: #aa7c11; font-size: 16px; font-weight: bold; }
+    .close-btn { background: transparent; border: none; font-size: 20px; color: #333; cursor: pointer; }
+    .modal-body { padding: 20px; overflow-y: auto; background: #fff; }
+    .modal-footer { padding: 15px 20px; background: #fdfbf7; border-top: 1px solid #e2d3a3; }
+    .download-btn { width: 100%; background: linear-gradient(135deg, #d4af37, #aa7c11); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
   `]
 })
 export class ProfilePage implements OnInit {
@@ -572,7 +658,7 @@ export class ProfilePage implements OnInit {
     { key: 'payments', icon: 'bi bi-credit-card-fill', labelKey: 'profile.tabPayments' },
     { key: 'notifications', icon: 'bi bi-bell-fill', labelKey: 'profile.tabNotifs' },
     { key: 'preferences', icon: 'bi bi-gear-fill', labelKey: 'profile.tabSettings' },
-      { key: 'marriage', icon: 'bi bi-suit-heart-fill', labelKey: 'matching.matchRecords' },
+    { key: 'marriage', icon: 'bi bi-suit-heart-fill', labelKey: 'matching.matchRecords' },
   ];
   activeTab = 'profile';
 
@@ -597,14 +683,17 @@ export class ProfilePage implements OnInit {
   notifications: any[] = [];
   loadingNotifs = false;
 
-    myMatches: any[] = [];
-    myProfiles: any[] = [];
-    loadingMatches = false;
+  myMatches: any[] = [];
+  myProfiles: any[] = [];
+  loadingMatches = false;
   unreadCount = 0;
 
   dailyNotifPref = true;
   prefMsg = '';
   prefSuccess = false;
+
+  selectedReportMatch: any = null;
+  isDownloadingPdf = false;
 
   constructor(
     private http: HttpClient,
@@ -654,8 +743,8 @@ export class ProfilePage implements OnInit {
     this.loadPayments();
     this.loadNotifications();
     this.loadPreferences();
-      this.loadMyMatches();
-      this.loadMyProfiles();
+    this.loadMyMatches();
+    this.loadMyProfiles();
   }
 
   loadExamResults() {
@@ -790,6 +879,54 @@ export class ProfilePage implements OnInit {
         this.prefMsg = 'பிழை ஏற்பட்டது.';
         this.prefSuccess = false;
       }
+    });
+  }
+
+  openReportModal(match: any) {
+    this.selectedReportMatch = match;
+  }
+
+  closeReportModal() {
+    this.selectedReportMatch = null;
+  }
+
+  downloadPdf() {
+    this.isDownloadingPdf = true;
+    const element = document.getElementById('report-pdf-content');
+    if (!element) {
+      this.isDownloadingPdf = false;
+      return;
+    }
+    
+    // Create a clone for perfect A4 rendering without mobile layout constraints
+    const clone = element.cloneNode(true) as HTMLElement;
+    clone.style.width = '800px';
+    clone.style.maxWidth = 'none';
+    clone.style.padding = '40px';
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.overflow = 'visible';
+    clone.style.background = '#ffffff';
+    clone.style.boxSizing = 'border-box';
+    document.body.appendChild(clone);
+
+    const opt = {
+      margin:       [10, 10, 10, 10],
+      filename:     `marriage_report_${this.selectedReportMatch.report_data.boy_name}_${this.selectedReportMatch.report_data.girl_name}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    (html2pdf as any)().from(clone).set(opt).save().then(() => {
+      this.isDownloadingPdf = false;
+      document.body.removeChild(clone);
+    }).catch((err: any) => {
+      console.error('PDF Generation Error:', err);
+      this.isDownloadingPdf = false;
+      document.body.removeChild(clone);
+      alert('Error generating PDF.');
     });
   }
 }
