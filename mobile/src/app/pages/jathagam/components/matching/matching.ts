@@ -478,9 +478,36 @@ export class MatchingComponent {
 
   reset() { this.step = 'form'; this.result = null; }
 
-  printReport() {
+  async printReport() {
     if (typeof window !== 'undefined') {
-      window.print();
+      const element = document.getElementById('printable-report');
+      if (element) {
+        try {
+          // Hide the print action bar before generating PDF
+          const actionBars = element.querySelectorAll('.print-action-bar');
+          actionBars.forEach((el: any) => el.style.display = 'none');
+
+          const html2pdf = (await import('html2pdf.js')).default;
+          
+          const opt: any = {
+            margin:       10,
+            filename:     `Jathagam-Match-${this.result?.girl_name || 'Girl'}-${this.result?.boy_name || 'Boy'}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          
+          await html2pdf().set(opt).from(element).save();
+          
+          // Restore action bar
+          actionBars.forEach((el: any) => el.style.display = '');
+        } catch (error) {
+          console.error('Error generating PDF', error);
+          window.print(); // Fallback
+        }
+      } else {
+        window.print();
+      }
     }
   }
 }

@@ -495,13 +495,13 @@
                 <small>{{ m.girl_rasi }} - {{ m.girl_star }}</small>
               </div>
             </div>
-            @if (m.result_document) {
+            @if (m.result_document || (m.report_data && m.report_data !== 'null' && m.report_data !== '{}')) {
             <div class="mmc-footer-actions"
               style="margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 12px; text-align: center;">
-              <a [href]="m.result_document" target="_blank" class="btn-download-chart"
-                style="display: inline-block; width: 100%;">
+              <button (click)="downloadMatchPDF(m)" class="btn-download-chart"
+                style="display: inline-block; width: 100%; border: none; cursor: pointer; background: #fff; text-align: center; color: #2563eb;">
                 <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பொருத்தம் அறிக்கை பதிவிறக்கம் (Download)
-              </a>
+              </button>
             </div>
             }
           </div>
@@ -592,6 +592,146 @@
 
       <div class="modal-footer-box">
         <button class="btn-app-gold-full" (click)="closeOptionDetail()">{{ 'common.close' | translate }}</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- HIDDEN PDF TEMPLATE -->
+  @if (pdfMatch && pdfMatch.report_data) {
+  <div style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="hidden-pdf-report" style="width: 800px; padding: 20px; background: #fff; color: #000; font-family: sans-serif;">
+      <!-- OFFICIAL REPORT CARD STYLING (Inlined for PDF) -->
+      <style>
+        .p-official-report-card { background: #ffffff; color: #0f172a; border: 2px solid #d97706; border-radius: 16px; padding: 20px; box-sizing: border-box; }
+        .p-report-header { text-align: center; border-bottom: 2px solid #fef3c7; padding-bottom: 12px; margin-bottom: 16px; }
+        .p-report-god-title { font-size: 14px; font-weight: 700; color: #b45309; margin-bottom: 4px; }
+        .p-report-astro-title { font-size: 22px; font-weight: 800; color: #78350f; margin: 0 0 6px 0; }
+        .p-report-astro-sub { font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 4px; }
+        .p-report-astro-contact { font-size: 12px; color: #475569; margin-bottom: 12px; }
+        .p-report-main-heading { font-size: 18px; font-weight: 800; color: #ffffff; background: #d97706; display: inline-block; padding: 8px 20px; border-radius: 20px; margin: 0; }
+        .p-report-couple-grid { display: flex; gap: 16px; margin-bottom: 20px; }
+        .p-couple-box { flex: 1; border-radius: 12px; padding: 16px; font-size: 13px; box-sizing: border-box; }
+        .p-couple-box.girl { background: #fff1f2; border: 1px solid #fecdd3; }
+        .p-couple-box.boy { background: #eff6ff; border: 1px solid #bfdbfe; }
+        .p-couple-box h3 { margin: 0 0 10px 0; font-size: 15px; font-weight: 800; }
+        .p-couple-box.girl h3 { color: #e11d48; }
+        .p-couple-box.boy h3 { color: #2563eb; }
+        .p-couple-box .row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #ccc; }
+        .p-couple-box .row span { color: #64748b; }
+        .p-couple-box .row strong { color: #0f172a; }
+        .p-porutham-table-wrap { margin-bottom: 20px; }
+        .p-porutham-table-wrap h4 { font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 10px 0; }
+        .p-porutham-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .p-porutham-item { display: flex; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 8px; font-size: 13px; }
+        .p-p-name { font-weight: 700; color: #1e293b; }
+        .p-p-status { font-weight: 800; padding: 2px 10px; border-radius: 6px; }
+        .p-p-status.pass { background: #dcfce7; color: #166534; }
+        .p-p-status.warn { background: #fef3c7; color: #92400e; }
+        .p-p-status.fail { background: #fee2e2; color: #991b1b; }
+        .p-house-analysis-wrap { margin-bottom: 20px; }
+        .p-house-analysis-wrap h4 { font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 10px 0; }
+        .p-house-grid { display: flex; gap: 16px; }
+        .p-h-col { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 12px; box-sizing: border-box; }
+        .p-h-col h5 { margin: 0 0 8px 0; font-size: 14px; font-weight: 800; }
+        .p-h-col.girl-h h5 { color: #e11d48; }
+        .p-h-col.boy-h h5 { color: #2563eb; }
+        .p-h-col p { margin: 0 0 6px 0; color: #334155; }
+        .p-analysis-text { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 8px; }
+        .p-report-verdict-box { background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 16px; margin-bottom: 10px; }
+        .p-verdict-top { display: flex; justify-content: space-between; font-size: 15px; color: #166534; margin-bottom: 10px; border-bottom: 1px solid #bbf7d0; padding-bottom: 8px; font-weight: 800; }
+        .p-verdict-opinion { font-size: 14px; color: #14532d; line-height: 1.5; }
+      </style>
+
+      <div class="p-official-report-card">
+        <div class="p-report-header">
+          <div class="p-report-god-title">ஓம் நமச்சிவாய</div>
+          <h2 class="p-report-astro-title">{{ pdfMatch.report_data.astrologer_title || 'ஓம் பிரகாஷ்பதி ஜோதிடாலயம்' }}</h2>
+          <div class="p-report-astro-sub">{{ pdfMatch.report_data.astrologer_name || 'தலைமை ஜோதிடர்' }}</div>
+          <div class="p-report-astro-contact">{{ pdfMatch.report_data.astrologer_address }} | {{ pdfMatch.report_data.astrologer_phone }}</div>
+          <h1 class="p-report-main-heading">திருமணப் பொருத்தம் அறிக்கை</h1>
+        </div>
+
+        <div class="p-report-couple-grid">
+          <div class="p-couple-box girl">
+            <h3>👧 பெண் ஜாதகி</h3>
+            <div class="row"><span>பெயர்:</span> <strong>{{ pdfMatch.report_data.girl_name || pdfMatch.girl_name }}</strong></div>
+            <div class="row"><span>நட்சத்திரம்:</span> <strong>{{ pdfMatch.report_data.girl_star || pdfMatch.girl_star }}</strong></div>
+            <div class="row"><span>ராசி:</span> <strong>{{ pdfMatch.report_data.girl_rasi || pdfMatch.girl_rasi }}</strong></div>
+            @if (pdfMatch.report_data.girl_age) { <div class="row"><span>வயது:</span> <strong>{{ pdfMatch.report_data.girl_age }}</strong></div> }
+            @if (pdfMatch.report_data.girl_mirugam) { <div class="row"><span>மிருகம்:</span> <strong>{{ pdfMatch.report_data.girl_mirugam }}</strong></div> }
+            @if (pdfMatch.report_data.girl_patshi) { <div class="row"><span>பட்சி:</span> <strong>{{ pdfMatch.report_data.girl_patshi }}</strong></div> }
+            @if (pdfMatch.report_data.girl_maram) { <div class="row"><span>மரம்:</span> <strong>{{ pdfMatch.report_data.girl_maram }}</strong></div> }
+            @if (pdfMatch.report_data.girl_ganam) { <div class="row"><span>கணம்:</span> <strong>{{ pdfMatch.report_data.girl_ganam }}</strong></div> }
+            @if (pdfMatch.report_data.girl_nadi) { <div class="row"><span>நாடி:</span> <strong>{{ pdfMatch.report_data.girl_nadi }}</strong></div> }
+          </div>
+
+          <div class="p-couple-box boy">
+            <h3>👦 ஆண் ஜாதகர்</h3>
+            <div class="row"><span>பெயர்:</span> <strong>{{ pdfMatch.report_data.boy_name || pdfMatch.boy_name }}</strong></div>
+            <div class="row"><span>நட்சத்திரம்:</span> <strong>{{ pdfMatch.report_data.boy_star || pdfMatch.boy_star }}</strong></div>
+            <div class="row"><span>ராசி:</span> <strong>{{ pdfMatch.report_data.boy_rasi || pdfMatch.boy_rasi }}</strong></div>
+            @if (pdfMatch.report_data.boy_age) { <div class="row"><span>வயது:</span> <strong>{{ pdfMatch.report_data.boy_age }}</strong></div> }
+            @if (pdfMatch.report_data.boy_mirugam) { <div class="row"><span>மிருகம்:</span> <strong>{{ pdfMatch.report_data.boy_mirugam }}</strong></div> }
+            @if (pdfMatch.report_data.boy_patshi) { <div class="row"><span>பட்சி:</span> <strong>{{ pdfMatch.report_data.boy_patshi }}</strong></div> }
+            @if (pdfMatch.report_data.boy_maram) { <div class="row"><span>மரம்:</span> <strong>{{ pdfMatch.report_data.boy_maram }}</strong></div> }
+            @if (pdfMatch.report_data.boy_ganam) { <div class="row"><span>கணம்:</span> <strong>{{ pdfMatch.report_data.boy_ganam }}</strong></div> }
+            @if (pdfMatch.report_data.boy_nadi) { <div class="row"><span>நாடி:</span> <strong>{{ pdfMatch.report_data.boy_nadi }}</strong></div> }
+          </div>
+        </div>
+
+        <div class="p-porutham-table-wrap">
+          <h4>📋 11 திருமணப் பொருத்தங்கள் பட்டியல்</h4>
+          <div class="p-porutham-grid">
+            @for (p of pdfMatch.report_data.poruthangal; track p.name) {
+              <div class="p-porutham-item">
+                <span class="p-p-name">{{ p.name }}</span>
+                <span class="p-p-status" [class.pass]="p.status === 'பொருந்தும்'" [class.warn]="p.status === 'சுமார்'" [class.fail]="p.status === 'பொருந்தாது'">
+                  {{ p.status }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (pdfMatch.report_data.girl_house_2 || pdfMatch.report_data.boy_house_2 || pdfMatch.report_data.girl_analysis || pdfMatch.report_data.boy_analysis) {
+          <div class="p-house-analysis-wrap">
+            <h4>🪐 ஜாதகப் பொருத்தல் & தோஷ ஆய்வுகள்</h4>
+            <div class="p-house-grid">
+              <div class="p-h-col girl-h">
+                <h5>பெண் ஜாதக ஆய்வு</h5>
+                @if (pdfMatch.report_data.girl_house_2) { <p><strong>2மிடம் (குடும்பம்):</strong> {{ pdfMatch.report_data.girl_house_2 }}</p> }
+                @if (pdfMatch.report_data.girl_house_5) { <p><strong>5மிடம் (புத்திர பாக்கியம்):</strong> {{ pdfMatch.report_data.girl_house_5 }}</p> }
+                @if (pdfMatch.report_data.girl_house_7) { <p><strong>7மிடம் (களத்திரம்):</strong> {{ pdfMatch.report_data.girl_house_7 }}</p> }
+                @if (pdfMatch.report_data.girl_guru_balam) { <p><strong>குருபலம்:</strong> {{ pdfMatch.report_data.girl_guru_balam }}</p> }
+                @if (pdfMatch.report_data.girl_dosham) { <p><strong>தோஷ அமைப்புகள்:</strong> {{ pdfMatch.report_data.girl_dosham }}</p> }
+                @if (pdfMatch.report_data.girl_dhasa_sandhi) { <p><strong>திசா சந்தி:</strong> {{ pdfMatch.report_data.girl_dhasa_sandhi }}</p> }
+                @if (pdfMatch.report_data.girl_analysis) { <p class="p-analysis-text"><strong>ஜோதிடர் ஆய்வு:</strong> {{ pdfMatch.report_data.girl_analysis }}</p> }
+              </div>
+
+              <div class="p-h-col boy-h">
+                <h5>ஆண் ஜாதக ஆய்வு</h5>
+                @if (pdfMatch.report_data.boy_house_2) { <p><strong>2மிடம் (குடும்பம்):</strong> {{ pdfMatch.report_data.boy_house_2 }}</p> }
+                @if (pdfMatch.report_data.boy_house_5) { <p><strong>5மிடம் (புத்திர பாக்கியம்):</strong> {{ pdfMatch.report_data.boy_house_5 }}</p> }
+                @if (pdfMatch.report_data.boy_house_7) { <p><strong>7மிடம் (களத்திரம்):</strong> {{ pdfMatch.report_data.boy_house_7 }}</p> }
+                @if (pdfMatch.report_data.boy_guru_balam) { <p><strong>குருபலம்:</strong> {{ pdfMatch.report_data.boy_guru_balam }}</p> }
+                @if (pdfMatch.report_data.boy_dosham) { <p><strong>தோஷ அமைப்புகள்:</strong> {{ pdfMatch.report_data.boy_dosham }}</p> }
+                @if (pdfMatch.report_data.boy_dhasa_sandhi) { <p><strong>திசா சந்தி:</strong> {{ pdfMatch.report_data.boy_dhasa_sandhi }}</p> }
+                @if (pdfMatch.report_data.boy_analysis) { <p class="p-analysis-text"><strong>ஜோதிடர் ஆய்வு:</strong> {{ pdfMatch.report_data.boy_analysis }}</p> }
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="p-report-verdict-box">
+          <div class="p-verdict-top">
+            <span class="v-total">மொத்தப்பொருத்தம்: <strong>{{ pdfMatch.report_data.total_porutham || '8 / 10 பொருத்தம்' }}</strong></span>
+            <span class="v-imp"><strong>{{ pdfMatch.report_data.important_porutham || 'முக்கிய பொருத்தம் உண்டு' }}</strong></span>
+          </div>
+          <div class="p-verdict-opinion">
+            <strong>ஜோதிடர் கருத்து:</strong> {{ pdfMatch.report_data.astrologer_opinion }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
