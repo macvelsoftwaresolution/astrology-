@@ -603,11 +603,11 @@
       </p>
 
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <!-- Option 1: Student Only -->
+        <!-- Option 1: Student Access Only -->
         <button type="button" (click)="confirmDelete('student_only')"
           style="text-align:left;padding:14px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;cursor:pointer;transition:all 0.2s;">
           <div style="font-weight:700;color:#b45309;font-size:14px;display:flex;align-items:center;gap:6px;">
-            <i class="bi bi-journal-x"></i> {{ translationService.currentLanguage() === 'ta' ? '1. மாணவர் சேர்க்கை மட்டும் நீக்கு (Revoke Student Access Only)' : '1. Revoke Student Access Only' }}
+            <i class="bi bi-journal-x"></i> {{ translationService.currentLanguage() === 'ta' ? '1. மாணவர் சேர்க்கை மட்டும் நீக்கு (Student ID Only)' : '1. Revoke Student Access Only' }}
           </div>
           <div style="font-size:12px;color:#78350f;margin-top:6px;line-height:1.4;">
             {{ translationService.currentLanguage() === 'ta' 
@@ -616,11 +616,24 @@
           </div>
         </button>
 
-        <!-- Option 2: Full Delete -->
+        <!-- Option 2: Astrology Member Only -->
+        <button type="button" (click)="confirmDelete('astrology_only')"
+          style="text-align:left;padding:14px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;cursor:pointer;transition:all 0.2s;">
+          <div style="font-weight:700;color:#0369a1;font-size:14px;display:flex;align-items:center;gap:6px;">
+            <i class="bi bi-person-badge-fill"></i> {{ translationService.currentLanguage() === 'ta' ? '2. ஜோதிட பயனர் கணக்கு மட்டும் நீக்கு (Astrology Member Only)' : '2. Revoke Astrology Member Account Only' }}
+          </div>
+          <div style="font-size:12px;color:#0c4a6e;margin-top:6px;line-height:1.4;">
+            {{ translationService.currentLanguage() === 'ta' 
+              ? 'ஜோதிட பயனர் கணக்கு நீக்கப்படும். இவர் Email/Phone மூலம் ஜோதிட ஆப்பில் Login செய்ய முடியாது. ஆனால் மாணவர் பாடநெறியில் Student ID வைத்து Login செய்யலாம்.' 
+              : 'Astrology member account will be deleted. Email/Phone login will fail, but Student ID login for Learn section remains active.' }}
+          </div>
+        </button>
+
+        <!-- Option 3: Full Delete -->
         <button type="button" (click)="confirmDelete('full')"
           style="text-align:left;padding:14px 16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;cursor:pointer;transition:all 0.2s;">
           <div style="font-weight:700;color:#b91c1c;font-size:14px;display:flex;align-items:center;gap:6px;">
-            <i class="bi bi-person-x-fill"></i> {{ translationService.currentLanguage() === 'ta' ? '2. முழு கணக்கையும் நீக்கு (Delete Entire Account Completely)' : '2. Delete Entire Account Completely' }}
+            <i class="bi bi-trash3-fill"></i> {{ translationService.currentLanguage() === 'ta' ? '3. முழு கணக்கையும் நீக்கு (Delete Entire Account Completely)' : '3. Delete Entire Account Completely' }}
           </div>
           <div style="font-size:12px;color:#7f1d1d;margin-top:6px;line-height:1.4;">
             {{ translationService.currentLanguage() === 'ta' 

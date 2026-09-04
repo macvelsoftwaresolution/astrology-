@@ -288,6 +288,22 @@ class UserProfileController extends Controller
             ]);
         }
 
+        // MODE 2: ASTROLOGY MEMBER ONLY DELETE
+        if ($mode === 'astrology_only') {
+            if ($user) {
+                DB::table('users')->where('id', $user->id)->delete();
+                DB::table('personal_access_tokens')
+                    ->where('tokenable_type', 'App\\Models\\User')
+                    ->where('tokenable_id', $user->id)
+                    ->delete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கப்பட்டது. மாணவர் பாடநெறி கணக்கில் (Student ID) தொடர்ந்து செயல்படலாம்.'
+            ]);
+        }
+
         // FULL DELETE MODE (default)
         if ($user) {
             DB::table('users')->where('id', $user->id)->delete();

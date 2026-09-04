@@ -372,13 +372,13 @@ export class UsersTabComponent implements OnInit {
     }
   }
 
-  confirmDelete(mode: 'student_only' | 'full'): void {
+  confirmDelete(mode: 'student_only' | 'astrology_only' | 'full'): void {
     if (!this.selectedUserForDelete) return;
     const id = this.selectedUserForDelete.id;
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}?mode=${mode}`, headers).subscribe({
       next: (res) => {
-        const msg = res.message || (mode === 'student_only' ? 'மாணவர் சேர்க்கை மட்டும் நீக்கப்பட்டது' : 'பயனர் வெற்றிகரமாக நீக்கப்பட்டார்.');
+        const msg = res.message || (mode === 'student_only' ? 'மாணவர் சேர்க்கை மட்டும் நீக்கப்பட்டது' : (mode === 'astrology_only' ? 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கப்பட்டது' : 'பயனர் வெற்றிகரமாக நீக்கப்பட்டார்.'));
         this.toastService.success(msg, 'நீக்கப்பட்டது');
         this.openDeleteModal = false;
         this.selectedUserForDelete = null;
