@@ -346,12 +346,33 @@ export class UsersTabComponent implements OnInit {
     return this.nonAdminUsers.length;
   }
 
-  deleteUser(id: number): void {
-    if (!confirm('Are you sure you want to delete this registered user?')) return;
+  openDeleteModal = false;
+  selectedUserForDelete: any = null;
+
+  deleteUser(userOrId: any): void {
+    const user = typeof userOrId === 'object' ? userOrId : this.users.find(u => u.id === userOrId);
+    if (!user) return;
+
+    this.selectedUserForDelete = user;
+    if (this.isStudent(user)) {
+      this.openDeleteModal = true;
+    } else {
+      if (confirm('Are you sure you want to delete this registered user?')) {
+        this.confirmDelete('full');
+      }
+    }
+  }
+
+  confirmDelete(mode: 'student_only' | 'full'): void {
+    if (!this.selectedUserForDelete) return;
+    const id = this.selectedUserForDelete.id;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}`, headers).subscribe({
-      next: () => {
-        this.toastService.success('User deleted successfully.', 'பயனர் நீக்கப்பட்டார்');
+    this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}?mode=${mode}`, headers).subscribe({
+      next: (res) => {
+        const msg = res.message || (mode === 'student_only' ? 'மாணவர் சேர்க்கை மட்டும் நீக்கப்பட்டது' : 'பயனர் கணக்கு நீக்கப்பட்டது');
+        this.toastService.success(msg, 'நீக்கப்பட்டது');
+        this.openDeleteModal = false;
+        this.selectedUserForDelete = null;
         this.loadUsers();
       },
       error: () => this.toastService.error('Failed to delete user.', 'பிழை ஏற்பட்டது')

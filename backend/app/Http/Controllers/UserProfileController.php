@@ -221,25 +221,103 @@ class UserProfileController extends Controller
     }
 
     /**
-     * Admin: Delete user account (Protected against deleting admins)
+     * Admin: Delete user account (Options: mode=student_only OR mode=full)
      */
-    public function deleteUser($id)
+    public function deleteUser(Request $request, $id)
     {
-        $deleted = DB::table('users')
-            ->where('id', $id)
-            ->where('role', '!=', 'admin')
-            ->delete();
+        $mode = $request->query('mode', $request->input('mode', 'full'));
 
-        if (!$deleted) {
+        $user = DB::table('users')->where('id', $id)->where('role', '!=', 'admin')->first();
+        $student = DB::table('students')->where('id', $id)->orWhere('student_id', $id)->first();
+
+        if (!$user && $student) {
+            $user = DB::table('users')
+                ->where('role', '!=', 'admin')
+                ->where(function($q) use ($student) {
+                    if ($student->email) $q->orWhere('email', $student->email);
+                    if ($student->phone) $q->orWhere('phone', $student->phone);
+                    if ($student->student_id) $q->orWhere('student_id', $student->student_id);
+                })
+                ->first();
+        }
+
+        if (!$user && !$student) {
             return response()->json([
                 'success' => false,
-                'message' => 'நிர்வாகி கணக்குகளை இந்த பக்கத்தில் இருந்து நீக்க இயலாது.'
+                'message' => 'பயனர் கணக்கு கிடைக்கவில்லை அல்லது நிர்வாகி கணக்கை நீக்க இயலாது.'
             ], 403);
+        }
+
+        $email = $user->email ?? $student->email ?? null;
+        $phone = $user->phone ?? $student->phone ?? null;
+        $studentCode = $user->student_id ?? $student->student_id ?? null;
+        $studentId = $student->id ?? null;
+
+        if ($mode === 'student_only') {
+            // 1. Delete record from `students` table ONLY
+            DB::table('students')
+                ->where(function($q) use ($studentId, $email, $phone, $studentCode) {
+                    if ($studentId) $q->orWhere('id', $studentId);
+                    if (!empty($email)) $q->orWhere('email', $email);
+                    if (!empty($phone)) $q->orWhere('phone', $phone);
+                    if (!empty($studentCode)) $q->orWhere('student_id', $studentCode);
+                })
+                ->delete();
+
+            // 2. Remove student_id and batch_id in `users` table so Astrology account stays active
+            if ($user) {
+                DB::table('users')
+                    ->where('id', $user->id)
+                    ->update([
+                        'student_id' => null,
+                        'batch_id'   => null,
+                    ]);
+            }
+
+            // 3. Wipe student access tokens
+            if ($studentId) {
+                DB::table('personal_access_tokens')
+                    ->where('tokenable_type', 'App\\Models\\Student')
+                    ->where('tokenable_id', $studentId)
+                    ->delete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'மாணவர் கணக்கு விபரங்கள் மட்டும் நீக்கப்பட்டது. பயனர் ஜோதிட போர்ட்டலில் தொடர்ந்து பயன்படுத்தலாம்.'
+            ]);
+        }
+
+        // FULL DELETE MODE (default)
+        if ($user) {
+            DB::table('users')->where('id', $user->id)->delete();
+        }
+
+        DB::table('students')
+            ->where(function($q) use ($studentId, $email, $phone, $studentCode) {
+                if ($studentId) $q->orWhere('id', $studentId);
+                if (!empty($email)) $q->orWhere('email', $email);
+                if (!empty($phone)) $q->orWhere('phone', $phone);
+                if (!empty($studentCode)) $q->orWhere('student_id', $studentCode);
+            })
+            ->delete();
+
+        if ($user) {
+            DB::table('personal_access_tokens')
+                ->where('tokenable_type', 'App\\Models\\User')
+                ->where('tokenable_id', $user->id)
+                ->delete();
+        }
+        if ($student) {
+            DB::table('personal_access_tokens')
+                ->where('tokenable_type', 'App\\Models\\Student')
+                ->where('tokenable_id', $student->id)
+                ->delete();
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'பயனர் கணக்கு நீக்கப்பட்டது.'
+            'message' => 'பயனர் கணக்கு முழுமையாக நீக்கப்பட்டது.'
         ]);
     }
 }

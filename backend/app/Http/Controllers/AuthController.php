@@ -127,17 +127,6 @@ class AuthController extends Controller
             ->orWhere('phone', $input)
             ->first();
 
-        // Support demo login seamlessly
-        if (!$user && $input === 'user@gmail.com' && in_array($request->password, ['123456', 'test123'])) {
-            $user = User::create([
-                'name'     => 'Karthik',
-                'email'    => 'user@gmail.com',
-                'phone'    => '9876543210',
-                'password' => Hash::make($request->password),
-                'role'     => 'user',
-                'status'   => 'active',
-            ]);
-        }
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
