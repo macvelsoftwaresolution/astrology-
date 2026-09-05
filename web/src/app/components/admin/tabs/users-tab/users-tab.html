@@ -217,7 +217,7 @@
             <span class="id-badge">#{{ u.id }}</span>
           </td>
           <td>
-            <div class="user-name-cell">
+            <div class="user-name-cell" (click)="selectedUserForProfile = u" style="cursor: pointer;" [title]="translationService.currentLanguage() === 'ta' ? 'விவரம் காண கிளிக் செய்யவும்' : 'Click to view details'">
               <span class="user-full-name">{{ u.name }}</span>
               @if (u.student_id) {
               <span class="student-tag">
@@ -348,11 +348,9 @@
                 'Batch' }}
               </button>
               }
-              @if (getParsedDetails(u)) {
-              <button class="btn-details-action" (click)="selectedUserForProfile = u" title="விவரம்">
-                <i class="bi bi-eye-fill"></i>
+              <button class="btn-details-action" (click)="selectedUserForProfile = u" [title]="translationService.currentLanguage() === 'ta' ? 'முழு விவரம் காண்க' : 'View Full Details'">
+                <i class="bi bi-eye-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'விவரம்' : 'View' }}
               </button>
-              }
               <button class="btn-delete-action" (click)="deleteUser(u)" title="நீக்கு">
                 <i class="bi bi-trash3-fill"></i>
               </button>
@@ -373,10 +371,10 @@
 </div>
 }
 
-<!-- MODAL: VIEW STUDENT ADMISSION / JATHAGAM PROFILE -->
+<!-- MODAL: VIEW STUDENT ADMISSION / JATHAGAM / MEMBER PROFILE -->
 @if (selectedUserForProfile) {
 <div class="modal-overlay" (click)="selectedUserForProfile = null">
-  <div class="modal-box" style="max-width:580px;max-height:88vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+  <div class="modal-box" style="max-width:600px;max-height:88vh;overflow-y:auto;" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div>
         <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
@@ -386,8 +384,10 @@
         <span style="font-size:12px;color:#64748b;">
           @if (isStudent(selectedUserForProfile)) {
           {{ 'users.studentAdmissionProfile' | translate }}
-          } @else {
+          } @else if (selectedUserForProfile.jathagam_profile || getParsedDetails(selectedUserForProfile)?.rasi) {
           {{ 'users.birthChartProfile' | translate }}
+          } @else {
+          {{ translationService.currentLanguage() === 'ta' ? 'உறுப்பினர் விவரக்குறிப்பு' : 'Member Profile' }}
           }
         </span>
       </div>
@@ -454,6 +454,14 @@
           <strong>{{ formatGender(getParsedDetails(selectedUserForProfile)?.gender) }}</strong>
         </div>
         <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'தொலைபேசி:' : 'Phone:' }}</span>
+          <strong>{{ selectedUserForProfile.phone || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மின்னஞ்சல்:' : 'Email:' }}</span>
+          <strong style="word-break:break-all;">{{ selectedUserForProfile.email }}</strong>
+        </div>
+        <div>
           <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.occupation' | translate
             }}</span>
           <strong>{{ formatOccupation(getParsedDetails(selectedUserForProfile)?.occupation) }}</strong>
@@ -479,7 +487,7 @@
         </div>
       </div>
     </div>
-    } @else {
+    } @else if (selectedUserForProfile.jathagam_profile || getParsedDetails(selectedUserForProfile)?.rasi) {
     <!-- IF HOROSCOPE RECORD -->
     <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
@@ -514,6 +522,52 @@
           <strong>{{ (getParsedDetails(selectedUserForProfile)?.gender ||
             selectedUserForProfile.jathagam_profile?.gender || '-') }}</strong>
         </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'தொலைபேசி:' : 'Phone:' }}</span>
+          <strong>{{ selectedUserForProfile.phone || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மின்னஞ்சல்:' : 'Email:' }}</span>
+          <strong style="word-break:break-all;">{{ selectedUserForProfile.email }}</strong>
+        </div>
+      </div>
+    </div>
+    } @else {
+    <!-- IF GENERAL MEMBER RECORD -->
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'பெயர்:' : 'Name:' }}</span>
+          <strong>{{ selectedUserForProfile.name }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'நிலை / பிரிவு:' : 'Role:' }}</span>
+          <span class="profile-tag-member" style="display:inline-block;padding:2px 8px;font-size:11px;">
+            <i class="bi bi-person-badge-fill"></i> {{ 'users.memberBadge' | translate }}
+          </span>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மின்னஞ்சல்:' : 'Email:' }}</span>
+          <strong style="word-break:break-all;">{{ selectedUserForProfile.email }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'தொலைபேசி எண்:' : 'Phone:' }}</span>
+          <strong>{{ selectedUserForProfile.phone || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'பதிவு தேதி:' : 'Registered Date:' }}</span>
+          <strong>{{ formatDynamicDate(selectedUserForProfile.created_at) }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'ஜோதிட முன்பதிவுகள்:' : 'Astrology Bookings:' }}</span>
+          <strong style="color:#2563eb;">{{ selectedUserForProfile.bookings_count || 0 }}</strong>
+        </div>
+        @if (selectedUserForProfile.address) {
+        <div style="grid-column: 1 / -1;">
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'முகவரி:' : 'Address:' }}</span>
+          <strong>{{ selectedUserForProfile.address }}</strong>
+        </div>
+        }
       </div>
     </div>
     }

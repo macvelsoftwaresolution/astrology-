@@ -408,8 +408,9 @@ export class UsersTabComponent implements OnInit {
 
   isStudent(u: any): boolean {
     if (!u) return false;
+    if (u.student_id || u.role === 'student' || u.status === 'student_only') return true;
     const d = this.getParsedDetails(u);
-    return !!(u.student_id || d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.qualification);
+    return !!(d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.qualification);
   }
 
   isAppointmentUser(u: any): boolean {

@@ -173,6 +173,17 @@ class UserProfileController extends Controller
                         'created_at'       => $st->created_at ?? now(),
                         'updated_at'       => now(),
                     ]);
+                } else {
+                    $updates = [];
+                    if (empty($exists->jathagam_details) && !empty($st->jathagam_details)) {
+                        $updates['jathagam_details'] = $st->jathagam_details;
+                    }
+                    if (empty($exists->address) && !empty($st->address)) {
+                        $updates['address'] = $st->address;
+                    }
+                    if (!empty($updates)) {
+                        DB::table('users')->where('id', $exists->id)->update($updates);
+                    }
                 }
             }
         } catch (\Throwable $e) {}
@@ -204,8 +215,21 @@ class UserProfileController extends Controller
         $users = $query->orderBy('users.id', 'desc')
             ->get()
             ->map(function ($u) {
-                $u->jathagam_details = $u->jathagam_details ? json_decode($u->jathagam_details) : null;
+                $u->jathagam_details = $u->jathagam_details ? (is_string($u->jathagam_details) ? json_decode($u->jathagam_details) : $u->jathagam_details) : null;
                 
+                // Fallback from students table if jathagam_details or address is empty
+                if (empty($u->jathagam_details) && !empty($u->student_id)) {
+                    $st = DB::table('students')->where('student_id', $u->student_id)->first();
+                    if ($st) {
+                        if (!empty($st->jathagam_details)) {
+                            $u->jathagam_details = is_string($st->jathagam_details) ? json_decode($st->jathagam_details) : $st->jathagam_details;
+                        }
+                        if (empty($u->address) && !empty($st->address)) {
+                            $u->address = $st->address;
+                        }
+                    }
+                }
+
                 // Fallback batch name from registration date or jathagam_details if not directly joined
                 if (empty($u->batch_name)) {
                     if (isset($u->jathagam_details->batch_name) && !empty($u->jathagam_details->batch_name)) {
