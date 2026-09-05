@@ -9,7 +9,6 @@ import { AuthService } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
-import * as html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-profile',
@@ -890,7 +889,7 @@ export class ProfilePage implements OnInit {
     this.selectedReportMatch = null;
   }
 
-  downloadPdf() {
+  async downloadPdf() {
     this.isDownloadingPdf = true;
     const element = document.getElementById('report-pdf-content');
     if (!element) {
@@ -919,14 +918,30 @@ export class ProfilePage implements OnInit {
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    (html2pdf as any)().from(clone).set(opt).save().then(() => {
+    let html2pdfObj = (window as any).html2pdf;
+    if (!html2pdfObj) {
+      try {
+        const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
+        html2pdfObj = mod?.default || mod;
+      } catch (e) {
+        console.error('Failed to load html2pdf.js', e);
+      }
+    }
+
+    if (html2pdfObj) {
+      html2pdfObj().from(clone).set(opt).save().then(() => {
+        this.isDownloadingPdf = false;
+        if (document.body.contains(clone)) document.body.removeChild(clone);
+      }).catch((err: any) => {
+        console.error('PDF Generation Error:', err);
+        this.isDownloadingPdf = false;
+        if (document.body.contains(clone)) document.body.removeChild(clone);
+        alert('Error generating PDF.');
+      });
+    } else {
       this.isDownloadingPdf = false;
-      document.body.removeChild(clone);
-    }).catch((err: any) => {
-      console.error('PDF Generation Error:', err);
-      this.isDownloadingPdf = false;
-      document.body.removeChild(clone);
-      alert('Error generating PDF.');
-    });
+      if (document.body.contains(clone)) document.body.removeChild(clone);
+      alert('Error loading PDF generator.');
+    }
   }
 }

@@ -474,8 +474,13 @@
 
         <!-- 4. MARRIAGE MATCHING REQUESTS VIEW -->
         @if (selectedOption === 'marriage') {
-        @if (getMatches().length > 0) {
+        @if (getMatches().length > 0 || getProfiles().length > 0) {
         <div class="activity-cards-list">
+          
+          <!-- Match Records -->
+          @if (getMatches().length > 0) {
+            <h4 style="margin: 10px 0; font-size: 14px; font-weight: 800; color: #e11d48;"><i class="bi bi-suit-heart-fill me-1"></i> திருமண பொருத்தம்</h4>
+          }
           @for (m of getMatches(); track m.id) {
           <div class="marriage-match-card">
             <div class="mmc-header">
@@ -515,11 +520,41 @@
             }
           </div>
           }
+
+          <!-- Matrimony Profiles (Registration Records) -->
+          @if (getProfiles().length > 0) {
+            <h4 style="margin: 20px 0 10px 0; font-size: 14px; font-weight: 800; color: #d97706;"><i class="bi bi-file-earmark-person-fill me-1"></i> வரன் பதிவு</h4>
+          }
+          @for (p of getProfiles(); track p.id) {
+          <div style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px; margin-bottom: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <strong style="color:#0f172a; font-size:13px;">
+                <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> {{ 'matching.varanRegBadge' | translate }}
+              </strong>
+              <span style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{ p.status || 'Pending' }}</span>
+            </div>
+
+            <div style="font-size:12px; color:#475569; display:flex; flex-direction:column; gap:4px;">
+              <span style="font-weight:600; color:#1e293b;">{{ p.name }} <small class="text-muted">({{ p.gender }})</small></span>
+              <span><i class="bi bi-telephone-fill me-1" style="font-size:10px;"></i> {{ p.phone_number }}</span>
+              @if(p.rasi || p.nakshatra) {
+              <span><i class="bi bi-stars me-1" style="font-size:10px;"></i> {{ p.rasi }} - {{ p.nakshatra }}</span>
+              }
+            </div>
+
+            <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+              <span>{{ p.created_at | date:'dd MMM yyyy' }}</span>
+              @if (p.result_document) {
+              <a [href]="p.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
+              }
+            </div>
+          </div>
+          }
         </div>
         } @else {
         <div class="empty-activity-state">
           <i class="bi bi-heartbreak text-muted" style="font-size:2.5rem;"></i>
-          <p>திருமணப் பொருத்த கோரிக்கைகள் ஏதுமில்லை</p>
+          <p>திருமண கோரிக்கைகள் ஏதுமில்லை</p>
         </div>
         }
         }

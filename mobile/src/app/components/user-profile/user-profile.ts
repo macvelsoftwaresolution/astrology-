@@ -39,6 +39,7 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   bookingsList: any[] = [];
   paymentsList: any[] = [];
   marriageMatches: any[] = [];
+  matrimonyProfiles: any[] = [];
   isLoadingActivities: boolean = false;
 
   constructor(
@@ -192,6 +193,21 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           this.marriageMatches = res.matches;
         } else {
           this.marriageMatches = [];
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cdr.detectChanges();
+      }
+    });
+
+    // 4. Load Matrimony Profiles (Varan Registrations) directly from database
+    this.http.get<any>(`${environment.apiUrl}/user/matrimony-profiles?_t=${timestamp}`, this.headers).subscribe({
+      next: (res) => {
+        if (res && res.profiles && Array.isArray(res.profiles)) {
+          this.matrimonyProfiles = res.profiles;
+        } else {
+          this.matrimonyProfiles = [];
         }
         this.cdr.detectChanges();
       },
@@ -458,6 +474,10 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
     return this.marriageMatches;
   }
 
+  getProfiles(): any[] {
+    return this.matrimonyProfiles;
+  }
+
   getParsedDetails(order: any): any {
     if (order.parsedDetails) return order.parsedDetails;
     if (order.details) {
@@ -510,40 +530,40 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
         document.body.appendChild(clone);
 
         try {
-<<<<<<< HEAD
-          const html2pdf = (await import('html2pdf.js')).default;
-          const opt: any = {
-            margin:       10,
-            filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
-          
-          await html2pdf().set(opt).from(clone).save();
-          document.body.removeChild(clone);
-=======
           let html2pdf = (window as any).html2pdf;
           if (!html2pdf) {
-            const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
-            html2pdf = mod?.default || mod;
+            try {
+              const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
+              html2pdf = mod?.default || mod;
+            } catch (e) {
+              console.warn('html2pdf.js dynamic import failed', e);
+            }
           }
           if (html2pdf) {
             const opt: any = {
               margin:       10,
               filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true },
+              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            await html2pdf().set(opt).from(element).save();
-          } else if (match.result_document) {
-            window.open(match.result_document, '_blank');
+            await html2pdf().set(opt).from(clone).save();
+            if (document.body.contains(clone)) {
+              document.body.removeChild(clone);
+            }
+          } else {
+            if (document.body.contains(clone)) {
+              document.body.removeChild(clone);
+            }
+            if (match.result_document) {
+              window.open(match.result_document, '_blank');
+            }
           }
->>>>>>> 0ac353cc757c352f57ee016893ad566492d96e68
         } catch (error) {
           console.error('Error generating PDF', error);
-          document.body.removeChild(clone);
+          if (document.body.contains(clone)) {
+            document.body.removeChild(clone);
+          }
           alert('Error generating PDF.');
         }
       }
