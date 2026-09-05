@@ -536,47 +536,15 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           let html2pdf = (window as any).html2pdf;
           if (!html2pdf) {
             try {
-<<<<<<< HEAD
-              const mod: any = await import(/* webpackIgnore: true */ 'html2pdf.js' as any);
+              const mod: any = await (Function('return import("html2pdf.js")')());
               html2pdf = mod?.default || mod;
             } catch (e) {
               console.warn('html2pdf.js dynamic import failed', e);
-=======
-              const mod: any = await (Function('return import("html2pdf.js")')());
-              html2pdf = mod?.default || mod;
-            } catch {
               html2pdf = null;
->>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
             }
           }
           if (html2pdf) {
             const opt: any = {
-<<<<<<< HEAD
-              margin:       10,
-              filename:     `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
-              image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            await html2pdf().set(opt).from(clone).save();
-            if (document.body.contains(clone)) {
-              document.body.removeChild(clone);
-            }
-          } else {
-            if (document.body.contains(clone)) {
-              document.body.removeChild(clone);
-            }
-            if (match.result_document) {
-              window.open(match.result_document, '_blank');
-            }
-          }
-        } catch (error) {
-          console.error('Error generating PDF', error);
-          if (document.body.contains(clone)) {
-            document.body.removeChild(clone);
-          }
-          alert('Error generating PDF.');
-=======
               margin: 10,
               filename: `Jathagam-Match-${match.girl_name || 'Girl'}-${match.boy_name || 'Boy'}.pdf`,
               image: { type: 'jpeg', quality: 0.98 },
@@ -589,8 +557,10 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           } else if (match.result_document) {
             if (clone.parentNode) clone.parentNode.removeChild(clone);
             window.open(match.result_document, '_blank');
+          } else {
+            if (clone.parentNode) clone.parentNode.removeChild(clone);
+            this.toastService.error('Error loading PDF generator.');
           }
-          if (clone.parentNode) clone.parentNode.removeChild(clone);
         } catch (error) {
           console.error('Error generating PDF', error);
           if (clone.parentNode) clone.parentNode.removeChild(clone);
@@ -599,7 +569,6 @@ export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
           } else {
             this.toastService.error('Error generating PDF.');
           }
->>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
         }
       }
     }, 150);

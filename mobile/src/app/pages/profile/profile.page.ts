@@ -10,11 +10,9 @@ import { TranslationService, LanguageCode } from '../../services/translation.ser
 import { ToastService } from '../../services/toast.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
-<<<<<<< HEAD
-=======
+
 
 declare var html2pdf: any;
->>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
 
 @Component({
   selector: 'app-profile',
@@ -903,7 +901,7 @@ export class ProfilePage implements OnInit {
       this.isDownloadingPdf = false;
       return;
     }
-    
+
     // Create a clone for perfect A4 rendering without mobile layout constraints
     const clone = element.cloneNode(true) as HTMLElement;
     clone.style.width = '800px';
@@ -918,11 +916,11 @@ export class ProfilePage implements OnInit {
     document.body.appendChild(clone);
 
     const opt = {
-      margin:       [10, 10, 10, 10],
-      filename:     `marriage_report_${this.selectedReportMatch.report_data.boy_name}_${this.selectedReportMatch.report_data.girl_name}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin: [10, 10, 10, 10],
+      filename: `marriage_report_${this.selectedReportMatch.report_data.boy_name}_${this.selectedReportMatch.report_data.girl_name}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowWidth: 800, width: 800 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     let html2pdfObj = (window as any).html2pdf;
@@ -939,27 +937,17 @@ export class ProfilePage implements OnInit {
       html2pdfObj().from(clone).set(opt).save().then(() => {
         this.isDownloadingPdf = false;
         if (document.body.contains(clone)) document.body.removeChild(clone);
+        this.toastService.success('PDF வெற்றிகரமாக பதிவிறக்கப்பட்டது!');
       }).catch((err: any) => {
         console.error('PDF Generation Error:', err);
         this.isDownloadingPdf = false;
         if (document.body.contains(clone)) document.body.removeChild(clone);
-        alert('Error generating PDF.');
+        this.toastService.error('Error generating PDF.');
       });
     } else {
       this.isDownloadingPdf = false;
-<<<<<<< HEAD
       if (document.body.contains(clone)) document.body.removeChild(clone);
-      alert('Error loading PDF generator.');
+      this.toastService.error('Error loading PDF generator.');
     }
-=======
-      this.toastService.success('PDF வெற்றிகரமாக பதிவிறக்கப்பட்டது!');
-      document.body.removeChild(clone);
-    }).catch((err: any) => {
-      console.error('PDF Generation Error:', err);
-      this.isDownloadingPdf = false;
-      document.body.removeChild(clone);
-      this.toastService.error('Error generating PDF.');
-    });
->>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
   }
 }
