@@ -10,9 +10,8 @@ public class MainActivity extends BridgeActivity implements PaymentResultWithDat
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RazorpayPlugin.class);
+        registerPlugin(SecureScreenPlugin.class);
         super.onCreate(savedInstanceState);
-        // Secure window: prevent screenshots, screen recording, and app switcher snooping
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
     }
 
     @Override
