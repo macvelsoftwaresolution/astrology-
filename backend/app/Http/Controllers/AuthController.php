@@ -103,10 +103,8 @@ class AuthController extends Controller
                     $authEntity = $student;
                     $isStudentModel = true;
                 }
-            }
-
-            // 2. Fallback strictly by Student ID to `users` table if not found or password didn't match in students table
-            if (!$authEntity) {
+            } else {
+                // 2. Only if record is not yet in `students` table, check `users` table as initial bootstrap
                 $user = User::whereRaw('UPPER(student_id) = ?', [$inputUpper])
                     ->orWhere('student_id', $input)
                     ->first();
@@ -130,7 +128,7 @@ class AuthController extends Controller
                                     'name'             => $user->name,
                                     'email'            => $user->email,
                                     'phone'            => $user->phone,
-                                    'password'         => $user->password,
+                                    'password'         => Hash::make($request->password),
                                     'batch_id'         => $user->batch_id,
                                     'status'           => $user->status,
                                     'address'          => $user->address,
@@ -179,9 +177,14 @@ class AuthController extends Controller
         // =====================================================================
         // 2. ASTROLOGY SECTION LOGIN (Username / Email + Password ONLY)
         // =====================================================================
-        $user = User::where('email', $input)
-            ->orWhere('name', $input)
-            ->orWhere('phone', $input)
+        $user = User::where(function($q) use ($input) {
+                $q->where('email', $input)
+                  ->orWhere('name', $input)
+                  ->orWhere(function($sq) use ($input) {
+                      $sq->where('phone', $input)
+                         ->where('phone', 'NOT LIKE', '%AR%');
+                  });
+            })
             ->first();
 
 
@@ -436,24 +439,33 @@ class AuthController extends Controller
         // Also synchronize with users table for web admin portal visibility
         $userRecord = User::where('email', $email)->orWhere('student_id', $loginId)->first();
         if ($userRecord) {
-            $userRecord->update([
+            $userUpdateData = [
                 'name'             => $fullName,
                 'student_id'       => $loginId,
                 'batch_id'         => $batchId ?: $userRecord->batch_id,
-                'password'         => Hash::make($password),
                 'role'             => 'user',
                 'status'           => 'active',
                 'address'          => $request->input('postalAddress', $userRecord->address),
                 'jathagam_details' => json_encode($details),
-                'phone'            => $phone ?: $userRecord->phone,
-            ]);
+            ];
+
+            if (!empty($phone)) {
+                $userUpdateData['phone'] = $phone;
+            }
+
+            // CRITICAL: Preserve the user's existing Astrology password! Do NOT overwrite it with student password.
+            if (empty($userRecord->password)) {
+                $userUpdateData['password'] = Hash::make($password);
+            }
+
+            $userRecord->update($userUpdateData);
         } else {
             User::create([
                 'name'             => $fullName,
                 'email'            => $email,
                 'student_id'       => $loginId,
                 'batch_id'         => $batchId,
-                'phone'            => $phone ?: $loginId,
+                'phone'            => !empty($phone) ? $phone : null,
                 'password'         => Hash::make($password),
                 'role'             => 'user',
                 'status'           => 'active',
