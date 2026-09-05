@@ -414,10 +414,13 @@ export class UsersTabComponent implements OnInit {
 
   isAppointmentUser(u: any): boolean {
     if (!u) return false;
+    if (u.status === 'student_only' || u.role === 'student') return false;
     return !!(u.bookings_count && u.bookings_count > 0);
   }
 
   isBothStudentAndAppointment(u: any): boolean {
+    if (!u) return false;
+    if (u.status === 'student_only' || u.role === 'student') return false;
     return this.isStudent(u) && this.isAppointmentUser(u);
   }
 

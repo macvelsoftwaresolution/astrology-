@@ -221,16 +221,20 @@ class UserProfileController extends Controller
                     }
                 }
 
-                $bookingCount = DB::table('bookings')
-                    ->where(function($q) use ($u) {
-                        $q->where('user_id', $u->id);
-                        if (!empty($u->phone)) {
-                            $q->orWhere('user_phone', $u->phone);
-                        }
-                    })
-                    ->count();
+                if ($u->status === 'student_only' || $u->role === 'student') {
+                    $u->bookings_count = 0;
+                } else {
+                    $bookingCount = DB::table('bookings')
+                        ->where(function($q) use ($u) {
+                            $q->where('user_id', $u->id);
+                            if (!empty($u->phone)) {
+                                $q->orWhere('user_phone', $u->phone);
+                            }
+                        })
+                        ->count();
 
-                $u->bookings_count = $bookingCount;
+                    $u->bookings_count = $bookingCount;
+                }
                 return $u;
             });
 
@@ -328,11 +332,15 @@ class UserProfileController extends Controller
 
         // MODE 2: ASTROLOGY MEMBER ONLY DELETE
         if ($mode === 'astrology_only') {
+            $phone = $user->phone ?? $student->phone ?? null;
             if ($user && ($user->student_id || $student)) {
                 // User is also a student: DO NOT delete the users table row!
                 // Instead, delete astrology bookings, revoke astrology tokens, and set role='student', status='student_only'
                 try {
-                    DB::table('bookings')->where('user_id', $user->id)->delete();
+                    DB::table('bookings')->where(function($q) use ($user, $phone) {
+                        $q->where('user_id', $user->id);
+                        if (!empty($phone)) $q->orWhere('user_phone', $phone);
+                    })->delete();
                     DB::table('notifications')->where('user_id', $user->id)->delete();
                 } catch (\Throwable $e) {}
 
@@ -352,7 +360,10 @@ class UserProfileController extends Controller
                 ]);
             } else if ($user) {
                 try {
-                    DB::table('bookings')->where('user_id', $user->id)->delete();
+                    DB::table('bookings')->where(function($q) use ($user, $phone) {
+                        $q->where('user_id', $user->id);
+                        if (!empty($phone)) $q->orWhere('user_phone', $phone);
+                    })->delete();
                     DB::table('notifications')->where('user_id', $user->id)->delete();
                 } catch (\Throwable $e) {}
                 DB::table('users')->where('id', $user->id)->delete();
