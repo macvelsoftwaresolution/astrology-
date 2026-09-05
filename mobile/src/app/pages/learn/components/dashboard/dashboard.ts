@@ -276,6 +276,9 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes['dashboardTab'] && changes['dashboardTab'].currentValue === 'lessons') {
+      this.loadStudentCurriculum();
+    }
     if (changes['initialOption'] || changes['orderNumber']) {
       this.checkInitialOption();
     }
