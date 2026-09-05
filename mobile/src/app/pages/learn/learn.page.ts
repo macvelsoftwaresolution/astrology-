@@ -433,7 +433,15 @@ export class LearnPage implements OnInit {
         this.currentScreen = 'dashboard';
       },
       error: (err) => {
-        this.loginErrorMessage = err?.error?.message || 'தவறான பயனர் ஐடி அல்லது கடவுச்சொல்.';
+        if (err.status === 401) {
+          this.loginErrorMessage = 'errors.invalidStudentCreds';
+        } else if (err.status === 403) {
+          this.loginErrorMessage = err?.error?.message || 'errors.invalidStudentCreds';
+        } else if (err.status === 0) {
+          this.loginErrorMessage = 'login.netError';
+        } else {
+          this.loginErrorMessage = err?.error?.message || 'errors.invalidStudentCreds';
+        }
       }
     });
   }

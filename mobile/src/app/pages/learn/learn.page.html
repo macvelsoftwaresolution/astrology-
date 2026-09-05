@@ -90,7 +90,7 @@
                 </div>
               </div>
               @if (loginErrorMessage) {
-                <p class="error-msg-txt">{{ loginErrorMessage | translate }}</p>
+                <p class="error-msg-txt">{{ (loginErrorMessage.startsWith('errors.') || loginErrorMessage.startsWith('login.') ? (loginErrorMessage | translate) : loginErrorMessage) }}</p>
               }
               <button class="action-login-btn" (click)="loginToCourse()">{{ 'learn.loginBtn' | translate }}</button>
 
