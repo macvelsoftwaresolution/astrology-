@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-learn-payment',
@@ -14,6 +15,8 @@ export class LearnPaymentComponent {
 
   isRazorpaySelected: boolean = true;
 
+  constructor(private toastService: ToastService) {}
+
   getCourseTitle(): string {
     const lvl = this.courseLevel?.toLowerCase() || 'ilanilai';
     return (lvl === 'mudhunilai' || lvl === 'muthunilai')
@@ -23,7 +26,7 @@ export class LearnPaymentComponent {
 
   onProceed() {
     if (!this.isRazorpaySelected) {
-      alert('தயவுசெய்து Razorpay Payment Gateway-ஐ தேர்வு செய்யவும்.');
+      this.toastService.warning('தயவுசெய்து Razorpay Payment Gateway-ஐ தேர்வு செய்யவும்.');
       return;
     }
     this.next.emit();

@@ -80,41 +80,98 @@ class AuthController extends Controller
         $service = $request->input('service', 'astrology');
 
         // =====================================================================
-        // 1. LEARN / EDUCATION SECTION LOGIN (Student ID + Password ONLY)
+        // 1. LEARN / EDUCATION SECTION LOGIN (Student ID / Email + Password)
         // =====================================================================
         if ($service === 'education') {
-            // Find student strictly by Student ID (e.g. 26AR01)
-            $student = Student::whereRaw('UPPER(student_id) = ?', [strtoupper($input)])
+            $inputUpper = strtoupper($input);
+
+            // 1. Try finding strictly by Student ID in dedicated `students` table first
+            $student = Student::whereRaw('UPPER(student_id) = ?', [$inputUpper])
                 ->orWhere('student_id', $input)
                 ->first();
 
-            if (!$student || !Hash::check($request->password, $student->password)) {
+            $authEntity = null;
+            $isStudentModel = false;
+
+            if ($student) {
+                $passwordValid = Hash::check($request->password, $student->password)
+                    || Hash::check(strtoupper($request->password), $student->password)
+                    || $request->password === $student->password
+                    || strtoupper($request->password) === $student->password;
+
+                if ($passwordValid) {
+                    $authEntity = $student;
+                    $isStudentModel = true;
+                }
+            }
+
+            // 2. Fallback strictly by Student ID to `users` table if not found or password didn't match in students table
+            if (!$authEntity) {
+                $user = User::whereRaw('UPPER(student_id) = ?', [$inputUpper])
+                    ->orWhere('student_id', $input)
+                    ->first();
+
+                if ($user) {
+                    $passwordValid = Hash::check($request->password, $user->password)
+                        || Hash::check(strtoupper($request->password), $user->password)
+                        || $request->password === $user->password
+                        || strtoupper($request->password) === $user->password;
+
+                    if ($passwordValid) {
+                        $authEntity = $user;
+                        $isStudentModel = false;
+
+                        // Ensure synchronized student record exists in students table
+                        try {
+                            $studentCode = $user->student_id ?: $input;
+                            Student::updateOrCreate(
+                                ['student_id' => $studentCode],
+                                [
+                                    'name'             => $user->name,
+                                    'email'            => $user->email,
+                                    'phone'            => $user->phone,
+                                    'password'         => $user->password,
+                                    'batch_id'         => $user->batch_id,
+                                    'status'           => $user->status,
+                                    'address'          => $user->address,
+                                    'jathagam_details' => $user->jathagam_details,
+                                    'avatar_url'       => $user->avatar_url,
+                                ]
+                            );
+                        } catch (\Throwable $e) {
+                            Log::warning("Could not auto-sync student record from user: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+
+            if (!$authEntity) {
                 return response()->json([
                     'success' => false,
                     'message' => 'தவறான மாணவர் ஐடி (Student ID) அல்லது கடவுச்சொல்.'
                 ], 401);
             }
 
-            if ($student->status !== 'active') {
+            if ($authEntity->status !== 'active') {
                 return response()->json([
                     'success' => false,
                     'message' => 'உங்கள் மாணவர் கணக்கு செயலற்றது. நிர்வாகியை தொடர்புகொள்ளவும்.'
                 ], 403);
             }
 
-            $token = $student->createToken('mobile_app_token', ['user'])->plainTextToken;
+            $token = $authEntity->createToken('mobile_app_token', ['user'])->plainTextToken;
 
             return response()->json([
                 'success' => true,
                 'token'   => $token,
                 'user'    => [
-                    'id'         => $student->id,
-                    'name'       => $student->name,
-                    'email'      => $student->email,
-                    'phone'      => $student->phone,
-                    'student_id' => $student->student_id,
+                    'id'         => $authEntity->id,
+                    'name'       => $authEntity->name,
+                    'email'      => $authEntity->email,
+                    'phone'      => $authEntity->phone,
+                    'student_id' => $authEntity->student_id ?? ($isStudentModel ? $authEntity->student_id : null),
                     'role'       => 'user',
-                    'avatar_url' => $student->avatar_url,
+                    'avatar_url' => $authEntity->avatar_url ?? null,
                 ]
             ]);
         }
@@ -127,17 +184,6 @@ class AuthController extends Controller
             ->orWhere('phone', $input)
             ->first();
 
-        // Support demo login seamlessly
-        if (!$user && $input === 'user@gmail.com' && in_array($request->password, ['123456', 'test123'])) {
-            $user = User::create([
-                'name'     => 'Karthik',
-                'email'    => 'user@gmail.com',
-                'phone'    => '9876543210',
-                'password' => Hash::make($request->password),
-                'role'     => 'user',
-                'status'   => 'active',
-            ]);
-        }
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -453,7 +499,21 @@ class AuthController extends Controller
         ]);
 
         $query   = trim($request->input('query'));
-        $student = Student::where('student_id', $query)->first();
+        $queryUpper = strtoupper($query);
+
+        $student = Student::whereRaw('UPPER(student_id) = ?', [$queryUpper])
+            ->orWhere('student_id', $query)
+            ->first();
+
+        if (!$student) {
+            $user = User::whereRaw('UPPER(student_id) = ?', [$queryUpper])
+                ->orWhere('student_id', $query)
+                ->first();
+
+            if ($user) {
+                $student = $user;
+            }
+        }
 
         if (!$student) {
             return response()->json([

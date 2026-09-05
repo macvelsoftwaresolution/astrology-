@@ -8,6 +8,7 @@ import { BackButtonService } from '../../services/back-button.service';
 import { ExitModalService } from '../../services/exit-modal.service';
 import { TranslationService } from '../../services/translation.service';
 import { RazorpayNativeService } from '../../services/razorpay-native.service';
+import { ToastService } from '../../services/toast.service';
 import { environment } from '../../../environments/environment';
 import { LearnDashboardComponent } from './components/dashboard/dashboard';
 
@@ -115,7 +116,8 @@ export class LearnPage implements OnInit {
     private exitModalService: ExitModalService,
     private http: HttpClient,
     public translationService: TranslationService,
-    private razorpayService: RazorpayNativeService
+    private razorpayService: RazorpayNativeService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit() {
@@ -366,18 +368,18 @@ export class LearnPage implements OnInit {
               this.isProcessingPayment = false;
               const msg = err?.message || (typeof err === 'string' ? err : '');
               if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
-                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+                this.toastService.error('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
               }
             });
         } else {
           this.isProcessingPayment = false;
-          alert('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
+          this.toastService.error('கட்டணம் செலுத்துவதற்கான ஆர்டரை உருவாக்குவதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {
         this.isProcessingPayment = false;
         console.error('Razorpay order creation error:', err);
-        alert(err.error?.message || 'கட்டண சேவைக்கான ஆர்டரை உருவாக்க முடியவில்லை.');
+        this.toastService.error(err.error?.message || 'கட்டண சேவைக்கான ஆர்டரை உருவாக்க முடியவில்லை.');
       }
     });
   }
@@ -402,14 +404,15 @@ export class LearnPage implements OnInit {
           this.loginPasswordInput = '';
           this.loginErrorMessage = '';
           this.currentScreen = 'post-payment-login';
+          this.toastService.success('பதிவு வெற்றிகரமாக முடிந்தது!');
         } else {
-          alert(res?.message || 'மாணவர் பதிவு செய்வதில் பிழை ஏற்பட்டது.');
+          this.toastService.error(res?.message || 'மாணவர் பதிவு செய்வதில் பிழை ஏற்பட்டது.');
         }
       },
       error: (err) => {
         this.isProcessingPayment = false;
         console.error('Student registration API error:', err);
-        alert(err.error?.message || 'மாணவர் பதிவு செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+        this.toastService.error(err.error?.message || 'மாணவர் பதிவு செய்வதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
       }
     });
   }
@@ -430,7 +433,15 @@ export class LearnPage implements OnInit {
         this.currentScreen = 'dashboard';
       },
       error: (err) => {
-        this.loginErrorMessage = err?.error?.message || 'தவறான பயனர் ஐடி அல்லது கடவுச்சொல்.';
+        if (err.status === 401) {
+          this.loginErrorMessage = 'errors.invalidStudentCreds';
+        } else if (err.status === 403) {
+          this.loginErrorMessage = err?.error?.message || 'errors.invalidStudentCreds';
+        } else if (err.status === 0) {
+          this.loginErrorMessage = 'login.netError';
+        } else {
+          this.loginErrorMessage = err?.error?.message || 'errors.invalidStudentCreds';
+        }
       }
     });
   }

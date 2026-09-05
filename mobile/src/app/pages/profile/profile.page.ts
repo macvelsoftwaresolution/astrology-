@@ -7,8 +7,14 @@ import { HttpClient } from '@angular/common/http';
 import { BackButtonService } from '../../services/back-button.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService, LanguageCode } from '../../services/translation.service';
+import { ToastService } from '../../services/toast.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
+<<<<<<< HEAD
+=======
+
+declare var html2pdf: any;
+>>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
 
 @Component({
   selector: 'app-profile',
@@ -232,12 +238,12 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                     <div>
                       <h4 style="color: #fff; margin: 0 0 4px 0; font-size: 15px; font-weight: 700;">{{ r.course_title }}</h4>
-                      <span style="font-size: 11px; color: #ffd700; font-weight: 600;">{{ r.batch_name || 'பொது பேட்ச் (Batch)' }}</span>
+                      <span style="font-size: 11px; color: #ffd700; font-weight: 600;">{{ r.batch_name || (currentLang === 'en' ? 'General Batch' : 'பொது பேட்ச்') }}</span>
                     </div>
                     <span [style.background]="(r.status === 'Approved' || r.score >= 40) ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'"
                           [style.color]="(r.status === 'Approved' || r.score >= 40) ? '#4ade80' : '#f87171'"
                           style="padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800;">
-                      {{ (r.status === 'Approved' || r.score >= 40) ? (currentLang === 'ta' ? 'தேர்ச்சி (PASS)' : 'PASS') : (currentLang === 'ta' ? 'மறுதேர்வு (FAIL)' : 'FAIL') }}
+                      {{ (r.status === 'Approved' || r.score >= 40) ? (currentLang === 'ta' ? 'தேர்ச்சி' : 'PASS') : (currentLang === 'ta' ? 'மறுதேர்வு' : 'FAIL') }}
                     </span>
                   </div>
 
@@ -330,7 +336,7 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
                           <div style="font-size:12px; color:#cbd5e1; margin-top:6px; font-style:italic;">"{{ m.report_data.astrologer_opinion }}"</div>
                         }
                         <button (click)="openReportModal(m)" style="margin-top: 10px; width: 100%; background: linear-gradient(135deg, #d4af37, #aa7c11); color: #000; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">
-                          <i class="bi bi-eye-fill"></i> முழு அறிக்கையை காண்க (View Full Report)
+                          <i class="bi bi-eye-fill"></i> {{ currentLang === 'en' ? 'View Full Report' : 'முழு அறிக்கையைக் காண்க' }}
                         </button>
                       </div>
                     }
@@ -469,12 +475,12 @@ import { IonContent, IonHeader, IonToolbar, IonSpinner } from '@ionic/angular/st
               </div>
 
               <!-- 11 Poruthangal Table -->
-              <h4 style="color: #000; margin-bottom: 10px;">11 பொருத்தங்கள்</h4>
+              <h4 style="color: #000; margin-bottom: 10px;">{{ currentLang === 'en' ? '11 Poruthams' : '11 பொருத்தங்கள்' }}</h4>
               <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; color: #000; font-size: 12px;">
                 <thead>
                   <tr style="background: #f0e6d2;">
-                    <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">பொருத்தம்</th>
-                    <th style="border: 1px solid #ccc; padding: 6px; text-align: center;">நிலை (Status)</th>
+                    <th style="border: 1px solid #ccc; padding: 6px; text-align: left;">{{ currentLang === 'en' ? 'Porutham' : 'பொருத்தம்' }}</th>
+                    <th style="border: 1px solid #ccc; padding: 6px; text-align: center;">{{ currentLang === 'en' ? 'Status' : 'நிலை' }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -699,7 +705,8 @@ export class ProfilePage implements OnInit {
     private router: Router,
     private backButtonService: BackButtonService,
     private authService: AuthService,
-    public translationService: TranslationService
+    public translationService: TranslationService,
+    private toastService: ToastService
   ) { }
 
   get currentLang(): LanguageCode {
@@ -940,8 +947,19 @@ export class ProfilePage implements OnInit {
       });
     } else {
       this.isDownloadingPdf = false;
+<<<<<<< HEAD
       if (document.body.contains(clone)) document.body.removeChild(clone);
       alert('Error loading PDF generator.');
     }
+=======
+      this.toastService.success('PDF வெற்றிகரமாக பதிவிறக்கப்பட்டது!');
+      document.body.removeChild(clone);
+    }).catch((err: any) => {
+      console.error('PDF Generation Error:', err);
+      this.isDownloadingPdf = false;
+      document.body.removeChild(clone);
+      this.toastService.error('Error generating PDF.');
+    });
+>>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
   }
 }

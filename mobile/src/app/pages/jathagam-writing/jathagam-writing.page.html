@@ -103,19 +103,22 @@
       </button>
     </form>
     } @else {
-    <div class="success-box" style="margin-top: 40px; text-align: center; padding: 20px;">
-      <i class="bi bi-check-circle-fill text-success" style="font-size: 48px; display: block; margin-bottom: 20px;"></i>
-      <h3 style="color: #059669; margin-bottom: 10px;">{{ 'jathagamWriting.successTitle' | translate }}</h3>
-      <span class="booking-ref-badge"
-        style="background: #ecfdf5; color: #065f46; padding: 5px 10px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px;">பதிவு
-        எண்: #{{ bookingRefCode }}</span>
+    <div class="jw-success-card">
+      <div class="jw-icon-ring">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h3 class="jw-success-title">{{ 'jathagamWriting.successTitle' | translate }}</h3>
+      <div class="jw-ref-badge">
+        <i class="bi bi-receipt me-1"></i> பதிவு எண்: #{{ bookingRefCode }}
+      </div>
 
-      <p style="color: #475569; line-height: 1.5; margin-bottom: 30px;">
+      <p class="jw-success-desc">
         {{ 'jathagamWriting.successDesc' | translate }}
       </p>
 
-      <button class="btn-app-gold" (click)="goBack()" style="border-radius: 20px; padding: 10px 30px;">{{ 'common.back'
-        | translate }}</button>
+      <button class="btn-app-gold jw-back-btn" (click)="goBack()">
+        {{ 'common.back' | translate }}
+      </button>
     </div>
     }
 

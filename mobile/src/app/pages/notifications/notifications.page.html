@@ -66,12 +66,12 @@
             <!-- Content Area -->
             <div class="notif-body">
               <div class="notif-top">
-                <h3 class="notif-title">{{ n.title }}</h3>
+                <h3 class="notif-title">{{ cleanTitle(n.title) }}</h3>
                 <div class="notif-top-actions">
                   @if (!n.is_read) {
-                    <span class="unread-pill">புதியது</span>
+                    <span class="unread-pill">{{ currentLang === 'en' ? 'New' : 'புதியது' }}</span>
                   }
-                  <button type="button" class="card-delete-btn" (click)="deleteNotification(n, $event)" title="அறிவிப்பை நீக்கு (Delete)">
+                  <button type="button" class="card-delete-btn" (click)="deleteNotification(n, $event)" [title]="currentLang === 'en' ? 'Delete' : 'அறிவிப்பை நீக்கு'">
                     <i class="bi bi-trash3"></i>
                   </button>
                 </div>

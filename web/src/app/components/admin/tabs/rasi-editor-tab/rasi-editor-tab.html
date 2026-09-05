@@ -12,9 +12,22 @@
         </h1>
         <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 500;">{{ 'rasi_editor.subtitle' | translate }}</p>
       </div>
+      <!-- Single Page View Segment Switcher -->
+      <div class="section-nav-pill">
+        <button type="button" [class.active]="activeSection === 'all'" (click)="activeSection = 'all'">
+          <i class="bi bi-grid-fill"></i> {{ 'rasi_editor.allSection' | translate }}
+        </button>
+        <button type="button" [class.active]="activeSection === 'panchangam'" (click)="activeSection = 'panchangam'">
+          <i class="bi bi-calendar-date-fill"></i> {{ 'rasi_editor.panchangamSection' | translate }}
+        </button>
+        <button type="button" [class.active]="activeSection === 'rasi'" (click)="activeSection = 'rasi'">
+          <i class="bi bi-stars"></i> {{ 'rasi_editor.zodiacSection' | translate }}
+        </button>
+      </div>
+
       <div class="header-actions-group" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <button class="btn-secondary-ed" (click)="resetAllToDefaults()" title="Reset to standard defaults">
-          <i class="bi bi-arrow-counterclockwise"></i> Reset Defaults
+        <button class="btn-secondary-ed" (click)="resetAllToDefaults()" [title]="'rasi_editor.resetDefaults' | translate">
+          <i class="bi bi-arrow-counterclockwise"></i> {{ 'rasi_editor.resetDefaults' | translate }}
         </button>
         <button class="btn-primary" (click)="publishRasiPalan()" [disabled]="rasiPublishing">
           @if (rasiPublishing) {
@@ -33,229 +46,294 @@
       </div>
     }
 
-    <!-- Tab Type & Date Selector Bar -->
-    <div class="rasi-controls-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-      <div class="rasi-type-bar" style="display: flex; gap: 5px;">
-        @for (t of rasiTypes; track t.val) {
-          <button 
-            [class.active]="rasiEditorType === t.val" 
-            (click)="changeRasiType(t.val)">
-            {{ t.label }}
-          </button>
-        }
-      </div>
-      
-      <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-        <!-- Coming Soon Toggle -->
-        <div class="field-group-lg" style="margin:0; background: #fef08a; padding: 6px 12px; border-radius: 6px; border: 1px solid #eab308; display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 13px; font-weight: 600; color: #854d0e; display: flex; align-items: center; gap: 4px;">
-            <i class="bi bi-clock-history"></i> Coming Soon
-          </span>
-          <div class="form-check form-switch m-0" style="padding-left: 2.5em;">
-            <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="isComingSoon" (change)="toggleComingSoon()" style="cursor:pointer;" title="Toggle to mark all Rasis as Coming Soon" />
-          </div>
-        </div>
-
-        <div class="rasi-date-filter">
-          <label><i class="bi bi-calendar-event"></i> {{ 'services.preferredDate' | translate }}:</label>
-          <input 
-            type="date" 
-            [(ngModel)]="selectedRasiDate" 
-            (change)="loadRasiPredictions()" 
-            class="date-input-ctrl"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading Indicator -->
-    @if (rasiPredictionsLoading) {
-      <div class="center-loader-box">
-        <p><i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}</p>
-      </div>
-    } @else {
-      <!-- 12 RASI ULTRA-CLEAN CARDS (ONLY ICON & TAMIL NAME) -->
-      <div class="rasi-clean-grid">
-        @for (r of rasiEditorList; track r.name; let i = $index) {
-          <div class="rasi-simple-card" style="position: relative;">
-            <!-- Hidden file input for uploading icon -->
-            <input type="file" #fileInput (change)="uploadRasiIcon($event, r)" accept="image/*" style="display: none;">
-            
-            <!-- Upload Icon Button -->
-            <button class="btn btn-sm btn-light" 
-                    (click)="fileInput.click()" 
-                    style="position: absolute; top: 4px; right: 4px; border-radius: 50%; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;" 
-                    title="Upload Custom Icon">
-              <i class="bi bi-camera-fill text-muted" style="font-size: 12px;"></i>
+    <!-- ================= RASI CARDS & CONTROLS ================= -->
+    @if (activeSection === 'all' || activeSection === 'rasi') {
+      <!-- Tab Type & Date Selector Bar -->
+      <div class="rasi-controls-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <div class="rasi-type-bar" style="display: flex; gap: 5px;">
+          @for (t of rasiTypes; track t.val) {
+            <button 
+              [class.active]="rasiEditorType === t.val" 
+              (click)="changeRasiType(t.val)">
+              {{ translationService.currentLanguage() === 'ta' ? t.tamilLabel : t.label }}
             </button>
-
-            <div 
-              class="rasi-card-content"
-              (click)="openRasiEditor(i)"
-              role="button"
-              tabindex="0"
-              style="display: flex; flex-direction: column; align-items: center; width: 100%;"
-            >
-              @if (r.customIcon) {
-                <div class="rasi-icon-circle" style="padding: 0; overflow: hidden; border: 2px solid #ECC876;">
-                  <img [src]="r.customIcon" alt="{{ r.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-              } @else {
-                <div class="rasi-icon-circle">{{ r.symbol }}</div>
-              }
-              <div class="rasi-name-info">
-                <h3 class="rasi-tamil-txt">{{ r.name }}</h3>
-              </div>
+          }
+        </div>
+        
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+          <!-- Coming Soon Toggle -->
+          <div class="field-group-lg" style="margin:0; background: #fef08a; padding: 6px 12px; border-radius: 6px; border: 1px solid #eab308; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 600; color: #854d0e; display: flex; align-items: center; gap: 4px;">
+              <i class="bi bi-clock-history"></i> {{ 'rasi_editor.comingSoon' | translate }}
+            </span>
+            <div class="form-check form-switch m-0" style="padding-left: 2.5em;">
+              <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="isComingSoon" (change)="toggleComingSoon()" style="cursor:pointer;" [title]="'rasi_editor.comingSoon' | translate" />
             </div>
           </div>
-        }
+
+          <div class="rasi-date-filter">
+            <label><i class="bi bi-calendar-event"></i> {{ 'services.preferredDate' | translate }}:</label>
+            <input 
+              type="date" 
+              [(ngModel)]="selectedRasiDate" 
+              (change)="loadRasiPredictions()" 
+              class="date-input-ctrl"
+            />
+          </div>
+        </div>
       </div>
+
+      <!-- Loading Indicator -->
+      @if (rasiPredictionsLoading) {
+        <div class="center-loader-box">
+          <p><i class="bi bi-hourglass-split"></i> {{ 'common.loading' | translate }}</p>
+        </div>
+      } @else {
+        <!-- 12 RASI ULTRA-CLEAN CARDS -->
+        <div class="rasi-clean-grid">
+          @for (r of rasiEditorList; track r.name; let i = $index) {
+            <div class="rasi-simple-card" style="position: relative;">
+              <!-- Hidden file input for uploading icon -->
+              <input type="file" #fileInput (change)="uploadRasiIcon($event, r)" accept="image/*" style="display: none;">
+              
+              <!-- Upload Icon Button -->
+              <button class="btn btn-sm btn-light" 
+                      (click)="fileInput.click()" 
+                      style="position: absolute; top: 4px; right: 4px; border-radius: 50%; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;" 
+                      [title]="'rasi_editor.uploadIcon' | translate">
+                <i class="bi bi-camera-fill text-muted" style="font-size: 12px;"></i>
+              </button>
+
+              <div 
+                class="rasi-card-content"
+                (click)="openRasiEditor(i)"
+                role="button"
+                tabindex="0"
+                style="display: flex; flex-direction: column; align-items: center; width: 100%;"
+              >
+                @if (r.customIcon) {
+                  <div class="rasi-icon-circle" style="padding: 0; overflow: hidden; border: 2px solid #ECC876;">
+                    <img [src]="r.customIcon" alt="{{ getRasiDisplayName(r) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                } @else {
+                  <div class="rasi-icon-circle">{{ r.symbol }}</div>
+                }
+                <div class="rasi-name-info">
+                  <h3 class="rasi-tamil-txt">{{ getRasiDisplayName(r) }}</h3>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
     }
 
-    <!-- PANCHANGAM LIVE EDITOR -->
-    <div class="card-box panchangam-editor-card" style="margin-top: 28px;">
-      <div class="panchangam-header-bar">
-        <h3 class="panchangam-title">
-          <i class="bi bi-calendar-date-fill" style="color: #d97706;"></i>
-          {{ 'rasi_editor.todayPanchangam' | translate }}
-        </h3>
-        <span class="chip-stat" style="color: #166534; background: #f0fdf4; border-color: #bbf7d0;">
-          <i class="bi bi-circle-fill" style="font-size: 7px; color: #16a34a;"></i> Live on App
-        </span>
-      </div>
+    <!-- ================= PANCHANGAM LIVE EDITOR ================= -->
+    @if (activeSection === 'all' || activeSection === 'panchangam') {
+      <div class="card-box panchangam-editor-card" [style.margin-top]="activeSection === 'panchangam' ? '0' : '24px'">
+        <div class="panchangam-header-bar">
+          <div class="panchangam-header-left">
+            <h3 class="panchangam-title">
+              <i class="bi bi-calendar-date-fill" style="color: #d97706;"></i>
+              {{ 'rasi_editor.todayPanchangam' | translate }}
+            </h3>
+            <span class="chip-stat live-badge">
+              <i class="bi bi-circle-fill"></i> {{ 'rasi_editor.liveOnApp' | translate }}
+            </span>
+          </div>
+          <button class="btn-primary panchangam-top-save" (click)="savePanchangam()">
+            <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
+          </button>
+        </div>
       
-      <div class="panchangam-grid-responsive">
+      <div class="panchangam-clean-grid">
 
-        <!-- Card 1: Basic Panchangam (Thithi & Nakshatra) -->
-        <div class="panchangam-item-card basic-card">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 class="panchangam-item-heading">
-              <i class="bi bi-stars" style="color: #d97706;"></i> பஞ்சாங்க அடிப்படை (Tithi & Star)
-            </h4>
-            <span class="panchangam-badge">Daily Info</span>
+        <!-- Card 1: Basic Panchangam (Tithi & Nakshatra) -->
+        <div class="panchangam-card-clean basic-border">
+          <div class="panchangam-card-head">
+            <div class="head-title-wrap">
+              <span class="icon-bubble amber"><i class="bi bi-stars"></i></span>
+              <h4>{{ 'rasi_editor.basicPanchangam' | translate }}</h4>
+            </div>
+            <span class="tag-badge amber">{{ 'rasi_editor.dailyInfo' | translate }}</span>
           </div>
 
-          <div class="form-group" style="margin: 0;">
-            <label style="font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-              <i class="bi bi-moon-stars-fill" style="color: #6366f1;"></i> {{ 'rasi_editor.thithi' | translate }}:
-            </label>
-            <input [(ngModel)]="panchangamForm.thithi" placeholder="எ.கா: சுக்ல பட்ச துவாதசி (Dwadashi)" class="ctrl" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;" />
-          </div>
+          <div class="panchangam-body-stack">
+            <div class="clean-field-group">
+              <label class="clean-field-label">
+                <i class="bi bi-moon-stars-fill text-indigo"></i> {{ 'rasi_editor.thithi' | translate }}:
+              </label>
+              <input 
+                [(ngModel)]="panchangamForm.thithi" 
+                [placeholder]="'rasi_editor.thithiPlaceholder' | translate" 
+                class="clean-input-box" 
+              />
+            </div>
 
-          <div class="form-group" style="margin: 0;">
-            <label style="font-size: 12.5px; font-weight: 700; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-              <i class="bi bi-star-fill" style="color: #eab308;"></i> {{ 'rasi_editor.nakshatra' | translate }}:
-            </label>
-            <input [(ngModel)]="panchangamForm.star" placeholder="எ.கா: ரோகிணி (Rohini)" class="ctrl" style="padding: 10px 14px; font-size: 13px; width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff;" />
+            <div class="clean-field-group">
+              <label class="clean-field-label">
+                <i class="bi bi-star-fill text-amber"></i> {{ 'rasi_editor.nakshatra' | translate }}:
+              </label>
+              <input 
+                [(ngModel)]="panchangamForm.star" 
+                [placeholder]="'rasi_editor.starPlaceholder' | translate" 
+                class="clean-input-box" 
+              />
+            </div>
           </div>
         </div>
 
         <!-- Card 2: Nalla Neram (Auspicious Timings) -->
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #15803d; display: flex; align-items: center; gap: 8px;">
-              <i class="bi bi-clock-fill" style="color: #16a34a;"></i> {{ 'rasi_editor.nallaNeram' | translate }}
-            </h4>
-            <span style="font-size: 11px; font-weight: 700; color: #166534; background: #dcfce7; padding: 2px 8px; border-radius: 20px;">Time Set <i class="bi bi-clock-history ms-1"></i></span>
+        <div class="panchangam-card-clean nalla-border">
+          <div class="panchangam-card-head">
+            <div class="head-title-wrap">
+              <span class="icon-bubble green"><i class="bi bi-clock-fill"></i></span>
+              <h4>{{ 'rasi_editor.nallaNeram' | translate }}</h4>
+            </div>
+            <span class="tag-badge green">{{ 'rasi_editor.timeSet' | translate }}</span>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <span style="font-size: 11px; color: #15803d; font-weight: 700; display: block; margin-bottom: 4px;"><i class="bi bi-brightness-high-fill me-1"></i> காலை:</span>
-              <div style="display: flex; gap: 4px; align-items: center;">
-                <input type="time" [(ngModel)]="timePickers.nallaMornFrom" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
-                <span style="color: #64748b; font-weight: 800;">-</span>
-                <input type="time" [(ngModel)]="timePickers.nallaMornTo" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
+          <div class="panchangam-body-stack">
+            <div class="timing-sub-box">
+              <span class="sub-box-label text-green">
+                <i class="bi bi-sun-fill text-amber"></i> {{ 'rasi_editor.morning' | translate }}:
+              </span>
+              <div class="time-pair-row">
+                <input type="time" [(ngModel)]="timePickers.nallaMornFrom" (change)="updateNallaNeramFromPickers()" class="time-field" />
+                <span class="time-dash">-</span>
+                <input type="time" [(ngModel)]="timePickers.nallaMornTo" (change)="updateNallaNeramFromPickers()" class="time-field" />
               </div>
             </div>
-            <div>
-              <span style="font-size: 11px; color: #15803d; font-weight: 700; display: block; margin-bottom: 4px;"><i class="bi bi-sunset-fill me-1"></i> மாலை:</span>
-              <div style="display: flex; gap: 4px; align-items: center;">
-                <input type="time" [(ngModel)]="timePickers.nallaEveFrom" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
-                <span style="color: #64748b; font-weight: 800;">-</span>
-                <input type="time" [(ngModel)]="timePickers.nallaEveTo" (change)="updateNallaNeramFromPickers()" style="flex: 1; padding: 6px 4px; font-size: 12px; font-weight: 700; border: 1px solid #86efac; border-radius: 6px; background: #ffffff;" />
+
+            <div class="timing-sub-box">
+              <span class="sub-box-label text-green">
+                <i class="bi bi-sunset-fill text-orange"></i> {{ 'rasi_editor.evening' | translate }}:
+              </span>
+              <div class="time-pair-row">
+                <input type="time" [(ngModel)]="timePickers.nallaEveFrom" (change)="updateNallaNeramFromPickers()" class="time-field" />
+                <span class="time-dash">-</span>
+                <input type="time" [(ngModel)]="timePickers.nallaEveTo" (change)="updateNallaNeramFromPickers()" class="time-field" />
               </div>
             </div>
-          </div>
 
-          <input [(ngModel)]="panchangamForm.nalla_neram" placeholder="06:15 AM - 07:15 AM (காலை) / 04:30 PM - 05:30 PM (மாலை)" style="width: 100%; padding: 8px 12px; font-size: 12.5px; font-weight: 700; color: #15803d; border: 1px solid #86efac; border-radius: 8px; background: #ffffff;" />
+            <!-- Clean Live Session Badges (Morning & Evening) -->
+            <div class="nalla-live-preview">
+              <span class="preview-session-badge morn">
+                <i class="bi bi-sun-fill"></i>
+                <span class="session-lbl">{{ 'rasi_editor.morning' | translate }}:</span>
+                <span class="session-val">{{ getFormattedMorn() || '-' }}</span>
+              </span>
+              <span class="preview-session-badge eve">
+                <i class="bi bi-sunset-fill"></i>
+                <span class="session-lbl">{{ 'rasi_editor.evening' | translate }}:</span>
+                <span class="session-val">{{ getFormattedEve() || '-' }}</span>
+              </span>
+            </div>
 
-          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <button type="button" class="btn-xs" (click)="setPreset('nalla_neram', '06:15 AM - 07:15 AM (காலை) / 04:30 PM - 05:30 PM (மாலை)')" style="font-size: 10.5px; padding: 2px 6px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer;">06:15-07:15 (காலை) & 04:30-05:30 (மாலை)</button>
-            <button type="button" class="btn-xs" (click)="setPreset('nalla_neram', '09:15 AM - 10:15 AM (காலை) / 04:45 PM - 05:45 PM (மாலை)')" style="font-size: 10.5px; padding: 2px 6px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer;">09:15-10:15 (காலை) & 04:45-05:45 (மாலை)</button>
+            <div class="preset-chips-wrap">
+              <button type="button" class="preset-chip" (click)="setNallaPreset('06:15', '07:15', '16:30', '17:30')">
+                <i class="bi bi-clock-history"></i> 06:15-07:15 & 04:30-05:30
+              </button>
+              <button type="button" class="preset-chip" (click)="setNallaPreset('09:15', '10:15', '16:45', '17:45')">
+                <i class="bi bi-clock-history"></i> 09:15-10:15 & 04:45-05:45
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- Card 3: Rahukalam -->
-        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #c2410c; display: flex; align-items: center; gap: 8px;">
-              <i class="bi bi-stopwatch-fill" style="color: #ea580c;"></i> {{ 'rasi_editor.rahukalam' | translate }}
-            </h4>
-            <span style="font-size: 11px; font-weight: 700; color: #9a3412; background: #ffedd5; padding: 2px 8px; border-radius: 20px;">Time Set <i class="bi bi-clock-history ms-1"></i></span>
+        <div class="panchangam-card-clean rahu-border">
+          <div class="panchangam-card-head">
+            <div class="head-title-wrap">
+              <span class="icon-bubble orange"><i class="bi bi-stopwatch-fill"></i></span>
+              <h4>{{ 'rasi_editor.rahukalam' | translate }}</h4>
+            </div>
+            <span class="tag-badge orange">{{ 'rasi_editor.timeSet' | translate }}</span>
           </div>
 
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <div style="flex: 1;">
-              <span style="font-size: 11px; color: #9a3412; font-weight: 700; display: block; margin-bottom: 2px;">முதல் (From):</span>
-              <input type="time" [(ngModel)]="timePickers.rahuFrom" (change)="updateRahukalamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fdba74; border-radius: 6px; background: #ffffff;" />
+          <div class="panchangam-body-stack">
+            <div class="timing-sub-box">
+              <div class="time-pair-row">
+                <div class="picker-column">
+                  <span class="sub-box-label text-orange">{{ 'rasi_editor.from' | translate }}:</span>
+                  <input type="time" [(ngModel)]="timePickers.rahuFrom" (change)="updateRahukalamFromPickers()" class="time-field" />
+                </div>
+                <span class="time-dash" style="margin-top: 18px;">-</span>
+                <div class="picker-column">
+                  <span class="sub-box-label text-orange">{{ 'rasi_editor.to' | translate }}:</span>
+                  <input type="time" [(ngModel)]="timePickers.rahuTo" (change)="updateRahukalamFromPickers()" class="time-field" />
+                </div>
+              </div>
             </div>
-            <span style="color: #94a3b8; font-weight: 800; margin-top: 16px;">-</span>
-            <div style="flex: 1;">
-              <span style="font-size: 11px; color: #9a3412; font-weight: 700; display: block; margin-bottom: 2px;">வரை (To):</span>
-              <input type="time" [(ngModel)]="timePickers.rahuTo" (change)="updateRahukalamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fdba74; border-radius: 6px; background: #ffffff;" />
+
+            <!-- Clean Live Session Badge -->
+            <div class="timing-live-badge orange">
+              <i class="bi bi-stopwatch-fill"></i>
+              <span class="session-lbl">{{ 'rasi_editor.rahukalam' | translate }}:</span>
+              <span class="session-val">{{ panchangamForm.rahukalam || '-' }}</span>
             </div>
-          </div>
 
-          <input [(ngModel)]="panchangamForm.rahukalam" placeholder="10:30 AM - 12:00 PM" style="width: 100%; padding: 8px 12px; font-size: 13px; font-weight: 700; color: #c2410c; border: 1px solid #fdba74; border-radius: 8px; background: #ffffff;" />
-
-          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '07:30 AM - 09:00 AM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">07:30-09:00</button>
-            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '09:00 AM - 10:30 AM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">09:00-10:30</button>
-            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '10:30 AM - 12:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">10:30-12:00</button>
-            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '01:30 PM - 03:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">01:30-03:00</button>
-            <button type="button" class="btn-xs" (click)="setPreset('rahukalam', '03:00 PM - 04:30 PM')" style="font-size: 10px; padding: 2px 6px; background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; border-radius: 4px; cursor: pointer;">03:00-04:30</button>
+            <div class="preset-chips-wrap">
+              <button type="button" class="preset-chip" (click)="setRahuPreset('07:30', '09:00')"><i class="bi bi-clock-history"></i> 07:30 - 09:00</button>
+              <button type="button" class="preset-chip" (click)="setRahuPreset('09:00', '10:30')"><i class="bi bi-clock-history"></i> 09:00 - 10:30</button>
+              <button type="button" class="preset-chip" (click)="setRahuPreset('10:30', '12:00')"><i class="bi bi-clock-history"></i> 10:30 - 12:00</button>
+              <button type="button" class="preset-chip" (click)="setRahuPreset('13:30', '15:00')"><i class="bi bi-clock-history"></i> 01:30 - 03:00</button>
+              <button type="button" class="preset-chip" (click)="setRahuPreset('15:00', '16:30')"><i class="bi bi-clock-history"></i> 03:00 - 04:30</button>
+            </div>
           </div>
         </div>
 
         <!-- Card 4: Yamagandam -->
-        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
-              <i class="bi bi-stopwatch-fill" style="color: #dc2626;"></i> {{ 'rasi_editor.yamagandam' | translate }}
-            </h4>
-            <span style="font-size: 11px; font-weight: 700; color: #991b1b; background: #fee2e2; padding: 2px 8px; border-radius: 20px;">Time Set <i class="bi bi-clock-history ms-1"></i></span>
+        <div class="panchangam-card-clean yama-border">
+          <div class="panchangam-card-head">
+            <div class="head-title-wrap">
+              <span class="icon-bubble red"><i class="bi bi-stopwatch-fill"></i></span>
+              <h4>{{ 'rasi_editor.yamagandam' | translate }}</h4>
+            </div>
+            <span class="tag-badge red">{{ 'rasi_editor.timeSet' | translate }}</span>
           </div>
 
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <div style="flex: 1;">
-              <span style="font-size: 11px; color: #991b1b; font-weight: 700; display: block; margin-bottom: 2px;">முதல் (From):</span>
-              <input type="time" [(ngModel)]="timePickers.yamaFrom" (change)="updateYamagandamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fca5a5; border-radius: 6px; background: #ffffff;" />
+          <div class="panchangam-body-stack">
+            <div class="timing-sub-box">
+              <div class="time-pair-row">
+                <div class="picker-column">
+                  <span class="sub-box-label text-red">{{ 'rasi_editor.from' | translate }}:</span>
+                  <input type="time" [(ngModel)]="timePickers.yamaFrom" (change)="updateYamagandamFromPickers()" class="time-field" />
+                </div>
+                <span class="time-dash" style="margin-top: 18px;">-</span>
+                <div class="picker-column">
+                  <span class="sub-box-label text-red">{{ 'rasi_editor.to' | translate }}:</span>
+                  <input type="time" [(ngModel)]="timePickers.yamaTo" (change)="updateYamagandamFromPickers()" class="time-field" />
+                </div>
+              </div>
             </div>
-            <span style="color: #94a3b8; font-weight: 800; margin-top: 16px;">-</span>
-            <div style="flex: 1;">
-              <span style="font-size: 11px; color: #991b1b; font-weight: 700; display: block; margin-bottom: 2px;">வரை (To):</span>
-              <input type="time" [(ngModel)]="timePickers.yamaTo" (change)="updateYamagandamFromPickers()" style="width: 100%; padding: 6px 8px; font-size: 12.5px; font-weight: 700; color: #0f172a; border: 1px solid #fca5a5; border-radius: 6px; background: #ffffff;" />
+
+            <!-- Clean Live Session Badge -->
+            <div class="timing-live-badge red">
+              <i class="bi bi-hourglass-split"></i>
+              <span class="session-lbl">{{ 'rasi_editor.yamagandam' | translate }}:</span>
+              <span class="session-val">{{ panchangamForm.yamagandam || '-' }}</span>
             </div>
-          </div>
 
-          <input [(ngModel)]="panchangamForm.yamagandam" placeholder="09:15 AM - 10:15 AM" style="width: 100%; padding: 8px 12px; font-size: 13px; font-weight: 700; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 8px; background: #ffffff;" />
-
-          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '06:00 AM - 07:30 AM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">06:00-07:30</button>
-            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '09:00 AM - 10:30 AM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">09:00-10:30</button>
-            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '10:30 AM - 12:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">10:30-12:00</button>
-            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '01:30 PM - 03:00 PM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">01:30-03:00</button>
-            <button type="button" class="btn-xs" (click)="setPreset('yamagandam', '03:00 PM - 04:30 PM')" style="font-size: 10px; padding: 2px 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">03:00-04:30</button>
+            <div class="preset-chips-wrap">
+              <button type="button" class="preset-chip" (click)="setYamaPreset('06:00', '07:30')"><i class="bi bi-clock-history"></i> 06:00 - 07:30</button>
+              <button type="button" class="preset-chip" (click)="setYamaPreset('09:00', '10:30')"><i class="bi bi-clock-history"></i> 09:00 - 10:30</button>
+              <button type="button" class="preset-chip" (click)="setYamaPreset('10:30', '12:00')"><i class="bi bi-clock-history"></i> 10:30 - 12:00</button>
+              <button type="button" class="preset-chip" (click)="setYamaPreset('13:30', '15:00')"><i class="bi bi-clock-history"></i> 01:30 - 03:00</button>
+              <button type="button" class="preset-chip" (click)="setYamaPreset('15:00', '16:30')"><i class="bi bi-clock-history"></i> 03:00 - 04:30</button>
+            </div>
           </div>
         </div>
 
       </div>
 
-      <button class="btn-primary" (click)="savePanchangam()" style="padding: 12px 28px; font-size: 14px; font-weight: 800; border-radius: 10px;">
-        <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
-      </button>
+      <div class="panchangam-footer-bar">
+        <button class="btn-primary" (click)="savePanchangam()" style="padding: 11px 26px; font-size: 14px; font-weight: 700; border-radius: 10px;">
+          <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePanchangam' | translate }}
+        </button>
+      </div>
     </div>
+    }
   }
 
   <!-- =========================================================
@@ -271,7 +349,7 @@
           class="btn-back-clean" 
           (click)="closeRasiEditor()"
         >
-          <i class="bi bi-arrow-left"></i> Back
+          <i class="bi bi-arrow-left"></i> {{ 'common.back' | translate }}
         </button>
 
         <!-- PREV / NEXT RASI SWITCHER -->
@@ -379,7 +457,7 @@
             } @else {
               <div class="uploaded-file-banner audio-active">
                 <div class="file-info-left" style="width: 100%;">
-                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> Audio Ready</span>
+                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> {{ 'rasi_editor.audioReady' | translate }}</span>
                   <audio controls [src]="rasiPredictions[selectedRasiIndex].audio_url" class="mini-audio-player" style="width: 100%;"></audio>
                 </div>
                 <div class="file-actions-right" style="margin-top: 8px;">
@@ -387,7 +465,7 @@
                     type="button"
                     class="btn-icon-action delete"
                     (click)="removeRasiAudio(selectedRasiIndex)"
-                    title="Remove Audio"
+                    [title]="'common.delete' | translate"
                   >
                     <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
                   </button>
@@ -433,7 +511,7 @@
             } @else {
               <div class="uploaded-file-banner video-active">
                 <div class="file-info-left" style="width: 100%;">
-                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> வீடியோ தயார்</span>
+                  <span class="file-ready-tag" style="margin-bottom: 8px;"><i class="bi bi-check-circle-fill"></i> {{ 'rasi_editor.videoReady' | translate }}</span>
                   <video controls [src]="rasiPredictions[selectedRasiIndex].video_url" style="width: 100%; border-radius: 8px; max-height: 200px; background: #000;"></video>
                 </div>
                 <div class="file-actions-right" style="margin-top: 8px;">
@@ -441,9 +519,9 @@
                     type="button"
                     class="btn-icon-action delete"
                     (click)="removeRasiVideo(selectedRasiIndex)"
-                    title="Remove Video"
+                    [title]="'common.delete' | translate"
                   >
-                    <i class="bi bi-trash3-fill"></i> நீக்கு
+                    <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
                   </button>
                 </div>
               </div>
@@ -458,7 +536,7 @@
             class="btn-primary btn-save-studio" 
             (click)="saveSingleRasi(selectedRasiIndex)"
           >
-            <i class="bi bi-floppy2-fill"></i> Save Prediction
+            <i class="bi bi-floppy2-fill"></i> {{ 'rasi_editor.savePrediction' | translate }}
           </button>
         </div>
 

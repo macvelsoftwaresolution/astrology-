@@ -597,7 +597,8 @@ a {
 
 .panch-large-date {
   font-size: 2rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 0;
+  line-height: 1.3;
 }
 
 .panch-sun-grid {
@@ -669,6 +670,51 @@ a {
 
 .text-orange {
   color: #FB923C !important;
+}
+
+.nalla-sessions-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nalla-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.nalla-pill i {
+  font-size: 0.8rem;
+}
+
+.nalla-pill.morning {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.nalla-pill.morning i {
+  color: #f59e0b;
+}
+
+.nalla-pill.evening {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.3);
+  color: #fb923c;
+}
+
+.nalla-pill.evening i {
+  color: #ea580c;
 }
 
 /* --------------------------------------------------

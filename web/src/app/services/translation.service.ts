@@ -154,8 +154,8 @@ export class TranslationService {
     if (lang === 'ta') {
       // PURE TAMIL MODE
       let res = text;
-      // Strip any English in brackets e.g. (Booking Completed), (Booking Received), (General), etc.
-      res = res.replace(/\s*\([A-Za-z\s0-9#\-_:]+\)/g, '').trim();
+      // Strip any English in brackets e.g. (Booking Completed), (Booking Received), (General), (Cancel), etc.
+      res = res.replace(/\s*\([A-Za-z\s0-9#\-_:.\/\\+*&]+\)/g, '').trim();
 
       // Common dynamic backend strings to Tamil
       const map: Record<string, string> = {
@@ -176,7 +176,15 @@ export class TranslationService {
         'Pending': 'காத்திருப்பில்',
         'Completed': 'நிறைவுற்றது',
         'Active': 'செயலில் உள்ளது',
-        'Cancelled': 'ரத்து செய்யப்பட்டது'
+        'Cancelled': 'ரத்து செய்யப்பட்டது',
+        'Success': 'வெற்றி',
+        'Error': 'பிழை',
+        'Warning': 'எச்சரிக்கை',
+        'Info': 'தகவல்',
+        'Cancel': 'ரத்து',
+        'Save': 'சேமி',
+        'Edit': 'திருத்து',
+        'Delete': 'நீக்கு'
       };
 
       if (map[res]) return map[res];
@@ -210,6 +218,13 @@ export class TranslationService {
     } else {
       // PURE ENGLISH MODE
       let res = text;
+
+      // If string contains Tamil with English in brackets like "ரத்து (Cancel)" or "திருத்து (Edit)"
+      const bracketMatch = res.match(/[\u0B80-\u0BFF]+[^(]*\(([^)]+)\)/);
+      if (bracketMatch && bracketMatch[1] && /[A-Za-z]/.test(bracketMatch[1])) {
+        return bracketMatch[1].trim();
+      }
+
       if (res.includes('Booking Completed') || res.includes('ஜோதிட கணிப்பு நிறைவுற்றது')) {
         return 'Astrology Prediction Completed!';
       }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ToastService } from '../../services/toast.service';
 
 interface Booking {
   id: string;
@@ -16,10 +17,13 @@ interface Booking {
   chartUrl?: string;
 }
 
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
+
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslatePipe],
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
@@ -32,7 +36,11 @@ export class AdminComponent implements OnInit {
   password = '';
   loginError = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private toastService: ToastService,
+    public translationService: TranslationService
+  ) {}
 
   ngOnInit() {
     const token = sessionStorage.getItem('auth_token');
@@ -204,7 +212,7 @@ export class AdminComponent implements OnInit {
           this.loadBookings();
           this.closeModal();
         },
-        error: (err) => alert('Fulfillment failed!')
+        error: (err) => this.toastService.error('Fulfillment failed!')
       });
     }
   }
@@ -220,8 +228,8 @@ export class AdminComponent implements OnInit {
       nalla_neram: this.panchangam.nallaNeram
     };
     this.http.put(`${this.apiUrl}/admin/panchangam`, payload).subscribe({
-      next: () => alert('பஞ்சாங்கம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!'),
-      error: (err) => alert('பஞ்சாங்கம் புதுப்பிப்பதில் தோல்வி!')
+      next: () => this.toastService.success('பஞ்சாங்கம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!'),
+      error: (err) => this.toastService.error('பஞ்சாங்கம் புதுப்பிப்பதில் தோல்வி!')
     });
   }
 
@@ -236,8 +244,8 @@ export class AdminComponent implements OnInit {
       }))
     };
     this.http.put(`${this.apiUrl}/admin/rasi-palan`, payload).subscribe({
-      next: () => alert('ராசி பலன் கணிப்புகள் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!'),
-      error: (err) => alert('ராசி பலன் புதுப்பிப்பதில் தோல்வி!')
+      next: () => this.toastService.success('ராசி பலன் கணிப்புகள் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!'),
+      error: (err) => this.toastService.error('ராசி பலன் புதுப்பிப்பதில் தோல்வி!')
     });
   }
 

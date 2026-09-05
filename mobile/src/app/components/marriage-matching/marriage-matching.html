@@ -41,7 +41,99 @@
     </div>
   </div>
 
+<<<<<<< HEAD
 
+=======
+  @if ((myMatches && myMatches.length > 0) || (myProfiles && myProfiles.length > 0)) {
+  <div class="option-card premium-card"
+    style="margin-top:24px; padding: 14px; cursor: pointer; text-align: center; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"
+    (click)="showHistory = !showHistory">
+    <strong style="color:#0f172a; font-size:14px; display: flex; justify-content: center; align-items: center;">
+      <i class="bi bi-clock-history text-gold me-2"></i> {{ 'matching.historyToggle' | translate }}
+      <i class="bi ms-2" [class.bi-chevron-down]="!showHistory" [class.bi-chevron-up]="showHistory"></i>
+    </strong>
+  </div>
+  }
+
+  @if (showHistory) {
+  @if (myMatches && myMatches.length > 0) {
+  <div style="margin-top:24px;">
+    <p class="section-sub-heading" style="margin-bottom:12px;"><i class="bi bi-suit-heart-fill me-1 text-rose"></i> {{
+      'matching.matchRecords' | translate }}</p>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      @for (m of myMatches; track m.id) {
+      <div
+        style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <strong style="color:#0f172a; font-size:13px;">
+            <i class="bi bi-suit-heart-fill" style="color:#e11d48; margin-right:4px;"></i> {{ 'matching.porutham10Title'
+            | translate }}
+          </strong>
+          <span
+            style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{
+            m.admin_status || m.consultation_status || 'Pending' }}</span>
+        </div>
+
+        <div style="font-size:12px; color:#475569; display:flex; align-items:center; gap:8px;">
+          <span><i class="bi bi-gender-male me-1 text-primary"></i> {{ m.boy_name }}</span>
+          <i class="bi bi-arrow-left-right text-muted" style="font-size:10px;"></i>
+          <span><i class="bi bi-gender-female me-1 text-danger"></i> {{ m.girl_name }}</span>
+        </div>
+
+        <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+          <span>{{ m.created_at | date:'dd MMM yyyy' }}</span>
+          @if (m.result_document) {
+          <a [href]="m.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i
+              class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  @if (myProfiles && myProfiles.length > 0) {
+  <div style="margin-top:24px;">
+    <p class="section-sub-heading" style="margin-bottom:12px;"><i
+        class="bi bi-file-earmark-person-fill me-1 text-gold"></i> {{ 'matching.regRecords' | translate }}</p>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      @for (p of myProfiles; track p.id) {
+      <div
+        style="background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #f1f5f9; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <strong style="color:#0f172a; font-size:13px;">
+            <i class="bi bi-file-earmark-person-fill" style="color:#d97706; margin-right:4px;"></i> {{
+            'matching.varanRegBadge' | translate }}
+          </strong>
+          <span
+            style="font-size:10px; font-weight:700; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">{{
+            p.status || 'Pending' }}</span>
+        </div>
+
+        <div style="font-size:12px; color:#475569; display:flex; flex-direction:column; gap:4px;">
+          <span style="font-weight:600; color:#1e293b;">{{ p.name }} <small class="text-muted">({{ p.gender
+              }})</small></span>
+          <span><i class="bi bi-telephone-fill me-1" style="font-size:10px;"></i> {{ p.phone_number }}</span>
+          @if(p.rasi || p.nakshatra) {
+          <span><i class="bi bi-stars me-1" style="font-size:10px;"></i> {{ p.rasi }} - {{ p.nakshatra }}</span>
+          }
+        </div>
+
+        <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+          <span>{{ p.created_at | date:'dd MMM yyyy' }}</span>
+          @if (p.result_document) {
+          <a [href]="p.result_document" target="_blank" style="color:#059669; text-decoration:none; font-weight:600;"><i
+              class="bi bi-file-earmark-arrow-down-fill"></i> Download PDF</a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+  }
+>>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
 </div>
 }
 
@@ -325,7 +417,7 @@
   </div>
   <div class="input-grid">
     <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம் (Photo)' }}</label>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Photo' : 'புகைப்படம்' }}</label>
       <input type="file" (change)="uploadDocument($event, 'reg', 'photoUrl')" accept="*/*">
       @if (regForm.photoUrl) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
@@ -333,7 +425,7 @@
       }
     </div>
     <div class="input-row">
-      <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம் (Horoscope)' }}</label>
+      <label>{{ translationService.currentLanguage() === 'en' ? 'Horoscope Chart' : 'ஜாதக கட்டம்' }}</label>
       <input type="file" (change)="uploadDocument($event, 'reg', 'jadhagamUrl')" accept="*/*">
       @if (regForm.jadhagamUrl) {
       <small class="text-success"><i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() ===
@@ -387,7 +479,9 @@
 @if (serviceStep === 3) {
 <div class="match-result-container">
   <div class="success-box">
-    <span class="success-icon"><i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i></span>
+    <div class="success-icon-ring">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
     <h3>பதிவு வெற்றியடைந்தது!</h3>
     <p>உங்கள் திருமண பதிவு வெற்றிகரமாக பெறப்பட்டது. எங்கள் மையம் உங்களை விரைவில் தொடர்பு கொள்ளும்.</p>
     <button class="btn-app-gold" (click)="resetApp()">முகப்பிற்கு செல்க</button>
@@ -576,18 +670,19 @@
   </div>
 
   <div style="text-align: center; padding: 30px 15px;">
-    <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #10b981;"></i>
-    <h3 style="margin-top: 15px; color: #064e3b;">கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!</h3>
+    <h3 style="margin-top: 15px; color: #064e3b;">{{ translationService.currentLanguage() === 'en' ? 'Request Sent Successfully!' : 'கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது!' }}</h3>
     <p style="color: #475569; margin-top: 10px; line-height: 1.5;">
-      உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது.
-      முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் (Profile) -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை
-      பதிவிறக்கம் செய்து கொள்ளலாம்.
+      @if (translationService.currentLanguage() === 'en') {
+        Your marriage matching request has been submitted to the chief astrologer. Once ready, you can view and download the match report from your <strong>Profile -> Match Requests</strong> section.
+      } @else {
+        உங்களது திருமணப் பொருத்த கோரிக்கை தலைமை ஜோதிடருக்கு அனுப்பப்பட்டுள்ளது. முடிவுகள் தயாரானதும், உங்கள் <strong>சுயவிவரம் -> திருமண கோரிக்கைகள்</strong> பகுதியில் பொருத்த சீட்டை பதிவிறக்கம் செய்து கொள்ளலாம்.
+      }
     </p>
   </div>
   <!-- Bottom Action buttons -->
   <div class="sheet-actions" style="margin-top: 15px;">
     <button class="btn-secondary-pill" (click)="serviceStep = 4">
-      <i class="bi bi-arrow-repeat me-1"></i> புதிய பொருத்தம்
+      <i class="bi bi-arrow-repeat me-1"></i> {{ translationService.currentLanguage() === 'en' ? 'New Matching' : 'புதிய பொருத்தம்' }}
     </button>
   </div>
 </div>

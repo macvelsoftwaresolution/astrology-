@@ -17,7 +17,26 @@
     <!-- Middle Row: Nalla Neram -->
     <div class="panch-item middle-full">
       <span class="panch-label label-gold"><i class="bi bi-clock-fill me-1"></i> {{ 'panchangam.sub' | translate }}</span>
-      <span class="panch-value value-gold">{{ panchangam.nalla_neram || '-' }}</span>
+      @if (getMorningNallaNeram() || getEveningNallaNeram()) {
+        <div class="nalla-sessions-wrap" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; width: 100%; margin-top: 4px;">
+          @if (getMorningNallaNeram()) {
+            <span class="session-badge" style="background: rgba(162, 123, 56, 0.12); color: #8A6520; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(162, 123, 56, 0.25);">
+              <i class="bi bi-sun-fill" style="color: #d97706; font-size: 0.82rem;"></i>
+              <span>{{ currentLang === 'en' ? 'Morning' : 'காலை' }}:</span>
+              <span>{{ getMorningNallaNeram() }}</span>
+            </span>
+          }
+          @if (getEveningNallaNeram()) {
+            <span class="session-badge" style="background: rgba(192, 86, 33, 0.12); color: #c05621; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(192, 86, 33, 0.25);">
+              <i class="bi bi-sunset-fill" style="color: #ea580c; font-size: 0.82rem;"></i>
+              <span>{{ currentLang === 'en' ? 'Evening' : 'மாலை' }}:</span>
+              <span>{{ getEveningNallaNeram() }}</span>
+            </span>
+          }
+        </div>
+      } @else {
+        <span class="panch-value value-gold">{{ getFormattedNallaNeram() }}</span>
+      }
     </div>
 
     <!-- Bottom Row: Rahukalam & Yamagandam -->

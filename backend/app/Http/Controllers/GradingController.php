@@ -469,14 +469,26 @@ class GradingController extends Controller
     public function getMyCertificates(Request $request)
     {
         $user = $request->user();
-        $studentId = $user ? $user->id : 1;
+        $studentId = $user ? $user->id : null;
+
+        if (!$studentId) {
+            return response()->json([
+                'success' => true,
+                'certificates' => [],
+                'results' => []
+            ]);
+        }
 
         $certificates = DB::table('certificates')
-            ->where('student_id', $studentId)
+            ->where('certificates.student_id', $studentId)
+            ->leftJoin('users', 'certificates.student_id', '=', 'users.id')
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
                 'certificates.*',
-                DB::raw("COALESCE(courses.title, 'இளநிலை ஜோதிட மணி (Vedic Astrology)') as course_title")
+                'users.name as student_name',
+                'users.email as student_email',
+                'users.phone as student_phone',
+                'courses.title as course_title'
             )
             ->orderBy('certificates.created_at', 'desc')
             ->get();
@@ -495,7 +507,7 @@ class GradingController extends Controller
                 'certificates.certificate_number',
                 'certificates.pdf_download_url as cert_pdf_url',
                 'certificates.marksheet_download_url',
-                DB::raw("COALESCE(courses.title, 'வேத ஜோதிடம் (Vedic Astrology)') as course_title")
+                'courses.title as course_title'
             )
             ->orderBy('student_submissions.created_at', 'desc')
             ->get();

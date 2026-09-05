@@ -1,17 +1,17 @@
-<div class="quiz-overlay">
+<div class="quiz-overlay protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" (cut)="$event.preventDefault()">
   <div class="quiz-header">
-    <span class="quiz-title-txt">{{ isPracticalStep ? 'செய்முறைத் தேர்வு (Practical Exam)' : ('learn.quizTitle' | translate) }}</span>
+    <span class="quiz-title-txt">{{ isPracticalStep ? 'செய்முறைத் தேர்வு' : ('learn.quizTitle' | translate) }}</span>
     <button class="close-quiz-btn" (click)="handleQuizClose()"><i class="bi bi-x-lg"></i></button>
   </div>
 
   @if (!quizSubmitted) {
     <!-- 1. Practical Chart Question Step -->
     @if (isPracticalStep) {
-      <div class="quiz-content-body">
+      <div class="quiz-content-body protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
           <div class="practical-exam-header-badge" style="margin: 0;">
             <i class="bi bi-patch-question-fill text-gold"></i>
-            <span>செய்முறை ஜாதக ஆய்வுத் தேர்வு (Practical Chart Exam)</span>
+            <span>செய்முறை ஜாதக ஆய்வுத் தேர்வு</span>
           </div>
           @if (timerDisplay) {
             <span style="font-weight: 800; color: #dc2626; display: flex; align-items: center; gap: 5px; font-size: 0.95rem; background: #fef2f2; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 20px; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08);">
@@ -22,15 +22,15 @@
 
         @if (exam?.chart_image_url) {
           <div class="exam-chart-card">
-            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம் (Rasi Chart)</span>
+            <span class="chart-badge"><i class="bi bi-diagram-3-fill"></i> ராசி கட்டம்</span>
             <div class="chart-img-wrap">
-              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" />
+              <img [src]="exam.chart_image_url" alt="Rasi Chart" class="exam-chart-img" draggable="false" (contextmenu)="$event.preventDefault()" />
             </div>
           </div>
         }
 
         @if (exam?.practical_prompt) {
-          <div class="exam-prompt-card">
+          <div class="exam-prompt-card protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
             <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> செய்முறை வழிகாட்டுதல் / கேள்வி</span>
             <p class="prompt-txt">{{ exam.practical_prompt }}</p>
           </div>
@@ -40,10 +40,10 @@
         <div class="answer-upload-card" style="background: #FFFFFF; border-radius: 14px; padding: 1.25rem; border: 1.5px solid rgba(162, 123, 56, 0.3); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #4A0E17; font-weight: 800; font-size: 0.95rem;">
             <i class="bi bi-file-earmark-arrow-up-fill" style="color: #A27B38; font-size: 1.1rem;"></i>
-            <span>உங்கள் விடைத்தாளைப் பதிவேற்றவும் (Upload Answer Sheet)</span>
+            <span>உங்கள் விடைத்தாளைப் பதிவேற்றவும்</span>
           </div>
           <p style="font-size: 0.8rem; color: #64748b; line-height: 1.4; margin: 0 0 12px 0;">
-            மேற்கண்ட ஜாதகத்திற்கான பலன்களை ஒரு தாளில் எழுதி (Handwritten Paper), அதை புகைப்படம் (Photo/Image) அல்லது PDF வடிவில் பதிவேற்றம் செய்யவும்.
+            மேற்கண்ட ஜாதகத்திற்கான பலன்களை ஒரு தாளில் தெளிவாக எழுதி, அதை புகைப்படம் அல்லது PDF வடிவில் பதிவேற்றம் செய்யவும்.
           </p>
 
           <!-- If no file is uploaded yet -->
@@ -100,14 +100,14 @@
         <button class="submit-quiz-btn" 
                 [disabled]="!uploadedAnswerUrl || isSubmittingPractical" 
                 (click)="submitPracticalExam()">
-          {{ isSubmittingPractical ? 'சமர்ப்பிக்கப்படுகிறது...' : 'தேர்வைச் சமர்ப்பிக்கவும் (Submit Exam)' }}
+          {{ isSubmittingPractical ? 'சமர்ப்பிக்கப்படுகிறது...' : 'தேர்வைச் சமர்ப்பிக்கவும்' }}
         </button>
       </div>
     }
 
     <!-- 2. MCQ Questions Step -->
     @else if (quizQuestions.length > 0) {
-      <div class="quiz-content-body">
+      <div class="quiz-content-body protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
         <div class="question-tracker-row">
           <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 6px;">
             <span>{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}</span>
@@ -120,14 +120,14 @@
           <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
         </div>
 
-        <div class="question-box">
+        <div class="question-box protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
           <span class="q-badge">{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }}</span>
           <p class="q-text">{{ quizQuestions[currentQuestionIndex].question }}</p>
         </div>
-        <div class="quiz-options-list">
+        <div class="quiz-options-list protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
           @if (quizQuestions[currentQuestionIndex].type === 'mcq') {
             @for (opt of quizQuestions[currentQuestionIndex].options; track $index; let i = $index) {
-              <div class="quiz-option-card"
+              <div class="quiz-option-card protected-content"
                 [class.selected]="selectedOption === opt"
                 (click)="selectOption(opt)">
                 <span class="opt-code">{{ i === 0 ? 'A' : i === 1 ? 'B' : i === 2 ? 'C' : 'D' }}</span>
@@ -158,7 +158,7 @@
 
   <!-- Quiz Results Screen -->
   @if (quizSubmitted) {
-    <div class="quiz-results-body">
+    <div class="quiz-results-body protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
       <span class="result-badge-icon passed">
         <i class="bi bi-patch-check-fill text-gold"></i>
       </span>
@@ -172,8 +172,8 @@
           <strong style="color: #059669; display: inline-flex; align-items: center; gap: 4px;"><i class="bi bi-check2"></i> பெறப்பட்டது</strong>
         </div>
         <div class="score-box">
-          <span>நிலை (Status)</span>
-          <strong style="color: #d97706;">மதிப்பீட்டில் (Pending)</strong>
+          <span>நிலை</span>
+          <strong style="color: #d97706;">மதிப்பீட்டில் உள்ளது</strong>
         </div>
       </div>
       <button class="submit-quiz-btn" (click)="close.emit()">{{ 'common.close' | translate }}</button>

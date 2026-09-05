@@ -1,11 +1,11 @@
-<div class="overlay-panel rasi-palan-page">
+<div class="overlay-panel rasi-palan-page protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
   <!-- Common Header -->
   <div class="overlay-header rasi-header">
     <div class="header-left">
       <div class="header-back-btn" (click)="selectedRasi ? closeDetail() : closeFlow.emit()">
         <i class="bi bi-chevron-left text-maroon fs-4"></i>
       </div>
-      <h2 class="app-brand-name">ஆருத்ரா</h2>
+      <h2 class="app-brand-name">{{ currentLang === 'en' ? 'Arudra' : 'ஆருத்ரா' }}</h2>
     </div>
     <div class="header-right">
       <span class="bell-icon" (click)="openNotifications()"><i class="bi bi-bell-fill"></i></span>
@@ -54,7 +54,7 @@
           <div class="zodiac-item" (click)="selectRasi(r)">
             <div class="zodiac-icon-box">
               @if (r.imagePath) {
-                <img [src]="r.imagePath" class="zodiac-img" alt="{{ r.name }}">
+                <img [src]="r.imagePath" class="zodiac-img" alt="{{ r.name }}" draggable="false" (contextmenu)="$event.preventDefault()">
               }
               @if (!r.imagePath) {
                 <span class="zodiac-glyph">{{ r.image }}&#xFE0E;</span>
@@ -74,11 +74,11 @@
       <div class="detail-hero-card">
         <div class="hero-image-placeholder">
           <!-- Placeholder for the rich image -->
-          <img src="assets/images/temple_sunrise.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+          <img src="assets/images/temple_sunrise.png" draggable="false" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
           <div class="hero-overlay-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
             @if (selectedRasi.imagePath) {
               <div style="width: 90px; height: 90px; margin-bottom: 0.5rem; border-radius: 50%; overflow: hidden; border: 2px solid #ECC876; box-shadow: 0px 4px 8px rgba(0,0,0,0.5); background-color: #fff; display: flex; align-items: center; justify-content: center;">
-                <img [src]="selectedRasi.imagePath" style="width: 100%; height: 100%; object-fit: cover;">
+                <img [src]="selectedRasi.imagePath" draggable="false" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 100%; object-fit: cover;">
               </div>
             }
             <h2 class="zodiac-main-title">{{ currentLang === 'en' ? selectedRasi.english : selectedRasi.name }}</h2>
@@ -105,37 +105,37 @@
       @if (isLoading) {
         <div class="section-title">
           <div class="title-bar"></div>
-          <h3>கணிப்பு ஏற்றப்படுகிறது... (Loading)</h3>
+          <h3>{{ (currentLang === 'en' ? 'Loading prediction...' : 'கணிப்பு ஏற்றப்படுகிறது...') }}</h3>
         </div>
       }
       @if (!isLoading && predictionData) {
-        <div class="prediction-large-card">
+        <div class="prediction-large-card protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
           <p>{{ predictionData.prediction_text }}</p>
         </div>
       }
       @if (!isLoading && (predictionData?.video_url || predictionData?.audio_url)) {
         <div class="section-title">
           <div class="title-bar"></div>
-          <h3>காணொளி & ஒலி</h3>
+          <h3>{{ (currentLang === 'en' ? 'Video & Audio' : 'காணொளி & ஒலி') }}</h3>
         </div>
       }
       <!-- Audio Player -->
       @if (!isLoading && predictionData?.audio_url) {
-        <div class="audio-player-detailed" style="padding: 15px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 1rem;">
+        <div class="audio-player-detailed protected-content" style="padding: 15px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 1rem;">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
             <div class="audio-icon-box" style="background: #eef2ff; color: #4f46e5; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-mic-fill"></i></div>
             <div class="audio-info">
-              <strong style="display: block; font-size: 14px; color: #1e293b;">ஒலிப் பதிவு (Audio)</strong>
-              <span style="font-size: 12px; color: #64748b;">இன்றைய ராசி பலன்</span>
+              <strong style="display: block; font-size: 14px; color: #1e293b;">{{ currentLang === 'en' ? 'Audio Forecast' : 'ஒலிப் பதிவு' }}</strong>
+              <span style="font-size: 12px; color: #64748b;">{{ currentLang === 'en' ? 'Daily Horoscope' : 'இன்றைய ராசி பலன்' }}</span>
             </div>
           </div>
-          <audio controls [src]="predictionData.audio_url" style="width: 100%; height: 40px; border-radius: 8px;"></audio>
+          <audio controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" [src]="predictionData.audio_url" style="width: 100%; height: 40px; border-radius: 8px;"></audio>
         </div>
       }
       <!-- Video Player (Moved Below Audio) -->
       @if (!isLoading && predictionData?.video_url) {
-        <div class="video-player-card" style="margin-top: 1.5rem;">
-          <video controls autoplay muted loop playsinline [src]="predictionData.video_url" width="100%" style="border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></video>
+        <div class="video-player-card protected-content" style="margin-top: 1.5rem;">
+          <video controls controlsList="nodownload noplaybackrate" disablePictureInPicture (contextmenu)="$event.preventDefault()" autoplay muted loop playsinline [src]="predictionData.video_url" width="100%" style="border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></video>
         </div>
       }
       <!-- Empty space to fix scrolling issue -->

@@ -282,7 +282,7 @@
             </div>
 
             <div class="rpc-status-tag">
-              <i class="bi bi-shield-fill-check"></i> கட்டணம் வெற்றிகரமாகச் செலுத்தப்பட்டது (Paid)
+              <i class="bi bi-shield-fill-check"></i> {{ currentLang === 'en' ? 'Payment Completed' : 'கட்டணம் வெற்றிகரமாகச் செலுத்தப்பட்டது' }}
             </div>
           </div>
           }
@@ -352,14 +352,14 @@
             <!-- Download Completed Chart if available -->
             @if (b.chart_url) {
             <a [href]="b.chart_url" target="_blank" class="btn-download-chart" style="margin-bottom: 8px;">
-              <i class="bi bi-file-earmark-pdf-fill me-1"></i> ஜாதகக் கோப்பு பதிவிறக்கம் (Download PDF)
+              <i class="bi bi-file-earmark-pdf-fill me-1"></i> {{ currentLang === 'en' ? 'Download Horoscope PDF' : 'ஜாதகக் கோப்பு பதிவிறக்கம்' }}
             </a>
             }
 
             <!-- Download Parigaram Document if available -->
             @if (b.parigaram_document) {
             <a [href]="b.parigaram_document" target="_blank" class="btn-download-chart" style="background:#f59e0b;">
-              <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பரிகார ஆவணம் பதிவிறக்கம்
+              <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> {{ currentLang === 'en' ? 'Download Remedy Document' : 'பரிகார ஆவணம் பதிவிறக்கம்' }}
             </a>
             }
 
@@ -368,18 +368,18 @@
             <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #93c5fd; border-radius: 10px; padding: 12px; margin-top: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <strong style="color: #1e40af; font-size: 13px;">
-                  <i class="bi bi-truck me-1"></i> கூரியர் அனுப்பப்பட்டது (Courier Dispatched)
+                  <i class="bi bi-truck me-1"></i> {{ currentLang === 'en' ? 'Courier Dispatched' : 'கூரியர் அனுப்பப்பட்டது' }}
                 </strong>
                 <span style="font-size: 11px; background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 12px; font-weight: 700;">
                   {{ b.status }}
                 </span>
               </div>
               <div style="font-size: 12px; color: #1e3a8a; line-height: 1.5;">
-                <div>கூரியர் நிறுவனம்: <strong>{{ b.courier_partner || 'Courier' }}</strong></div>
-                <div>டிராக்கிங் AWB எண்: <strong style="color: #2563eb; letter-spacing: 0.5px;">{{ b.awb_number }}</strong></div>
+                <div>{{ currentLang === 'en' ? 'Courier Partner:' : 'கூரியர் நிறுவனம்:' }} <strong>{{ b.courier_partner || 'Courier' }}</strong></div>
+                <div>{{ currentLang === 'en' ? 'Tracking AWB No:' : 'டிராக்கிங் AWB எண்:' }} <strong style="color: #2563eb; letter-spacing: 0.5px;">{{ b.awb_number }}</strong></div>
                 @if (b.shipping_address) {
                 <div style="margin-top: 4px; color: #475569; font-size: 11px;">
-                  <i class="bi bi-geo-alt-fill text-danger me-1"></i> முகவரி: {{ b.shipping_address }}
+                  <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ currentLang === 'en' ? 'Address:' : 'முகவரி:' }} {{ b.shipping_address }}
                 </div>
                 }
               </div>
@@ -391,7 +391,7 @@
             <div
               style="background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:12px; margin-top:12px;">
               <h4 style="color:#b45309; font-size:13px; margin:0 0 6px 0; font-weight:700;"><i
-                  class="bi bi-brightness-high-fill me-1"></i> பரிகாரம் (Remedies)</h4>
+                  class="bi bi-brightness-high-fill me-1"></i> {{ currentLang === 'en' ? 'Remedies' : 'பரிகாரம்' }}</h4>
               <p style="color:#78350f; font-size:13px; line-height:1.5; margin:0; white-space:pre-wrap;">{{ b.parigaram
                 }}</p>
             </div>
@@ -506,14 +506,14 @@
               @if (m.result_document) {
                 <a [href]="m.result_document" target="_blank" class="btn-download-chart"
                   style="display: inline-block; width: 100%; border: none; cursor: pointer; background: rgba(16,185,129,0.1); text-align: center; color: #10b981; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-weight: bold; text-decoration: none;">
-                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> பதிவேற்றப்பட்ட அறிக்கை (Uploaded PDF)
+                  <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> {{ currentLang === 'en' ? 'Uploaded Report (PDF)' : 'பதிவேற்றப்பட்ட அறிக்கை' }}
                 </a>
               }
 
               @if (m.report_data && m.report_data !== 'null' && m.report_data !== '{}') {
                 <button (click)="downloadMatchPDF(m)" class="btn-download-chart"
                   style="display: inline-block; width: 100%; border: none; cursor: pointer; background: rgba(37,99,235,0.1); text-align: center; color: #2563eb; padding: 10px; border-radius: 8px; font-weight: bold;">
-                  <i class="bi bi-file-earmark-text-fill me-1"></i> ஜோதிடர் விரிவான அறிக்கை (System Report)
+                  <i class="bi bi-file-earmark-text-fill me-1"></i> {{ currentLang === 'en' ? 'Astrologer Match Report' : 'ஜோதிடர் விரிவான அறிக்கை' }}
                 </button>
               }
             </div>
@@ -554,7 +554,11 @@
         } @else {
         <div class="empty-activity-state">
           <i class="bi bi-heartbreak text-muted" style="font-size:2.5rem;"></i>
+<<<<<<< HEAD
           <p>திருமண கோரிக்கைகள் ஏதுமில்லை</p>
+=======
+          <p>{{ currentLang === 'en' ? 'No marriage matching requests found.' : 'திருமணப் பொருத்த கோரிக்கைகள் ஏதுமில்லை' }}</p>
+>>>>>>> 446cbe63af553bcf6b71e2e339919f0eccbf4568
         </div>
         }
         }
@@ -562,7 +566,7 @@
       </div>
 
       <div class="modal-footer-box">
-        <button class="btn-app-gold-full" (click)="closeOptionDetail()">மூடுக (Close)</button>
+        <button class="btn-app-gold-full" (click)="closeOptionDetail()">{{ currentLang === 'en' ? 'Close' : 'மூடுக' }}</button>
       </div>
     </div>
   </div>

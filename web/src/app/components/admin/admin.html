@@ -391,8 +391,8 @@
             }
             
             <div class="button-row" style="margin-top: 1rem;">
-              <button (click)="fulfillBooking()" class="btn-primary">முடிக்கப்பட்டது என சேமி (Fulfill Booking)</button>
-              <button (click)="closeModal()" class="btn-secondary">ரத்துசெய் (Cancel)</button>
+              <button (click)="fulfillBooking()" class="btn-primary">{{ translationService.currentLanguage() === 'ta' ? 'முடிக்கப்பட்டது என சேமி' : 'Fulfill Booking' }}</button>
+              <button (click)="closeModal()" class="btn-secondary">{{ 'common.cancel' | translate }}</button>
             </div>
           </div>
         }

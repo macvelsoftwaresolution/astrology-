@@ -276,6 +276,9 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes['dashboardTab'] && changes['dashboardTab'].currentValue === 'lessons') {
+      this.loadStudentCurriculum();
+    }
     if (changes['initialOption'] || changes['orderNumber']) {
       this.checkInitialOption();
     }
@@ -947,7 +950,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
               this.isProcessingPayment = false;
               const msg = err?.message || (typeof err === 'string' ? err : '');
               if (msg && !msg.toLowerCase().includes('dismissed') && !msg.toLowerCase().includes('cancelled')) {
-                alert('கட்டணம் செலுத்துவதில் பிழை: ' + msg);
+                this.showToast('கட்டணம் செலுத்துவதில் பிழை: ' + msg, 'warning', 'bi bi-exclamation-triangle-fill');
               }
             });
         } else {

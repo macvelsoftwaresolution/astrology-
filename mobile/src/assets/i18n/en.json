@@ -490,6 +490,7 @@
     "varanName": "Please enter the profile name correctly!",
     "varanDob": "Please select the profile date of birth!",
     "fillStudentCreds": "Please enter your Student ID and Password.",
+    "invalidStudentCreds": "Invalid Student ID or Password.",
     "fillIlanilaiId": "Please enter your Ilanilai Student ID (e.g. 26AR01).",
     "studentIdNotFound": "Student ID not found. Please enter a valid ID or fill details manually below.",
     "fillAllDetails": "Please fill in all details (Name, Phone, Address).",

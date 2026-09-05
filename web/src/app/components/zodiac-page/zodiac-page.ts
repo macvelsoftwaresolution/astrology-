@@ -71,7 +71,7 @@ export interface ZodiacPageItem {
                       [class.active]="selectedZodiac.name === zodiac.name"
                       (click)="selectZodiac(zodiac)">
                       @if (zodiac.iconUrl) {
-                        <img [src]="zodiac.iconUrl" [alt]="zodiac.name" class="zodiac-custom-icon" />
+                        <img [src]="zodiac.iconUrl" [alt]="zodiac.name" class="zodiac-custom-icon" draggable="false" (contextmenu)="$event.preventDefault()" />
                       } @else {
                         <span class="sign-glyph">{{ zodiac.symbol }}</span>
                       }
@@ -80,17 +80,17 @@ export interface ZodiacPageItem {
                   }
                 </div>
 
-                <div class="zodiac-display-card">
+                <div class="zodiac-display-card protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
                   <div class="card-inner-halo"></div>
                   <div class="zodiac-display-header">
                     @if (selectedZodiac.iconUrl) {
-                      <img [src]="selectedZodiac.iconUrl" [alt]="selectedZodiac.name" class="display-custom-icon-large" />
+                      <img [src]="selectedZodiac.iconUrl" [alt]="selectedZodiac.name" class="display-custom-icon-large" draggable="false" (contextmenu)="$event.preventDefault()" />
                     } @else {
                       <span class="display-symbol-large">{{ selectedZodiac.symbol }}</span>
                     }
                     <h3>{{ selectedZodiac.name }}</h3>
                     <span class="display-label-sub">{{ selectedZodiac.englishName }} &bull; {{ selectedZodiac.dates }}</span>
-                    <span class="live-badge-pill"><span class="pulse-dot"></span> நேரலை கணிப்பு (Live Sync)</span>
+                    <span class="live-badge-pill"><span class="pulse-dot"></span> நேரலை கணிப்பு</span>
                   </div>
 
                   <p class="zodiac-display-prediction">
@@ -99,21 +99,21 @@ export interface ZodiacPageItem {
 
                   <!-- Optional Audio Player -->
                   @if (selectedZodiac.audioUrl) {
-                    <div class="zodiac-audio-player">
+                    <div class="zodiac-audio-player protected-content">
                       <div class="audio-info">
                         <i class="bi bi-volume-up-fill text-gold me-2"></i>
-                        <span>ராசி பலன் ஆடியோ உரை (Audio Forecast)</span>
+                        <span>ராசி பலன் ஆடியோ உரை</span>
                       </div>
-                      <audio [src]="selectedZodiac.audioUrl" controls style="width: 100%; border-radius: 8px; margin-top: 8px;"></audio>
+                      <audio [src]="selectedZodiac.audioUrl" controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" style="width: 100%; border-radius: 8px; margin-top: 8px;"></audio>
                     </div>
                   }
 
                   <!-- Optional Video Player (NEW) -->
                   @if (selectedZodiac.videoUrl) {
-                    <div class="zodiac-video-player-box">
+                    <div class="zodiac-video-player-box protected-content">
                       <div class="video-header-info">
                         <i class="bi bi-play-btn-fill text-gold me-2"></i>
-                        <span>{{ selectedZodiac.name }} ராசி பலன் வீடியோ உரை (Video Horoscope)</span>
+                        <span>{{ selectedZodiac.name }} ராசி பலன் வீடியோ உரை</span>
                       </div>
                       @if (isYouTube(selectedZodiac.videoUrl)) {
                         <div class="video-embed-responsive">
@@ -127,7 +127,7 @@ export interface ZodiacPageItem {
                         </div>
                       } @else {
                         <div class="video-direct-responsive">
-                          <video [src]="selectedZodiac.videoUrl" controls style="width: 100%; border-radius: 12px; max-height: 340px; background: #000;"></video>
+                          <video [src]="selectedZodiac.videoUrl" controls controlsList="nodownload noplaybackrate" disablePictureInPicture (contextmenu)="$event.preventDefault()" style="width: 100%; border-radius: 12px; max-height: 340px; background: #000;"></video>
                         </div>
                       }
                     </div>

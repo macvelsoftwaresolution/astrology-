@@ -62,3 +62,18 @@ i.bi:not(:last-child),
 [class*=" bi-"]:not(:last-child) {
   margin-right: 6px;
 }
+
+/* Protected Content Security */
+.protected-content,
+.zodiac-display-card,
+.zodiac-display-prediction {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+img, video, audio {
+  -webkit-user-drag: none !important;
+}

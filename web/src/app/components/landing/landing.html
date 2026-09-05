@@ -121,16 +121,6 @@
       <div class="panch-left-hero">
         <span class="panch-large-label">இன்றைய தேதி</span>
         <h3 class="panch-large-date">{{ panchangam.date || '-' }}</h3>
-        <div class="panch-sun-grid">
-          <div class="sun-item">
-            <span class="sun-label"><i class="bi bi-sunrise-fill text-gold me-1"></i> சூரிய உதயம்</span>
-            <strong class="sun-val">{{ panchangam.sunrise || '-' }}</strong>
-          </div>
-          <div class="sun-item">
-            <span class="sun-label"><i class="bi bi-sunset-fill text-gold me-1"></i> சூரிய அஸ்தமனம்</span>
-            <strong class="sun-val">{{ panchangam.sunset || '-' }}</strong>
-          </div>
-        </div>
       </div>
 
       <div class="panch-right-slots">
@@ -147,7 +137,21 @@
         <div class="panch-slot-row">
           <span class="slot-title">நல்ல நேரம்</span>
           <div class="slot-divider"></div>
-          <span class="slot-value text-green">{{ panchangam.nallaNeram || '-' }}</span>
+          <div class="nalla-sessions-pills">
+            @if (panchangam.nallaMorning) {
+              <span class="nalla-pill morning">
+                <i class="bi bi-sun-fill"></i> காலை: {{ panchangam.nallaMorning }}
+              </span>
+            }
+            @if (panchangam.nallaEvening) {
+              <span class="nalla-pill evening">
+                <i class="bi bi-sunset-fill"></i> மாலை: {{ panchangam.nallaEvening }}
+              </span>
+            }
+            @if (!panchangam.nallaMorning && !panchangam.nallaEvening) {
+              <span class="slot-value text-green">{{ panchangam.nallaNeram || '-' }}</span>
+            }
+          </div>
         </div>
         <div class="panch-slot-row">
           <span class="slot-title">இராகு காலம்</span>

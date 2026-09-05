@@ -3,9 +3,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
@@ -79,8 +81,31 @@ export class LmsTabComponent implements OnInit {
     private authService: AuthService,
     public translationService: TranslationService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
+    private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef
   ) { }
+
+  isYouTubeUrl(url?: string): boolean {
+    if (!url) return false;
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  }
+
+  getSafeVideoUrl(url?: string): SafeResourceUrl | null {
+    if (!url) return null;
+    let embedUrl = url;
+    if (this.isYouTubeUrl(url)) {
+      let videoId = '';
+      const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      if (ytMatch && ytMatch[1]) {
+        videoId = ytMatch[1];
+      }
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0`;
+      }
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+  }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -296,7 +321,7 @@ export class LmsTabComponent implements OnInit {
     const maxAudioSize = 10 * 1024 * 1024;
     if (file.size > maxAudioSize) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      alert(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`);
+      this.toastService.warning(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`, 'கோப்பு அளவு அதிகம்');
       return;
     }
 
@@ -309,15 +334,16 @@ export class LmsTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url && this.editingDayLesson.audios_json[index]) {
           this.editingDayLesson.audios_json[index].url = res.url;
+          this.toastService.success('ஆடியோ வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingDayAudio = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         if (err?.status === 413) {
-          alert('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!');
+          this.toastService.error('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!', 'பதிவேற்றப் பிழை');
         } else {
-          alert('Audio upload failed.');
+          this.toastService.error('Audio upload failed.', 'பதிவேற்றப் பிழை');
         }
         this.isUploadingDayAudio = false;
         this.cdr.detectChanges();
@@ -358,7 +384,7 @@ export class LmsTabComponent implements OnInit {
     const maxPdfSize = 15 * 1024 * 1024;
     if (file.size > maxPdfSize) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      alert(`தேர்ந்தெடுக்கப்பட்ட PDF கோப்பு ${sizeMb} MB உள்ளது! 15 MB-க்குள் இருக்கும் PDF கோப்பைத் தேர்ந்தெடுக்கவும்.`);
+      this.toastService.warning(`தேர்ந்தெடுக்கப்பட்ட PDF கோப்பு ${sizeMb} MB உள்ளது! 15 MB-க்குள் இருக்கும் PDF கோப்பைத் தேர்ந்தெடுக்கவும்.`, 'கோப்பு அளவு அதிகம்');
       return;
     }
 
@@ -371,15 +397,16 @@ export class LmsTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url && this.editingDayLesson.pdfs_json[index]) {
           this.editingDayLesson.pdfs_json[index].url = res.url;
+          this.toastService.success('PDF வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingDayPdf = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         if (err?.status === 413) {
-          alert('413 Request Entity Too Large: PDF கோப்பின் அளவு சேவையக எல்லைக்கு (15 MB) அதிகமாக உள்ளது!');
+          this.toastService.error('413 Request Entity Too Large: PDF கோப்பின் அளவு சேவையக எல்லைக்கு (15 MB) அதிகமாக உள்ளது!', 'பதிவேற்றப் பிழை');
         } else {
-          alert('PDF upload failed.');
+          this.toastService.error('PDF upload failed.', 'பதிவேற்றப் பிழை');
         }
         this.isUploadingDayPdf = false;
         this.cdr.detectChanges();
@@ -402,12 +429,13 @@ export class LmsTabComponent implements OnInit {
             this.editingDayLesson.images_json = [];
           }
           this.editingDayLesson.images_json.push(res.url);
+          this.toastService.success('படம் வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingDayImage = false;
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('Image upload failed.');
+        this.toastService.error('Image upload failed.');
         this.isUploadingDayImage = false;
         this.cdr.detectChanges();
       }
@@ -460,23 +488,31 @@ export class LmsTabComponent implements OnInit {
     this.openCopyBatchModal = true;
   }
 
-  submitCopyBatch(): void {
+  async submitCopyBatch(): Promise<void> {
     if (!this.copyFromBatchId || !this.selectedBatchId) {
-      alert('Please select a source batch to copy from.');
+      this.toastService.warning('தயவுசெய்து நகலெடுக்க வேண்டிய மூலப் பிரிவைத் தேர்வு செய்யவும்.', 'எச்சரிக்கை');
       return;
     }
-    if (!confirm('This will copy/overwrite curriculum lessons in the current batch. Continue?')) return;
+    const ok = await this.confirmService.confirm({
+      title: 'பாடத்திட்டத்தை நகலெடுக்கவா?',
+      message: 'இந்த பிரிவில் உள்ள தற்போதைய பாடங்கள் மூலப் பிரிவின் பாடங்களால் மாற்றியமைக்கப்படும். தொடர விரும்புகிறீர்களா?',
+      confirmText: 'ஆம், நகலெடு',
+      type: 'warning',
+      icon: 'bi bi-copy'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/lms/curriculum/copy`, {
       from_batch_id: this.copyFromBatchId,
       to_batch_id: this.selectedBatchId
     }, headers).subscribe({
       next: (res) => {
-        alert(res.message || 'Curriculum copied successfully!');
+        this.toastService.success(res.message || 'பாடத்திட்டம் வெற்றிகரமாக நகலெடுக்கப்பட்டது!');
         this.openCopyBatchModal = false;
         this.loadCurriculum();
       },
-      error: (err) => alert(err.error?.message || 'Failed to copy batch curriculum.')
+      error: (err) => this.toastService.error(err.error?.message || 'பாடத்திட்டத்தை நகலெடுப்பதில் பிழை.')
     });
   }
 
@@ -551,28 +587,39 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: (res) => {
-        alert('Exam details saved successfully!');
+        this.toastService.success('Exam details saved successfully!');
         if (!this.activeExamWizard.id && res.exam_id) {
           this.activeExamWizard.id = res.exam_id;
         }
         this.loadExams();
       },
-      error: () => alert('Failed to save exam.')
+      error: () => this.toastService.error('Failed to save exam.')
     });
   }
 
-  deleteExam(id: number): void {
-    if (!confirm('Are you sure you want to delete this exam?')) return;
+  async deleteExam(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'தேர்வை நீக்கவா?',
+      message: 'இந்த தேர்வு மற்றும் அதன் வினாக்கள் நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/exams/${id}`, headers).subscribe({
-      next: () => this.loadExams(),
-      error: () => alert('Failed to delete exam.')
+      next: () => {
+        this.toastService.success('தேர்வு வெற்றிகரமாக நீக்கப்பட்டது.');
+        this.loadExams();
+      },
+      error: () => this.toastService.error('தேர்வை நீக்குவதில் பிழை.')
     });
   }
 
   saveQuestion(): void {
     if (!this.activeExamWizard.id) {
-      alert('Please save the exam details first before adding questions.');
+      this.toastService.warning('வினாக்களை சேர்ப்பதற்கு முன் தேர்வு விவரங்களை சேமிக்கவும்.', 'எச்சரிக்கை');
       return;
     }
     if (!this.newQuestion.question_text || !this.newQuestion.correct_answer) return;
@@ -580,21 +627,31 @@ export class LmsTabComponent implements OnInit {
 
     this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/questions`, this.newQuestion, headers).subscribe({
       next: () => {
+        this.toastService.success('வினா சேர்க்கப்பட்டது!');
         this.loadExams();
         this.newQuestion = { type: 'mcq', question_text: '', options: ['', '', '', ''], correct_answer: '', marks: 1 };
       },
-      error: () => alert('Failed to add question.')
+      error: () => this.toastService.error('வினாவை சேர்ப்பதில் பிழை.')
     });
   }
 
-  deleteQuestion(id: number): void {
-    if (!confirm('Are you sure you want to delete this question?')) return;
+  async deleteQuestion(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'கேள்வியை நீக்கவா?',
+      message: 'இந்த வினா நிரந்தரமாக நீக்கப்படும்.',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/questions/${id}`, headers).subscribe({
       next: () => {
+        this.toastService.success('வினா நீக்கப்பட்டது.');
         this.loadExams();
       },
-      error: () => alert('Failed to delete question.')
+      error: () => this.toastService.error('வினாவை நீக்குவதில் பிழை.')
     });
   }
 
@@ -604,7 +661,7 @@ export class LmsTabComponent implements OnInit {
     const file = event.target?.files?.[0];
     if (!file) return;
     if (!this.activeExamWizard.id) {
-      alert('Please save the exam details first.');
+      this.toastService.warning('Please save the exam details first.', 'எச்சரிக்கை');
       return;
     }
 
@@ -618,14 +675,14 @@ export class LmsTabComponent implements OnInit {
       }
     }).subscribe({
       next: (res) => {
-        alert(res.message || 'Questions imported successfully!');
+        this.toastService.success(res.message || 'Questions imported successfully!');
         this.loadExams();
         this.isImportingCsv = false;
         event.target.value = '';
         this.cdr.detectChanges();
       },
       error: (err) => {
-        alert('Failed to import questions from CSV: ' + (err.error?.message || 'Unknown error'));
+        this.toastService.error('Failed to import questions from CSV: ' + (err.error?.message || 'Unknown error'));
         this.isImportingCsv = false;
         event.target.value = '';
         this.cdr.detectChanges();
@@ -639,7 +696,7 @@ export class LmsTabComponent implements OnInit {
     const file = event.target?.files?.[0];
     if (!file) return;
     if (!this.activeExamWizard.id) {
-      alert('Please save the exam details first.');
+      this.toastService.warning('Please save the exam details first.', 'எச்சரிக்கை');
       return;
     }
 
@@ -647,28 +704,20 @@ export class LmsTabComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    const headers = this.authService.getAuthHeaders();
-    // Assuming authService.getAuthHeaders() returns { headers: HttpHeaders }
-    // We shouldn't set Content-Type to application/json for FormData. Angular will set multipart/form-data automatically.
-    // However, if getAuthHeaders sets Content-Type: application/json, we need to remove it.
-    // Let's create a custom header object just with Authorization.
-
-    // We'll trust getAuthHeaders for now, but usually FormData requires boundary. 
-    // Usually we just pass headers without Content-Type. Let's see.
     this.http.post<any>(`${environment.apiUrl}/admin/exams/${this.activeExamWizard.id}/import-pdf`, formData, {
       headers: {
         Authorization: `Bearer ${typeof window !== 'undefined' ? sessionStorage.getItem('token') : ''}`
       }
     }).subscribe({
       next: (res) => {
-        alert(res.message || 'Questions imported successfully!');
+        this.toastService.success(res.message || 'Questions imported successfully!');
         this.loadExams(); // this will refresh activeExamWizard.questions
         this.isImportingPdf = false;
         event.target.value = ''; // reset file input
         this.cdr.detectChanges();
       },
       error: (err) => {
-        alert('Failed to import questions from PDF: ' + (err.error?.message || 'Unknown error'));
+        this.toastService.error('Failed to import questions from PDF: ' + (err.error?.message || 'Unknown error'));
         this.isImportingPdf = false;
         event.target.value = ''; // reset file input
         this.cdr.detectChanges();
@@ -904,12 +953,23 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
-  deleteLiveClass(id: number): void {
-    if (!confirm('Are you sure you want to delete this Live Class?')) return;
+  async deleteLiveClass(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'நேரலை வகுப்பை நீக்கவா?',
+      message: 'இந்த நேரலை வகுப்பு அட்டவணை நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/live-class/${id}`, headers).subscribe({
-      next: () => this.loadLiveClasses(),
-      error: () => alert('Failed to delete Live Class.')
+      next: () => {
+        this.toastService.success('நேரலை வகுப்பு வெற்றிகரமாக நீக்கப்பட்டது.');
+        this.loadLiveClasses();
+      },
+      error: () => this.toastService.error('நேரலை வகுப்பை நீக்குவதில் பிழை.')
     });
   }
 
@@ -1051,12 +1111,23 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
-  deleteSeminar(id: number): void {
-    if (!confirm('Are you sure you want to delete this seminar?')) return;
+  async deleteSeminar(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'கருத்தரங்கை நீக்கவா?',
+      message: 'இந்த கருத்தரங்க பதிவு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/seminars/${id}`, headers).subscribe({
-      next: () => this.loadSeminars(),
-      error: () => alert('Failed to delete seminar.')
+      next: () => {
+        this.toastService.success('கருத்தரங்கம் நீக்கப்பட்டது.');
+        this.loadSeminars();
+      },
+      error: () => this.toastService.error('கருத்தரங்கை நீக்குவதில் பிழை.')
     });
   }
 
@@ -1094,7 +1165,7 @@ export class LmsTabComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('Thumbnail upload failed.');
+        this.toastService.error('Thumbnail upload failed.');
         this.isUploadingThumbnail = false;
         this.cdr.detectChanges();
       }
@@ -1118,12 +1189,13 @@ export class LmsTabComponent implements OnInit {
         if (res && res.url) {
           if (!this.editingLiveClass) this.editingLiveClass = {};
           this.editingLiveClass.banner_image_url = res.url;
+          this.toastService.success('பேனர் படம் வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingLiveBanner = false;
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('பேனர் படம் பதிவேற்றுவதில் பிழைப்பட்டது.');
+        this.toastService.error('பேனர் படம் பதிவேற்றுவதில் பிழைப்பட்டது.');
         this.isUploadingLiveBanner = false;
         this.cdr.detectChanges();
       }
@@ -1148,10 +1220,11 @@ export class LmsTabComponent implements OnInit {
           this.newLesson.content_url = res.url;
         }
         this.isUploadingLessonFile = false;
+        this.toastService.success('கோப்பு பதிவேற்றப்பட்டது!', 'வெற்றி');
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('File upload failed.');
+        this.toastService.error('File upload failed.');
         this.isUploadingLessonFile = false;
         this.cdr.detectChanges();
       }
@@ -1171,12 +1244,13 @@ export class LmsTabComponent implements OnInit {
       next: (res) => {
         if (res && res.url && this.editingMaterial) {
           this.editingMaterial.file_url = res.url;
+          this.toastService.success('PDF பதிவேற்றப்பட்டது!', 'வெற்றி');
         }
         this.isUploadingMaterial = false;
         this.cdr.detectChanges();
       },
       error: () => {
-        alert('PDF upload failed.');
+        this.toastService.error('PDF upload failed.');
         this.isUploadingMaterial = false;
         this.cdr.detectChanges();
       }
@@ -1185,7 +1259,7 @@ export class LmsTabComponent implements OnInit {
 
   saveMaterial(): void {
     if (!this.editingMaterial.title) {
-      alert('Material title is required.');
+      this.toastService.warning('Material title is required.', 'எச்சரிக்கை');
       return;
     }
     this.editingMaterial.level = this.selectedCategory || 'ILANILAI';
@@ -1200,19 +1274,31 @@ export class LmsTabComponent implements OnInit {
 
     req.subscribe({
       next: () => {
+        this.toastService.success('பாடக்குறிப்பு வெற்றிகரமாக சேமிக்கப்பட்டது!');
         this.activeView = 'dashboard';
         this.loadMaterials();
       },
-      error: () => alert('Failed to save study material.')
+      error: () => this.toastService.error('Failed to save study material.')
     });
   }
 
-  deleteMaterial(id: number): void {
-    if (!confirm('Are you sure you want to delete this study material?')) return;
+  async deleteMaterial(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'பாடக்குறிப்பை நீக்கவா?',
+      message: 'இந்த பாடக்குறிப்பு (Study Material) நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/materials/${id}`, headers).subscribe({
-      next: () => this.loadMaterials(),
-      error: () => alert('Failed to delete material.')
+      next: () => {
+        this.toastService.success('பாடக்குறிப்பு வெற்றிகரமாக நீக்கப்பட்டது.');
+        this.loadMaterials();
+      },
+      error: () => this.toastService.error('பாடக்குறிப்பை நீக்குவதில் பிழை.')
     });
   }
 
@@ -1304,11 +1390,11 @@ export class LmsTabComponent implements OnInit {
       title: this.newModuleTitle
     }, headers).subscribe({
       next: () => {
-        alert('Module added successfully!');
+        this.toastService.success('Module added successfully!');
         this.openModuleModal = false;
         this.loadCourses();
       },
-      error: () => alert('Failed to add module.')
+      error: () => this.toastService.error('Failed to add module.')
     });
   }
 
@@ -1330,11 +1416,11 @@ export class LmsTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.post<any>(`${environment.apiUrl}/admin/modules/${this.selectedModuleIdForLesson}/lessons`, this.newLesson, headers).subscribe({
       next: () => {
-        alert('Lesson added successfully!');
+        this.toastService.success('Lesson added successfully!');
         this.openLessonModal = false;
         this.loadCourses();
       },
-      error: () => alert('Failed to add lesson.')
+      error: () => this.toastService.error('Failed to add lesson.')
     });
   }
 
@@ -1353,8 +1439,15 @@ export class LmsTabComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  removeModuleInWizard(moduleId: number): void {
-    if (confirm('இந்த நிலையை (Level) நீக்க விரும்புகிறீர்களா?')) {
+  async removeModuleInWizard(moduleId: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'நிலையை நீக்கவா?',
+      message: 'இந்த நிலையை (Level) மற்றும் அதன் பாடங்களை நீக்க விரும்புகிறீர்களா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'warning',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (ok) {
       this.wizardModules = this.wizardModules.filter(m => m.id !== moduleId);
       if (this.activeLessonForm && this.activeLessonForm.moduleId === moduleId) {
         this.activeLessonForm = null;
@@ -1397,16 +1490,16 @@ export class LmsTabComponent implements OnInit {
   submitInlineLesson(): void {
     if (!this.activeLessonForm) return;
     if (!this.newInlineLesson.title || this.newInlineLesson.title.trim() === '') {
-      alert('தயவுசெய்து பாடத்தின் தலைப்பை (Title) உள்ளிடவும்.');
+      this.toastService.warning('தயவுசெய்து பாடத்தின் தலைப்பை (Title) உள்ளிடவும்.', 'விவரங்கள் தேவை');
       return;
     }
     const type = this.newInlineLesson.content_type;
     if (type !== 'text' && !this.newInlineLesson.content_url) {
-      alert('தயவுசெய்து கோப்பை (File / Link) வழங்கவும்.');
+      this.toastService.warning('தயவுசெய்து கோப்பை (File / Link) வழங்கவும்.', 'விவரங்கள் தேவை');
       return;
     }
     if (type === 'text' && (!this.newInlineLesson.description || this.newInlineLesson.description.trim() === '')) {
-      alert('தயவுசெய்து உரையை (Content) உள்ளிடவும்.');
+      this.toastService.warning('தயவுசெய்து உரையை (Content) உள்ளிடவும்.', 'விவரங்கள் தேவை');
       return;
     }
     const module = this.wizardModules.find(m => m.id === this.activeLessonForm!.moduleId);
@@ -1447,34 +1540,42 @@ export class LmsTabComponent implements OnInit {
     if (this.newCourse.id) {
       this.http.put<any>(`${environment.apiUrl}/admin/courses/${this.newCourse.id}`, payload, headers).subscribe({
         next: () => {
-          alert('Course updated successfully!');
+          this.toastService.success('படிப்பு வெற்றிகரமாக புதுப்பிக்கப்பட்டது!');
           this.activeView = 'dashboard';
           this.loadCourses();
         },
-        error: () => alert('Failed to update course.')
+        error: () => this.toastService.error('படிப்பை புதுப்பிப்பதில் பிழை.')
       });
     } else {
       // Otherwise create new (POST)
       this.http.post<any>(`${environment.apiUrl}/admin/courses`, payload, headers).subscribe({
         next: () => {
-          alert('Course created and published live successfully!');
+          this.toastService.success('புதிய படிப்பு உருவாக்கப்பட்டு வெளியிடப்பட்டது!');
           this.activeView = 'dashboard';
           this.loadCourses();
         },
-        error: () => alert('Failed to publish course.')
+        error: () => this.toastService.error('படிப்பை வெளியிடுவதில் பிழை.')
       });
     }
   }
 
-  deleteCourse(id: number): void {
-    if (!confirm('Are you sure you want to delete this course?')) return;
+  async deleteCourse(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'படிப்பை நீக்கவா?',
+      message: 'இந்த படிப்பு மற்றும் அதன் பாடத்திட்டங்கள் நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/courses/${id}`, headers).subscribe({
       next: () => {
-        alert('Course deleted successfully.');
+        this.toastService.success('படிப்பு வெற்றிகரமாக நீக்கப்பட்டது.');
         this.loadCourses();
       },
-      error: () => alert('Failed to delete course.')
+      error: () => this.toastService.error('படிப்பை நீக்குவதில் பிழை.')
     });
   }
 }

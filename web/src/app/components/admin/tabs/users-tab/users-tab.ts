@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
@@ -45,6 +46,7 @@ export class UsersTabComponent implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private toastService: ToastService,
+    private confirmService: ConfirmService,
     public translationService: TranslationService,
     private cdr: ChangeDetectorRef
   ) { }
@@ -346,15 +348,43 @@ export class UsersTabComponent implements OnInit {
     return this.nonAdminUsers.length;
   }
 
-  deleteUser(id: number): void {
-    if (!confirm('Are you sure you want to delete this registered user?')) return;
+  openDeleteModal = false;
+  selectedUserForDelete: any = null;
+
+  async deleteUser(userOrId: any): Promise<void> {
+    const user = typeof userOrId === 'object' ? userOrId : this.users.find(u => u.id === userOrId);
+    if (!user) return;
+
+    this.selectedUserForDelete = user;
+    if (this.isStudent(user)) {
+      this.openDeleteModal = true;
+    } else {
+      const ok = await this.confirmService.confirm({
+        title: 'பயனரை நீக்கவா?',
+        message: 'இந்த பதிவு செய்த பயனர் கணக்கு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+        confirmText: 'ஆம், நீக்குக',
+        type: 'danger',
+        icon: 'bi bi-trash3-fill'
+      });
+      if (!ok) return;
+
+      this.confirmDelete('full');
+    }
+  }
+
+  confirmDelete(mode: 'student_only' | 'astrology_only' | 'full'): void {
+    if (!this.selectedUserForDelete) return;
+    const id = this.selectedUserForDelete.id;
     const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}`, headers).subscribe({
-      next: () => {
-        this.toastService.success('User deleted successfully.', 'பயனர் நீக்கப்பட்டார்');
+    this.http.delete<any>(`${environment.apiUrl}/admin/users/${id}?mode=${mode}`, headers).subscribe({
+      next: (res) => {
+        const msg = res.message || (mode === 'student_only' ? 'மாணவர் சேர்க்கை மட்டும் நீக்கப்பட்டது' : (mode === 'astrology_only' ? 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கப்பட்டது' : 'பயனர் வெற்றிகரமாக நீக்கப்பட்டார்.'));
+        this.toastService.success(msg, 'நீக்கப்பட்டது');
+        this.openDeleteModal = false;
+        this.selectedUserForDelete = null;
         this.loadUsers();
       },
-      error: () => this.toastService.error('Failed to delete user.', 'பிழை ஏற்பட்டது')
+      error: () => this.toastService.error('பயனரை நீக்குவதில் பிழை ஏற்பட்டது.', 'பிழை ஏற்பட்டது')
     });
   }
 

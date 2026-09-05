@@ -18,45 +18,40 @@ class LmsCurriculumController extends Controller
     public function getAdminBatches(Request $request)
     {
         $year = (int) $request->input('year', date('Y'));
-        $rawLevel = trim($request->input('level', 'ilanilai'));
-        $level = strtolower($rawLevel);
-        if ($level === 'mudhunilai') {
-            $level = 'muthunilai';
-        }
         $today = now()->format('Y-m-d');
 
         $defaultBatches = [
             [
-                'batch_code'   => "{$year}-B1-{$level}",
+                'batch_code'   => "{$year}-B1",
                 'name'         => "Batch 1 (Jan - Mar {$year})",
-                'course_level' => $level,
+                'course_level' => 'all',
                 'year'         => $year,
                 'quarter'      => 'Q1',
                 'start_date'   => "{$year}-01-01",
                 'end_date'     => "{$year}-03-31",
             ],
             [
-                'batch_code'   => "{$year}-B2-{$level}",
+                'batch_code'   => "{$year}-B2",
                 'name'         => "Batch 2 (Apr - Jun {$year})",
-                'course_level' => $level,
+                'course_level' => 'all',
                 'year'         => $year,
                 'quarter'      => 'Q2',
                 'start_date'   => "{$year}-04-01",
                 'end_date'     => "{$year}-06-30",
             ],
             [
-                'batch_code'   => "{$year}-B3-{$level}",
+                'batch_code'   => "{$year}-B3",
                 'name'         => "Batch 3 (Jul - Sep {$year})",
-                'course_level' => $level,
+                'course_level' => 'all',
                 'year'         => $year,
                 'quarter'      => 'Q3',
                 'start_date'   => "{$year}-07-01",
                 'end_date'     => "{$year}-09-30",
             ],
             [
-                'batch_code'   => "{$year}-B4-{$level}",
+                'batch_code'   => "{$year}-B4",
                 'name'         => "Batch 4 (Oct - Dec {$year})",
-                'course_level' => $level,
+                'course_level' => 'all',
                 'year'         => $year,
                 'quarter'      => 'Q4',
                 'start_date'   => "{$year}-10-01",
@@ -76,12 +71,6 @@ class LmsCurriculumController extends Controller
             }
 
             $existing = CourseBatch::where('year', $year)
-                ->where(function ($q) use ($level, $rawLevel) {
-                    $q->whereRaw('LOWER(course_level) = ?', [$level])
-                      ->orWhere('course_level', $level)
-                      ->orWhere('course_level', $rawLevel)
-                      ->orWhere('course_level', strtoupper($level));
-                })
                 ->where('quarter', $b['quarter'])
                 ->first();
 
@@ -91,7 +80,7 @@ class LmsCurriculumController extends Controller
                 $existing->update([
                     'name'         => $b['name'],
                     'batch_code'   => $b['batch_code'],
-                    'course_level' => $level,
+                    'course_level' => 'all',
                     'start_date'   => $b['start_date'],
                     'end_date'     => $b['end_date'],
                     'status'       => $computedStatus,
@@ -100,14 +89,7 @@ class LmsCurriculumController extends Controller
         }
 
         $batches = CourseBatch::where('year', $year)
-            ->where(function ($q) use ($level, $rawLevel) {
-                $q->whereRaw('LOWER(course_level) = ?', [$level])
-                  ->orWhere('course_level', $level)
-                  ->orWhere('course_level', $rawLevel)
-                  ->orWhere('course_level', strtoupper($level));
-            })
-            ->orderByRaw("CASE WHEN status = 'active' THEN 1 WHEN status = 'upcoming' THEN 2 WHEN status = 'completed' THEN 3 ELSE 4 END")
-            ->orderBy('start_date', 'asc')
+            ->orderBy('id', 'asc')
             ->get();
 
         return response()->json([
@@ -337,47 +319,32 @@ class LmsCurriculumController extends Controller
             }
 
             // 1. Strict Batch Resolution for Student (Case-Insensitive for course_level)
-            $studentBatch = null;
+            // 1. Strict Batch Resolution: match student's registration year & quarter (strictly 4 batches per year)
+            $studentBatch = CourseBatch::where('year', $year)
+                ->where('quarter', $quarter)
+                ->first();
 
-            if ($student && $student->batch_id) {
+            // If not found by year & quarter, check student's explicit batch_id
+            if (!$studentBatch && $student && $student->batch_id) {
                 $studentBatch = CourseBatch::find($student->batch_id);
             }
             if (!$studentBatch && $user && $user->batch_id) {
                 $studentBatch = CourseBatch::find($user->batch_id);
             }
 
-            // If no explicit batch assigned, find matching quarter batch by registration date & level
-            if (!$studentBatch) {
-                $studentBatch = CourseBatch::where('year', $year)
-                    ->where(function ($q) use ($courseLevel, $rawLevel) {
-                        $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
-                          ->orWhere('course_level', $courseLevel)
-                          ->orWhere('course_level', $rawLevel)
-                          ->orWhere('course_level', strtoupper($courseLevel));
-                    })
-                    ->where('quarter', $quarter)
-                    ->first();
-            }
-
             // If batch doesn't exist in DB yet, auto-seed and find it
             if (!$studentBatch) {
                 try {
-                    $this->getAdminBatches(new Request(['year' => $year, 'level' => $courseLevel]));
+                    $this->getAdminBatches(new Request(['year' => $year]));
                 } catch (\Throwable $e) {}
                 
                 $studentBatch = CourseBatch::where('year', $year)
-                    ->where(function ($q) use ($courseLevel, $rawLevel) {
-                        $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
-                          ->orWhere('course_level', $courseLevel)
-                          ->orWhere('course_level', $rawLevel)
-                          ->orWhere('course_level', strtoupper($courseLevel));
-                    })
                     ->where('quarter', $quarter)
                     ->first();
             }
 
-            // Auto-assign batch_id to student record safely
-            if ($studentBatch && $student && !$student->batch_id) {
+            // Ensure student record has the exact course_batches id saved
+            if ($studentBatch && $student && $student->batch_id !== $studentBatch->id) {
                 try {
                     $student->batch_id = $studentBatch->id;
                     $student->save();

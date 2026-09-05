@@ -99,6 +99,13 @@ class NotificationController extends Controller
     /**
      * Admin: Broadcast notification to all users or specific user
      */
+    protected static function stripEmojis(?string $string): string
+    {
+        if (!$string) return '';
+        $clean = preg_replace('/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{FE00}-\x{FE0F}\x{1F1E6}-\x{1F1FF}]/u', '', $string);
+        return trim(preg_replace('/\s+/', ' ', $clean));
+    }
+
     public function broadcastNotification(Request $request)
     {
         $request->validate([
@@ -108,12 +115,15 @@ class NotificationController extends Controller
             'user_id' => 'nullable|integer' // null = broadcast to all
         ]);
 
+        $title = self::stripEmojis($request->title);
+        $body = self::stripEmojis($request->body);
+
         if ($request->user_id) {
             // Send to specific user
             DB::table('notifications')->insert([
                 'user_id'    => $request->user_id,
-                'title'      => $request->title,
-                'body'       => $request->body,
+                'title'      => $title,
+                'body'       => $body,
                 'type'       => $request->type,
                 'is_read'    => false,
                 'data'       => $request->has('data') ? json_encode($request->data) : null,
@@ -127,8 +137,8 @@ class NotificationController extends Controller
             $now = now();
             $rows = $users->map(fn($uid) => [
                 'user_id'    => $uid,
-                'title'      => $request->title,
-                'body'       => $request->body,
+                'title'      => $title,
+                'body'       => $body,
                 'type'       => $request->type,
                 'is_read'    => false,
                 'data'       => $request->has('data') ? json_encode($request->data) : null,
@@ -341,12 +351,14 @@ class NotificationController extends Controller
      */
     public static function broadcastToUsers(string $title, string $body, string $type, ?array $data = null): void
     {
+        $cleanTitle = self::stripEmojis($title);
+        $cleanBody = self::stripEmojis($body);
         $users = DB::table('users')->where('role', 'user')->pluck('id');
         $now = now();
         $rows = $users->map(fn($uid) => [
             'user_id'    => $uid,
-            'title'      => $title,
-            'body'       => $body,
+            'title'      => $cleanTitle,
+            'body'       => $cleanBody,
             'type'       => $type,
             'is_read'    => false,
             'data'       => $data ? json_encode($data) : null,
@@ -366,8 +378,8 @@ class NotificationController extends Controller
     {
         DB::table('notifications')->insert([
             'user_id'    => $userId,
-            'title'      => $title,
-            'body'       => $body,
+            'title'      => self::stripEmojis($title),
+            'body'       => self::stripEmojis($body),
             'type'       => $type,
             'is_read'    => false,
             'data'       => $data ? json_encode($data) : null,
