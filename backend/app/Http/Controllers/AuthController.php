@@ -146,7 +146,7 @@ class AuthController extends Controller
             if (!$authEntity) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'தவறான மாணவர் ஐடி (Student ID) அல்லது கடவுச்சொல்.'
+                    'message' => 'errors.invalidStudentCreds'
                 ], 401);
             }
 
@@ -191,7 +191,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'தவறான மின்னஞ்சல்/பயனர் பெயர் அல்லது கடவுச்சொல்.'
+                'message' => 'login.invalidCreds'
             ], 401);
         }
 
