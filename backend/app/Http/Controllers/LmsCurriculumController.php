@@ -337,26 +337,23 @@ class LmsCurriculumController extends Controller
             }
 
             // 1. Strict Batch Resolution for Student (Case-Insensitive for course_level)
-            $studentBatch = null;
+            // 1. Strict Batch Resolution: find the exact batch for the student's course_level and quarter
+            $studentBatch = CourseBatch::where('year', $year)
+                ->where(function ($q) use ($courseLevel, $rawLevel) {
+                    $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
+                      ->orWhere('course_level', $courseLevel)
+                      ->orWhere('course_level', $rawLevel)
+                      ->orWhere('course_level', strtoupper($courseLevel));
+                })
+                ->where('quarter', $quarter)
+                ->first();
 
-            if ($student && $student->batch_id) {
+            // If not found by quarter & level, check student's explicit batch_id
+            if (!$studentBatch && $student && $student->batch_id) {
                 $studentBatch = CourseBatch::find($student->batch_id);
             }
             if (!$studentBatch && $user && $user->batch_id) {
                 $studentBatch = CourseBatch::find($user->batch_id);
-            }
-
-            // If no explicit batch assigned, find matching quarter batch by registration date & level
-            if (!$studentBatch) {
-                $studentBatch = CourseBatch::where('year', $year)
-                    ->where(function ($q) use ($courseLevel, $rawLevel) {
-                        $q->whereRaw('LOWER(course_level) = ?', [$courseLevel])
-                          ->orWhere('course_level', $courseLevel)
-                          ->orWhere('course_level', $rawLevel)
-                          ->orWhere('course_level', strtoupper($courseLevel));
-                    })
-                    ->where('quarter', $quarter)
-                    ->first();
             }
 
             // If batch doesn't exist in DB yet, auto-seed and find it
@@ -376,8 +373,8 @@ class LmsCurriculumController extends Controller
                     ->first();
             }
 
-            // Auto-assign batch_id to student record safely
-            if ($studentBatch && $student && !$student->batch_id) {
+            // Ensure student record has the exact course_batches id saved
+            if ($studentBatch && $student && $student->batch_id !== $studentBatch->id) {
                 try {
                     $student->batch_id = $studentBatch->id;
                     $student->save();
