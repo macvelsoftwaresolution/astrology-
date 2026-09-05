@@ -254,7 +254,14 @@ class UserProfileController extends Controller
         $studentId = $student->id ?? null;
 
         if ($mode === 'student_only') {
-            // 1. Delete record from `students` table ONLY
+            // 1. Delete student daily progress
+            if ($studentId) {
+                try {
+                    DB::table('student_daily_progress')->where('student_id', $studentId)->delete();
+                } catch (\Throwable $e) {}
+            }
+
+            // 2. Delete record from `students` table ONLY
             DB::table('students')
                 ->where(function($q) use ($studentId, $email, $phone, $studentCode) {
                     if ($studentId) $q->orWhere('id', $studentId);
@@ -264,7 +271,7 @@ class UserProfileController extends Controller
                 })
                 ->delete();
 
-            // 2. Remove student_id and batch_id in `users` table so Astrology account stays active
+            // 3. Remove student_id and batch_id in `users` table so Astrology account stays active
             if ($user) {
                 DB::table('users')
                     ->where('id', $user->id)
@@ -274,7 +281,7 @@ class UserProfileController extends Controller
                     ]);
             }
 
-            // 3. Wipe student access tokens
+            // 4. Wipe student access tokens
             if ($studentId) {
                 DB::table('personal_access_tokens')
                     ->where('tokenable_type', 'App\\Models\\Student')
@@ -291,6 +298,9 @@ class UserProfileController extends Controller
         // MODE 2: ASTROLOGY MEMBER ONLY DELETE
         if ($mode === 'astrology_only') {
             if ($user) {
+                try {
+                    DB::table('notifications')->where('user_id', $user->id)->delete();
+                } catch (\Throwable $e) {}
                 DB::table('users')->where('id', $user->id)->delete();
                 DB::table('personal_access_tokens')
                     ->where('tokenable_type', 'App\\Models\\User')
@@ -306,7 +316,16 @@ class UserProfileController extends Controller
 
         // FULL DELETE MODE (default)
         if ($user) {
+            try {
+                DB::table('notifications')->where('user_id', $user->id)->delete();
+            } catch (\Throwable $e) {}
             DB::table('users')->where('id', $user->id)->delete();
+        }
+
+        if ($studentId) {
+            try {
+                DB::table('student_daily_progress')->where('student_id', $studentId)->delete();
+            } catch (\Throwable $e) {}
         }
 
         DB::table('students')
