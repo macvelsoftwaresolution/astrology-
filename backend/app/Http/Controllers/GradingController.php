@@ -288,13 +288,27 @@ class GradingController extends Controller
 
     public function getMySubmissions(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user('sanctum') ?: $request->user();
         if (!$user) {
             return response()->json(['success' => true, 'submissions' => []]);
         }
 
+        $userIds = [$user->id];
+        $studentCode = $user->student_id ?? null;
+        if (!empty($studentCode)) {
+            $userRecord = DB::table('users')->where('student_id', $studentCode)->first();
+            if ($userRecord) {
+                $userIds[] = $userRecord->id;
+            }
+            $studentModel = DB::table('students')->where('student_id', $studentCode)->first();
+            if ($studentModel) {
+                $userIds[] = $studentModel->id;
+            }
+        }
+        $userIds = array_values(array_unique(array_filter($userIds)));
+
         $submissions = DB::table('student_submissions')
-            ->where('student_id', $user->id)
+            ->whereIn('student_id', $userIds)
             ->get();
 
         return response()->json([
@@ -324,7 +338,39 @@ class GradingController extends Controller
             ]);
 
             $user = $request->user('sanctum') ?: auth('sanctum')->user() ?: $request->user();
-            $studentId = $user ? $user->id : null;
+            $studentId = null;
+
+            if ($user) {
+                // If authenticated as Student model or has student_id, locate or ensure matching row in `users`
+                $studentCode = $user->student_id ?? null;
+                $userRecord = null;
+                if (!empty($studentCode)) {
+                    $userRecord = DB::table('users')->where('student_id', $studentCode)->first();
+                }
+                if (!$userRecord && !empty($user->email)) {
+                    $userRecord = DB::table('users')->where('email', $user->email)->first();
+                }
+
+                if ($userRecord) {
+                    $studentId = $userRecord->id;
+                } else if ($user instanceof \App\Models\User && DB::table('users')->where('id', $user->id)->exists()) {
+                    $studentId = $user->id;
+                } else {
+                    // Auto-restore anchor in users table so foreign key constraint never fails
+                    $studentId = DB::table('users')->insertGetId([
+                        'name'             => $user->name ?? 'Student User',
+                        'email'            => $user->email ?: ('student_' . ($studentCode ? strtolower($studentCode) : time()) . '@sriaarudhraaastro.com'),
+                        'student_id'       => $studentCode,
+                        'batch_id'         => $user->batch_id ?? null,
+                        'phone'            => $user->phone ?? null,
+                        'password'         => $user->password ?? bcrypt('123456'),
+                        'role'             => 'student',
+                        'status'           => 'student_only',
+                        'created_at'       => now(),
+                        'updated_at'       => now(),
+                    ]);
+                }
+            }
 
             if (!$studentId) {
                 $studentId = DB::table('users')->where('id', 1)->value('id') 

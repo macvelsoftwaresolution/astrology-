@@ -298,8 +298,8 @@ export class UsersTabComponent implements OnInit {
     } else if (this.selectedCategoryFilter === 'both') {
       list = list.filter(u => this.isBothStudentAndAppointment(u));
     } else if (this.selectedCategoryFilter === 'members') {
-      // In Members view: show all registered non-admin members
-      list = list;
+      // In Members view: show strictly general members who are not students
+      list = list.filter(u => this.isMemberOnly(u));
     }
 
     // 2. Batch Filter (Active when looking at students or all)
@@ -332,6 +332,12 @@ export class UsersTabComponent implements OnInit {
     return this.users.filter(u => u.role !== 'admin');
   }
 
+  isMemberOnly(u: any): boolean {
+    if (!u) return false;
+    if (u.status === 'student_only' || u.role === 'student') return false;
+    return !this.isStudent(u);
+  }
+
   get studentsCount(): number {
     return this.nonAdminUsers.filter(u => this.isStudent(u)).length;
   }
@@ -345,7 +351,7 @@ export class UsersTabComponent implements OnInit {
   }
 
   get membersCount(): number {
-    return this.nonAdminUsers.length;
+    return this.nonAdminUsers.filter(u => this.isMemberOnly(u)).length;
   }
 
   openDeleteModal = false;
@@ -402,16 +408,20 @@ export class UsersTabComponent implements OnInit {
 
   isStudent(u: any): boolean {
     if (!u) return false;
+    if (u.student_id || u.role === 'student' || u.status === 'student_only') return true;
     const d = this.getParsedDetails(u);
-    return !!(u.student_id || d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.qualification);
+    return !!(d?.courseLevel || d?.studentNameTamil || d?.fatherName || d?.qualification);
   }
 
   isAppointmentUser(u: any): boolean {
     if (!u) return false;
+    if (u.status === 'student_only' || u.role === 'student') return false;
     return !!(u.bookings_count && u.bookings_count > 0);
   }
 
   isBothStudentAndAppointment(u: any): boolean {
+    if (!u) return false;
+    if (u.status === 'student_only' || u.role === 'student') return false;
     return this.isStudent(u) && this.isAppointmentUser(u);
   }
 

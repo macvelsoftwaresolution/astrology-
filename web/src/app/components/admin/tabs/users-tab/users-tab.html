@@ -217,7 +217,7 @@
             <span class="id-badge">#{{ u.id }}</span>
           </td>
           <td>
-            <div class="user-name-cell">
+            <div class="user-name-cell" (click)="selectedUserForProfile = u" style="cursor: pointer;" [title]="translationService.currentLanguage() === 'ta' ? 'விவரம் காண கிளிக் செய்யவும்' : 'Click to view details'">
               <span class="user-full-name">{{ u.name }}</span>
               @if (u.student_id) {
               <span class="student-tag">
@@ -264,14 +264,14 @@
               }
             </div>
             }
-            <!-- 2. When Filter is explicitly 'appointments' -> show only Appointment badge -->
+            <!-- 3. When Filter is explicitly 'appointments' -> show only Appointment badge -->
             @else if (selectedCategoryFilter === 'appointments') {
             <span class="profile-tag-booking">
               <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
             </span>
             }
-            <!-- 3. When 'Both' or 'All' is selected and user has both roles -> show dual badge -->
-            @else if (isBothStudentAndAppointment(u)) {
+            <!-- 4. When user has both active student and appointment roles -->
+            @else if (isBothStudentAndAppointment(u) && u.status !== 'student_only' && u.role !== 'student') {
             <div class="profile-tags-stack">
               <div class="dual-tag-wrap">
                 <span class="profile-tag-lms">
@@ -279,8 +279,7 @@
                 </span>
                 <span class="tag-separator">/</span>
                 <span class="profile-tag-booking">
-                  <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count
-                  }})
+                  <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
                 </span>
               </div>
               @if (u.batch_name) {
@@ -290,17 +289,19 @@
               }
             </div>
             }
-            <!-- 4. Default Fallbacks -->
+            <!-- 5. When user is a student -->
             @else if (isStudent(u)) {
             <div class="profile-tags-stack">
               <div class="dual-tag-wrap">
+                @if (u.status !== 'student_only' && u.role !== 'student') {
                 <span class="profile-tag-member">
                   <i class="bi bi-person-fill"></i> {{ 'users.memberBadge' | translate }}
                 </span>
+                }
                 <span class="profile-tag-lms">
                   <i class="bi bi-mortarboard-fill"></i> {{ getStudentLevel(u) }}
                 </span>
-                @if (isAppointmentUser(u)) {
+                @if (isAppointmentUser(u) && u.status !== 'student_only' && u.role !== 'student') {
                 <span class="profile-tag-booking">
                   <i class="bi bi-calendar2-check-fill"></i> {{ 'users.bookingBadge' | translate }} ({{ u.bookings_count }})
                 </span>
@@ -347,11 +348,9 @@
                 'Batch' }}
               </button>
               }
-              @if (getParsedDetails(u)) {
-              <button class="btn-details-action" (click)="selectedUserForProfile = u" title="விவரம்">
-                <i class="bi bi-eye-fill"></i>
+              <button class="btn-details-action" (click)="selectedUserForProfile = u" [title]="translationService.currentLanguage() === 'ta' ? 'முழு விவரம் காண்க' : 'View Full Details'">
+                <i class="bi bi-eye-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'விவரம்' : 'View' }}
               </button>
-              }
               <button class="btn-delete-action" (click)="deleteUser(u)" title="நீக்கு">
                 <i class="bi bi-trash3-fill"></i>
               </button>
@@ -372,10 +371,10 @@
 </div>
 }
 
-<!-- MODAL: VIEW STUDENT ADMISSION / JATHAGAM PROFILE -->
+<!-- MODAL: VIEW STUDENT ADMISSION / JATHAGAM / MEMBER PROFILE -->
 @if (selectedUserForProfile) {
 <div class="modal-overlay" (click)="selectedUserForProfile = null">
-  <div class="modal-box" style="max-width:580px;max-height:88vh;overflow-y:auto;" (click)="$event.stopPropagation()">
+  <div class="modal-box" style="max-width:600px;max-height:88vh;overflow-y:auto;" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div>
         <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
@@ -385,8 +384,10 @@
         <span style="font-size:12px;color:#64748b;">
           @if (isStudent(selectedUserForProfile)) {
           {{ 'users.studentAdmissionProfile' | translate }}
-          } @else {
+          } @else if (selectedUserForProfile.jathagam_profile || getParsedDetails(selectedUserForProfile)?.rasi) {
           {{ 'users.birthChartProfile' | translate }}
+          } @else {
+          {{ translationService.currentLanguage() === 'ta' ? 'உறுப்பினர் விவரக்குறிப்பு' : 'Member Profile' }}
           }
         </span>
       </div>
@@ -453,6 +454,14 @@
           <strong>{{ formatGender(getParsedDetails(selectedUserForProfile)?.gender) }}</strong>
         </div>
         <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'தொலைபேசி:' : 'Phone:' }}</span>
+          <strong>{{ selectedUserForProfile.phone || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மின்னஞ்சல்:' : 'Email:' }}</span>
+          <strong style="word-break:break-all;">{{ selectedUserForProfile.email }}</strong>
+        </div>
+        <div>
           <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ 'users.occupation' | translate
             }}</span>
           <strong>{{ formatOccupation(getParsedDetails(selectedUserForProfile)?.occupation) }}</strong>
@@ -478,7 +487,7 @@
         </div>
       </div>
     </div>
-    } @else {
+    } @else if (selectedUserForProfile.jathagam_profile || getParsedDetails(selectedUserForProfile)?.rasi) {
     <!-- IF HOROSCOPE RECORD -->
     <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
@@ -513,6 +522,52 @@
           <strong>{{ (getParsedDetails(selectedUserForProfile)?.gender ||
             selectedUserForProfile.jathagam_profile?.gender || '-') }}</strong>
         </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'தொலைபேசி:' : 'Phone:' }}</span>
+          <strong>{{ selectedUserForProfile.phone || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மின்னஞ்சல்:' : 'Email:' }}</span>
+          <strong style="word-break:break-all;">{{ selectedUserForProfile.email }}</strong>
+        </div>
+      </div>
+    </div>
+    } @else {
+    <!-- IF GENERAL MEMBER RECORD -->
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:10px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'பெயர்:' : 'Name:' }}</span>
+          <strong>{{ selectedUserForProfile.name }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'நிலை / பிரிவு:' : 'Role:' }}</span>
+          <span class="profile-tag-member" style="display:inline-block;padding:2px 8px;font-size:11px;">
+            <i class="bi bi-person-badge-fill"></i> {{ 'users.memberBadge' | translate }}
+          </span>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மின்னஞ்சல்:' : 'Email:' }}</span>
+          <strong style="word-break:break-all;">{{ selectedUserForProfile.email }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'தொலைபேசி எண்:' : 'Phone:' }}</span>
+          <strong>{{ selectedUserForProfile.phone || '-' }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'பதிவு தேதி:' : 'Registered Date:' }}</span>
+          <strong>{{ formatDynamicDate(selectedUserForProfile.created_at) }}</strong>
+        </div>
+        <div>
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'ஜோதிட முன்பதிவுகள்:' : 'Astrology Bookings:' }}</span>
+          <strong style="color:#2563eb;">{{ selectedUserForProfile.bookings_count || 0 }}</strong>
+        </div>
+        @if (selectedUserForProfile.address) {
+        <div style="grid-column: 1 / -1;">
+          <span class="muted" style="font-size:11px;display:block;color:#64748b;">{{ translationService.currentLanguage() === 'ta' ? 'முகவரி:' : 'Address:' }}</span>
+          <strong>{{ selectedUserForProfile.address }}</strong>
+        </div>
+        }
       </div>
     </div>
     }
@@ -578,73 +633,86 @@
 <!-- MODAL: DELETE USER OPTIONS (STUDENT ACCESS vs FULL DELETE) -->
 @if (openDeleteModal && selectedUserForDelete) {
 <div class="modal-overlay" (click)="openDeleteModal = false">
-  <div class="modal-box batch-modal-box" (click)="$event.stopPropagation()" style="max-width:480px;">
-    <div class="modal-header" style="border-bottom:1px solid #fee2e2;padding-bottom:12px;">
-      <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:16px;color:#dc2626;">
-        <i class="bi bi-exclamation-triangle-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'கணக்கு நீக்குதல் தேர்வு' : 'Delete Account Choice' }}
-      </h3>
-      <button type="button" class="btn-close-modal" (click)="openDeleteModal = false"><i class="bi bi-x-lg"></i></button>
-    </div>
-    <div class="modal-body" style="padding:16px 0;">
-      <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:16px;">
-        <div style="font-weight:700;color:#0f172a;font-size:15px;">{{ selectedUserForDelete.name }}</div>
-        <div style="font-size:12px;color:#64748b;margin-top:4px;">
-          Email: {{ selectedUserForDelete.email || '-' }} | Phone: {{ selectedUserForDelete.phone || '-' }}
-          @if (selectedUserForDelete.student_id) {
-            | <span style="font-weight:600;color:#d97706;">Student ID: {{ selectedUserForDelete.student_id }}</span>
-          }
-        </div>
+  <div class="modal-box delete-choice-modal" (click)="$event.stopPropagation()">
+    <div class="delete-choice-header">
+      <div class="delete-header-icon-wrap">
+        <i class="bi bi-shield-exclamation"></i>
       </div>
+      <div class="delete-header-text">
+        <h3>{{ translationService.currentLanguage() === 'ta' ? 'கணக்கு நீக்குதல் தேர்வு' : 'Delete Account Options' }}</h3>
+        <span class="user-subtext">{{ selectedUserForDelete.name }} @if (selectedUserForDelete.student_id) { ({{ selectedUserForDelete.student_id }}) }</span>
+      </div>
+      <button type="button" class="btn-close-modal" (click)="openDeleteModal = false">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
 
-      <p style="font-size:13px;color:#475569;margin-bottom:16px;line-height:1.5;">
+    <div class="delete-choice-body">
+      <p class="delete-instruction">
         {{ translationService.currentLanguage() === 'ta' 
-          ? 'இந்த பயனர் மாணவர் சேர்க்கை மற்றும் ஜோதிட போர்ட்டலில் உள்ளார். நீங்கள் எதை நீக்க விரும்புகிறீர்கள்?' 
-          : 'This user has both Student access and Astrology portal access. What would you like to delete?' }}
+          ? 'நீக்க வேண்டிய கணக்கு வகையைத் தேர்ந்தெடுக்கவும்:' 
+          : 'Please select which access to revoke:' }}
       </p>
 
-      <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="delete-options-list">
         <!-- Option 1: Student Access Only -->
-        <button type="button" (click)="confirmDelete('student_only')"
-          style="text-align:left;padding:14px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;cursor:pointer;transition:all 0.2s;">
-          <div style="font-weight:700;color:#b45309;font-size:14px;display:flex;align-items:center;gap:6px;">
-            <i class="bi bi-journal-x"></i> {{ translationService.currentLanguage() === 'ta' ? '1. மாணவர் சேர்க்கை மட்டும் நீக்கு (Student ID Only)' : '1. Revoke Student Access Only' }}
+        <button type="button" class="delete-option-card opt-student" (click)="confirmDelete('student_only')">
+          <div class="opt-icon-circle student">
+            <i class="bi bi-mortarboard-fill"></i>
           </div>
-          <div style="font-size:12px;color:#78350f;margin-top:6px;line-height:1.4;">
-            {{ translationService.currentLanguage() === 'ta' 
-              ? 'மாணவர் ஐடி (Student ID) நீக்கப்படும். இவர் Student ID வைத்து Login செய்ய முடியாது. ஆனால் ஜோதிட போர்ட்டலில் Email/Phone மூலம் தொடர்ந்து Login செய்யலாம்.' 
-              : 'Student ID will be deleted. They cannot log in using Student ID, but can still log in to Astrology portal.' }}
+          <div class="opt-content">
+            <div class="opt-title">
+              {{ translationService.currentLanguage() === 'ta' ? 'மாணவர் சேர்க்கை மட்டும் நீக்கு' : 'Revoke Student ID Only' }}
+            </div>
+            <div class="opt-desc">
+              {{ translationService.currentLanguage() === 'ta' 
+                ? 'Student ID நீக்கப்படும். ஜோதிட கணக்கு தொடர்ந்து இயங்கும்.' 
+                : 'Student access removed. Astrology portal remains active.' }}
+            </div>
           </div>
+          <i class="bi bi-chevron-right opt-arrow"></i>
         </button>
 
         <!-- Option 2: Astrology Member Only -->
-        <button type="button" (click)="confirmDelete('astrology_only')"
-          style="text-align:left;padding:14px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;cursor:pointer;transition:all 0.2s;">
-          <div style="font-weight:700;color:#0369a1;font-size:14px;display:flex;align-items:center;gap:6px;">
-            <i class="bi bi-person-badge-fill"></i> {{ translationService.currentLanguage() === 'ta' ? '2. ஜோதிட பயனர் கணக்கு மட்டும் நீக்கு (Astrology Member Only)' : '2. Revoke Astrology Member Account Only' }}
+        <button type="button" class="delete-option-card opt-member" (click)="confirmDelete('astrology_only')">
+          <div class="opt-icon-circle member">
+            <i class="bi bi-person-x-fill"></i>
           </div>
-          <div style="font-size:12px;color:#0c4a6e;margin-top:6px;line-height:1.4;">
-            {{ translationService.currentLanguage() === 'ta' 
-              ? 'ஜோதிட பயனர் கணக்கு நீக்கப்படும். இவர் Email/Phone மூலம் ஜோதிட ஆப்பில் Login செய்ய முடியாது. ஆனால் மாணவர் பாடநெறியில் Student ID வைத்து Login செய்யலாம்.' 
-              : 'Astrology member account will be deleted. Email/Phone login will fail, but Student ID login for Learn section remains active.' }}
+          <div class="opt-content">
+            <div class="opt-title">
+              {{ translationService.currentLanguage() === 'ta' ? 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கு' : 'Revoke Astrology Member Only' }}
+            </div>
+            <div class="opt-desc">
+              {{ translationService.currentLanguage() === 'ta' 
+                ? 'ஜோதிட உள்நுழைவு நீக்கப்படும். மாணவர் LMS தொடர்ந்து இயங்கும்.' 
+                : 'Astrology login revoked. Student LMS remains active.' }}
+            </div>
           </div>
+          <i class="bi bi-chevron-right opt-arrow"></i>
         </button>
 
         <!-- Option 3: Full Delete -->
-        <button type="button" (click)="confirmDelete('full')"
-          style="text-align:left;padding:14px 16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;cursor:pointer;transition:all 0.2s;">
-          <div style="font-weight:700;color:#b91c1c;font-size:14px;display:flex;align-items:center;gap:6px;">
-            <i class="bi bi-trash3-fill"></i> {{ translationService.currentLanguage() === 'ta' ? '3. முழு கணக்கையும் நீக்கு (Delete Entire Account Completely)' : '3. Delete Entire Account Completely' }}
+        <button type="button" class="delete-option-card opt-full" (click)="confirmDelete('full')">
+          <div class="opt-icon-circle full">
+            <i class="bi bi-trash3-fill"></i>
           </div>
-          <div style="font-size:12px;color:#7f1d1d;margin-top:6px;line-height:1.4;">
-            {{ translationService.currentLanguage() === 'ta' 
-              ? 'மாணவர் விபரங்கள் மற்றும் ஜோதிட கணக்கு உட்பட அனைத்தும் சிஸ்டத்தில் இருந்து முழுமையாக நீக்கப்படும்.' 
-              : 'Removes both Student ID and Astrology account completely from database.' }}
+          <div class="opt-content">
+            <div class="opt-title text-danger">
+              {{ translationService.currentLanguage() === 'ta' ? 'முழு கணக்கையும் நீக்கு' : 'Delete Entire Account' }}
+            </div>
+            <div class="opt-desc text-danger-sub">
+              {{ translationService.currentLanguage() === 'ta' 
+                ? 'மாணவர் மற்றும் ஜோதிட விவரங்கள் முற்றிலும் நிரந்தரமாக அழியும்.' 
+                : 'Removes both student & astrology accounts permanently.' }}
+            </div>
           </div>
+          <i class="bi bi-chevron-right opt-arrow"></i>
         </button>
       </div>
     </div>
-    <div class="modal-btns" style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button type="button" class="btn-cancel" (click)="openDeleteModal = false" style="padding:8px 16px;border-radius:6px;">
+
+    <div class="delete-choice-footer">
+      <button type="button" class="btn-cancel-flat" (click)="openDeleteModal = false">
         {{ 'common.cancel' | translate }}
       </button>
     </div>
