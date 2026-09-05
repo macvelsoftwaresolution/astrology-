@@ -205,9 +205,12 @@ class AuthController extends Controller
         }
 
         if ($user->status !== 'active') {
+            $msg = ($user->status === 'student_only' || $user->role === 'student')
+                ? 'உங்கள் கணக்கிற்கு ஜோதிட போர்ட்டலில் அனுமதி இல்லை. கல்விப் பிரிவில் (Student Login) உள்நுழையவும்.'
+                : 'உங்கள் கணக்கு செயலற்றது. நிர்வாகியை தொடர்புகொள்ளவும்.';
             return response()->json([
                 'success' => false,
-                'message' => 'உங்கள் கணக்கு செயலற்றது. நிர்வாகியை தொடர்புகொள்ளவும்.'
+                'message' => $msg
             ], 403);
         }
 

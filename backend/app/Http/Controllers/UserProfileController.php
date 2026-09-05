@@ -146,6 +146,37 @@ class UserProfileController extends Controller
     {
         $batchIdFilter = $request->query('batch_id');
 
+        // Auto-heal: Ensure all students from `students` table have a record in `users` table
+        try {
+            $standaloneStudents = DB::table('students')->get();
+            foreach ($standaloneStudents as $st) {
+                $exists = DB::table('users')
+                    ->where(function($q) use ($st) {
+                        if (!empty($st->student_id)) $q->where('student_id', $st->student_id);
+                        if (!empty($st->email)) $q->orWhere('email', $st->email);
+                    })
+                    ->first();
+
+                if (!$exists) {
+                    DB::table('users')->insert([
+                        'name'             => $st->name,
+                        'email'            => $st->email ?: ('student_' . strtolower($st->student_id) . '@sriaarudhraaastro.com'),
+                        'student_id'       => $st->student_id,
+                        'batch_id'         => $st->batch_id,
+                        'phone'            => $st->phone,
+                        'password'         => $st->password,
+                        'role'             => 'student',
+                        'status'           => 'student_only',
+                        'address'          => $st->address,
+                        'jathagam_details' => $st->jathagam_details,
+                        'avatar_url'       => $st->avatar_url,
+                        'created_at'       => $st->created_at ?? now(),
+                        'updated_at'       => now(),
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {}
+
         $query = DB::table('users')
             ->leftJoin('batches', 'users.batch_id', '=', 'batches.id')
             ->where('users.role', '!=', 'admin')
@@ -297,8 +328,31 @@ class UserProfileController extends Controller
 
         // MODE 2: ASTROLOGY MEMBER ONLY DELETE
         if ($mode === 'astrology_only') {
-            if ($user) {
+            if ($user && ($user->student_id || $student)) {
+                // User is also a student: DO NOT delete the users table row!
+                // Instead, delete astrology bookings, revoke astrology tokens, and set role='student', status='student_only'
                 try {
+                    DB::table('bookings')->where('user_id', $user->id)->delete();
+                    DB::table('notifications')->where('user_id', $user->id)->delete();
+                } catch (\Throwable $e) {}
+
+                DB::table('personal_access_tokens')
+                    ->where('tokenable_type', 'App\\Models\\User')
+                    ->where('tokenable_id', $user->id)
+                    ->delete();
+
+                DB::table('users')->where('id', $user->id)->update([
+                    'role'   => 'student',
+                    'status' => 'student_only',
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கப்பட்டது. மாணவர் பாடநெறி கணக்கில் (Student ID) தொடர்ந்து செயல்படலாம்.'
+                ]);
+            } else if ($user) {
+                try {
+                    DB::table('bookings')->where('user_id', $user->id)->delete();
                     DB::table('notifications')->where('user_id', $user->id)->delete();
                 } catch (\Throwable $e) {}
                 DB::table('users')->where('id', $user->id)->delete();
@@ -306,12 +360,12 @@ class UserProfileController extends Controller
                     ->where('tokenable_type', 'App\\Models\\User')
                     ->where('tokenable_id', $user->id)
                     ->delete();
-            }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கப்பட்டது. மாணவர் பாடநெறி கணக்கில் (Student ID) தொடர்ந்து செயல்படலாம்.'
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'ஜோதிட பயனர் கணக்கு மட்டும் நீக்கப்பட்டது.'
+                ]);
+            }
         }
 
         // FULL DELETE MODE (default)
