@@ -26,7 +26,8 @@ class SuperAdminController extends Controller
                 (SELECT COALESCE(SUM(price), 0) FROM bookings) as service_revenue,
                 (SELECT COALESCE(SUM(price), 0) FROM book_orders) as book_revenue,
                 (SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE order_type IN ('marriage_matching', 'marriage_match', 'porutham')) as match_revenue,
-                (SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE order_type IN ('matrimony_registration', 'matrimony_reg', 'matrimony')) as matrimony_revenue
+                (SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE order_type IN ('matrimony_registration', 'matrimony_reg', 'matrimony')) as matrimony_revenue,
+                (SELECT COALESCE(SUM(amount), 0) FROM payment_transactions WHERE order_type IN ('course_admission', 'course_fee', 'lms_admission')) as course_revenue
         ");
 
         $recentAdmins = User::whereIn('role', ['admin', 'super_admin'])->get();
@@ -68,8 +69,8 @@ class SuperAdminController extends Controller
 
         $totalMembers = $usersList->count();
 
-        // 2. Course Revenue = Total student enrollments * 2500 + Courses sum
-        $courseEnrollmentRevenue = ($ilanilaiCount + $mudhunilaiCount) * 2500;
+        // 2. Course Revenue = Total from payment transactions
+        $courseEnrollmentRevenue = (float) ($data->course_revenue ?? 0);
         $serviceRevenue = (float) ($data->service_revenue ?? 0);
         $bookRevenue = (float) ($data->book_revenue ?? 0);
         $matchRevenue = (float) ($data->match_revenue ?? 0);

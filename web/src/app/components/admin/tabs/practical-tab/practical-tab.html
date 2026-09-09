@@ -1,0 +1,129 @@
+<div class="exams-eval-container">
+  <div class="header-box">
+    <div>
+      <h2 class="main-title">
+        <i class="bi bi-diagram-3-fill text-gold"></i> Practical Test Builder
+      </h2>
+      <p class="main-sub">
+        Create standalone practical exams with question paper uploads.
+      </p>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="actions-wrapper">
+      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="category-select">
+        <option value="ILANILAI">{{ 'courses.ilanilai' | translate }}</option>
+        <option value="MUTHUNILAI">{{ 'courses.muthunilai' | translate }}</option>
+        <option value="RESEARCH">{{ 'courses.research' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="wizard-container" style="margin-top: 20px;">
+    
+    @if (!isEditing) {
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+        <button type="button" class="btn-primary-gold" (click)="createNewPractical()">
+          <i class="bi bi-plus-lg"></i> Add New Practical Exam
+        </button>
+      </div>
+
+      <!-- List of Practical Exams -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover bg-white shadow-sm" style="border-radius: 8px; overflow: hidden; width: 100%; text-align: left;">
+          <thead style="background-color: #f8fafc;">
+            <tr>
+              <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Title</th>
+              <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Exam Date</th>
+              <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Question File</th>
+              <th class="text-center" style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ex of exams; track ex.id) {
+              <tr>
+                <td class="font-bold text-slate-800" style="padding: 12px; border-bottom: 1px solid #e2e8f0;">{{ ex.title }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">{{ ex.exam_date ? (ex.exam_date | date:'medium') : 'Not Set' }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
+                  @if (ex.chart_image_url) {
+                    <a [href]="ex.chart_image_url" target="_blank" class="text-blue-600 hover:text-blue-800" style="text-decoration: none;">
+                      <i class="bi bi-file-earmark-text-fill"></i> View File
+                    </a>
+                  } @else {
+                    <span class="text-slate-400">None</span>
+                  }
+                </td>
+                <td class="text-center" style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
+                  <button class="btn btn-sm btn-outline-primary mx-1" (click)="editPractical(ex)">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger mx-1" (click)="deletePractical(ex.id)">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center text-slate-500 py-4">
+                  No practical exams found for this category. Click 'Add New Practical Exam' to create one.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <!-- Form to Create/Edit Practical Exam -->
+      <div class="wizard-section" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+          <h4 class="section-title text-maroon" style="margin: 0;">
+            <i class="bi bi-pencil-square text-gold"></i> {{ activeExamWizard.id ? 'Edit Practical Exam' : 'Create Practical Exam' }}
+          </h4>
+          <button class="btn btn-light" (click)="cancelEdit()"><i class="bi bi-x-lg"></i> Cancel</button>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label font-bold text-slate-800">Exam Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="activeExamWizard.title" placeholder="E.g. Final Practical 2026" />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label font-bold text-slate-800">Exam Date & Time</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="activeExamWizard.exam_date" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label font-bold text-slate-800">Duration (Mins)</label>
+            <input type="number" class="form-control" [(ngModel)]="activeExamWizard.duration" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label font-bold text-slate-800">Total Marks</label>
+            <input type="number" class="form-control" [(ngModel)]="activeExamWizard.total_marks" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label font-bold text-slate-800">Pass Mark</label>
+            <input type="number" class="form-control" [(ngModel)]="activeExamWizard.pass_mark" />
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="mb-4">
+          <label class="form-label font-bold text-slate-800">
+            Questions / Content <span class="text-danger">*</span>
+          </label>
+          <textarea [(ngModel)]="activeExamWizard.practical_prompt" rows="12" class="form-control" style="resize: none; width: 100%; min-height: 250px; font-size: 1.05rem; padding: 15px;" placeholder="Type your questions here..."></textarea>
+        </div>
+
+        <!-- SAVE FOOTER -->
+        <div class="wizard-footer text-end mt-4 pt-3 border-top">
+          <button type="button" (click)="savePracticalExam()" class="btn-primary-gold px-4 py-2" style="font-size: 1.1rem;">
+            <i class="bi bi-check2-circle"></i> Save Practical Exam
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

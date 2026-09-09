@@ -485,6 +485,47 @@ class AuthController extends Controller
             Log::error("Failed to send student credentials email to {$email}: " . $e->getMessage());
         }
 
+        // Log payment transaction if Razorpay details are present
+        if ($request->filled('razorpay_payment_id')) {
+            $feeAmount = ($courseLevel === 'muthunilai') ? 3500 : 2500;
+            DB::table('payment_transactions')->updateOrInsert(
+                ['razorpay_payment_id' => $request->input('razorpay_payment_id')],
+                [
+                    'user_id' => isset($userRecord) ? $userRecord->id : $student->id,
+                    'booking_id' => 'LMS-' . $loginId,
+                    'order_type' => 'course_admission',
+                    'razorpay_order_id' => $request->input('razorpay_order_id'),
+                    'amount' => $feeAmount,
+                    'currency' => 'INR',
+                    'status' => 'Paid',
+                    'description' => 'கல்விக் கட்டணம் (' . ucfirst($courseLevel) . ')',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            );
+            
+            // Notify Admins
+            try {
+                $admins = DB::table('users')->where('role', 'admin')->pluck('id');
+                $adminNotifs = [];
+                foreach ($admins as $adminId) {
+                    $adminNotifs[] = [
+                        'user_id'    => $adminId,
+                        'title'      => 'புதிய கட்டணம் பெறப்பட்டது!',
+                        'body'       => 'கல்விக் கட்டணம் (' . ucfirst($courseLevel) . ') க்காக ரூ. ' . $feeAmount . ' பெறப்பட்டது.',
+                        'type'       => 'payment',
+                        'target_tab' => 'payments',
+                        'is_read'    => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                if (!empty($adminNotifs)) {
+                    DB::table('notifications')->insert($adminNotifs);
+                }
+            } catch (\Throwable $e) {}
+        }
+
         return response()->json([
             'success'    => true,
             'message'    => 'மாணவர் பதிவு வெற்றிகரமாக முடிந்தது! உள்நுழைவு விவரங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது.',

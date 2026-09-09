@@ -55,6 +55,8 @@ class ExamController extends Controller
             'practical_prompt' => 'nullable|string',
             'chart_image_url' => 'nullable|string',
             'batch_id' => 'nullable',
+            'exam_date' => 'nullable|date',
+            'is_practical' => 'nullable|boolean'
         ]);
 
         $batchId = $request->batch_id ? (int)$request->batch_id : null;
@@ -62,6 +64,8 @@ class ExamController extends Controller
         $totalMarks = $request->total_marks ? (int)$request->total_marks : 100;
         $passMark = $request->pass_mark ? (int)$request->pass_mark : 40;
         $level = $request->level ? strtoupper($request->level) : 'ILANILAI';
+        $examDate = $request->exam_date ?: null;
+        $isPractical = $request->is_practical ? true : false;
 
         $examId = DB::table('exams')->insertGetId([
             'level' => $level,
@@ -72,6 +76,8 @@ class ExamController extends Controller
             'practical_prompt' => $request->practical_prompt ?: null,
             'chart_image_url' => $request->chart_image_url ?: null,
             'batch_id' => $batchId,
+            'exam_date' => $examDate,
+            'is_practical' => $isPractical,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -96,12 +102,16 @@ class ExamController extends Controller
             'practical_prompt' => 'nullable|string',
             'chart_image_url' => 'nullable|string',
             'batch_id' => 'nullable',
+            'exam_date' => 'nullable|date',
+            'is_practical' => 'nullable|boolean'
         ]);
 
         $batchId = $request->batch_id ? (int)$request->batch_id : null;
         $duration = $request->duration ? (int)$request->duration : 60;
         $totalMarks = $request->total_marks ? (int)$request->total_marks : 100;
         $passMark = $request->pass_mark ? (int)$request->pass_mark : 40;
+        $examDate = $request->exam_date ?: null;
+        $isPractical = $request->is_practical ? true : false;
 
         DB::table('exams')->where('id', $id)->update([
             'title' => $request->title,
@@ -111,6 +121,8 @@ class ExamController extends Controller
             'practical_prompt' => $request->practical_prompt ?: null,
             'chart_image_url' => $request->chart_image_url ?: null,
             'batch_id' => $batchId,
+            'exam_date' => $examDate,
+            'is_practical' => $isPractical,
             'updated_at' => now(),
         ]);
 

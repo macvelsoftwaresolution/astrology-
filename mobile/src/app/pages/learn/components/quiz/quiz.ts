@@ -43,7 +43,7 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
   ) {}
 
   hasPracticalSection(): boolean {
-    return !!(this.exam && (this.exam.chart_image_url || this.exam.practical_prompt));
+    return !!(this.exam && (this.exam.is_practical || this.exam.chart_image_url || this.exam.practical_prompt));
   }
 
   ngOnInit() {
@@ -62,7 +62,7 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
       this.isPracticalStep = true;
     }
 
-    if (this.exam && this.exam.duration) {
+    if (this.exam && this.exam.duration && !this.exam.is_practical) {
       this.timeRemaining = this.exam.duration * 60;
       this.updateTimerDisplay();
       this.startTimer();
@@ -94,7 +94,9 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
   showExitConfirmModal: boolean = false;
 
   handleQuizClose() {
-    if (!this.quizSubmitted) {
+    if (this.exam?.is_practical) {
+      this.close.emit();
+    } else if (!this.quizSubmitted) {
       this.showExitConfirmModal = true;
     } else {
       this.close.emit();

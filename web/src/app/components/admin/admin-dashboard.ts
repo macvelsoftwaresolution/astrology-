@@ -26,6 +26,7 @@ import { UsersTabComponent } from './tabs/users-tab/users-tab';
 import { LmsSettingsTabComponent } from './tabs/lms-settings-tab/lms-settings-tab';
 import { ExamsEvalTabComponent } from './tabs/exams-eval-tab/exams-eval-tab';
 import { CertificatesTabComponent } from './tabs/certificates-tab/certificates-tab';
+import { PracticalTabComponent } from './tabs/practical-tab/practical-tab';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -48,7 +49,8 @@ import { CertificatesTabComponent } from './tabs/certificates-tab/certificates-t
     BroadcastTabComponent,
     UsersTabComponent,
     ExamsEvalTabComponent,
-    CertificatesTabComponent
+    CertificatesTabComponent,
+    PracticalTabComponent
   ],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']

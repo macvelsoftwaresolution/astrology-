@@ -9,13 +9,6 @@ import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
 
-export interface ChartHouse {
-  id: string;
-  name: string;
-  rasiNo: number;
-  gridPos: string;
-  planets: string[];
-}
 
 @Component({
   selector: 'app-exams-eval-tab',
@@ -53,30 +46,7 @@ export class ExamsEvalTabComponent implements OnInit {
     marks: 10
   };
   csvFileToUpload: File | null = null;
-  chartImageToUpload: File | null = null;
-  isUploadingChart = false;
-  chartMode: 'interactive' | 'upload' = 'interactive';
 
-  // 2. Interactive Astrology 12-House Chart Builder State
-  availablePlanets: string[] = [
-    'லக்', 'சூரி', 'சந்', 'செவ்', 'புத', 'குரு', 'சுக்', 'சனி', 'ராகு', 'கேது', 'மா'
-  ];
-  selectedPlanetTool: string = 'லக்';
-
-  chartHouses: ChartHouse[] = [
-    { id: 'meenam', name: 'மீனம்', rasiNo: 12, gridPos: '1 / 1', planets: [] },
-    { id: 'mesham', name: 'மேஷம்', rasiNo: 1, gridPos: '1 / 2', planets: [] },
-    { id: 'rishabam', name: 'ரிஷபம்', rasiNo: 2, gridPos: '1 / 3', planets: [] },
-    { id: 'mithunam', name: 'மிதுனம்', rasiNo: 3, gridPos: '1 / 4', planets: [] },
-    { id: 'katakam', name: 'கடகம்', rasiNo: 4, gridPos: '2 / 4', planets: [] },
-    { id: 'simmam', name: 'சிம்மம்', rasiNo: 5, gridPos: '3 / 4', planets: [] },
-    { id: 'kanni', name: 'கன்னி', rasiNo: 6, gridPos: '4 / 4', planets: [] },
-    { id: 'thulam', name: 'துலாம்', rasiNo: 7, gridPos: '4 / 3', planets: [] },
-    { id: 'vrichikam', name: 'விருச்சிகம்', rasiNo: 8, gridPos: '4 / 2', planets: [] },
-    { id: 'dhanusu', name: 'தனுசு', rasiNo: 9, gridPos: '4 / 1', planets: [] },
-    { id: 'makaram', name: 'மகரம்', rasiNo: 10, gridPos: '3 / 1', planets: [] },
-    { id: 'kumbam', name: 'கும்பம்', rasiNo: 11, gridPos: '2 / 1', planets: [] }
-  ];
 
   // 3. Evaluation & Submissions State
   submissions: any[] = [];
@@ -230,137 +200,11 @@ export class ExamsEvalTabComponent implements OnInit {
     });
   }
 
-  // --- DYNAMIC RASI CHART BUILDER & PARSER ---
-  selectPlanetTool(planet: string): void {
-    this.selectedPlanetTool = planet;
-  }
 
-  togglePlanetInHouse(house: ChartHouse): void {
-    if (!this.selectedPlanetTool) return;
-
-    const idx = house.planets.indexOf(this.selectedPlanetTool);
-    if (idx > -1) {
-      house.planets.splice(idx, 1);
-    } else {
-      house.planets.push(this.selectedPlanetTool);
-    }
-    this.syncChartToExamPrompt();
-    this.cdr?.markForCheck();
-  }
-
-  clearHousePlanets(house: ChartHouse, event: Event): void {
-    event.stopPropagation();
-    house.planets = [];
-    this.syncChartToExamPrompt();
-    this.cdr?.markForCheck();
-  }
-
-  resetAllChartHouses(): void {
-    this.chartHouses.forEach(h => h.planets = []);
-    this.syncChartToExamPrompt();
-    this.cdr?.markForCheck();
-  }
-
-  loadChartPreset(presetKey: string): void {
-    this.resetAllChartHouses();
-
-    if (presetKey === 'gajakesari') {
-      const mesham = this.chartHouses.find(h => h.id === 'mesham');
-      const katakam = this.chartHouses.find(h => h.id === 'katakam');
-      const simmam = this.chartHouses.find(h => h.id === 'simmam');
-      if (mesham) mesham.planets = ['லக்', 'சந்'];
-      if (katakam) katakam.planets = ['குரு'];
-      if (simmam) simmam.planets = ['சூரி', 'புத'];
-    } else if (presetKey === 'malavya') {
-      const rishabam = this.chartHouses.find(h => h.id === 'rishabam');
-      const makaram = this.chartHouses.find(h => h.id === 'makaram');
-      const dhanusu = this.chartHouses.find(h => h.id === 'dhanusu');
-      if (rishabam) rishabam.planets = ['லக்', 'சுக்'];
-      if (makaram) makaram.planets = ['சனி'];
-      if (dhanusu) dhanusu.planets = ['குரு', 'கேது'];
-    } else if (presetKey === 'surya_atchi') {
-      const simmam = this.chartHouses.find(h => h.id === 'simmam');
-      const kanni = this.chartHouses.find(h => h.id === 'kanni');
-      const katakam = this.chartHouses.find(h => h.id === 'katakam');
-      if (simmam) simmam.planets = ['லக்', 'சூரி'];
-      if (kanni) kanni.planets = ['புத'];
-      if (katakam) katakam.planets = ['சந்', 'சுக்'];
-    }
-    this.syncChartToExamPrompt();
-    this.cdr?.markForCheck();
-  }
-
-  syncChartToExamPrompt(): void {
-    if (!this.activeExamWizard) return;
-
-    const placedHouses = this.chartHouses
-      .filter(h => h.planets.length > 0)
-      .map(h => `${h.name}: [${h.planets.join(', ')}]`);
-
-    if (placedHouses.length > 0) {
-      this.activeExamWizard.practical_prompt =
-        `கொடுக்கப்பட்டுள்ள ராசி கட்டக் கிரக நிலைகள்:\n` +
-        placedHouses.join(' | ') +
-        `\n\nவினா: மேற்கண்ட ஜாதகக் கட்டத்தை ஆராய்ந்து லக்னாதிபதி பலம், யோகங்கள் மற்றும் 7-ம் பாவ பலன்களை விவரிக்கவும்.`;
-    }
-  }
-
-  parsePromptToChartHouses(promptText: string): void {
-    this.resetAllChartHouses();
-    if (!promptText) return;
-
-    this.chartHouses.forEach(h => {
-      const regex = new RegExp(`${h.name}:\\s*\\[([^\\]]+)\\]`, 'u');
-      const match = promptText.match(regex);
-      if (match && match[1]) {
-        h.planets = match[1].split(',').map(p => p.trim()).filter(Boolean);
-      }
-    });
-  }
-
-  setChartMode(mode: 'interactive' | 'upload'): void {
-    this.chartMode = mode;
-  }
-
-  onChartImageFileSelected(event: any): void {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    this.isUploadingChart = true;
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'exam_charts');
-
-    const headers = this.authService.getUploadHeaders();
-    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
-      next: (res) => {
-        this.isUploadingChart = false;
-        if (res && res.url) {
-          this.activeExamWizard.chart_image_url = res.url;
-        } else if (res && res.path) {
-          this.activeExamWizard.chart_image_url = res.path;
-        }
-        this.cdr?.markForCheck();
-      },
-      error: () => {
-        this.isUploadingChart = false;
-        this.toastService.error('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
-        this.cdr?.markForCheck();
-      }
-    });
-  }
-
-  removeUploadedChart(): void {
-    if (this.activeExamWizard) {
-      this.activeExamWizard.chart_image_url = '';
-      this.cdr?.markForCheck();
-    }
-  }
 
   // --- EXAM WIZARD ACTIONS ---
   openCreateExam(): void {
-    this.resetAllChartHouses();
-    this.chartMode = 'interactive';
+
     this.activeExamWizard = {
       id: null,
       level: this.selectedCategory,
@@ -378,15 +222,12 @@ export class ExamsEvalTabComponent implements OnInit {
   }
 
   editExam(exam: any): void {
-    this.chartMode = exam.chart_image_url ? 'upload' : 'interactive';
     this.activeExamWizard = {
       ...exam,
       pass_percentage: exam.pass_percentage || 50
     };
     if (!this.activeExamWizard.questions) this.activeExamWizard.questions = [];
     
-    // Dynamically reconstruct chart from prompt
-    this.parsePromptToChartHouses(exam.practical_prompt || '');
     this.activeView = 'exam-wizard';
   }
 
@@ -449,28 +290,7 @@ export class ExamsEvalTabComponent implements OnInit {
     });
   }
 
-  onChartImageSelected(event: any): void {
-    const file = event.target.files[0];
-    if (!file) return;
-    this.isUploadingChart = true;
-    const formData = new FormData();
-    formData.append('file', file);
-    const headers = this.authService.getAuthHeaders();
-    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
-      next: (res) => {
-        this.isUploadingChart = false;
-        if (res.url && this.activeExamWizard) {
-          this.activeExamWizard.chart_image_url = res.url;
-        }
-        this.cdr?.markForCheck();
-      },
-      error: () => {
-        this.isUploadingChart = false;
-        this.toastService.error('படம் பதிவேற்றுவதில் பிழை ஏற்பட்டது.');
-        this.cdr?.markForCheck();
-      }
-    });
-  }
+
 
   async ensureExamSaved(): Promise<boolean> {
     if (this.activeExamWizard.id) return true;

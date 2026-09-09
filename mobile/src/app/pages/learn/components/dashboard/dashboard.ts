@@ -665,6 +665,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   // Exams List (Dynamic from DB)
   exams: any[] = [];
+  regularExams: any[] = [];
+  practicalExams: any[] = [];
   mySubmissions: any[] = [];
 
   loadExams() {
@@ -673,6 +675,8 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
       next: (res) => {
         if (res && res.exams) {
           this.exams = res.exams;
+          this.practicalExams = this.exams.filter(e => e.is_practical == 1 || e.is_practical === true || e.is_practical === '1' || e.is_practical === 'true');
+          this.regularExams = this.exams.filter(e => !(e.is_practical == 1 || e.is_practical === true || e.is_practical === '1' || e.is_practical === 'true'));
         }
       },
       error: () => { }
@@ -725,7 +729,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   handleExamClick(ex: any) {
-    if (this.isExamSubmitted(ex.id)) {
+    if (this.isExamSubmitted(ex.id) && !ex.is_practical) {
       const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(ex.id));
       const isApproved = sub ? (sub.status === 'Approved' || sub.is_published === true || sub.is_published === 1) : false;
       const isRejected = sub ? sub.status === 'Rejected' : false;
