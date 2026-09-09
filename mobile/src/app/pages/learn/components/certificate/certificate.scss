@@ -47,7 +47,7 @@ $color-purple-dark: #200438;
 }
 
 .cert-body-scroll {
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -63,7 +63,7 @@ $color-purple-dark: #200438;
   h3 {
     font-family: 'Noto Serif Tamil', serif;
     color: $color-maroon;
-    font-size: 1.3rem;
+    font-size: 1.15rem;
     font-weight: 700;
     margin: 0;
   }
@@ -75,178 +75,333 @@ $color-purple-dark: #200438;
   }
 }
 
+/* ========================================================================= */
+/* AUTHENTIC MOBILE CERTIFICATE CARD                                         */
+/* ========================================================================= */
+
 .cert-gold-card {
   width: 100%;
-  max-width: 340px;
+  max-width: 360px;
   background-color: #FFFDF0;
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 
   .cert-border-outer {
-    border: 3px double $color-gold;
+    border: 3px double #C48E2E;
     border-radius: 8px;
-    padding: 0.25rem;
+    padding: 0.2rem;
   }
 
   .cert-border-inner {
-    border: 1px solid rgba($color-gold, 0.5);
+    border: 1.5px solid #8e2a37;
     border-radius: 4px;
-    padding: 1.5rem 1rem;
+    padding: 1rem 0.75rem;
     text-align: center;
     background-color: #FFFFFF;
-    background-image: radial-gradient(rgba($color-gold-light, 0.05) 1px, transparent 0);
-    background-size: 8px 8px;
+  }
+}
+
+.top-om {
+  font-size: 11px;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 6px;
+}
+
+.mobile-inst-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  margin-bottom: 8px;
+
+  .m-seal-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
   }
 
-  .cert-academy-title {
-    font-family: 'Noto Serif Tamil', serif;
-    color: $color-maroon;
-    font-size: 1.4rem;
-    font-weight: 800;
-    margin: 0 0 0.5rem 0;
-  }
-
-  .cert-cert-title {
-    font-size: 0.65rem;
-    color: $color-gold;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 1rem 0;
-  }
-
-  .cert-given-to {
-    font-size: 0.75rem;
-    color: $color-text-muted;
+  .m-title-ta {
     margin: 0;
+    font-size: 16px;
+    font-weight: 900;
+    color: #c92a2a;
+    line-height: 1.1;
   }
 
-  .cert-student-name {
-    font-family: 'Noto Serif Tamil', serif;
-    color: $color-maroon;
-    font-size: 1.5rem;
+  .m-sub-ta {
+    margin: 2px 0 0 0;
+    font-size: 13px;
+    font-weight: 900;
+    color: #885b04;
+  }
+
+  .m-trust-reg {
+    font-size: 8.5px;
     font-weight: 800;
-    margin: 0.4rem 0 1rem 0;
-    border-bottom: 1.5px solid rgba($color-gold, 0.3);
-    padding-bottom: 0.25rem;
-    display: inline-block;
+    color: #b91c1c;
   }
 
-  .cert-accomplishment {
-    font-size: 0.75rem;
-    color: $color-text-dark;
-    line-height: 1.4;
-    margin: 0 0 1.5rem 0;
+  .m-address {
+    font-size: 8px;
+    color: #475569;
+  }
+}
 
-    strong {
-      color: $color-maroon;
+.m-ribbon-wrap {
+  margin: 6px 0;
+}
+
+.m-ribbon-badge {
+  display: inline-block;
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 12px;
+}
+
+.m-merit-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-decoration: underline;
+  margin-bottom: 4px;
+}
+
+.m-reg-photo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0;
+  font-size: 10px;
+
+  .m-photo-box {
+    width: 36px;
+    height: 44px;
+    border: 1px solid #000;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
+}
 
-  .cert-details-footer {
+.m-stmt-ta {
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: #1e293b;
+  text-align: justify;
+  margin: 6px 0;
+
+  .red-txt {
+    color: #b91c1c;
+  }
+}
+
+.m-award-box {
+  margin: 6px 0;
+  text-align: center;
+
+  .m-title-red {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 900;
+    color: #dc2626;
+  }
+
+  .m-title-sub {
+    font-size: 8.5px;
+    color: #475569;
+  }
+}
+
+.m-stmt-en {
+  font-size: 9px;
+  line-height: 1.4;
+  color: #334155;
+  margin: 6px 0;
+  text-align: justify;
+
+  .m-award-en {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #dc2626;
+    margin-top: 2px;
+  }
+}
+
+.m-footer-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 6px;
+  margin-top: 6px;
+}
+
+.m-signatures-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #475569;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* ========================================================================= */
+/* AUTHENTIC MOBILE MARKSHEET CARD                                           */
+/* ========================================================================= */
+
+.marksheet-card-wrap {
+  width: 100%;
+  max-width: 360px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 2px solid #b45309;
+  padding: 4px;
+  box-shadow: 0 4px 14px rgba(180, 83, 9, 0.1);
+
+  .ms-card-inner {
+    border: 1px solid #451a03;
+    border-radius: 8px;
+    padding: 10px;
+  }
+}
+
+.ms-head-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #c92a2a;
+  text-align: center;
+}
+
+.ms-head-sub {
+  font-size: 9px;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.ms-student-table {
+  background: #fffdf5;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  font-size: 9.5px;
+
+  .row-2 {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    font-size: 0.6rem;
-    color: $color-text-muted;
-    text-align: left;
-
-    div {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .cert-seal {
-      width: 40px;
-      height: 40px;
-      background-color: $color-gold-light;
-      border: 2px dashed $color-gold;
-      border-radius: 50%;
-      color: $color-maroon;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.55rem;
-    }
+    margin-bottom: 3px;
   }
 }
 
-.cert-action-btn {
+.ms-table-compact {
   width: 100%;
-  max-width: 340px;
-  padding: 0.85rem;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
+  border-collapse: collapse;
+  font-size: 9.5px;
+  border: 1px solid #cbd5e1;
+  margin-bottom: 8px;
 
-  &.pdf {
-    background-color: $color-purple;
-    color: white;
-    box-shadow: 0 6px 15px rgba($color-purple, 0.25);
+  th {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 3px 4px;
+    font-size: 9px;
   }
 
-  &.share {
-    background-color: transparent;
-    border: 1.5px solid $color-gold;
-    color: $color-gold;
-    margin-top: 0.25rem;
+  td {
+    border: 1px solid #cbd5e1;
+    padding: 3px 4px;
   }
+
+  .sec-hdr td {
+    background: #fafaf9;
+    font-weight: 800;
+    color: #4A0E17;
+  }
+
+  .tot-row td {
+    background: #fffdf5;
+    font-weight: 800;
+  }
+
+  .pct-row td, .title-row td {
+    background: #fffdf5;
+  }
+
+  .bold { font-weight: 800; }
+  .pass { color: #15803d; }
+  .total { color: #0f172a; }
+  .green { color: #15803d; }
+  .red { color: #b91c1c; }
+  .text-center { text-align: center; }
 }
 
-/* LUXURY SEGMENTED TAB SWITCHER */
+.m-pass-criteria {
+  margin: 6px 0 8px 0;
+  font-size: 8px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ms-footer-signatures {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #64748b;
+  text-align: center;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 6px;
+}
+
+/* Common */
 .luxury-cert-segmented-bar {
   display: flex;
   width: 100%;
-  max-width: 380px;
+  max-width: 360px;
   background: #FFFDF5;
   border: 1.5px solid #ECC876;
-  border-radius: 16px;
-  padding: 4px;
+  border-radius: 14px;
+  padding: 3px;
   gap: 4px;
-  margin: 8px 0 16px 0;
-  box-shadow: 0 4px 14px rgba(74, 14, 23, 0.08);
 
   .segmented-tab-btn {
     flex: 1;
-    height: 44px;
+    height: 40px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: transparent;
     color: #4A0E17;
-    font-size: 12.5px;
+    font-size: 11.5px;
     font-weight: 800;
     font-family: 'Noto Serif Tamil', serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-
-    i {
-      font-size: 15px;
-      color: #A27B38;
-      transition: color 0.25s;
-    }
 
     &.active {
-      background: linear-gradient(135deg, #4A0E17 0%, #7A1929 100%);
+      background: linear-gradient(135deg, #4A0E17, #7A1929);
       color: #ECC876;
-      box-shadow: 0 4px 12px rgba(74, 14, 23, 0.25);
-
-      i {
-        color: #ECC876;
-      }
-    }
-
-    &:not(.active):active {
-      background: rgba(162, 123, 56, 0.12);
     }
   }
 }
@@ -256,27 +411,22 @@ $color-purple-dark: #200438;
   padding: 40px 16px;
   color: #4A0E17;
   font-weight: 800;
-  font-size: 14px;
 }
 
 .cert-course-chips-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
-  padding-bottom: 8px;
-  margin-bottom: 12px;
-  width: 100%;
-  max-width: 380px;
+  max-width: 360px;
 
   .course-chip {
     border: 1px solid #ECC876;
     background: #FFFDF5;
     color: #4A0E17;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 11px;
     font-weight: 700;
-    cursor: pointer;
     white-space: nowrap;
 
     &.active {
@@ -286,40 +436,24 @@ $color-purple-dark: #200438;
   }
 }
 
-.cert-num-badge {
-  text-align: center;
-  margin: 10px 0;
-  font-family: monospace;
-  color: #7A3508;
-  font-weight: 800;
-  font-size: 12px;
-  background: #FFFDF0;
-  padding: 4px 10px;
-  border-radius: 6px;
-  display: inline-block;
-  border: 1px solid rgba(162, 123, 56, 0.3);
-}
-
 .empty-doc-card {
   width: 100%;
   max-width: 360px;
   text-align: center;
-  padding: 30px 20px;
+  padding: 26px 16px;
   background: #FFFFFF;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1.5px dashed rgba(162, 123, 56, 0.35);
-  box-shadow: 0 4px 14px rgba(74, 14, 23, 0.04);
-  margin-bottom: 16px;
 
   .empty-doc-icon-wrap {
-    width: 64px;
-    height: 64px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    margin: 0 auto 14px auto;
+    margin: 0 auto 10px auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 24px;
 
     &.gold {
       background: #FFFDF0;
@@ -335,85 +469,17 @@ $color-purple-dark: #200438;
   }
 
   h3 {
-    font-family: 'Noto Serif Tamil', serif;
     color: #4A0E17;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 800;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
   }
 
   p {
     color: #64748B;
-    font-size: 0.82rem;
-    line-height: 1.5;
+    font-size: 0.78rem;
+    line-height: 1.4;
     margin: 0;
-  }
-}
-
-.marksheet-card {
-  width: 100%;
-  max-width: 360px;
-  background: #FFFFFF;
-  border-radius: 16px;
-  border: 1.5px solid #BFDBFE;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
-  overflow: hidden;
-  margin-bottom: 14px;
-
-  .marksheet-header {
-    background: linear-gradient(135deg, #1E40AF, #3B82F6);
-    padding: 14px 16px;
-    color: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-
-    h3 {
-      font-family: 'Noto Serif Tamil', serif;
-      font-size: 0.95rem;
-      font-weight: 800;
-      margin: 0;
-    }
-
-    .marksheet-status-tag {
-      font-size: 10px;
-      font-weight: 800;
-      color: #10B981;
-      background: #ECFDF5;
-      padding: 2px 8px;
-      border-radius: 12px;
-      align-self: flex-start;
-    }
-  }
-
-  .marksheet-student-info {
-    padding: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12.5px;
-
-      .lbl {
-        color: #64748B;
-        font-weight: 600;
-      }
-
-      .val {
-        color: #1E293B;
-        font-weight: 700;
-
-        &.score-bold {
-          color: #059669;
-          font-size: 15px;
-          font-weight: 800;
-        }
-      }
-    }
   }
 }
 
@@ -426,27 +492,24 @@ $color-purple-dark: #200438;
 
   .cert-action-btn {
     width: 100%;
-    height: 44px;
-    border-radius: 12px;
+    height: 42px;
+    border-radius: 10px;
     font-weight: 800;
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
 
     &.pdf {
       background: linear-gradient(135deg, #4A0E17, #7A1929);
       color: #ECC876;
-      box-shadow: 0 4px 12px rgba(74, 14, 23, 0.2);
     }
 
     &.marksheet-dl {
       background: linear-gradient(135deg, #1E40AF, #3B82F6);
       color: #FFFFFF;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
     }
 
     &.share {

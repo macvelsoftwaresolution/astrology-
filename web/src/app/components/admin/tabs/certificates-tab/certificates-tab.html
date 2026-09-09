@@ -1,225 +1,760 @@
 <div class="certificates-container">
 
   <!-- HEADER -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+  <div class="cert-page-header">
     <div>
-      <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: #4A0E17; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-award-fill" style="color: #D4AF37;"></i> {{ 'certificates.title' | translate }}
+      <h2 class="page-title">
+        <i class="bi bi-award-fill text-gold"></i> சான்றிதழ் & மதிப்பெண் பட்டியல் மேலாண்மை (Certificates & Marksheets)
       </h2>
-      <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
-        {{ 'certificates.subtitle' | translate }}
+      <p class="page-subtitle">
+        ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம் அங்கீகரிக்கப்பட்ட இளநிலை (UG) மற்றும் முதுநிலை (PG) சான்றிதழ் & மதிப்பெண் பட்டியல் தயாரித்தல்
       </p>
     </div>
 
     <!-- Actions -->
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-      <button (click)="toggleUploadForm('certificate')" style="background: linear-gradient(135deg, #4A0E17, #7A1C28); border: 1px solid #D4AF37; padding: 8px 16px; border-radius: 8px; font-weight: 700; color: #fef3c7; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-        <i class="bi bi-award-fill"></i> {{ 'certificates.issueCertBtn' | translate }}
+    <div class="header-actions">
+      <button (click)="openDesignerModal('UG')" class="btn-create-cert ug">
+        <i class="bi bi-patch-check-fill"></i> + புதிய இளநிலை (UG - ஜோதிட ரத்னா)
       </button>
-      <button (click)="toggleUploadForm('marksheet')" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); border: 1px solid #93c5fd; padding: 8px 16px; border-radius: 8px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-        <i class="bi bi-file-earmark-spreadsheet-fill"></i> {{ 'certificates.issueMarksheetBtn' | translate }}
+      <button (click)="openDesignerModal('PG')" class="btn-create-cert pg">
+        <i class="bi bi-mortarboard-fill"></i> + புதிய முதுநிலை (PG - ஜோதிட கலாநிதி)
+      </button>
+      <button (click)="toggleQuickUpload('certificate')" class="btn-secondary-action">
+        <i class="bi bi-cloud-arrow-up-fill"></i> கோப்பு பதிவேற்றம் (PDF)
       </button>
     </div>
   </div>
 
-  <!-- DIRECT CERTIFICATE FORM -->
-  @if (showUploadForm && uploadType === 'certificate') {
-    <div style="margin-bottom: 24px; border: 2px solid #D4AF37; background: #fffdfa; border-radius: 12px; padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">
-        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #4A0E17;">
-          <i class="bi bi-award-fill" style="color: #D4AF37;"></i> {{ 'certificates.certFormTitle' | translate }}
-        </h3>
-        <button (click)="showUploadForm = false" style="background: none; border: none; font-size: 18px; color: #64748b; cursor: pointer;">&times;</button>
+  <!-- QUICK UPLOAD FORM -->
+  @if (showQuickUpload) {
+    <div class="quick-upload-card">
+      <div class="qu-header">
+        <h3><i class="bi bi-upload"></i> சான்றிதழ் / மதிப்பெண் PDF பதிவேற்றம்</h3>
+        <button (click)="showQuickUpload = false" class="close-btn">&times;</button>
       </div>
 
-      <form (ngSubmit)="submitDirectCertificate()">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px;">
-          <div>
-            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectStudent' | translate }}</label>
-            <select [(ngModel)]="directCertForm.student_id" name="cStudent" required class="ctrl" style="width: 100%;">
-              @for (st of studentsList; track st.id) {
-                <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
-              }
-            </select>
-          </div>
-
-          <div>
-            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectCourse' | translate }}</label>
-            <select [(ngModel)]="directCertForm.course_id" name="cCourse" required class="ctrl" style="width: 100%;">
-              @for (c of coursesList; track c.id) {
-                <option [value]="c.id">{{ c.title }}</option>
-              }
-            </select>
-          </div>
-
-          <div>
-            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.certNumber' | translate }}</label>
-            <input type="text" [(ngModel)]="directCertForm.certificate_number" name="cNum" class="ctrl" style="width: 100%;" placeholder="ASTRO-CERT-2026-XXXX" />
-          </div>
-
-          <div>
-            <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.issueDate' | translate }}</label>
-            <input type="date" [(ngModel)]="directCertForm.issue_date" name="cDate" class="ctrl" style="width: 100%;" />
-          </div>
-        </div>
-
-        <div style="margin-bottom: 16px;">
-          <label style="font-weight: 700; color: #4A0E17; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.certFile' | translate }}</label>
-          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <input type="file" (change)="onCertificateFileSelected($event)" accept="application/pdf,image/*" class="ctrl" style="flex: 1;" />
-            @if (isUploadingFile) {
-              <span style="color: #d97706; font-size: 13px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> {{ 'certificates.uploading' | translate }}</span>
-            }
-            @if (directCertForm.pdf_download_url) {
-              <a [href]="directCertForm.pdf_download_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 13px; text-decoration: none;">
-                <i class="bi bi-check-circle-fill"></i> {{ 'certificates.viewPdf' | translate }}
-              </a>
-            }
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
-          <button type="button" (click)="showUploadForm = false" class="btn-cancel">{{ 'certificates.cancelBtn' | translate }}</button>
-          <button type="submit" [disabled]="isUploadingFile || !directCertForm.pdf_download_url" class="btn-primary" style="background: #4A0E17; color: #ECC876; font-weight: 800;">
-            {{ 'certificates.submitCertBtn' | translate }}
-          </button>
-        </div>
-      </form>
-    </div>
-  }
-
-  <!-- DIRECT MARKSHEET FORM -->
-  @if (showUploadForm && uploadType === 'marksheet') {
-    <div style="margin-bottom: 24px; border: 2px solid #2563eb; background: #f0f9ff; border-radius: 12px; padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px;">
-        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #1e3a8a;">
-          <i class="bi bi-file-earmark-spreadsheet-fill" style="color: #2563eb;"></i> {{ 'certificates.marksheetFormTitle' | translate }}
-        </h3>
-        <button (click)="showUploadForm = false" style="background: none; border: none; font-size: 18px; color: #64748b; cursor: pointer;">&times;</button>
+      <div class="qu-tabs">
+        <button [class.active]="uploadType === 'certificate'" (click)="uploadType = 'certificate'">சான்றிதழ் (Certificate)</button>
+        <button [class.active]="uploadType === 'marksheet'" (click)="uploadType = 'marksheet'">மதிப்பெண் பட்டியல் (Marksheet)</button>
       </div>
 
-      <form (ngSubmit)="submitDirectMarksheet()">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px;">
-          <div>
-            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectStudent' | translate }}</label>
-            <select [(ngModel)]="directMarksheetForm.student_id" name="mStudent" required class="ctrl" style="width: 100%;">
-              @for (st of studentsList; track st.id) {
-                <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
-              }
-            </select>
+      @if (uploadType === 'certificate') {
+        <form (ngSubmit)="submitDirectCertificate()" class="qu-form">
+          <div class="form-grid">
+            <div>
+              <label>மாணவர் (Student)</label>
+              <select [(ngModel)]="directCertForm.student_id" name="cStudent" required class="ctrl">
+                @for (st of studentsList; track st.id) {
+                  <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label>சான்றிதழ் எண் (Cert Number)</label>
+              <input type="text" [(ngModel)]="directCertForm.certificate_number" name="cNum" class="ctrl" placeholder="ASTRO-CERT-2026-XXXX" />
+            </div>
+            <div>
+              <label>சான்றிதழ் கோப்பு (PDF/Image)</label>
+              <input type="file" (change)="onCertificateFileSelected($event)" accept="application/pdf,image/*" class="ctrl" />
+            </div>
           </div>
-
-          <div>
-            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.selectCourse' | translate }}</label>
-            <select [(ngModel)]="directMarksheetForm.course_id" name="mCourse" required class="ctrl" style="width: 100%;">
-              @for (c of coursesList; track c.id) {
-                <option [value]="c.id">{{ c.title }}</option>
-              }
-            </select>
+          <div class="form-actions">
+            <button type="button" (click)="showQuickUpload = false" class="btn-cancel">ரத்து</button>
+            <button type="submit" [disabled]="isUploadingFile || !directCertForm.pdf_download_url" class="btn-submit">வழங்கு (Issue)</button>
           </div>
-
-          <div>
-            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.marksheetNumber' | translate }}</label>
-            <input type="text" [(ngModel)]="directMarksheetForm.marksheet_number" name="mNum" class="ctrl" style="width: 100%;" placeholder="ASTRO-MRK-2026-XXXX" />
+        </form>
+      } @else {
+        <form (ngSubmit)="submitDirectMarksheet()" class="qu-form">
+          <div class="form-grid">
+            <div>
+              <label>மாணவர் (Student)</label>
+              <select [(ngModel)]="directMarksheetForm.student_id" name="mStudent" required class="ctrl">
+                @for (st of studentsList; track st.id) {
+                  <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label>மதிப்பெண் பட்டியல் எண்</label>
+              <input type="text" [(ngModel)]="directMarksheetForm.marksheet_number" name="mNum" class="ctrl" placeholder="ASTRO-MRK-2026-XXXX" />
+            </div>
+            <div>
+              <label>மதிப்பெண் கோப்பு (PDF/Image)</label>
+              <input type="file" (change)="onMarksheetFileSelected($event)" accept="application/pdf,image/*" class="ctrl" />
+            </div>
           </div>
-
-          <div>
-            <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.totalScore' | translate }}</label>
-            <input type="number" [(ngModel)]="directMarksheetForm.score" name="mScore" class="ctrl" style="width: 100%; font-weight: 700;" />
+          <div class="form-actions">
+            <button type="button" (click)="showQuickUpload = false" class="btn-cancel">ரத்து</button>
+            <button type="submit" [disabled]="isUploadingFile || !directMarksheetForm.marksheet_download_url" class="btn-submit">வழங்கு (Issue)</button>
           </div>
-        </div>
-
-        <div style="margin-bottom: 16px;">
-          <label style="font-weight: 700; color: #1e3a8a; font-size: 12px; margin-bottom: 4px; display: block;">{{ 'certificates.marksheetFile' | translate }}</label>
-          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <input type="file" (change)="onMarksheetFileSelected($event)" accept="application/pdf,image/*" class="ctrl" style="flex: 1;" />
-            @if (isUploadingFile) {
-              <span style="color: #d97706; font-size: 13px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> {{ 'certificates.uploading' | translate }}</span>
-            }
-            @if (directMarksheetForm.marksheet_download_url) {
-              <a [href]="directMarksheetForm.marksheet_download_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 13px; text-decoration: none;">
-                <i class="bi bi-check-circle-fill"></i> {{ 'certificates.viewPdf' | translate }}
-              </a>
-            }
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
-          <button type="button" (click)="showUploadForm = false" class="btn-cancel">{{ 'certificates.cancelBtn' | translate }}</button>
-          <button type="submit" [disabled]="isUploadingFile || !directMarksheetForm.marksheet_download_url" class="btn-primary" style="background: #1e3a8a; color: #fff; font-weight: 800;">
-            {{ 'certificates.submitMarksheetBtn' | translate }}
-          </button>
-        </div>
-      </form>
+        </form>
+      }
     </div>
   }
 
   <!-- ISSUED CERTIFICATES & MARKSHEETS TABLE -->
-  <div class="card-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #fff;">
-    <h3 style="margin: 0 0 16px 0; font-size: 17px; font-weight: 800; color: #0f172a;">
-      <i class="bi bi-award" style="color: #D4AF37;"></i> {{ 'certificates.issuedTitle' | translate }}
-    </h3>
+  <div class="card-box main-table-box">
+    <div class="table-header-row">
+      <h3>
+        <i class="bi bi-award text-gold"></i> வழங்கப்பட்ட சான்றிதழ்கள் & மதிப்பெண் பட்டியல்கள் (Issued Documents)
+      </h3>
+      <span class="badge-count">{{ issuedCertificates.length }} பதிவுகள்</span>
+    </div>
 
-    <table class="table-styled" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr style="background: #4A0E17; color: #ECC876; text-align: left;">
-          <th style="padding: 12px;">{{ 'certificates.studentNameReg' | translate }}</th>
-          <th style="padding: 12px;">{{ 'certificates.courseCol' | translate }}</th>
-          <th style="padding: 12px;">{{ 'certificates.certNumCol' | translate }}</th>
-          <th style="padding: 12px;">{{ 'certificates.marksheetNumCol' | translate }}</th>
-          <th style="padding: 12px;">{{ 'certificates.scoreGradeCol' | translate }}</th>
-          <th style="padding: 12px;">{{ 'certificates.filesCol' | translate }}</th>
-          <th style="padding: 12px;">{{ 'certificates.actionCol' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (c of issuedCertificates; track c.id) {
-          <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 12px;">
-              <div style="font-weight: 800; color: #0f172a;">{{ c.student_name }}</div>
-              <div style="font-size: 11px; color: #D4AF37; font-weight: 700;">ID: {{ c.student_reg_id || c.student_phone || '-' }}</div>
-            </td>
-            <td style="padding: 12px; font-weight: 600; font-size: 13px;">
-              {{ c.course_title }}
-            </td>
-            <td style="padding: 12px; font-family: monospace; font-weight: 700; color: #4A0E17;">
-              {{ c.certificate_number || '-' }}
-            </td>
-            <td style="padding: 12px; font-family: monospace; font-weight: 700; color: #1e3a8a;">
-              {{ c.marksheet_number || '-' }}
-            </td>
-            <td style="padding: 12px;">
-              <span style="font-weight: 800; font-size: 14px; color: #166534;">{{ c.score }} / 100</span>
-              <div style="font-size: 11px; color: #64748b;">{{ c.grade }}</div>
-            </td>
-            <td style="padding: 12px;">
-              <div style="display: flex; flex-direction: column; gap: 4px;">
-                @if (c.pdf_download_url) {
-                  <a [href]="c.pdf_download_url" target="_blank" style="color: #4A0E17; font-weight: 700; text-decoration: none; font-size: 12px;">
-                    <i class="bi bi-award-fill" style="color: #D4AF37;"></i> PDF
-                  </a>
-                }
-                @if (c.marksheet_download_url) {
-                  <a [href]="c.marksheet_download_url" target="_blank" style="color: #1e3a8a; font-weight: 700; text-decoration: none; font-size: 12px;">
-                    <i class="bi bi-file-earmark-spreadsheet-fill" style="color: #2563eb;"></i> PDF
-                  </a>
-                }
-              </div>
-            </td>
-            <td style="padding: 12px;">
-              <button (click)="deleteRecord(c.id)" style="background: #fee2e2; color: #991b1b; border: none; padding: 6px 10px; border-radius: 6px; font-weight: 700; cursor: pointer;">
-                <i class="bi bi-trash-fill"></i>
-              </button>
-            </td>
-          </tr>
-        }
-        @if (issuedCertificates.length === 0) {
+    <div class="table-responsive">
+      <table class="table-styled">
+        <thead>
           <tr>
-            <td colspan="7" style="text-align: center; padding: 30px; color: #94a3b8;">{{ 'certificates.noRecords' | translate }}</td>
+            <th>மாணவர் விபரம்</th>
+            <th>படிப்பு & நிலை</th>
+            <th>பதிவு எண்</th>
+            <th>சான்றிதழ் எண்</th>
+            <th>மதிப்பெண் & கிரேடு</th>
+            <th>செயல்கள் (Actions)</th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (c of issuedCertificates; track c.id) {
+            <tr>
+              <td>
+                <div class="student-info-cell">
+                  <div class="avatar-ring">
+                    <img [src]="c.photo_url || '/assets/images/user_avatar.png'" alt="Student" (error)="c.photo_url = '/assets/images/user_avatar.png'" />
+                  </div>
+                  <div>
+                    <div class="s-name-ta">{{ c.student_name_ta || c.student_name }}</div>
+                    <div class="s-name-en">{{ c.student_name_en || c.student_name }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="level-pill" [class.pg]="c.course_level === 'PG'">{{ c.course_level || 'UG' }}</span>
+                <div class="course-title-sub">{{ c.award_title_ta || c.course_title }}</div>
+              </td>
+              <td>
+                <span class="code-badge">{{ c.registration_number || c.student_reg_id || '-' }}</span>
+              </td>
+              <td>
+                <span class="code-badge cert">{{ c.certificate_number || '-' }}</span>
+              </td>
+              <td>
+                <div class="score-tag">
+                  <strong>{{ c.total_marks || c.score || '-' }}</strong> 
+                  <span class="pct">({{ c.percentage || 'PASS' }})</span>
+                </div>
+                <div class="grade-text">{{ c.grade || 'First Class' }}</div>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button (click)="openDesignerModal(c.course_level || 'UG', c)" class="action-btn edit" title="சான்றிதழை எடிட் செய்து அச்சிடு (Edit & Print)">
+                    <i class="bi bi-pencil-square"></i> எடிட் & அச்சு
+                  </button>
+                  <button (click)="deleteRecord(c.id)" class="action-btn delete" title="நீக்குக (Delete)">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (issuedCertificates.length === 0 && !isLoading) {
+            <tr>
+              <td colspan="6" class="empty-row">
+                <i class="bi bi-folder2-open empty-icon"></i>
+                <p>இதுவரை சான்றிதழ்கள் எதுவும் வழங்கப்படவில்லை. மேலுள்ள பட்டன்களைப் பயன்படுத்தி புதிதாக உருவாக்கவும்.</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>
+
+<!-- ========================================================================= -->
+<!-- FULLSCREEN DYNAMIC CERTIFICATE & MARKSHEET DESIGNER & PRINT STUDIO MODAL  -->
+<!-- ========================================================================= -->
+@if (showDesignerModal) {
+  <div class="designer-modal-backdrop">
+    <div class="designer-modal-container">
+      
+      <!-- TOP BAR OF MODAL -->
+      <div class="designer-topbar">
+        <div class="d-title-group">
+          <i class="bi bi-award-fill gold-icon"></i>
+          <div>
+            <h2>அங்கீகரிக்கப்பட்ட சான்றிதழ் & மதிப்பெண் பட்டியல் தயாரிப்பான் (Certificate Studio)</h2>
+            <span>ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம் - அரசு பதிவு எண்: BK4/3/2018PKM</span>
+          </div>
+        </div>
+
+        <!-- Level selector pills -->
+        <div class="level-switch-group">
+          <button [class.active]="designerForm.course_level === 'UG'" (click)="setCourseLevel('UG')" class="lvl-btn">
+            🎓 இளநிலை (UG - ஜோதிட ரத்னா)
+          </button>
+          <button [class.active]="designerForm.course_level === 'PG'" (click)="setCourseLevel('PG')" class="lvl-btn">
+            🏆 முதுநிலை (PG - ஜோதிட கலாநிதி)
+          </button>
+        </div>
+
+        <!-- Modal Action Buttons -->
+        <div class="d-actions-group">
+          <button (click)="printDocument()" class="btn-print" title="நேரடியாக A4 தாளில் அச்சிட அல்லது PDF சேமிக்க">
+            <i class="bi bi-printer-fill"></i> A4 அச்சிடு / PDF (Print)
+          </button>
+          <button (click)="saveCustomCertificate()" [disabled]="isSaving" class="btn-save">
+            <i class="bi bi-check2-circle"></i> @if (isSaving) { சேமிக்கிறது... } @else { சேமி & வழங்கு (Save) }
+          </button>
+          <button (click)="showDesignerModal = false" class="btn-close-modal">&times;</button>
+        </div>
+      </div>
+
+      <!-- MAIN SPLIT WORKSPACE -->
+      <div class="designer-workspace">
+        
+        <!-- LEFT: EDITABLE CONTROLS -->
+        <div class="controls-panel">
+          <div class="panel-header">
+            <h3><i class="bi bi-sliders"></i> விபரங்களை மாற்றியமைக்க (Editable Form)</h3>
+            <span class="panel-hint">மாற்றங்கள் வலதுபுறத்தில் உடனுக்குடன் தெரியும்</span>
+          </div>
+
+          <div class="controls-scroll">
+            
+            <!-- Student Selection & Basic Info -->
+            <div class="control-section">
+              <div class="section-title">1. மாணவர் & பதிவு விபரங்கள் (Student Info)</div>
+              
+              <div class="form-group">
+                <label>மாணவரை தேர்வு செய்க (Select Student)</label>
+                <select [ngModel]="designerForm.student_id" (ngModelChange)="onStudentSelect($event)" class="ctrl">
+                  @for (st of studentsList; track st.id) {
+                    <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
+                  }
+                </select>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>பெயர் (தமிழ்)</label>
+                  <input type="text" [(ngModel)]="designerForm.student_name_ta" class="ctrl" placeholder="த. பாலுசாமி" />
+                </div>
+                <div class="form-group">
+                  <label>Name (English)</label>
+                  <input type="text" [(ngModel)]="designerForm.student_name_en" class="ctrl" placeholder="D. BALUSAMY" />
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>பதிவு எண் (Reg. Number)</label>
+                  <input type="text" [(ngModel)]="designerForm.registration_number" (ngModelChange)="designerForm.certificate_number = $event" class="ctrl" />
+                </div>
+                <div class="form-group">
+                  <label>பாஸ்போர்ட் புகைப்படம் (Photo)</label>
+                  <input type="file" (change)="onPhotoSelected($event)" accept="image/*" class="ctrl file-ctrl" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Course, Center & Period Info -->
+            <div class="control-section">
+              <div class="section-title">2. பயிற்சி மையம் & காலம் (Center & Duration)</div>
+              
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>மையம் (தமிழ்)</label>
+                  <input type="text" [(ngModel)]="designerForm.center_name" class="ctrl" placeholder="பல்லடம்" />
+                </div>
+                <div class="form-group">
+                  <label>Centre (English)</label>
+                  <input type="text" [(ngModel)]="designerForm.center_name_en" class="ctrl" placeholder="PALLADAM" />
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>பயிற்சி துவக்கம் (From)</label>
+                  <input type="text" [(ngModel)]="designerForm.course_period_from" class="ctrl" placeholder="06.02.2018" />
+                </div>
+                <div class="form-group">
+                  <label>பயிற்சி முடிவு (To)</label>
+                  <input type="text" [(ngModel)]="designerForm.course_period_to" class="ctrl" placeholder="06.02.2019" />
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>பொதுத்தேர்வு நாள் (Exam Date)</label>
+                  <input type="text" [(ngModel)]="designerForm.exam_date" class="ctrl" placeholder="28.01.2019" />
+                </div>
+                <div class="form-group">
+                  <label>கல்வியாண்டு (Year of Study)</label>
+                  <input type="text" [(ngModel)]="designerForm.academic_year" class="ctrl" placeholder="2018 FEB to 2019 FEB" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Award Title & Issue Info -->
+            <div class="control-section">
+              <div class="section-title">3. வழங்கப்படும் பட்டம் & சான்றிதழ் நாள் (Title & Issue)</div>
+              
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>பட்டம் (தமிழ்)</label>
+                  <input type="text" [(ngModel)]="designerForm.award_title_ta" class="ctrl bold-red" />
+                </div>
+                <div class="form-group">
+                  <label>Award Title (English)</label>
+                  <input type="text" [(ngModel)]="designerForm.award_title_en" class="ctrl bold-red" />
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>வழங்கிய நாள் (Issue Date)</label>
+                  <input type="text" [(ngModel)]="designerForm.issue_date" class="ctrl" placeholder="28.10.2019" />
+                </div>
+                <div class="form-group">
+                  <label>வழங்கிய இடம் (Place)</label>
+                  <input type="text" [(ngModel)]="designerForm.issue_place" class="ctrl" placeholder="பெரியகுளம்" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Marks & Assessment -->
+            <div class="control-section">
+              <div class="section-title">4. தேர்வு மதிப்பெண்கள் (Marks - {{ designerForm.course_level }})</div>
+              
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>{{ designerForm.course_level === 'UG' ? 'UGE - I' : 'PGE - I' }} (Theory)</label>
+                  <input type="number" [(ngModel)]="designerForm.theory1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                </div>
+                <div class="form-group">
+                  <label>{{ designerForm.course_level === 'UG' ? 'UGE - II' : 'PGE - II' }} (Theory)</label>
+                  <input type="number" [(ngModel)]="designerForm.theory2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                </div>
+              </div>
+
+              <div class="grid-3">
+                <div class="form-group">
+                  <label>செய்முறை பகுதி - I</label>
+                  <input type="number" [(ngModel)]="designerForm.practical1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                </div>
+                <div class="form-group">
+                  <label>செய்முறை பகுதி - II</label>
+                  <input type="number" [(ngModel)]="designerForm.practical2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                </div>
+                <div class="form-group">
+                  <label>செய்முறை பகுதி - III</label>
+                  <input type="number" [(ngModel)]="designerForm.practical3_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                </div>
+              </div>
+
+              <div class="grid-3 summary-row">
+                <div class="form-group">
+                  <label>மொத்தம் (Total)</label>
+                  <input type="number" [(ngModel)]="designerForm.total_marks" class="ctrl num bold" />
+                </div>
+                <div class="form-group">
+                  <label>சதவீதம் (%)</label>
+                  <input type="text" [(ngModel)]="designerForm.percentage" class="ctrl num bold" />
+                </div>
+                <div class="form-group">
+                  <label>கிரேடு / தகுதி</label>
+                  <input type="text" [(ngModel)]="designerForm.grade" class="ctrl bold" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Pass Criteria Notes (As in Official Marksheet) -->
+            <div class="control-section">
+              <div class="section-title">5. தேர்ச்சி தகுதி விபரங்கள் (Pass Criteria Notes)</div>
+              
+              <div class="form-group">
+                <label>தியரி தேர்ச்சி விதி (Theory Pass Criteria)</label>
+                <input type="text" [(ngModel)]="designerForm.pass_criteria_theory" class="ctrl" />
+              </div>
+              <div class="form-group">
+                <label>செய்முறை தேர்ச்சி விதி (Practical Pass Criteria)</label>
+                <input type="text" [(ngModel)]="designerForm.pass_criteria_practical" class="ctrl" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: LIVE INTERACTIVE PREVIEW & PRINT CANVAS -->
+        <div class="preview-panel">
+          
+          <!-- Tab selector for Certificate vs Marksheet view & Zoom -->
+          <div class="preview-toolbar">
+            <div class="preview-tabs">
+              <button [class.active]="previewTab === 'certificate'" (click)="previewTab = 'certificate'" class="p-tab">
+                <i class="bi bi-award-fill"></i> 1. சான்றிதழ் (Certificate)
+              </button>
+              <button [class.active]="previewTab === 'marksheet'" (click)="previewTab = 'marksheet'" class="p-tab">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i> 2. மதிப்பெண் பட்டியல் (Marksheet)
+              </button>
+            </div>
+            
+            <div class="preview-status-zoom">
+              <div class="zoom-btn-group">
+                <button type="button" (click)="previewScale = 0.7" [class.active]="previewScale === 0.7">70%</button>
+                <button type="button" (click)="previewScale = 0.85" [class.active]="previewScale === 0.85">85%</button>
+                <button type="button" (click)="previewScale = 1.0" [class.active]="previewScale === 1.0">100%</button>
+              </div>
+              <span class="badge-live"><i class="bi bi-dot"></i> Live A4</span>
+            </div>
+          </div>
+
+          <!-- THE PRINTABLE A4 CONTAINER -->
+          <div class="a4-stage-wrapper">
+            <div id="printDocumentArea" class="a4-page-sheet" [style.transform]="'scale(' + previewScale + ')'">
+              
+              <!-- ================================================= -->
+              <!-- VIEW 1: AUTHENTIC SRI AARUTHRAA CERTIFICATE (A4)  -->
+              <!-- ================================================= -->
+              @if (previewTab === 'certificate') {
+                <div class="official-cert-layout" [class.pg-cert]="designerForm.course_level === 'PG'">
+                  
+                  <!-- Double Ornate Border Box -->
+                  <div class="ornate-outer-border">
+                    <div class="ornate-inner-border">
+                      
+                      <!-- Header Section: Om Namachivaya & Institute Details -->
+                      <div class="cert-header-section">
+                        <div class="top-invocation">ஓம் நமச்சிவாய</div>
+
+                        <!-- Institute Seal & Header Block -->
+                        <div class="inst-header-block">
+                          <div class="inst-logo-wrap">
+                            <img src="/app-logo.jpg" alt="Sri Aaruthraa Seal" class="inst-seal-img" (error)="false" />
+                          </div>
+                          <div class="inst-text-wrap">
+                            <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
+                            <h2 class="inst-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+                            <div class="inst-trust-reg">அறக்கட்டளை அரசு பதிவு எண் : (BK4/3/2018PKM)</div>
+                            <div class="inst-address">
+                              எண் : 1/346,ஸ்டேட் பாங்க் காலனி, சுந்தரராஜநகர், கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.
+                            </div>
+                            <div class="inst-email">(www.sriaaruthraaastro@gmail.com)</div>
+                          </div>
+                        </div>
+
+                        <!-- Certificate Ribbon Banner -->
+                        <div class="ribbon-banner-wrap">
+                          <div class="ribbon-pill">
+                            @if (designerForm.course_level === 'UG') {
+                              ஜோதிட சிறப்பு தகுநிலை சான்றிதழ்
+                            } @else {
+                              ஜோதிட மேல்நிலை சிறப்பு தகுநிலை சான்றிதழ்
+                            }
+                          </div>
+                          @if (designerForm.course_level === 'PG') {
+                            <div class="pg-merit-title">Meritorius Certificate</div>
+                          }
+                        </div>
+                      </div>
+
+                      <!-- Main Body Flow with Floating Photo -->
+                      <div class="cert-body-flow">
+                        <!-- Passport Photo Floated Right -->
+                        <div class="passport-photo-floating">
+                          <img [src]="designerForm.photo_url || '/assets/images/user_avatar.png'" alt="Student" (error)="designerForm.photo_url = '/assets/images/user_avatar.png'" />
+                        </div>
+
+                        <!-- Reg Number Line -->
+                        <div class="reg-no-line">
+                          <span class="lbl-ta">பதிவு எண் :</span> 
+                          <span class="val-reg">{{ designerForm.registration_number || designerForm.certificate_number }}</span>
+                        </div>
+
+                        <!-- TAMIL STATEMENT -->
+                        <div class="tamil-flow-para">
+                          @if (designerForm.course_level === 'PG') {
+                            திரு / திருமதி <span class="fill-line name">{{ designerForm.student_name_ta || 'ம. திருநிறைச்செல்வி' }}</span> என்பவர் நமது 
+                            <strong>ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயத்தின்</strong> <span class="fill-line center">{{ designerForm.center_name || 'பல்லடம்' }}</span> மையத்தில், 
+                            ஜோதிடவியல் வித்தக மேல்நிலை சாஸ்திர கல்வி பயிற்சியான <span class="fill-line date">{{ designerForm.course_period_from || '06.02.2019' }}</span> முதல் 
+                            <span class="fill-line date">{{ designerForm.course_period_to || '06.02.2020' }}</span> வரை நடைபெற்ற 
+                            முதுநிலை பயிற்சியை வெற்றிகரமாக நிறைவு செய்து <span class="fill-line date">{{ designerForm.exam_date || '07.02.2020' }}</span> ஆண்டில் 
+                            நடைபெற்ற பொதுத் தேர்வில் கலந்து கொண்டு தேர்ச்சி பெற்றமைக்காக அவரை பாராட்டி சான்றளிப்பதுடன்
+                          } @else {
+                            திரு / திருமதி <span class="fill-line name">{{ designerForm.student_name_ta || 'த. பாலுசாமி' }}</span> என்பவர் 
+                            எமது <strong>ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயத்தின்</strong> <span class="fill-line center">{{ designerForm.center_name || 'பல்லடம்' }}</span> மையத்தில், 
+                            ஜோதிடவியல் சாஸ்திர கல்வி பயிற்சியான <span class="fill-line date">{{ designerForm.course_period_from || '06.02.2018' }}</span> முதல் 
+                            <span class="fill-line date">{{ designerForm.course_period_to || '06.02.2019' }}</span> வரை நடைபெற்ற 
+                            இளநிலை பயிற்சியை வெற்றிகரமாக நிறைவு செய்து <span class="fill-line date">{{ designerForm.exam_date || '28.01.2019' }}</span> ஆண்டில் 
+                            நடைபெற்ற பொதுத்தேர்வில் கலந்து கொண்டு தேர்ச்சி பெற்றமைக்காக சான்றளிப்பதுடன்
+                          }
+                        </div>
+                      </div>
+
+                      <!-- PROMINENT TITLE BADGE -->
+                      <div class="awarded-title-box">
+                        <h2 class="title-tamil">“{{ designerForm.award_title_ta || (designerForm.course_level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா') }}”</h2>
+                        <div class="title-sub-ta">
+                          @if (designerForm.course_level === 'PG') {
+                            என்ற உயரிய சிறப்பு பட்டயத்தையும், மனநிறைவுடனும், மகிழ்வுடனும் வழங்கி அவரை பாராட்டி வாழ்த்துகின்றோம்.
+                          } @else {
+                            என்ற சிறப்புப்பட்டயத்தையும் மனநிறைவுடனும் மகிழ்வுடனும் வழங்கி வாழ்த்துகிறோம்.
+                          }
+                        </div>
+                      </div>
+
+                      <!-- ENGLISH CERTIFICATION STATEMENT -->
+                      <div class="cert-statement-english">
+                        @if (designerForm.course_level === 'PG') {
+                          <div class="eng-para">
+                            We Certify that <span class="fill-line name">{{ designerForm.student_name_en || 'M. THIRUNIRAISELVI' }}</span> Studied in our 
+                            <strong>SRI AARUTHRAA JOTHIDA SASTHIRA VIDHYALAYAM</strong> has Successfully Completed the Post Graduate Astrology Course, During the Period from 
+                            <span class="fill-line date">{{ designerForm.course_period_from || '06.02.2019' }}</span> to 
+                            <span class="fill-line date">{{ designerForm.course_period_to || '06.02.2020' }}</span> at 
+                            <span class="fill-line center">{{ designerForm.center_name_en || 'PALLADAM' }}</span> Centre and Passed the Public higher Examination Conducted on 
+                            <span class="fill-line date">{{ designerForm.exam_date || '07.02.2020' }}</span>.
+                          </div>
+                          <div class="eng-sub-statement">
+                            He has brought forward the full efforts of Studies in Astrology and rendered an exemplary learning the course. Hence he is awarded with great pleasure and proud the rich Title.
+                          </div>
+                        } @else {
+                          <div class="eng-para">
+                            We Certify that <span class="fill-line name">{{ designerForm.student_name_en || 'D. BALUSAMY' }}</span> has successfully Completed 
+                            the Undergraduate Astrology Course during the Period from 
+                            <span class="fill-line date">{{ designerForm.course_period_from || '06.02.2018' }}</span> to 
+                            <span class="fill-line date">{{ designerForm.course_period_to || '06.02.2019' }}</span> at 
+                            <span class="fill-line center">{{ designerForm.center_name_en || 'PALLADAM' }}</span> Centre, and passed the Examination conducted on 
+                            <span class="fill-line date">{{ designerForm.exam_date || '28.01.2019' }}</span> with great pleasure and proud we award him a title.
+                          </div>
+                        }
+
+                        <div class="eng-title-highlight">
+                          “{{ designerForm.award_title_en || (designerForm.course_level === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA') }}”
+                        </div>
+                        <div class="eng-congrats">
+                          {{ designerForm.course_level === 'PG' ? 'and Congrates,' : 'and Congratulation,' }}
+                        </div>
+                      </div>
+
+                      <!-- BOTTOM FOOTER: DATE, PLACE & 4 SIGNATURES -->
+                      <div class="cert-bottom-section">
+                        <div class="date-place-row">
+                          <div class="dp-item"><strong>நாள் :</strong> {{ designerForm.issue_date || (designerForm.course_level === 'PG' ? '10.02.2020' : '28.10.2019') }}</div>
+                          <div class="dp-item"><strong>இடம் :</strong> {{ designerForm.issue_place || 'பெரியகுளம்' }}</div>
+                        </div>
+
+                        <div class="signatures-grid-4">
+                          <div class="sig-box">
+                            <div class="sig-space">
+                              @if (designerForm.course_level === 'PG') {
+                                <span class="sig-handwritten teacher">U.S. Raja</span>
+                              }
+                            </div>
+                            <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
+                            <div class="sig-role-en">Training Teacher</div>
+                          </div>
+                          <div class="sig-box">
+                            <div class="sig-space">
+                              <span class="sig-handwritten">M. Kaly</span>
+                            </div>
+                            <div class="sig-role-ta">பொருளாளர்</div>
+                            <div class="sig-role-en">Treasurer</div>
+                          </div>
+                          <div class="sig-box">
+                            <div class="sig-space">
+                              <span class="sig-handwritten sec">U.S. Raja</span>
+                            </div>
+                            <div class="sig-role-ta">செயலாளர்</div>
+                            <div class="sig-role-en">Secretary</div>
+                          </div>
+                          <div class="sig-box">
+                            <div class="sig-space">
+                              <span class="sig-handwritten founder">K. Hari</span>
+                            </div>
+                            <div class="sig-role-ta">நிறுவனர்</div>
+                            <div class="sig-role-en">Founder</div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- ================================================= -->
+              <!-- VIEW 2: AUTHENTIC SRI AARUTHRAA MARKSHEET (A4)    -->
+              <!-- ================================================= -->
+              @if (previewTab === 'marksheet') {
+                <div class="official-marksheet-layout" [class.pg-marksheet]="designerForm.course_level === 'PG'">
+                  
+                  <div class="marksheet-outer-border">
+                    <div class="marksheet-inner-border">
+                      
+                      <!-- Header: Invocation & Authority -->
+                      <div class="top-invocation">ஓம் நமச்சிவாய</div>
+                      
+                      <div class="marksheet-header-block">
+                        <div class="ms-logo-wrap">
+                          <img src="/assets/images/nataraja.png" alt="Sri Aaruthraa Seal" class="inst-seal-img" (error)="false" />
+                        </div>
+                        <div class="ms-text-wrap">
+                          <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
+                          <h2 class="inst-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+                          <div class="inst-trust-reg">(அறக்கட்டளை அரசு பதிவு எண் : BK4/3/2018PKM)</div>
+                          <div class="ms-heading-ta">ஜோதிடவியல் தேர்வு மதிப்பெண் பட்டியல்</div>
+                          <div class="ms-heading-en">(ASTROLOGY COURSE EXAM MARK SHEET)</div>
+                          <div class="ms-auth-line">The Certified Mark Sheet under Authority of <strong>SRI AARUTHRAA JOTHIDA SASTHIRA VIDHYALAYAM</strong></div>
+                        </div>
+                      </div>
+
+                      <!-- STUDENT META 2x2 GRID -->
+                      <div class="student-meta-grid">
+                        <div class="meta-item">
+                          <span class="m-lbl">மாணவர் பெயர்:</span>
+                          <span class="m-val-ta">{{ designerForm.student_name_ta || 'த. பாலுசாமி' }}</span>
+                          <div class="m-sub">(STUDENT NAME): <strong>{{ designerForm.student_name_en || 'D. BALUSAMY' }}</strong></div>
+                        </div>
+                        <div class="meta-item">
+                          <span class="m-lbl">தேர்வு நாள்:</span>
+                          <span class="m-val">{{ designerForm.exam_date || '28-01-2019' }}</span>
+                          <div class="m-sub">(EXAM DATE): <strong>{{ designerForm.exam_date || '28-01-2019' }}</strong></div>
+                        </div>
+                        <div class="meta-item">
+                          <span class="m-lbl">பதிவு எண்:</span>
+                          <span class="m-val code">{{ designerForm.registration_number || designerForm.certificate_number }}</span>
+                          <div class="m-sub">(REGISTRATION NUMBER)</div>
+                        </div>
+                        <div class="meta-item">
+                          <span class="m-lbl">கல்வியாண்டு:</span>
+                          <span class="m-val">{{ designerForm.academic_year || '2018 FEB to 2019 FEB' }}</span>
+                          <div class="m-sub">(YEAR OF STUDY)</div>
+                        </div>
+                      </div>
+
+                      <!-- TABLE SECTION BANNER -->
+                      <div class="marks-table-banner">
+                        @if (designerForm.course_level === 'UG') {
+                          <div class="t-banner-ta">இளநிலை தேர்வு மாணவர் மதிப்பெண் பட்டியல்</div>
+                          <div class="t-banner-en">(Under Graduate Examination and Alliend the Following Marks)</div>
+                        } @else {
+                          <div class="t-banner-ta">முதுநிலை தேர்வு மாணவர் மதிப்பெண் பட்டியல்</div>
+                          <div class="t-banner-en">(Post Graduate Examination and Alliend the Following Marks)</div>
+                        }
+                      </div>
+
+                      <!-- MARKS TABLE -->
+                      <table class="marks-official-table">
+                        <thead>
+                          <tr>
+                            <th style="width: 10%;">வ. எண்<br><small>S.No</small></th>
+                            <th style="width: 45%;">பாடப்பிரிவு<br><small>(SUBJECT)</small></th>
+                            <th style="width: 25%;">மதிப்பெண் உள்ளடக்கம்<br><small>(TOTAL MARKS OBTAINED)</small></th>
+                            <th style="width: 20%;">தேர்ச்சி நிலை<br><small>(PASSED OBTAINED)</small></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="text-center">1.</td>
+                            <td>{{ designerForm.course_level === 'UG' ? 'UGE - I (THEORY)' : 'PGE - I (THEORY)' }}</td>
+                            <td class="text-center mark-val">{{ designerForm.theory1_mark }}</td>
+                            <td class="text-center pass-tag">PASS</td>
+                          </tr>
+                          <tr>
+                            <td class="text-center">2.</td>
+                            <td>{{ designerForm.course_level === 'UG' ? 'UGE - II (THEORY)' : 'PGE - II (THEORY)' }}</td>
+                            <td class="text-center mark-val">{{ designerForm.theory2_mark }}</td>
+                            <td class="text-center pass-tag">PASS</td>
+                          </tr>
+                          <tr class="section-row">
+                            <td colspan="4"><strong>PRACTICAL (செய்முறை)</strong></td>
+                          </tr>
+                          <tr>
+                            <td class="text-center">3.</td>
+                            <td>செய்முறை பகுதி - I</td>
+                            <td class="text-center mark-val">{{ designerForm.practical1_mark }}</td>
+                            <td class="text-center pass-tag">PASS</td>
+                          </tr>
+                          <tr>
+                            <td class="text-center">4.</td>
+                            <td>செய்முறை பகுதி - II</td>
+                            <td class="text-center mark-val">{{ designerForm.practical2_mark }}</td>
+                            <td class="text-center pass-tag">PASS</td>
+                          </tr>
+                          <tr>
+                            <td class="text-center">5.</td>
+                            <td>செய்முறை பகுதி - III</td>
+                            <td class="text-center mark-val">{{ designerForm.practical3_mark }}</td>
+                            <td class="text-center pass-tag">PASS</td>
+                          </tr>
+                          
+                          <!-- TOTALS & SUMMARY -->
+                          <tr class="summary-total-row">
+                            <td colspan="2"><strong>மொத்த மதிப்பெண்கள் (TOTAL MARKS)</strong></td>
+                            <td class="text-center total-val"><strong>{{ designerForm.total_marks }}</strong></td>
+                            <td class="text-center pass-tag"><strong>{{ designerForm.pass_status }}</strong></td>
+                          </tr>
+                          <tr class="summary-pct-row">
+                            <td colspan="2"><strong>மொத்த சதவீதம் (TOTAL PERCENTAGE)</strong></td>
+                            <td class="text-center pct-val"><strong>{{ designerForm.percentage }}</strong></td>
+                            <td class="text-center grade-val"><strong>{{ designerForm.grade }}</strong></td>
+                          </tr>
+                          <tr class="summary-award-row">
+                            <td colspan="2"><strong>வித்யாலயம் வழங்கிய தகுநிலை (AWARDED TITLE)</strong></td>
+                            <td colspan="2" class="text-center award-val">
+                              <strong>“{{ designerForm.award_title_ta }}”</strong>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <!-- PASS CRITERIA NOTES -->
+                      <div class="pass-criteria-notes">
+                        <div class="pass-crit-line">{{ designerForm.pass_criteria_theory }}</div>
+                        <div class="pass-crit-line">{{ designerForm.pass_criteria_practical }}</div>
+                      </div>
+
+                      <!-- 4 SIGNATURES -->
+                      <div class="marksheet-signatures-grid">
+                        <div class="sig-box">
+                          <div class="sig-space"></div>
+                          <div class="sig-role-ta">மாணவர் கையொப்பம்:</div>
+                          <div class="sig-role-en">Candidates Certified</div>
+                        </div>
+                        <div class="sig-box">
+                          <div class="sig-space"></div>
+                          <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
+                          <div class="sig-role-en">Training Teacher</div>
+                        </div>
+                        <div class="sig-box">
+                          <div class="sig-space">
+                            <span class="sig-handwritten sec">U.S. Raja</span>
+                          </div>
+                          <div class="sig-role-ta">செயலாளர்</div>
+                          <div class="sig-role-en">Secretary</div>
+                        </div>
+                        <div class="sig-box">
+                          <div class="sig-space">
+                            <span class="sig-handwritten founder">K. Hari</span>
+                          </div>
+                          <div class="sig-role-ta">நிறுவனர்</div>
+                          <div class="sig-role-en">Founder</div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              }
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+}

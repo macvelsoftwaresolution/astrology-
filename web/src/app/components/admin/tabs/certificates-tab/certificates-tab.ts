@@ -22,10 +22,52 @@ export class CertificatesTabComponent implements OnInit {
   coursesList: any[] = [];
   
   isLoading = false;
-  showUploadForm = false;
-  uploadType: 'certificate' | 'marksheet' = 'certificate';
+  showDesignerModal = false;
+  showQuickUpload = false;
+  previewTab: 'certificate' | 'marksheet' = 'certificate';
+  previewScale: number = 0.85;
   isUploadingFile = false;
+  isSaving = false;
 
+  // Custom Full Certificate & Marksheet Form
+  designerForm = {
+    id: null as number | null,
+    student_id: '',
+    course_id: '',
+    course_level: 'UG' as 'UG' | 'PG',
+    student_name_ta: '',
+    student_name_en: '',
+    photo_url: '',
+    registration_number: '',
+    center_name: 'பல்லடம்',
+    center_name_en: 'PALLADAM',
+    course_period_from: '06.02.2018',
+    course_period_to: '06.02.2019',
+    exam_date: '28.01.2019',
+    academic_year: '2018 FEB to 2019 FEB',
+    award_title_ta: 'ஜோதிட ரத்னா',
+    award_title_en: 'JOTHIDA RATHNA',
+    issue_date: '28.10.2019',
+    issue_place: 'பெரியகுளம்',
+    certificate_number: '',
+    marksheet_number: '',
+    theory1_mark: 98,
+    theory2_mark: 90,
+    practical1_mark: 92,
+    practical2_mark: 87,
+    practical3_mark: 93,
+    total_marks: 460,
+    percentage: '92%',
+    grade: 'First Class',
+    pass_status: 'PASS',
+    pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+    pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
+    pdf_download_url: '',
+    marksheet_download_url: ''
+  };
+
+  // Quick Direct Upload
+  uploadType: 'certificate' | 'marksheet' = 'certificate';
   directCertForm = {
     student_id: '',
     course_id: '',
@@ -87,9 +129,8 @@ export class CertificatesTabComponent implements OnInit {
         this.studentsList = Array.isArray(users)
           ? users.filter((u: any) => !!u.student_id && u.student_id.trim() !== '')
           : [];
-        if (this.studentsList.length > 0) {
-          if (!this.directCertForm.student_id) this.directCertForm.student_id = this.studentsList[0].id;
-          if (!this.directMarksheetForm.student_id) this.directMarksheetForm.student_id = this.studentsList[0].id;
+        if (this.studentsList.length > 0 && !this.designerForm.student_id) {
+          this.onStudentSelect(this.studentsList[0].id);
         }
         this.cdr.markForCheck();
       },
@@ -101,9 +142,8 @@ export class CertificatesTabComponent implements OnInit {
       next: (res) => {
         const courses = res.courses || res || [];
         this.coursesList = Array.isArray(courses) ? courses : [];
-        if (this.coursesList.length > 0) {
-          if (!this.directCertForm.course_id) this.directCertForm.course_id = this.coursesList[0].id;
-          if (!this.directMarksheetForm.course_id) this.directMarksheetForm.course_id = this.coursesList[0].id;
+        if (this.coursesList.length > 0 && !this.designerForm.course_id) {
+          this.designerForm.course_id = this.coursesList[0].id;
         }
         this.cdr.markForCheck();
       },
@@ -111,13 +151,267 @@ export class CertificatesTabComponent implements OnInit {
     });
   }
 
-  toggleUploadForm(type?: 'certificate' | 'marksheet'): void {
-    if (type) {
-      this.uploadType = type;
-      this.showUploadForm = true;
+  openDesignerModal(level: 'UG' | 'PG' = 'UG', existingRecord: any = null): void {
+    if (existingRecord) {
+      this.populateFromRecord(existingRecord);
     } else {
-      this.showUploadForm = !this.showUploadForm;
+      this.resetDesignerForm(level);
     }
+    this.showDesignerModal = true;
+    this.cdr.markForCheck();
+  }
+
+  resetDesignerForm(level: 'UG' | 'PG'): void {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const selectedStudent = this.studentsList.find(s => s.id == this.designerForm.student_id) || this.studentsList[0];
+
+    if (level === 'UG') {
+      this.designerForm = {
+        id: null,
+        student_id: selectedStudent ? selectedStudent.id : '',
+        course_id: this.coursesList.length > 0 ? this.coursesList[0].id : '',
+        course_level: 'UG',
+        student_name_ta: selectedStudent?.name || 'த. பாலுசாமி',
+        student_name_en: selectedStudent?.name ? selectedStudent.name.toUpperCase() : 'D. BALUSAMY',
+        photo_url: selectedStudent?.profile_photo_url || '/assets/images/user_avatar.png',
+        registration_number: selectedStudent?.student_id || '05180200004',
+        center_name: 'பல்லடம்',
+        center_name_en: 'PALLADAM',
+        course_period_from: '06.02.2018',
+        course_period_to: '06.02.2019',
+        exam_date: '28.01.2019',
+        academic_year: '2018 FEB to 2019 FEB',
+        award_title_ta: 'ஜோதிட ரத்னா',
+        award_title_en: 'JOTHIDA RATHNA',
+        issue_date: '28.10.2019',
+        issue_place: 'பெரியகுளம்',
+        certificate_number: '05180200004',
+        marksheet_number: 'MRK-UG-2019-' + randomNum,
+        theory1_mark: 98,
+        theory2_mark: 90,
+        practical1_mark: 92,
+        practical2_mark: 87,
+        practical3_mark: 93,
+        total_marks: 460,
+        percentage: '92%',
+        grade: 'Distinction',
+        pass_status: 'PASS',
+        pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+        pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
+        pdf_download_url: '',
+        marksheet_download_url: ''
+      };
+    } else {
+      this.designerForm = {
+        id: null,
+        student_id: selectedStudent ? selectedStudent.id : '',
+        course_id: this.coursesList.length > 0 ? this.coursesList[0].id : '',
+        course_level: 'PG',
+        student_name_ta: selectedStudent?.name || 'ம. திருநிறைச்செல்வி',
+        student_name_en: selectedStudent?.name ? selectedStudent.name.toUpperCase() : 'M. THIRUNIRAISELVI',
+        photo_url: selectedStudent?.profile_photo_url || '/assets/images/user_avatar.png',
+        registration_number: selectedStudent?.student_id || '05180200005',
+        center_name: 'பல்லடம்',
+        center_name_en: 'PALLADAM',
+        course_period_from: '06.02.2019',
+        course_period_to: '06.02.2020',
+        exam_date: '07.02.2020',
+        academic_year: '2019 FEB to 2020 FEB',
+        award_title_ta: 'ஜோதிட கலாநிதி',
+        award_title_en: 'JOTHIDA KALANITHI',
+        issue_date: '10.02.2020',
+        issue_place: 'பெரியகுளம்',
+        certificate_number: '05180200005',
+        marksheet_number: 'MRK-PG-2020-' + randomNum,
+        theory1_mark: 75,
+        theory2_mark: 75,
+        practical1_mark: 120,
+        practical2_mark: 70,
+        practical3_mark: 120,
+        total_marks: 460,
+        percentage: '65%',
+        grade: 'GRADE - II',
+        pass_status: 'PASS',
+        pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+        pass_criteria_practical: 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.',
+        pdf_download_url: '',
+        marksheet_download_url: ''
+      };
+    }
+    this.calculateMarks();
+  }
+
+  populateFromRecord(rec: any): void {
+    const isPG = (rec.course_level === 'PG');
+    this.designerForm = {
+      id: rec.id,
+      student_id: rec.student_id,
+      course_id: rec.course_id,
+      course_level: (rec.course_level || 'UG') as 'UG' | 'PG',
+      student_name_ta: rec.student_name_ta || rec.student_name || '',
+      student_name_en: rec.student_name_en || rec.student_name || '',
+      photo_url: rec.photo_url || '/assets/images/user_avatar.png',
+      registration_number: rec.registration_number || rec.student_reg_id || '',
+      center_name: rec.center_name || 'பல்லடம்',
+      center_name_en: rec.center_name_en || 'PALLADAM',
+      course_period_from: rec.course_period_from || (isPG ? '06.02.2019' : '06.02.2018'),
+      course_period_to: rec.course_period_to || (isPG ? '06.02.2020' : '06.02.2019'),
+      exam_date: rec.exam_date || (isPG ? '07.02.2020' : '28.01.2019'),
+      academic_year: rec.academic_year || (isPG ? '2019 FEB to 2020 FEB' : '2018 FEB to 2019 FEB'),
+      award_title_ta: rec.award_title_ta || (isPG ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா'),
+      award_title_en: rec.award_title_en || (isPG ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA'),
+      issue_date: rec.issue_date || (isPG ? '10.02.2020' : '28.10.2019'),
+      issue_place: rec.issue_place || 'பெரியகுளம்',
+      certificate_number: rec.certificate_number || '',
+      marksheet_number: rec.marksheet_number || '',
+      theory1_mark: rec.theory1_mark ?? (isPG ? 75 : 98),
+      theory2_mark: rec.theory2_mark ?? (isPG ? 75 : 90),
+      practical1_mark: rec.practical1_mark ?? (isPG ? 120 : 92),
+      practical2_mark: rec.practical2_mark ?? (isPG ? 70 : 87),
+      practical3_mark: rec.practical3_mark ?? (isPG ? 120 : 93),
+      total_marks: rec.total_marks ?? (rec.score || 460),
+      percentage: rec.percentage || (isPG ? '65%' : '92%'),
+      grade: rec.grade || (isPG ? 'GRADE - II' : 'Distinction'),
+      pass_status: rec.pass_status || 'PASS',
+      pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+      pass_criteria_practical: isPG 
+        ? 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.'
+        : 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
+      pdf_download_url: rec.pdf_download_url || '',
+      marksheet_download_url: rec.marksheet_download_url || ''
+    };
+  }
+
+  onStudentSelect(studentId: any): void {
+    this.designerForm.student_id = studentId;
+    const st = this.studentsList.find(s => s.id == studentId);
+    if (st) {
+      this.designerForm.student_name_ta = st.name || '';
+      this.designerForm.student_name_en = st.name ? st.name.toUpperCase() : '';
+      this.designerForm.registration_number = st.student_id || '';
+      this.designerForm.certificate_number = st.student_id || '';
+      if (st.profile_photo_url) {
+        this.designerForm.photo_url = st.profile_photo_url;
+      }
+    }
+  }
+
+  setCourseLevel(level: 'UG' | 'PG'): void {
+    this.designerForm.course_level = level;
+    if (level === 'UG') {
+      this.designerForm.award_title_ta = 'ஜோதிட ரத்னா';
+      this.designerForm.award_title_en = 'JOTHIDA RATHNA';
+      this.designerForm.grade = 'Distinction';
+      this.designerForm.pass_criteria_theory = 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.';
+      this.designerForm.pass_criteria_practical = 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.';
+    } else {
+      this.designerForm.award_title_ta = 'ஜோதிட கலாநிதி';
+      this.designerForm.award_title_en = 'JOTHIDA KALANITHI';
+      this.designerForm.grade = 'GRADE - II';
+      this.designerForm.pass_criteria_theory = 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.';
+      this.designerForm.pass_criteria_practical = 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.';
+    }
+    this.calculateMarks();
+  }
+
+  calculateMarks(): void {
+    const t1 = Number(this.designerForm.theory1_mark) || 0;
+    const t2 = Number(this.designerForm.theory2_mark) || 0;
+    const p1 = Number(this.designerForm.practical1_mark) || 0;
+    const p2 = Number(this.designerForm.practical2_mark) || 0;
+    const p3 = Number(this.designerForm.practical3_mark) || 0;
+
+    const total = t1 + t2 + p1 + p2 + p3;
+    this.designerForm.total_marks = total;
+
+    if (this.designerForm.course_level === 'UG') {
+      const pct = Math.round((total / 500) * 100);
+      this.designerForm.percentage = `${pct}%`;
+      this.designerForm.pass_status = (t1 >= 35 && t2 >= 35 && p1 >= 50 && p2 >= 50 && p3 >= 50) ? 'PASS' : 'FAIL';
+    } else {
+      // PG standard
+      const pct = Math.round((total / 600) * 100) || 65;
+      this.designerForm.percentage = `${pct}%`;
+      this.designerForm.pass_status = (t1 >= 35 && t2 >= 35) ? 'PASS' : 'FAIL';
+    }
+  }
+
+  onPhotoSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+    this.isUploadingFile = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = this.authService.getUploadHeaders();
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
+      next: (res) => {
+        this.isUploadingFile = false;
+        if (res.url) {
+          this.designerForm.photo_url = res.url;
+          this.toastService.success('புகைப்படம் பதிவேற்றப்பட்டது!');
+        }
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isUploadingFile = false;
+        this.toastService.error('புகைப்படம் பதிவேற்றுவதில் பிழை.');
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  saveCustomCertificate(): void {
+    if (!this.designerForm.student_id) {
+      this.toastService.warning('மாணவரை தேர்வு செய்யவும்.', 'விபரம் தேவை');
+      return;
+    }
+    this.isSaving = true;
+    const headers = this.authService.getAuthHeaders();
+
+    this.http.post<any>(`${environment.apiUrl}/admin/certificates/save-custom`, this.designerForm, headers).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        this.toastService.success(res.message || 'சான்றிதழ் & மதிப்பெண் பட்டியல் சேமிக்கப்பட்டது!', 'வெற்றி');
+        this.showDesignerModal = false;
+        this.loadIssuedCertificates();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.toastService.error(err.error?.message || 'சேமிப்பதில் பிழை ஏற்பட்டது.');
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  printDocument(): void {
+    window.print();
+  }
+
+  async deleteRecord(id: number): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'பதிவை நீக்கவா?',
+      message: 'இந்த சான்றிதழ் / மதிப்பெண் பதிவு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
+      confirmText: 'ஆம், நீக்குக',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
+    const headers = this.authService.getAuthHeaders();
+    this.http.delete<any>(`${environment.apiUrl}/admin/certificates/${id}`, headers).subscribe({
+      next: () => {
+        this.toastService.success('பதிவு வெற்றிகரமாக நீக்கப்பட்டது.');
+        this.loadIssuedCertificates();
+      },
+      error: () => this.toastService.error('நீக்குவதில் பிழை.')
+    });
+  }
+
+  toggleQuickUpload(type: 'certificate' | 'marksheet'): void {
+    this.uploadType = type;
+    this.showQuickUpload = !this.showQuickUpload;
   }
 
   onCertificateFileSelected(event: any): void {
@@ -178,7 +472,7 @@ export class CertificatesTabComponent implements OnInit {
     this.http.post<any>(`${environment.apiUrl}/admin/certificates`, this.directCertForm, headers).subscribe({
       next: (res) => {
         this.toastService.success(res.message || 'சான்றிதழ் வெற்றிகரமாக வழங்கப்பட்டது!');
-        this.showUploadForm = false;
+        this.showQuickUpload = false;
         this.loadIssuedCertificates();
       },
       error: () => this.toastService.error('சான்றிதழ் வழங்குவதில் பிழை.')
@@ -194,30 +488,10 @@ export class CertificatesTabComponent implements OnInit {
     this.http.post<any>(`${environment.apiUrl}/admin/marksheets`, this.directMarksheetForm, headers).subscribe({
       next: (res) => {
         this.toastService.success(res.message || 'மதிப்பெண் சான்றிதழ் வெற்றிகரமாக வழங்கப்பட்டது!');
-        this.showUploadForm = false;
+        this.showQuickUpload = false;
         this.loadIssuedCertificates();
       },
       error: () => this.toastService.error('மதிப்பெண் சான்றிதழ் வழங்குவதில் பிழை.')
-    });
-  }
-
-  async deleteRecord(id: number): Promise<void> {
-    const ok = await this.confirmService.confirm({
-      title: 'பதிவை நீக்கவா?',
-      message: 'இந்த சான்றிதழ் / மதிப்பெண் பதிவு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
-      confirmText: 'ஆம், நீக்குக',
-      type: 'danger',
-      icon: 'bi bi-trash3-fill'
-    });
-    if (!ok) return;
-
-    const headers = this.authService.getAuthHeaders();
-    this.http.delete<any>(`${environment.apiUrl}/admin/certificates/${id}`, headers).subscribe({
-      next: () => {
-        this.toastService.success('பதிவு வெற்றிகரமாக நீக்கப்பட்டது.');
-        this.loadIssuedCertificates();
-      },
-      error: () => this.toastService.error('நீக்குவதில் பிழை.')
     });
   }
 }

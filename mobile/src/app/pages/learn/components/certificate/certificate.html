@@ -3,32 +3,32 @@
     <button class="cert-back-btn" (click)="close.emit()">
       <i class="bi bi-arrow-left me-1"></i>
     </button>
-    <h2>{{ 'profile.certTitle' | translate }}</h2>
+    <h2>சான்றிதழ் & மதிப்பெண் பட்டியல்</h2>
     <div style="width: 32px;"></div>
   </div>
 
   <div class="cert-body-scroll">
 
-    <!-- Luxury Segmented Tab Switcher (Certificates vs Marksheets) -->
+    <!-- Segmented Tab Switcher (Certificates vs Marksheets) -->
     <div class="luxury-cert-segmented-bar">
       <button class="segmented-tab-btn" 
         [class.active]="activeDocumentTab === 'certificate'" 
         (click)="activeDocumentTab = 'certificate'">
         <i class="bi bi-award-fill"></i>
-        <span>{{ 'profile.tabDiplomaCert' | translate }}</span>
+        <span>சான்றிதழ் (Certificate)</span>
       </button>
 
       <button class="segmented-tab-btn" 
         [class.active]="activeDocumentTab === 'marksheet'" 
         (click)="activeDocumentTab = 'marksheet'">
         <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-        <span>{{ 'profile.tabMarksheet' | translate }}</span>
+        <span>மதிப்பெண் பட்டியல் (Marksheet)</span>
       </button>
     </div>
 
     @if (isLoading) {
       <div class="cert-loading-box">
-        <i class="bi bi-hourglass-split me-1"></i> {{ 'common.loading' | translate }}
+        <i class="bi bi-hourglass-split me-1"></i> ஏற்றுகிறது...
       </div>
     } @else {
 
@@ -39,135 +39,234 @@
             <button (click)="selectCertificate(c)"
               [class.active]="selectedCert?.id === c.id"
               class="course-chip">
-              <i class="bi bi-mortarboard-fill me-1"></i> {{ c.course_title }}
+              <i class="bi bi-mortarboard-fill me-1"></i> {{ c.award_title_ta || c.course_title }}
             </button>
           }
         </div>
       }
 
-      <!-- TAB 1: CERTIFICATE -->
+      <!-- TAB 1: AUTHENTIC CERTIFICATE -->
       @if (activeDocumentTab === 'certificate') {
         @if (hasCertificateDoc) {
           <div class="cert-message-banner">
-            <h3><i class="bi bi-award-fill text-gold me-1"></i>{{ 'profile.yourCert' | translate }}</h3>
-            <p>{{ 'profile.certCongrats' | translate }}</p>
+            <h3><i class="bi bi-award-fill text-gold me-1"></i> வாழ்த்துகள்! உங்கள் சான்றிதழ் தயாராக உள்ளது</h3>
+            <p>ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம் அங்கீகரிக்கப்பட்ட பட்டயச் சான்றிதழ்.</p>
           </div>
 
-          <!-- Certificate Gold Card -->
+          <!-- Authentic Sri Aaruthraa Gold Certificate Card -->
           <div class="cert-gold-card">
             <div class="cert-border-outer">
               <div class="cert-border-inner">
-                <h1 class="cert-academy-title">{{ 'profile.academyTitle' | translate }}</h1>
-                <p class="cert-cert-title">{{ 'profile.certTitle' | translate }}</p>
+                
+                <div class="top-om">ஓம் நமச்சிவாய</div>
 
-                <p class="cert-given-to">{{ 'profile.givenTo' | translate }}</p>
-                <h2 class="cert-student-name">{{ studentName }}</h2>
-
-                @if (selectedCert?.course_title) {
-                  <p class="cert-accomplishment">
-                    <strong>{{ selectedCert.course_title }}</strong>
-                  </p>
-                }
-
-                @if (selectedCert?.certificate_number) {
-                  <div class="cert-num-badge">
-                    {{ 'profile.certNumber' | translate }} {{ selectedCert.certificate_number }}
-                  </div>
-                }
-
-                <div class="cert-details-footer">
+                <!-- Logo & Heading -->
+                <div class="mobile-inst-header">
+                  <img src="/assets/images/nataraja.png" alt="Logo" class="m-seal-img" (error)="false" />
                   <div>
-                    @if (selectedCert?.issue_date) {
-                      <span>{{ 'profile.issueDate' | translate }} {{ selectedCert.issue_date }}</span>
-                    } @else if (selectedCert?.created_at) {
-                      <span>{{ 'profile.issueDate' | translate }} {{ selectedCert.created_at | date:'mediumDate' }}</span>
-                    }
-                    @if (selectedCert?.score !== null && selectedCert?.score !== undefined) {
-                      <span>{{ 'profile.score' | translate }} {{ selectedCert.score }}%</span>
-                    }
+                    <h1 class="m-title-ta">ஸ்ரீ ஆருத்ரா</h1>
+                    <h2 class="m-sub-ta">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+                    <div class="m-trust-reg">அறக்கட்டளை அரசு பதிவு எண் : (BK4/3/2018PKM)</div>
+                    <div class="m-address">பெரியகுளம் – 625 605, தேனி மாவட்டம்.</div>
                   </div>
                 </div>
+
+                <!-- Ribbon -->
+                <div class="m-ribbon-wrap">
+                  <span class="m-ribbon-badge">
+                    {{ selectedCert?.course_level === 'PG' ? 'ஜோதிட மேல்நிலை சிறப்பு தகுநிலை சான்றிதழ்' : 'ஜோதிட சிறப்பு தகுநிலை சான்றிதழ்' }}
+                  </span>
+                </div>
+
+                @if (selectedCert?.course_level === 'PG') {
+                  <div class="m-merit-title">Meritorius Certificate</div>
+                }
+
+                <!-- Reg & Photo -->
+                <div class="m-reg-photo-row">
+                  <div class="m-reg-text">
+                    பதிவு எண்: <strong>{{ selectedCert?.registration_number || selectedCert?.certificate_number }}</strong>
+                  </div>
+                  @if (selectedCert?.photo_url) {
+                    <div class="m-photo-box">
+                      <img [src]="selectedCert.photo_url" alt="Student" (error)="false" />
+                    </div>
+                  }
+                </div>
+
+                <!-- Tamil Statement -->
+                <div class="m-stmt-ta">
+                  திரு/திருமதி <strong class="red-txt">{{ selectedCert?.student_name_ta || studentName }}</strong> என்பவர் 
+                  எமது ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயத்தின் <strong>{{ selectedCert?.center_name || 'பல்லடம்' }}</strong> மையத்தில் 
+                  {{ selectedCert?.course_level === 'PG' ? 'முதுநிலை' : 'இளநிலை' }} பயிற்சியை நிறைவு செய்து தேர்ச்சி பெற்றமைக்காக சான்றளிப்பதுடன்
+                </div>
+
+                <!-- Awarded Title -->
+                <div class="m-award-box">
+                  <h2 class="m-title-red">“{{ selectedCert?.award_title_ta || (selectedCert?.course_level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா') }}”</h2>
+                  <div class="m-title-sub">என்ற சிறப்புப்பட்டயத்தை வழங்கி வாழ்த்துகிறோம்.</div>
+                </div>
+
+                <!-- English Statement -->
+                <div class="m-stmt-en">
+                  We Certify that <strong>{{ selectedCert?.student_name_en || studentName }}</strong> has successfully Completed the 
+                  {{ selectedCert?.course_level === 'PG' ? 'Post Graduate' : 'Undergraduate' }} Astrology Course at 
+                  <strong>{{ selectedCert?.center_name_en || 'PALLADAM' }}</strong> Centre.
+                  <div class="m-award-en">“{{ selectedCert?.award_title_en || (selectedCert?.course_level === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA') }}”</div>
+                </div>
+
+                <!-- Date & Signatures -->
+                <div class="m-footer-row">
+                  <div><strong>நாள்:</strong> {{ selectedCert?.issue_date || '28.10.2019' }}</div>
+                  <div><strong>இடம்:</strong> {{ selectedCert?.issue_place || 'பெரியகுளம்' }}</div>
+                </div>
+
+                <div class="m-signatures-row">
+                  <span>பயிற்சி ஆசிரியர்</span>
+                  <span>பொருளாளர்</span>
+                  <span>செயலாளர்</span>
+                  <span>நிறுவனர்</span>
+                </div>
+
               </div>
             </div>
           </div>
 
           <div class="cert-actions-wrap">
             <button class="cert-action-btn pdf" (click)="downloadCertificate(selectedCert)">
-              <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> {{ 'profile.downloadCert' | translate }}
+              <i class="bi bi-printer-fill me-2"></i> அச்சிடு / PDF பதிவிறக்கு
             </button>
             <button class="cert-action-btn share" (click)="shareCertificate(selectedCert)">
-              <i class="bi bi-share-fill me-2"></i> {{ 'profile.shareCert' | translate }}
+              <i class="bi bi-share-fill me-2"></i> பகிர் (Share)
             </button>
           </div>
         } @else {
-          <!-- Empty State: Admin has not uploaded certificate yet -->
+          <!-- Empty State -->
           <div class="empty-doc-card">
             <div class="empty-doc-icon-wrap gold">
               <i class="bi bi-clock-history"></i>
             </div>
-            <h3>{{ 'profile.noCertHeader' | translate }}</h3>
-            <p>{{ 'profile.noCertDesc' | translate }}</p>
+            <h3>சான்றிதழ் இன்னும் வழங்கப்படவில்லை</h3>
+            <p>தேர்வு மதிப்பீடு நிறைவடைந்ததும் உங்கள் அதிகாரப்பூர்வ சான்றிதழ் இங்கு தோன்றும்.</p>
           </div>
         }
       }
 
-      <!-- TAB 2: MARKSHEET -->
+      <!-- TAB 2: AUTHENTIC MARKSHEET -->
       @if (activeDocumentTab === 'marksheet') {
         @if (hasMarksheetDoc) {
           <div class="cert-message-banner">
-            <h3><i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i>{{ 'profile.marksheetBannerTitle' | translate }}</h3>
-            <p>{{ 'profile.marksheetBannerDesc' | translate }}</p>
+            <h3><i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i> அதிகாரப்பூர்வ தேர்வு மதிப்பெண் பட்டியல்</h3>
+            <p>தேர்வில் நீங்கள் பெற்ற மதிப்பெண் விபரங்கள் கீழே தரப்பட்டுள்ளன.</p>
           </div>
 
           <!-- Marksheet Card -->
-          <div class="marksheet-card">
-            <div class="marksheet-header">
-              <h3>{{ selectedCert?.course_title || '' }}</h3>
-              <span class="marksheet-status-tag"><i class="bi bi-check-circle-fill me-1"></i> {{ 'profile.statusPassed' | translate }}</span>
-            </div>
-
-            <div class="marksheet-student-info">
-              <div class="info-row">
-                <span class="lbl">{{ 'profile.studentNameLbl' | translate }}</span>
-                <span class="val">{{ studentName }}</span>
+          <div class="marksheet-card-wrap">
+            <div class="ms-card-inner">
+              
+              <div class="top-om">ஓம் நமச்சிவாய</div>
+              <div class="ms-head-title">ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்</div>
+              <div class="ms-head-sub">ஜோதிடவியல் தேர்வு மதிப்பெண் பட்டியல் (EXAM MARK SHEET)</div>
+              
+              <div class="ms-student-table">
+                <div class="row-2">
+                  <div><strong>பெயர்:</strong> {{ selectedCert?.student_name_ta || studentName }}</div>
+                  <div><strong>பதிவு எண்:</strong> {{ selectedCert?.registration_number || selectedCert?.certificate_number }}</div>
+                </div>
+                <div class="row-2">
+                  <div><strong>தேர்வு நாள்:</strong> {{ selectedCert?.exam_date || '28-01-2019' }}</div>
+                  <div><strong>கல்வியாண்டு:</strong> {{ selectedCert?.academic_year || '2018-2019' }}</div>
+                </div>
               </div>
-              @if (selectedCert?.marksheet_number || selectedCert?.certificate_number) {
-                <div class="info-row">
-                  <span class="lbl">{{ 'profile.regNumLbl' | translate }}</span>
-                  <span class="val">{{ selectedCert.marksheet_number || selectedCert.certificate_number }}</span>
-                </div>
-              }
-              @if (selectedCert?.score !== null && selectedCert?.score !== undefined) {
-                <div class="info-row">
-                  <span class="lbl">{{ 'profile.totalScoreLbl' | translate }}</span>
-                  <span class="val score-bold">{{ selectedCert.score }}%</span>
-                </div>
-              }
-              @if (selectedCert?.grade) {
-                <div class="info-row">
-                  <span class="lbl">Grade:</span>
-                  <span class="val">{{ selectedCert.grade }}</span>
-                </div>
-              }
+
+              <!-- Marks Table -->
+              <table class="ms-table-compact">
+                <thead>
+                  <tr>
+                    <th>பாடப்பிரிவு (SUBJECT)</th>
+                    <th class="text-center">மதிப்பெண்</th>
+                    <th class="text-center">நிலை</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ selectedCert?.course_level === 'PG' ? 'PGE - I (THEORY)' : 'UGE - I (THEORY)' }}</td>
+                    <td class="text-center bold">{{ selectedCert?.theory1_mark ?? 98 }}</td>
+                    <td class="text-center pass">PASS</td>
+                  </tr>
+                  <tr>
+                    <td>{{ selectedCert?.course_level === 'PG' ? 'PGE - II (THEORY)' : 'UGE - II (THEORY)' }}</td>
+                    <td class="text-center bold">{{ selectedCert?.theory2_mark ?? 90 }}</td>
+                    <td class="text-center pass">PASS</td>
+                  </tr>
+                  <tr class="sec-hdr"><td colspan="3">செய்முறை (PRACTICAL)</td></tr>
+                  <tr>
+                    <td>செய்முறை பகுதி - I</td>
+                    <td class="text-center bold">{{ selectedCert?.practical1_mark ?? 92 }}</td>
+                    <td class="text-center pass">PASS</td>
+                  </tr>
+                  <tr>
+                    <td>செய்முறை பகுதி - II</td>
+                    <td class="text-center bold">{{ selectedCert?.practical2_mark ?? 87 }}</td>
+                    <td class="text-center pass">PASS</td>
+                  </tr>
+                  <tr>
+                    <td>செய்முறை பகுதி - III</td>
+                    <td class="text-center bold">{{ selectedCert?.practical3_mark ?? 93 }}</td>
+                    <td class="text-center pass">PASS</td>
+                  </tr>
+                  <tr class="tot-row">
+                    <td><strong>மொத்த மதிப்பெண்கள்</strong></td>
+                    <td class="text-center bold total">{{ selectedCert?.total_marks ?? (selectedCert?.score || 460) }}</td>
+                    <td class="text-center pass bold">{{ selectedCert?.pass_status || 'PASS' }}</td>
+                  </tr>
+                  <tr class="pct-row">
+                    <td><strong>மொத்த சதவீதம் / கிரேடு</strong></td>
+                    <td colspan="2" class="text-center bold green">{{ selectedCert?.percentage || '92%' }} ({{ selectedCert?.grade || 'First Class' }})</td>
+                  </tr>
+                  <tr class="title-row">
+                    <td><strong>வழங்கிய தகுநிலை</strong></td>
+                    <td colspan="2" class="text-center bold red">“{{ selectedCert?.award_title_ta || 'ஜோதிட ரத்னா' }}”</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- PASS CRITERIA NOTES -->
+              <div class="m-pass-criteria">
+                <div>&bull; Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.</div>
+                @if (selectedCert?.course_level === 'PG') {
+                  <div>&bull; Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.</div>
+                } @else {
+                  <div>&bull; Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.</div>
+                }
+              </div>
+
+              <div class="ms-footer-signatures">
+                <span>மாணவர்</span>
+                <span>ஆசிரியர்</span>
+                <span>செயலாளர்</span>
+                <span>நிறுவனர்</span>
+              </div>
+
             </div>
           </div>
 
           <div class="cert-actions-wrap">
             <button class="cert-action-btn marksheet-dl" (click)="downloadMarksheet(selectedCert)">
-              <i class="bi bi-file-earmark-arrow-down-fill me-2"></i> {{ 'profile.downloadMarksheet' | translate }}
+              <i class="bi bi-printer-fill me-2"></i> மதிப்பெண் பட்டியல் அச்சிடு
             </button>
             <button class="cert-action-btn share" (click)="shareMarksheet(selectedCert)">
-              <i class="bi bi-share-fill me-2"></i> {{ 'profile.shareCert' | translate }}
+              <i class="bi bi-share-fill me-2"></i> பகிர் (Share)
             </button>
           </div>
         } @else {
-          <!-- Empty State: Admin has not uploaded marksheet yet -->
+          <!-- Empty State -->
           <div class="empty-doc-card">
             <div class="empty-doc-icon-wrap blue">
               <i class="bi bi-file-earmark-spreadsheet-fill"></i>
             </div>
-            <h3>{{ 'profile.noMarksheetHeader' | translate }}</h3>
-            <p>{{ 'profile.noMarksheetDesc' | translate }}</p>
+            <h3>மதிப்பெண் பட்டியல் இன்னும் தயாராகவில்லை</h3>
+            <p>தேர்வு முடிவுகள் வெளியிடப்பட்டதும் உங்கள் மதிப்பெண் பட்டியல் இங்கு தோன்றும்.</p>
           </div>
         }
       }

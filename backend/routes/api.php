@@ -165,6 +165,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/submissions/{id}/evaluate',       [GradingController::class, 'evaluateSubmission']);
     Route::get('/certificates',                     [GradingController::class, 'adminGetCertificates']);
     Route::post('/certificates',                    [GradingController::class, 'adminUploadCertificate']);
+    Route::post('/certificates/save-custom',        [GradingController::class, 'adminSaveCustomCertificate']);
     Route::post('/marksheets',                      [GradingController::class, 'adminUploadMarksheet']);
     Route::delete('/certificates/{id}',             [GradingController::class, 'adminDeleteCertificate']);
 

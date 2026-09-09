@@ -718,6 +718,119 @@ class GradingController extends Controller
     }
 
     /**
+     * Admin: Save Custom Detailed Certificate & Marksheet (UG / PG)
+     */
+    public function adminSaveCustomCertificate(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required',
+            'course_level' => 'nullable|in:UG,PG',
+            'student_name_ta' => 'nullable|string',
+            'student_name_en' => 'nullable|string',
+            'registration_number' => 'nullable|string',
+            'award_title_ta' => 'nullable|string',
+            'award_title_en' => 'nullable|string',
+        ]);
+
+        $courseLevel = strtoupper($request->course_level ?: 'UG');
+        $courseId = $request->course_id ?: (DB::table('courses')->value('id') ?: 1);
+
+        $defaultCertNum = 'ASTRO-CERT-' . $courseLevel . '-' . date('Y') . '-' . strtoupper(Str::random(5));
+        $defaultMarkNum = 'ASTRO-MRK-' . $courseLevel . '-' . date('Y') . '-' . strtoupper(Str::random(5));
+        $verifyCode = 'VERIFY-' . strtoupper(Str::random(8));
+
+        $data = [
+            'student_id'             => $request->student_id,
+            'course_id'              => $courseId,
+            'course_level'           => $courseLevel,
+            'student_name_ta'        => $request->student_name_ta,
+            'student_name_en'        => $request->student_name_en,
+            'photo_url'              => $request->photo_url,
+            'registration_number'    => $request->registration_number,
+            'center_name'            => $request->center_name ?: 'பல்லடம்',
+            'center_name_en'         => $request->center_name_en ?: 'PALLADAM',
+            'course_period_from'     => $request->course_period_from,
+            'course_period_to'       => $request->course_period_to,
+            'exam_date'              => $request->exam_date,
+            'academic_year'          => $request->academic_year,
+            'award_title_ta'         => $request->award_title_ta ?: ($courseLevel === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா'),
+            'award_title_en'         => $request->award_title_en ?: ($courseLevel === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA'),
+            'issue_date'             => $request->issue_date ?: now()->toDateString(),
+            'issue_place'            => $request->issue_place ?: 'பெரியகுளம்',
+            'certificate_number'     => strtoupper($request->certificate_number ?: $defaultCertNum),
+            'marksheet_number'       => strtoupper($request->marksheet_number ?: $defaultMarkNum),
+            'theory1_mark'           => $request->has('theory1_mark') ? (int)$request->theory1_mark : null,
+            'theory2_mark'           => $request->has('theory2_mark') ? (int)$request->theory2_mark : null,
+            'practical1_mark'        => $request->has('practical1_mark') ? (int)$request->practical1_mark : null,
+            'practical2_mark'        => $request->has('practical2_mark') ? (int)$request->practical2_mark : null,
+            'practical3_mark'        => $request->has('practical3_mark') ? (int)$request->practical3_mark : null,
+            'total_marks'            => $request->has('total_marks') ? (int)$request->total_marks : null,
+            'percentage'             => $request->percentage ? (string)$request->percentage : null,
+            'score'                  => $request->has('score') ? (int)$request->score : ($request->has('total_marks') ? min(100, round((int)$request->total_marks / 5)) : 100),
+            'grade'                  => $request->grade ?: ($courseLevel === 'PG' ? 'GRADE - II' : 'Distinction'),
+            'pass_status'            => $request->pass_status ?: 'PASS',
+            'pdf_download_url'       => $request->pdf_download_url ?: "/api/certificates/{$defaultCertNum}/download",
+            'marksheet_download_url' => $request->marksheet_download_url ?: "/api/marksheets/{$defaultMarkNum}/download",
+            'custom_data'            => $request->has('custom_data') ? json_encode($request->custom_data) : null,
+            'updated_at'             => now()
+        ];
+
+        if (!empty($request->id)) {
+            DB::table('certificates')->where('id', $request->id)->update($data);
+            $certId = $request->id;
+        } else {
+            $data['verification_code'] = $verifyCode;
+            $data['created_at'] = now();
+            $certId = DB::table('certificates')->insertGetId($data);
+        }
+
+        $certificate = DB::table('certificates')->where('id', $certId)->first();
+
+        return response()->json([
+            'success'     => true,
+            'message'     => 'சான்றிதழ் மற்றும் மதிப்பெண் பட்டியல் வெற்றிகரமாக சேமிக்கப்பட்டது!',
+            'certificate' => $certificate
+        ]);
+    }
+
+    /**
+     * Public / Student: Get Single Certificate Details
+     */
+    public function getCertificateDetails($id)
+    {
+        $cert = DB::table('certificates')
+            ->where('certificates.id', $id)
+            ->orWhere('certificates.certificate_number', $id)
+            ->orWhere('certificates.marksheet_number', $id)
+            ->leftJoin('students', 'certificates.student_id', '=', 'students.id')
+            ->leftJoin('users', function($join) {
+                $join->on('certificates.student_id', '=', 'users.id')
+                     ->whereNull('students.id');
+            })
+            ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
+            ->select(
+                'certificates.*',
+                DB::raw("COALESCE(certificates.student_name_ta, students.name, users.name, 'மாணவர்') as student_name"),
+                DB::raw("COALESCE(certificates.student_name_en, users.name, students.name, 'STUDENT') as student_name_english"),
+                DB::raw("COALESCE(certificates.registration_number, students.student_id, users.student_id, '') as student_reg_id"),
+                'courses.title as course_title'
+            )
+            ->first();
+
+        if (!$cert) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Certificate not found.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'certificate' => $cert
+        ]);
+    }
+
+    /**
      * Admin: Delete Certificate / Mark Sheet
      */
     public function adminDeleteCertificate($id)
