@@ -83,13 +83,7 @@
         <i class="bi bi-person-check-fill"></i> {{ 'exams.evalTab' | translate }}
       </button>
 
-      <button [class.active]="activeView === 'leaderboard'" (click)="activeView = 'leaderboard'" class="tab-btn tab-btn-leaderboard">
-        <i class="bi bi-trophy-fill text-gold"></i> {{ 'exams.leaderboardTab' | translate }}
-      </button>
 
-      <button [class.active]="activeView === 'analytics'" (click)="activeView = 'analytics'" class="tab-btn tab-btn-analytics">
-        <i class="bi bi-bar-chart-fill"></i> {{ 'exams.analyticsTab' | translate }}
-      </button>
 
       <button (click)="openCreateExam()" class="btn-create-exam">
         <i class="bi bi-plus-circle-fill"></i> {{ 'exams.createBtn' | translate }}
@@ -388,9 +382,6 @@
             }
           </select>
 
-          <button (click)="publishBatchResults()" class="btn-publish-batch">
-            <i class="bi bi-send-check-fill"></i> {{ 'exams.publishBatch' | translate }}
-          </button>
         </div>
       </div>
 
@@ -405,7 +396,6 @@
               <th>{{ 'exams.mcqPracMarks' | translate }}</th>
               <th>{{ 'exams.totalScore' | translate }}</th>
               <th>{{ 'exams.passStatus' | translate }}</th>
-              <th>{{ 'exams.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -450,7 +440,6 @@
                 </td>
                 <td class="text-sm">
                   <div style="font-size: 12px; color: #334155;">MCQ: <strong style="color: #0f172a;">{{ s.mcq_score !== null && s.mcq_score !== undefined ? s.mcq_score : '-' }}</strong></div>
-                  <div style="font-size: 12px; color: #334155;">{{ 'exams.practicalMarks' | translate }}: <strong style="color: #0f172a;">{{ s.practical_score !== null && s.practical_score !== undefined ? s.practical_score : '-' }}</strong></div>
                 </td>
                 <td>
                   <span class="score-badge" style="font-weight: 800;">{{ s.score !== null && s.score !== undefined ? s.score : '-' }} / 100</span>
@@ -464,27 +453,18 @@
                       <i class="bi bi-globe"></i> Published
                     </span>
                   }
-                </td>
-                <td>
-                  <div class="flex-actions-cell" style="display: flex; gap: 6px; align-items: center;">
-                    <button (click)="openGradingModal(s)" class="btn-eval-action" [title]="'exams.evaluateBtn' | translate">
-                      <i class="bi bi-pencil-square"></i> {{ 'exams.evaluateBtn' | translate }}
+                  @if (s.status === 'Approved' || (s.score && s.score >= 40)) {
+                    <button (click)="issueCertificateForStudent(s)" class="btn-cert-action" style="margin-top: 6px; width: 100%; justify-content: center; padding: 4px 8px; border-radius: 6px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer; display: flex; gap: 4px; align-items: center;" [title]="'exams.certificateBtn' | translate">
+                      <i class="bi bi-award-fill"></i> Certificate
                     </button>
-                    @if (s.status === 'Approved' || (s.score && s.score >= 40)) {
-                      <button (click)="issueCertificateForStudent(s)" class="btn-cert-action" [title]="'exams.certificateBtn' | translate">
-                        <i class="bi bi-award-fill"></i>
-                      </button>
-                    }
-                    <button (click)="deleteSubmission(s.id)" class="btn-action-delete" style="padding: 6px 8px; border-radius: 6px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer;" title="Delete Submission">
-                      <i class="bi bi-trash-fill"></i>
-                    </button>
-                  </div>
+                  }
                 </td>
+
               </tr>
             }
             @if (submissions.length === 0) {
               <tr>
-                <td colspan="8">
+                <td colspan="7">
                   <div class="table-empty-box">
                     <i class="bi bi-file-earmark-excel text-slate-300" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;"></i>
                     <p style="font-weight: 700; color: #64748b; margin: 0; font-size: 14px;">{{ 'exams.noSubmissionsFound' | translate }}</p>

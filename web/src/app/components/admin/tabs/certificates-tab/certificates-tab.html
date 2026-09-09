@@ -206,7 +206,9 @@
           <button (click)="saveCustomCertificate()" [disabled]="isSaving" class="btn-save">
             <i class="bi bi-check2-circle"></i> @if (isSaving) { சேமிக்கிறது... } @else { சேமி & வழங்கு (Save) }
           </button>
-          <button (click)="showDesignerModal = false" class="btn-close-modal">&times;</button>
+          <button (click)="showDesignerModal = false" class="btn-close-modal" title="வெளியேறு (Back)">
+            <i class="bi bi-x-circle-fill"></i> வெளியேறு (Close)
+          </button>
         </div>
       </div>
 
@@ -330,30 +332,65 @@
               <div class="grid-2">
                 <div class="form-group">
                   <label>{{ designerForm.course_level === 'UG' ? 'UGE - I' : 'PGE - I' }} (Theory)</label>
-                  <input type="number" [(ngModel)]="designerForm.theory1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                  <div style="display:flex; gap: 4px;">
+                    <input type="number" [(ngModel)]="designerForm.theory1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
+                    <select [(ngModel)]="designerForm.theory1_status" class="ctrl" style="flex: 1; padding: 4px;">
+                      <option value="PASS">PASS</option>
+                      <option value="FAIL">FAIL</option>
+                      <option value="ABSENT">ABSENT</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>{{ designerForm.course_level === 'UG' ? 'UGE - II' : 'PGE - II' }} (Theory)</label>
-                  <input type="number" [(ngModel)]="designerForm.theory2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                  <div style="display:flex; gap: 4px;">
+                    <input type="number" [(ngModel)]="designerForm.theory2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
+                    <select [(ngModel)]="designerForm.theory2_status" class="ctrl" style="flex: 1; padding: 4px;">
+                      <option value="PASS">PASS</option>
+                      <option value="FAIL">FAIL</option>
+                      <option value="ABSENT">ABSENT</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <div class="grid-3">
                 <div class="form-group">
                   <label>செய்முறை பகுதி - I</label>
-                  <input type="number" [(ngModel)]="designerForm.practical1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                  <div style="display:flex; gap: 4px;">
+                    <input type="number" [(ngModel)]="designerForm.practical1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
+                    <select [(ngModel)]="designerForm.practical1_status" class="ctrl" style="flex: 1; padding: 4px;">
+                      <option value="PASS">PASS</option>
+                      <option value="FAIL">FAIL</option>
+                      <option value="ABSENT">ABSENT</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>செய்முறை பகுதி - II</label>
-                  <input type="number" [(ngModel)]="designerForm.practical2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                  <div style="display:flex; gap: 4px;">
+                    <input type="number" [(ngModel)]="designerForm.practical2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
+                    <select [(ngModel)]="designerForm.practical2_status" class="ctrl" style="flex: 1; padding: 4px;">
+                      <option value="PASS">PASS</option>
+                      <option value="FAIL">FAIL</option>
+                      <option value="ABSENT">ABSENT</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>செய்முறை பகுதி - III</label>
-                  <input type="number" [(ngModel)]="designerForm.practical3_mark" (ngModelChange)="calculateMarks()" class="ctrl num" />
+                  <div style="display:flex; gap: 4px;">
+                    <input type="number" [(ngModel)]="designerForm.practical3_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
+                    <select [(ngModel)]="designerForm.practical3_status" class="ctrl" style="flex: 1; padding: 4px;">
+                      <option value="PASS">PASS</option>
+                      <option value="FAIL">FAIL</option>
+                      <option value="ABSENT">ABSENT</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div class="grid-3 summary-row">
+              <div class="grid-2 summary-row">
                 <div class="form-group">
                   <label>மொத்தம் (Total)</label>
                   <input type="number" [(ngModel)]="designerForm.total_marks" class="ctrl num bold" />
@@ -362,9 +399,18 @@
                   <label>சதவீதம் (%)</label>
                   <input type="text" [(ngModel)]="designerForm.percentage" class="ctrl num bold" />
                 </div>
+              </div>
+              <div class="grid-2" style="margin-top: 8px;">
                 <div class="form-group">
-                  <label>கிரேடு / தகுதி</label>
+                  <label>கிரேடு / தகுதி (Grade)</label>
                   <input type="text" [(ngModel)]="designerForm.grade" class="ctrl bold" />
+                </div>
+                <div class="form-group">
+                  <label>தேர்ச்சி நிலை (Overall Result)</label>
+                  <select [(ngModel)]="designerForm.pass_status" class="ctrl bold" style="color: #15803d; font-weight: 800;">
+                    <option value="PASS">PASS (தேர்ச்சி)</option>
+                    <option value="FAIL">FAIL (தோல்வி)</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -431,7 +477,7 @@
                         <!-- Institute Seal & Header Block -->
                         <div class="inst-header-block">
                           <div class="inst-logo-wrap">
-                            <img src="/app-logo.jpg" alt="Sri Aaruthraa Seal" class="inst-seal-img" (error)="false" />
+                            <img src="/assets/images/nataraja.png" alt="Sri Aaruthraa Seal" class="inst-seal-img" (error)="false" />
                           </div>
                           <div class="inst-text-wrap">
                             <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
@@ -609,27 +655,32 @@
                         </div>
                       </div>
 
-                      <!-- STUDENT META 2x2 GRID -->
-                      <div class="student-meta-grid">
-                        <div class="meta-item">
-                          <span class="m-lbl">மாணவர் பெயர்:</span>
-                          <span class="m-val-ta">{{ designerForm.student_name_ta || 'த. பாலுசாமி' }}</span>
-                          <div class="m-sub">(STUDENT NAME): <strong>{{ designerForm.student_name_en || 'D. BALUSAMY' }}</strong></div>
+                      <!-- STUDENT META & PHOTO -->
+                      <div style="display: flex; gap: 15px; margin: 8px 0; align-items: flex-start;">
+                        <div class="student-meta-grid" style="margin: 0; flex: 1;">
+                          <div class="meta-item">
+                            <span class="m-lbl">மாணவர் பெயர்:</span>
+                            <span class="m-val-ta">{{ designerForm.student_name_ta || 'த. பாலுசாமி' }}</span>
+                            <div class="m-sub">(STUDENT NAME): <strong>{{ designerForm.student_name_en || 'D. BALUSAMY' }}</strong></div>
+                          </div>
+                          <div class="meta-item">
+                            <span class="m-lbl">தேர்வு நாள்:</span>
+                            <span class="m-val">{{ designerForm.exam_date || '28-01-2019' }}</span>
+                            <div class="m-sub">(EXAM DATE): <strong>{{ designerForm.exam_date || '28-01-2019' }}</strong></div>
+                          </div>
+                          <div class="meta-item">
+                            <span class="m-lbl">பதிவு எண்:</span>
+                            <span class="m-val code">{{ designerForm.registration_number || designerForm.certificate_number }}</span>
+                            <div class="m-sub">(REGISTRATION NUMBER)</div>
+                          </div>
+                          <div class="meta-item">
+                            <span class="m-lbl">கல்வியாண்டு:</span>
+                            <span class="m-val">{{ designerForm.academic_year || '2018 FEB to 2019 FEB' }}</span>
+                            <div class="m-sub">(YEAR OF STUDY)</div>
+                          </div>
                         </div>
-                        <div class="meta-item">
-                          <span class="m-lbl">தேர்வு நாள்:</span>
-                          <span class="m-val">{{ designerForm.exam_date || '28-01-2019' }}</span>
-                          <div class="m-sub">(EXAM DATE): <strong>{{ designerForm.exam_date || '28-01-2019' }}</strong></div>
-                        </div>
-                        <div class="meta-item">
-                          <span class="m-lbl">பதிவு எண்:</span>
-                          <span class="m-val code">{{ designerForm.registration_number || designerForm.certificate_number }}</span>
-                          <div class="m-sub">(REGISTRATION NUMBER)</div>
-                        </div>
-                        <div class="meta-item">
-                          <span class="m-lbl">கல்வியாண்டு:</span>
-                          <span class="m-val">{{ designerForm.academic_year || '2018 FEB to 2019 FEB' }}</span>
-                          <div class="m-sub">(YEAR OF STUDY)</div>
+                        <div class="passport-photo-floating" style="float: none; margin: 0; flex-shrink: 0; width: 105px; height: 125px; border: 2px solid #334155;">
+                          <img [src]="designerForm.photo_url || '/assets/images/user_avatar.png'" alt="Student" (error)="designerForm.photo_url = '/assets/images/user_avatar.png'" />
                         </div>
                       </div>
 
@@ -659,13 +710,13 @@
                             <td class="text-center">1.</td>
                             <td>{{ designerForm.course_level === 'UG' ? 'UGE - I (THEORY)' : 'PGE - I (THEORY)' }}</td>
                             <td class="text-center mark-val">{{ designerForm.theory1_mark }}</td>
-                            <td class="text-center pass-tag">PASS</td>
+                            <td class="text-center pass-tag" [style.color]="(designerForm.theory1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.theory1_status || 'PASS' }}</td>
                           </tr>
                           <tr>
                             <td class="text-center">2.</td>
                             <td>{{ designerForm.course_level === 'UG' ? 'UGE - II (THEORY)' : 'PGE - II (THEORY)' }}</td>
                             <td class="text-center mark-val">{{ designerForm.theory2_mark }}</td>
-                            <td class="text-center pass-tag">PASS</td>
+                            <td class="text-center pass-tag" [style.color]="(designerForm.theory2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.theory2_status || 'PASS' }}</td>
                           </tr>
                           <tr class="section-row">
                             <td colspan="4"><strong>PRACTICAL (செய்முறை)</strong></td>
@@ -674,26 +725,26 @@
                             <td class="text-center">3.</td>
                             <td>செய்முறை பகுதி - I</td>
                             <td class="text-center mark-val">{{ designerForm.practical1_mark }}</td>
-                            <td class="text-center pass-tag">PASS</td>
+                            <td class="text-center pass-tag" [style.color]="(designerForm.practical1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical1_status || 'PASS' }}</td>
                           </tr>
                           <tr>
                             <td class="text-center">4.</td>
                             <td>செய்முறை பகுதி - II</td>
                             <td class="text-center mark-val">{{ designerForm.practical2_mark }}</td>
-                            <td class="text-center pass-tag">PASS</td>
+                            <td class="text-center pass-tag" [style.color]="(designerForm.practical2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical2_status || 'PASS' }}</td>
                           </tr>
                           <tr>
                             <td class="text-center">5.</td>
                             <td>செய்முறை பகுதி - III</td>
                             <td class="text-center mark-val">{{ designerForm.practical3_mark }}</td>
-                            <td class="text-center pass-tag">PASS</td>
+                            <td class="text-center pass-tag" [style.color]="(designerForm.practical3_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical3_status || 'PASS' }}</td>
                           </tr>
                           
                           <!-- TOTALS & SUMMARY -->
                           <tr class="summary-total-row">
                             <td colspan="2"><strong>மொத்த மதிப்பெண்கள் (TOTAL MARKS)</strong></td>
                             <td class="text-center total-val"><strong>{{ designerForm.total_marks }}</strong></td>
-                            <td class="text-center pass-tag"><strong>{{ designerForm.pass_status }}</strong></td>
+                            <td class="text-center pass-tag" [style.color]="(designerForm.pass_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'"><strong>{{ designerForm.pass_status || 'PASS' }}</strong></td>
                           </tr>
                           <tr class="summary-pct-row">
                             <td colspan="2"><strong>மொத்த சதவீதம் (TOTAL PERCENTAGE)</strong></td>

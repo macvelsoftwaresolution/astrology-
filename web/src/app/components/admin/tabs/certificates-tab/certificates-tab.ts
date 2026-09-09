@@ -5,13 +5,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
 import { ConfirmService } from '../../../../services/confirm.service';
-import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-certificates-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './certificates-tab.html',
   styleUrls: ['../../admin-dashboard.css', './certificates-tab.css']
 })
@@ -52,10 +51,15 @@ export class CertificatesTabComponent implements OnInit {
     certificate_number: '',
     marksheet_number: '',
     theory1_mark: 98,
+    theory1_status: 'PASS',
     theory2_mark: 90,
+    theory2_status: 'PASS',
     practical1_mark: 92,
+    practical1_status: 'PASS',
     practical2_mark: 87,
+    practical2_status: 'PASS',
     practical3_mark: 93,
+    practical3_status: 'PASS',
     total_marks: 460,
     percentage: '92%',
     grade: 'First Class',
@@ -188,10 +192,15 @@ export class CertificatesTabComponent implements OnInit {
         certificate_number: '05180200004',
         marksheet_number: 'MRK-UG-2019-' + randomNum,
         theory1_mark: 98,
+        theory1_status: 'PASS',
         theory2_mark: 90,
+        theory2_status: 'PASS',
         practical1_mark: 92,
+        practical1_status: 'PASS',
         practical2_mark: 87,
+        practical2_status: 'PASS',
         practical3_mark: 93,
+        practical3_status: 'PASS',
         total_marks: 460,
         percentage: '92%',
         grade: 'Distinction',
@@ -224,10 +233,15 @@ export class CertificatesTabComponent implements OnInit {
         certificate_number: '05180200005',
         marksheet_number: 'MRK-PG-2020-' + randomNum,
         theory1_mark: 75,
+        theory1_status: 'PASS',
         theory2_mark: 75,
+        theory2_status: 'PASS',
         practical1_mark: 120,
+        practical1_status: 'PASS',
         practical2_mark: 70,
+        practical2_status: 'PASS',
         practical3_mark: 120,
+        practical3_status: 'PASS',
         total_marks: 460,
         percentage: '65%',
         grade: 'GRADE - II',
@@ -265,10 +279,15 @@ export class CertificatesTabComponent implements OnInit {
       certificate_number: rec.certificate_number || '',
       marksheet_number: rec.marksheet_number || '',
       theory1_mark: rec.theory1_mark ?? (isPG ? 75 : 98),
+      theory1_status: rec.theory1_status || 'PASS',
       theory2_mark: rec.theory2_mark ?? (isPG ? 75 : 90),
+      theory2_status: rec.theory2_status || 'PASS',
       practical1_mark: rec.practical1_mark ?? (isPG ? 120 : 92),
+      practical1_status: rec.practical1_status || 'PASS',
       practical2_mark: rec.practical2_mark ?? (isPG ? 70 : 87),
+      practical2_status: rec.practical2_status || 'PASS',
       practical3_mark: rec.practical3_mark ?? (isPG ? 120 : 93),
+      practical3_status: rec.practical3_status || 'PASS',
       total_marks: rec.total_marks ?? (rec.score || 460),
       percentage: rec.percentage || (isPG ? '65%' : '92%'),
       grade: rec.grade || (isPG ? 'GRADE - II' : 'Distinction'),
@@ -324,15 +343,52 @@ export class CertificatesTabComponent implements OnInit {
     const total = t1 + t2 + p1 + p2 + p3;
     this.designerForm.total_marks = total;
 
+    if (this.designerForm.theory1_status !== 'ABSENT') {
+      this.designerForm.theory1_status = (t1 >= 35) ? 'PASS' : 'FAIL';
+    }
+    if (this.designerForm.theory2_status !== 'ABSENT') {
+      this.designerForm.theory2_status = (t2 >= 35) ? 'PASS' : 'FAIL';
+    }
+
     if (this.designerForm.course_level === 'UG') {
+      if (this.designerForm.practical1_status !== 'ABSENT') {
+        this.designerForm.practical1_status = (p1 >= 50) ? 'PASS' : 'FAIL';
+      }
+      if (this.designerForm.practical2_status !== 'ABSENT') {
+        this.designerForm.practical2_status = (p2 >= 50) ? 'PASS' : 'FAIL';
+      }
+      if (this.designerForm.practical3_status !== 'ABSENT') {
+        this.designerForm.practical3_status = (p3 >= 50) ? 'PASS' : 'FAIL';
+      }
+
       const pct = Math.round((total / 500) * 100);
       this.designerForm.percentage = `${pct}%`;
-      this.designerForm.pass_status = (t1 >= 35 && t2 >= 35 && p1 >= 50 && p2 >= 50 && p3 >= 50) ? 'PASS' : 'FAIL';
+      const allPassed = (this.designerForm.theory1_status === 'PASS') &&
+                        (this.designerForm.theory2_status === 'PASS') &&
+                        (this.designerForm.practical1_status === 'PASS') &&
+                        (this.designerForm.practical2_status === 'PASS') &&
+                        (this.designerForm.practical3_status === 'PASS');
+      this.designerForm.pass_status = allPassed ? 'PASS' : 'FAIL';
     } else {
       // PG standard
+      if (this.designerForm.practical1_status !== 'ABSENT') {
+        this.designerForm.practical1_status = (p1 >= 50) ? 'PASS' : 'FAIL';
+      }
+      if (this.designerForm.practical2_status !== 'ABSENT') {
+        this.designerForm.practical2_status = (p2 >= 50) ? 'PASS' : 'FAIL';
+      }
+      if (this.designerForm.practical3_status !== 'ABSENT') {
+        this.designerForm.practical3_status = (p3 >= 50) ? 'PASS' : 'FAIL';
+      }
+
       const pct = Math.round((total / 600) * 100) || 65;
       this.designerForm.percentage = `${pct}%`;
-      this.designerForm.pass_status = (t1 >= 35 && t2 >= 35) ? 'PASS' : 'FAIL';
+      const allPassed = (this.designerForm.theory1_status === 'PASS') &&
+                        (this.designerForm.theory2_status === 'PASS') &&
+                        (this.designerForm.practical1_status === 'PASS') &&
+                        (this.designerForm.practical2_status === 'PASS') &&
+                        (this.designerForm.practical3_status === 'PASS');
+      this.designerForm.pass_status = allPassed ? 'PASS' : 'FAIL';
     }
   }
 
