@@ -218,14 +218,19 @@ class UserProfileController extends Controller
                 $u->jathagam_details = $u->jathagam_details ? (is_string($u->jathagam_details) ? json_decode($u->jathagam_details) : $u->jathagam_details) : null;
                 
                 // Fallback from students table if jathagam_details or address is empty
-                if (empty($u->jathagam_details) && !empty($u->student_id)) {
+                if (!empty($u->student_id)) {
                     $st = DB::table('students')->where('student_id', $u->student_id)->first();
                     if ($st) {
-                        if (!empty($st->jathagam_details)) {
+                        if (empty($u->jathagam_details) && !empty($st->jathagam_details)) {
                             $u->jathagam_details = is_string($st->jathagam_details) ? json_decode($st->jathagam_details) : $st->jathagam_details;
                         }
                         if (empty($u->address) && !empty($st->address)) {
                             $u->address = $st->address;
+                        }
+                        // If student has a newer admission date, reflect that in created_at
+                        $studentDate = $st->created_at ?? $st->updated_at ?? null;
+                        if ($studentDate && (!empty($u->created_at) ? strtotime($studentDate) > strtotime($u->created_at) : true)) {
+                            $u->created_at = $studentDate;
                         }
                     }
                 }

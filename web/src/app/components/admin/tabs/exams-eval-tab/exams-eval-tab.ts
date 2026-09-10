@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
@@ -15,7 +16,7 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './exams-eval-tab.html',
-  styleUrls: ['../../admin-dashboard.css', './exams-eval-tab.css']
+  styleUrls: ['../../admin-dashboard.css', './exams-eval-tab.css', '../certificates-tab/certificates-tab.css']
 })
 export class ExamsEvalTabComponent implements OnInit {
   private http = inject(HttpClient);
@@ -24,9 +25,19 @@ export class ExamsEvalTabComponent implements OnInit {
   private toastService = inject(ToastService);
   private confirmService = inject(ConfirmService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   activeView: 'list' | 'exam-wizard' | 'evaluation' | 'leaderboard' | 'analytics' = 'list';
   selectedCategory = 'ILANILAI';
+
+  // Certificate & Marksheet Quick Preview Modal State
+  showDocPreviewModal = false;
+  activeDocPreview: {
+    title: string;
+    type: 'certificate' | 'marksheet';
+    sub: any;
+    cert: any;
+  } | null = null;
 
   exams: any[] = [];
   batches: any[] = [];
@@ -595,5 +606,90 @@ export class ExamsEvalTabComponent implements OnInit {
       },
       error: () => this.toastService.error('நீக்குவதில் பிழை.')
     });
+  }
+
+  // ==========================================
+  // CERTIFICATE & MARKSHEET ACTIONS
+  // ==========================================
+
+  previewDoc(sub: any, type: 'certificate' | 'marksheet'): void {
+    const cert = sub.certificate || {
+      certificate_number: sub.certificate_number || 'ASTRO-CERT-2026',
+      marksheet_number: sub.marksheet_number || 'ASTRO-MRK-2026',
+      student_name_ta: sub.student_name,
+      student_name_en: (sub.student_name || '').toUpperCase(),
+      registration_number: sub.student_code || '26AR01',
+      center_name: 'பல்லடம்',
+      center_name_en: 'PALLADAM',
+      course_level: 'UG',
+      award_title_ta: sub.award_title_ta || 'ஜோதிட ரத்னா',
+      award_title_en: sub.award_title_en || 'JOTHIDA RATHNA',
+      course_period_from: '06.02.2018',
+      course_period_to: '06.02.2019',
+      exam_date: '28.01.2019',
+      academic_year: '2018 FEB to 2019 FEB',
+      issue_date: new Date().toLocaleDateString('en-GB'),
+      issue_place: 'பெரியகுளம்',
+      theory1_mark: 98,
+      theory2_mark: 90,
+      practical1_mark: 92,
+      practical2_mark: 87,
+      practical3_mark: 93,
+      total_marks: sub.cert_total_marks || 460,
+      percentage: sub.cert_percentage || '92%',
+      grade: sub.cert_grade || 'First Class',
+      pass_status: sub.cert_pass_status || 'PASS',
+      pdf_download_url: sub.cert_pdf_url,
+      marksheet_download_url: sub.marksheet_download_url
+    };
+
+    this.activeDocPreview = {
+      title: type === 'certificate' ? 'சான்றிதழ் முன்னோட்டம் (Certificate Preview)' : 'மதிப்பெண் பட்டியல் முன்னோட்டம் (Marksheet Preview)',
+      type,
+      sub,
+      cert
+    };
+    this.showDocPreviewModal = true;
+    this.cdr.markForCheck();
+  }
+
+  closeDocPreview(): void {
+    this.showDocPreviewModal = false;
+    this.activeDocPreview = null;
+    this.cdr.markForCheck();
+  }
+
+  printDocPreview(): void {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  }
+
+  async publishSingleSubmission(sub: any): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'மாணவருக்கு சான்றிதழ் & தேர்வு முடிவு வெளியிடவா?',
+      message: `${sub.student_name} மாணவருக்கு தேர்வு முடிவு மற்றும் சான்றிதழை வெளியிட விரும்புகிறீர்களா? வெளியிட்டவுடன் மாணவர் தனது மொபைல் ஆப்பில் உடனே பார்க்க மற்றும் பதிவிறக்கம் செய்ய முடியும்.`,
+      confirmText: 'ஆம், வெளியிடு (Publish)',
+      type: 'warning',
+      icon: 'bi bi-send-fill'
+    });
+    if (!ok) return;
+
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/admin/submissions/${sub.id}/publish`, {}, headers).subscribe({
+      next: (res) => {
+        this.toastService.success(res.message || 'தேர்வு முடிவு & சான்றிதழ் மாணவருக்கு வெளியிடப்பட்டது!');
+        sub.is_published = true;
+        this.loadSubmissions();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.toastService.error(err?.error?.message || 'வெளியிடுவதில் பிழை ஏற்பட்டது.');
+      }
+    });
+  }
+
+  createCertificateFor(sub: any): void {
+    this.router.navigate(['/admin/certificates'], { queryParams: { student_id: sub.student_id } });
   }
 }

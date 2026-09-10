@@ -424,6 +424,7 @@ class AuthController extends Controller
                 'address'          => $request->input('postalAddress', $student->address),
                 'jathagam_details' => json_encode($details),
                 'phone'            => $phone ?: $student->phone,
+                'created_at'       => now(),
             ]);
         } else {
             $student = Student::create([
@@ -450,6 +451,7 @@ class AuthController extends Controller
                 'status'           => 'active',
                 'address'          => $request->input('postalAddress', $userRecord->address),
                 'jathagam_details' => json_encode($details),
+                'created_at'       => now(),
             ];
 
             if (!empty($phone)) {

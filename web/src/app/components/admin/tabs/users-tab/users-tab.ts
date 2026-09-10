@@ -444,7 +444,11 @@ export class UsersTabComponent implements OnInit {
       };
     }
     try {
-      const d = new Date(rawDate);
+      let str = String(rawDate).trim();
+      if (str.includes(' ') && !str.includes('T')) {
+        str = str.replace(' ', 'T');
+      }
+      const d = new Date(str);
       if (isNaN(d.getTime())) return { date: String(rawDate), time: '' };
 
       const dayNamesEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

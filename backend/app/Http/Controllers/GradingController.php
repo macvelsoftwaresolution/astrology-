@@ -50,6 +50,40 @@ class GradingController extends Controller
 
         $submissions = $query->orderBy('student_submissions.created_at', 'desc')->get();
 
+        foreach ($submissions as $s) {
+            $cert = DB::table('certificates')
+                ->where(function($q) use ($s) {
+                    $q->where('student_id', $s->student_id);
+                    if (!empty($s->student_code)) {
+                        $q->orWhere('registration_number', $s->student_code);
+                    }
+                })
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($cert) {
+                $s->certificate = $cert;
+                $s->certificate_id = $cert->id;
+                $s->certificate_number = $cert->certificate_number;
+                $s->marksheet_number = $cert->marksheet_number;
+                $s->cert_pdf_url = $cert->pdf_download_url;
+                $s->marksheet_download_url = $cert->marksheet_download_url;
+                $s->cert_total_marks = $cert->total_marks;
+                $s->cert_percentage = $cert->percentage;
+                $s->cert_grade = $cert->grade;
+                $s->cert_pass_status = $cert->pass_status;
+                $s->award_title_ta = $cert->award_title_ta;
+                $s->award_title_en = $cert->award_title_en;
+            } else {
+                $s->certificate = null;
+                $s->certificate_id = null;
+                $s->certificate_number = null;
+                $s->marksheet_number = null;
+                $s->cert_pdf_url = null;
+                $s->marksheet_download_url = null;
+            }
+        }
+
         return response()->json([
             'success' => true,
             'submissions' => $submissions
@@ -169,6 +203,59 @@ class GradingController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Published results for {$count} student submission(s)."
+        ]);
+    }
+
+    /**
+     * Admin: Publish Single Student Result & Certificate
+     */
+    public function publishSubmission($id)
+    {
+        $submission = DB::table('student_submissions')->where('id', $id)->first();
+        if (!$submission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'தேர்வு சமர்ப்பிப்பு விவரம் காணப்படவில்லை.'
+            ], 404);
+        }
+
+        DB::table('student_submissions')->where('id', $id)->update([
+            'is_published' => true,
+            'status' => ($submission->status === 'Pending' || !$submission->status) ? 'Approved' : $submission->status,
+            'updated_at' => now()
+        ]);
+
+        // Send In-App Notification to Student
+        try {
+            $studentId = $submission->student_id;
+            $studentUser = DB::table('users')->where('id', $studentId)->first();
+            if (!$studentUser) {
+                $st = DB::table('students')->where('id', $studentId)->first();
+                if ($st && !empty($st->email)) {
+                    $studentUser = DB::table('users')->where('email', $st->email)->first();
+                }
+            }
+
+            if ($studentUser) {
+                DB::table('notifications')->insert([
+                    'user_id' => $studentUser->id,
+                    'title' => '🎓 தேர்வு முடிவு & சான்றிதழ் வெளியிடப்பட்டது!',
+                    'body' => 'உங்கள் தேர்வு முடிவுகள் மற்றும் சான்றிதழ் / மதிப்பெண் பட்டியல் வெளியிடப்பட்டுள்ளது. "My Certificates" பகுதியில் பார்வையிட்டு பதிவிறக்கம் செய்துகொள்ளலாம்.',
+                    'type' => 'certificate_published',
+                    'is_read' => 0,
+                    'data' => json_encode([
+                        'submission_id' => $submission->id,
+                        'course_id' => $submission->course_id,
+                    ]),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        return response()->json([
+            'success' => true,
+            'message' => 'தேர்வு முடிவு & சான்றிதழ் மாணவருக்கு வெற்றிகரமாக வெளியிடப்பட்டது!'
         ]);
     }
 
@@ -526,7 +613,25 @@ class GradingController extends Controller
         }
 
         $certificates = DB::table('certificates')
-            ->where('certificates.student_id', $studentId)
+            ->where(function($q) use ($studentId, $user) {
+                $q->where('certificates.student_id', $studentId);
+                if (!empty($user->student_id)) {
+                    $q->orWhere('certificates.registration_number', $user->student_id);
+                }
+            })
+            ->where(function($q) use ($studentId, $user) {
+                // If an exam submission exists for this student, only show certificate if published
+                $q->whereExists(function($sub) use ($studentId, $user) {
+                    $sub->select(DB::raw(1))
+                        ->from('student_submissions')
+                        ->where('student_submissions.student_id', $studentId)
+                        ->where('student_submissions.is_published', 1);
+                })->orWhereNotExists(function($sub) use ($studentId, $user) {
+                    $sub->select(DB::raw(1))
+                        ->from('student_submissions')
+                        ->where('student_submissions.student_id', $studentId);
+                });
+            })
             ->leftJoin('users', 'certificates.student_id', '=', 'users.id')
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
@@ -541,6 +646,7 @@ class GradingController extends Controller
 
         $results = DB::table('student_submissions')
             ->where('student_submissions.student_id', $studentId)
+            ->where('student_submissions.is_published', 1)
             ->leftJoin('courses', 'student_submissions.course_id', '=', 'courses.id')
             ->leftJoin('course_batches', 'student_submissions.batch_id', '=', 'course_batches.id')
             ->leftJoin('certificates', function($join) {

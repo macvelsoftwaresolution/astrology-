@@ -163,6 +163,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/exam-analytics',                   [GradingController::class, 'getExamAnalytics']);
     Route::post('/submissions/publish-batch',       [GradingController::class, 'publishBatchResults']);
     Route::post('/submissions/{id}/evaluate',       [GradingController::class, 'evaluateSubmission']);
+    Route::post('/submissions/{id}/publish',        [GradingController::class, 'publishSubmission']);
     Route::get('/certificates',                     [GradingController::class, 'adminGetCertificates']);
     Route::post('/certificates',                    [GradingController::class, 'adminUploadCertificate']);
     Route::post('/certificates/save-custom',        [GradingController::class, 'adminSaveCustomCertificate']);
