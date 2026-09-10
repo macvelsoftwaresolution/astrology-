@@ -329,66 +329,142 @@
             <div class="control-section">
               <div class="section-title">4. தேர்வு மதிப்பெண்கள் (Marks - {{ designerForm.course_level }})</div>
               
-              <div class="grid-2">
-                <div class="form-group">
-                  <label>{{ designerForm.course_level === 'UG' ? 'UGE - I' : 'PGE - I' }} (Theory)</label>
-                  <div style="display:flex; gap: 4px;">
-                    <input type="number" [(ngModel)]="designerForm.theory1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
-                    <select [(ngModel)]="designerForm.theory1_status" class="ctrl" style="flex: 1; padding: 4px;">
-                      <option value="PASS">PASS</option>
-                      <option value="FAIL">FAIL</option>
-                      <option value="ABSENT">ABSENT</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>{{ designerForm.course_level === 'UG' ? 'UGE - II' : 'PGE - II' }} (Theory)</label>
-                  <div style="display:flex; gap: 4px;">
-                    <input type="number" [(ngModel)]="designerForm.theory2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
-                    <select [(ngModel)]="designerForm.theory2_status" class="ctrl" style="flex: 1; padding: 4px;">
-                      <option value="PASS">PASS</option>
-                      <option value="FAIL">FAIL</option>
-                      <option value="ABSENT">ABSENT</option>
-                    </select>
-                  </div>
+              <!-- MCQ Exam 1 -->
+              <div class="form-group" style="margin-bottom: 8px;">
+                <label class="exam-field-label">
+                  <span>{{ designerForm.has_mcq2 ? 'MCQ தேர்வு - I' : 'MCQ தேர்வு (Theory Exam)' }}</span>
+                  <span class="max-badge">அதிகபட்சம்: 100</span>
+                </label>
+                <div style="display:flex; gap: 6px;">
+                  <input type="number" [(ngModel)]="designerForm.theory1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" min="0" max="100" />
+                  <select [(ngModel)]="designerForm.theory1_status" (ngModelChange)="calculateMarks()" class="ctrl" style="flex: 1; padding: 4px;">
+                    <option value="PASS">PASS</option>
+                    <option value="FAIL">FAIL</option>
+                    <option value="ABSENT">ABSENT</option>
+                  </select>
                 </div>
               </div>
 
-              <div class="grid-3">
-                <div class="form-group">
-                  <label>செய்முறை பகுதி - I</label>
-                  <div style="display:flex; gap: 4px;">
-                    <input type="number" [(ngModel)]="designerForm.practical1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
-                    <select [(ngModel)]="designerForm.practical1_status" class="ctrl" style="flex: 1; padding: 4px;">
+              <!-- MCQ Exam 2 (Dynamic box directly below MCQ 1) -->
+              @if (designerForm.has_mcq2) {
+                <div class="form-group dynamic-exam-box">
+                  <div class="dynamic-box-header">
+                    <label class="exam-field-label" style="margin: 0;">
+                      <span>MCQ தேர்வு - II</span>
+                      <span class="max-badge">அதிகபட்சம்: 100</span>
+                    </label>
+                    <button type="button" (click)="removeMCQ2()" class="btn-remove-sub" title="2-வது தேர்வை நீக்கு">
+                      <i class="bi bi-x-circle-fill"></i> நீக்கு (Remove)
+                    </button>
+                  </div>
+                  <div style="display:flex; gap: 6px; margin-top: 4px;">
+                    <input type="number" [(ngModel)]="designerForm.theory2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" min="0" max="100" />
+                    <select [(ngModel)]="designerForm.theory2_status" (ngModelChange)="calculateMarks()" class="ctrl" style="flex: 1; padding: 4px;">
                       <option value="PASS">PASS</option>
                       <option value="FAIL">FAIL</option>
                       <option value="ABSENT">ABSENT</option>
                     </select>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label>செய்முறை பகுதி - II</label>
-                  <div style="display:flex; gap: 4px;">
-                    <input type="number" [(ngModel)]="designerForm.practical2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
-                    <select [(ngModel)]="designerForm.practical2_status" class="ctrl" style="flex: 1; padding: 4px;">
-                      <option value="PASS">PASS</option>
-                      <option value="FAIL">FAIL</option>
-                      <option value="ABSENT">ABSENT</option>
-                    </select>
-                  </div>
+              } @else {
+                <div style="margin: 4px 0 10px 0;">
+                  <button type="button" (click)="addMCQ2()" class="btn-toggle-extra">
+                    <i class="bi bi-plus-circle-fill"></i> + 2-வது MCQ தேர்வு சேர் (Add MCQ Exam 2)
+                  </button>
                 </div>
-                <div class="form-group">
-                  <label>செய்முறை பகுதி - III</label>
-                  <div style="display:flex; gap: 4px;">
-                    <input type="number" [(ngModel)]="designerForm.practical3_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" />
-                    <select [(ngModel)]="designerForm.practical3_status" class="ctrl" style="flex: 1; padding: 4px;">
-                      <option value="PASS">PASS</option>
-                      <option value="FAIL">FAIL</option>
-                      <option value="ABSENT">ABSENT</option>
-                    </select>
+              }
+
+              <!-- Practical Exams (Conditional: Only 1 practical by default when added) -->
+              @if (designerForm.has_practicals) {
+                <div class="dynamic-practicals-container">
+                  <div class="dynamic-box-header" style="margin-bottom: 8px;">
+                    <span class="practical-heading"><i class="bi bi-journal-check"></i> செய்முறைத் தேர்வு (Practical Exam)</span>
+                    <button type="button" (click)="removePracticals()" class="btn-remove-sub" title="செய்முறைத் தேர்வை நீக்கு">
+                      <i class="bi bi-trash3-fill"></i> செய்முறை நீக்கு (Remove)
+                    </button>
                   </div>
+
+                  <!-- Practical 1 -->
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="exam-field-label">
+                      <span>{{ (designerForm.has_practical2 || designerForm.has_practical3) ? 'செய்முறை - பகுதி I' : 'செய்முறை தேர்வு (Practical 1)' }}</span>
+                      <span class="max-badge">அதிகபட்சம்: 100</span>
+                    </label>
+                    <div style="display:flex; gap: 6px;">
+                      <input type="number" [(ngModel)]="designerForm.practical1_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" min="0" max="100" />
+                      <select [(ngModel)]="designerForm.practical1_status" (ngModelChange)="calculateMarks()" class="ctrl" style="flex: 1; padding: 4px;">
+                        <option value="PASS">PASS</option>
+                        <option value="FAIL">FAIL</option>
+                        <option value="ABSENT">ABSENT</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Practical 2 (Dynamic) -->
+                  @if (designerForm.has_practical2) {
+                    <div class="form-group dynamic-exam-box" style="margin-bottom: 8px;">
+                      <div class="dynamic-box-header">
+                        <label class="exam-field-label" style="margin: 0;">
+                          <span>செய்முறை - பகுதி II</span>
+                          <span class="max-badge">அதிகபட்சம்: 100</span>
+                        </label>
+                        <button type="button" (click)="removePractical2()" class="btn-remove-sub" title="செய்முறை 2-ஐ நீக்கு">
+                          <i class="bi bi-x-circle-fill"></i> நீக்கு (Remove)
+                        </button>
+                      </div>
+                      <div style="display:flex; gap: 6px; margin-top: 4px;">
+                        <input type="number" [(ngModel)]="designerForm.practical2_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" min="0" max="100" />
+                        <select [(ngModel)]="designerForm.practical2_status" (ngModelChange)="calculateMarks()" class="ctrl" style="flex: 1; padding: 4px;">
+                          <option value="PASS">PASS</option>
+                          <option value="FAIL">FAIL</option>
+                          <option value="ABSENT">ABSENT</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Practical 3 (Dynamic) -->
+                    @if (designerForm.has_practical3) {
+                      <div class="form-group dynamic-exam-box" style="margin-bottom: 8px;">
+                        <div class="dynamic-box-header">
+                          <label class="exam-field-label" style="margin: 0;">
+                            <span>செய்முறை - பகுதி III</span>
+                            <span class="max-badge">அதிகபட்சம்: 100</span>
+                          </label>
+                          <button type="button" (click)="removePractical3()" class="btn-remove-sub" title="செய்முறை 3-ஐ நீக்கு">
+                            <i class="bi bi-x-circle-fill"></i> நீக்கு (Remove)
+                          </button>
+                        </div>
+                        <div style="display:flex; gap: 6px; margin-top: 4px;">
+                          <input type="number" [(ngModel)]="designerForm.practical3_mark" (ngModelChange)="calculateMarks()" class="ctrl num" style="flex: 2" min="0" max="100" />
+                          <select [(ngModel)]="designerForm.practical3_status" (ngModelChange)="calculateMarks()" class="ctrl" style="flex: 1; padding: 4px;">
+                            <option value="PASS">PASS</option>
+                            <option value="FAIL">FAIL</option>
+                            <option value="ABSENT">ABSENT</option>
+                          </select>
+                        </div>
+                      </div>
+                    } @else {
+                      <div style="margin: 4px 0 8px 0;">
+                        <button type="button" (click)="addPractical3()" class="btn-toggle-extra practical-sub-btn">
+                          <i class="bi bi-plus-circle-fill"></i> + 3-வது செய்முறை சேர் (Add Practical 3)
+                        </button>
+                      </div>
+                    }
+                  } @else {
+                    <div style="margin: 4px 0 8px 0;">
+                      <button type="button" (click)="addPractical2()" class="btn-toggle-extra practical-sub-btn">
+                        <i class="bi bi-plus-circle-fill"></i> + 2-வது செய்முறை சேர் (Add Practical 2)
+                      </button>
+                    </div>
+                  }
                 </div>
-              </div>
+              } @else {
+                <div style="margin: 6px 0 12px 0;">
+                  <button type="button" (click)="addPracticals()" class="btn-toggle-extra practical-btn">
+                    <i class="bi bi-plus-square-dotted"></i> + செய்முறைத் தேர்வு சேர் (Add Practical)
+                  </button>
+                </div>
+              }
 
               <div class="grid-2 summary-row">
                 <div class="form-group">
@@ -407,7 +483,7 @@
                 </div>
                 <div class="form-group">
                   <label>தேர்ச்சி நிலை (Overall Result)</label>
-                  <select [(ngModel)]="designerForm.pass_status" class="ctrl bold" style="color: #15803d; font-weight: 800;">
+                  <select [(ngModel)]="designerForm.pass_status" class="ctrl bold" [style.color]="designerForm.pass_status === 'PASS' ? '#15803d' : '#dc2626'">
                     <option value="PASS">PASS (தேர்ச்சி)</option>
                     <option value="FAIL">FAIL (தோல்வி)</option>
                   </select>
@@ -420,13 +496,15 @@
               <div class="section-title">5. தேர்ச்சி தகுதி விபரங்கள் (Pass Criteria Notes)</div>
               
               <div class="form-group">
-                <label>தியரி தேர்ச்சி விதி (Theory Pass Criteria)</label>
+                <label>தியரி / MCQ தேர்ச்சி விதி (Theory / MCQ Pass Criteria)</label>
                 <input type="text" [(ngModel)]="designerForm.pass_criteria_theory" class="ctrl" />
               </div>
-              <div class="form-group">
-                <label>செய்முறை தேர்ச்சி விதி (Practical Pass Criteria)</label>
-                <input type="text" [(ngModel)]="designerForm.pass_criteria_practical" class="ctrl" />
-              </div>
+              @if (designerForm.has_practicals) {
+                <div class="form-group">
+                  <label>செய்முறை தேர்ச்சி விதி (Practical Pass Criteria)</label>
+                  <input type="text" [(ngModel)]="designerForm.pass_criteria_practical" class="ctrl" />
+                </div>
+              }
             </div>
 
           </div>
@@ -706,39 +784,60 @@
                           </tr>
                         </thead>
                         <tbody>
+                          <!-- ROW 1: MCQ Exam 1 -->
                           <tr>
                             <td class="text-center">1.</td>
-                            <td>{{ designerForm.course_level === 'UG' ? 'UGE - I (THEORY)' : 'PGE - I (THEORY)' }}</td>
+                            <td>
+                              @if (designerForm.has_mcq2) {
+                                {{ designerForm.course_level === 'UG' ? 'UGE - I (MCQ தேர்வு)' : 'PGE - I (MCQ தேர்வு)' }}
+                              } @else {
+                                {{ designerForm.course_level === 'UG' ? 'UGE - கொள்குறி வகை தேர்வு (MCQ THEORY)' : 'PGE - கொள்குறி வகை தேர்வு (MCQ THEORY)' }}
+                              }
+                            </td>
                             <td class="text-center mark-val">{{ designerForm.theory1_mark }}</td>
                             <td class="text-center pass-tag" [style.color]="(designerForm.theory1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.theory1_status || 'PASS' }}</td>
                           </tr>
-                          <tr>
-                            <td class="text-center">2.</td>
-                            <td>{{ designerForm.course_level === 'UG' ? 'UGE - II (THEORY)' : 'PGE - II (THEORY)' }}</td>
-                            <td class="text-center mark-val">{{ designerForm.theory2_mark }}</td>
-                            <td class="text-center pass-tag" [style.color]="(designerForm.theory2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.theory2_status || 'PASS' }}</td>
-                          </tr>
-                          <tr class="section-row">
-                            <td colspan="4"><strong>PRACTICAL (செய்முறை)</strong></td>
-                          </tr>
-                          <tr>
-                            <td class="text-center">3.</td>
-                            <td>செய்முறை பகுதி - I</td>
-                            <td class="text-center mark-val">{{ designerForm.practical1_mark }}</td>
-                            <td class="text-center pass-tag" [style.color]="(designerForm.practical1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical1_status || 'PASS' }}</td>
-                          </tr>
-                          <tr>
-                            <td class="text-center">4.</td>
-                            <td>செய்முறை பகுதி - II</td>
-                            <td class="text-center mark-val">{{ designerForm.practical2_mark }}</td>
-                            <td class="text-center pass-tag" [style.color]="(designerForm.practical2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical2_status || 'PASS' }}</td>
-                          </tr>
-                          <tr>
-                            <td class="text-center">5.</td>
-                            <td>செய்முறை பகுதி - III</td>
-                            <td class="text-center mark-val">{{ designerForm.practical3_mark }}</td>
-                            <td class="text-center pass-tag" [style.color]="(designerForm.practical3_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical3_status || 'PASS' }}</td>
-                          </tr>
+
+                          <!-- ROW 2: MCQ Exam 2 (Conditional) -->
+                          @if (designerForm.has_mcq2) {
+                            <tr>
+                              <td class="text-center">2.</td>
+                              <td>{{ designerForm.course_level === 'UG' ? 'UGE - II (MCQ தேர்வு)' : 'PGE - II (MCQ தேர்வு)' }}</td>
+                              <td class="text-center mark-val">{{ designerForm.theory2_mark }}</td>
+                              <td class="text-center pass-tag" [style.color]="(designerForm.theory2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.theory2_status || 'PASS' }}</td>
+                            </tr>
+                          }
+
+                          <!-- PRACTICAL ROWS (Conditional) -->
+                          @if (designerForm.has_practicals) {
+                            <tr class="section-row">
+                              <td colspan="4"><strong>PRACTICAL (செய்முறை)</strong></td>
+                            </tr>
+                            <tr>
+                              <td class="text-center">{{ designerForm.has_mcq2 ? 3 : 2 }}.</td>
+                              <td>
+                                {{ (designerForm.has_practical2 || designerForm.has_practical3) ? 'செய்முறை பகுதி - I' : 'செய்முறை தேர்வு (PRACTICAL)' }}
+                              </td>
+                              <td class="text-center mark-val">{{ designerForm.practical1_mark }}</td>
+                              <td class="text-center pass-tag" [style.color]="(designerForm.practical1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical1_status || 'PASS' }}</td>
+                            </tr>
+                            @if (designerForm.has_practical2) {
+                              <tr>
+                                <td class="text-center">{{ designerForm.has_mcq2 ? 4 : 3 }}.</td>
+                                <td>செய்முறை பகுதி - II</td>
+                                <td class="text-center mark-val">{{ designerForm.practical2_mark }}</td>
+                                <td class="text-center pass-tag" [style.color]="(designerForm.practical2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical2_status || 'PASS' }}</td>
+                              </tr>
+                            }
+                            @if (designerForm.has_practical3) {
+                              <tr>
+                                <td class="text-center">{{ designerForm.has_mcq2 ? 5 : 4 }}.</td>
+                                <td>செய்முறை பகுதி - III</td>
+                                <td class="text-center mark-val">{{ designerForm.practical3_mark }}</td>
+                                <td class="text-center pass-tag" [style.color]="(designerForm.practical3_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ designerForm.practical3_status || 'PASS' }}</td>
+                              </tr>
+                            }
+                          }
                           
                           <!-- TOTALS & SUMMARY -->
                           <tr class="summary-total-row">
@@ -763,7 +862,9 @@
                       <!-- PASS CRITERIA NOTES -->
                       <div class="pass-criteria-notes">
                         <div class="pass-crit-line">{{ designerForm.pass_criteria_theory }}</div>
-                        <div class="pass-crit-line">{{ designerForm.pass_criteria_practical }}</div>
+                        @if (designerForm.has_practicals) {
+                          <div class="pass-crit-line">{{ designerForm.pass_criteria_practical }}</div>
+                        }
                       </div>
 
                       <!-- 4 SIGNATURES -->

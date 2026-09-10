@@ -50,6 +50,10 @@ export class CertificatesTabComponent implements OnInit {
     issue_place: 'பெரியகுளம்',
     certificate_number: '',
     marksheet_number: '',
+    has_mcq2: false,
+    has_practicals: false,
+    has_practical2: false,
+    has_practical3: false,
     theory1_mark: 98,
     theory1_status: 'PASS',
     theory2_mark: 90,
@@ -60,11 +64,11 @@ export class CertificatesTabComponent implements OnInit {
     practical2_status: 'PASS',
     practical3_mark: 93,
     practical3_status: 'PASS',
-    total_marks: 460,
-    percentage: '92%',
-    grade: 'First Class',
+    total_marks: 98,
+    percentage: '98%',
+    grade: 'Distinction',
     pass_status: 'PASS',
-    pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+    pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
     pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
     pdf_download_url: '',
     marksheet_download_url: ''
@@ -191,6 +195,10 @@ export class CertificatesTabComponent implements OnInit {
         issue_place: 'பெரியகுளம்',
         certificate_number: '05180200004',
         marksheet_number: 'MRK-UG-2019-' + randomNum,
+        has_mcq2: false,
+        has_practicals: false,
+        has_practical2: false,
+        has_practical3: false,
         theory1_mark: 98,
         theory1_status: 'PASS',
         theory2_mark: 90,
@@ -201,11 +209,11 @@ export class CertificatesTabComponent implements OnInit {
         practical2_status: 'PASS',
         practical3_mark: 93,
         practical3_status: 'PASS',
-        total_marks: 460,
-        percentage: '92%',
+        total_marks: 98,
+        percentage: '98%',
         grade: 'Distinction',
         pass_status: 'PASS',
-        pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+        pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
         pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
         pdf_download_url: '',
         marksheet_download_url: ''
@@ -232,7 +240,11 @@ export class CertificatesTabComponent implements OnInit {
         issue_place: 'பெரியகுளம்',
         certificate_number: '05180200005',
         marksheet_number: 'MRK-PG-2020-' + randomNum,
-        theory1_mark: 75,
+        has_mcq2: false,
+        has_practicals: false,
+        has_practical2: false,
+        has_practical3: false,
+        theory1_mark: 85,
         theory1_status: 'PASS',
         theory2_mark: 75,
         theory2_status: 'PASS',
@@ -242,11 +254,11 @@ export class CertificatesTabComponent implements OnInit {
         practical2_status: 'PASS',
         practical3_mark: 120,
         practical3_status: 'PASS',
-        total_marks: 460,
-        percentage: '65%',
-        grade: 'GRADE - II',
+        total_marks: 85,
+        percentage: '85%',
+        grade: 'GRADE - I',
         pass_status: 'PASS',
-        pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+        pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
         pass_criteria_practical: 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.',
         pdf_download_url: '',
         marksheet_download_url: ''
@@ -257,6 +269,25 @@ export class CertificatesTabComponent implements OnInit {
 
   populateFromRecord(rec: any): void {
     const isPG = (rec.course_level === 'PG');
+    let customData: any = {};
+    if (rec.custom_data) {
+      try {
+        customData = typeof rec.custom_data === 'string' ? JSON.parse(rec.custom_data) : rec.custom_data;
+      } catch (e) {}
+    }
+    const hasMcq2 = customData.has_mcq2 !== undefined 
+      ? !!customData.has_mcq2 
+      : (rec.theory2_mark !== null && rec.theory2_mark !== undefined && Number(rec.theory2_mark) > 0);
+    const hasPracticals = customData.has_practicals !== undefined 
+      ? !!customData.has_practicals 
+      : (rec.practical1_mark !== null && rec.practical1_mark !== undefined && Number(rec.practical1_mark) > 0);
+    const hasPractical2 = customData.has_practical2 !== undefined 
+      ? !!customData.has_practical2 
+      : (rec.practical2_mark !== null && rec.practical2_mark !== undefined && Number(rec.practical2_mark) > 0);
+    const hasPractical3 = customData.has_practical3 !== undefined 
+      ? !!customData.has_practical3 
+      : (rec.practical3_mark !== null && rec.practical3_mark !== undefined && Number(rec.practical3_mark) > 0);
+
     this.designerForm = {
       id: rec.id,
       student_id: rec.student_id,
@@ -278,7 +309,11 @@ export class CertificatesTabComponent implements OnInit {
       issue_place: rec.issue_place || 'பெரியகுளம்',
       certificate_number: rec.certificate_number || '',
       marksheet_number: rec.marksheet_number || '',
-      theory1_mark: rec.theory1_mark ?? (isPG ? 75 : 98),
+      has_mcq2: hasMcq2,
+      has_practicals: hasPracticals,
+      has_practical2: hasPractical2,
+      has_practical3: hasPractical3,
+      theory1_mark: rec.theory1_mark ?? (isPG ? 85 : 98),
       theory1_status: rec.theory1_status || 'PASS',
       theory2_mark: rec.theory2_mark ?? (isPG ? 75 : 90),
       theory2_status: rec.theory2_status || 'PASS',
@@ -288,11 +323,11 @@ export class CertificatesTabComponent implements OnInit {
       practical2_status: rec.practical2_status || 'PASS',
       practical3_mark: rec.practical3_mark ?? (isPG ? 120 : 93),
       practical3_status: rec.practical3_status || 'PASS',
-      total_marks: rec.total_marks ?? (rec.score || 460),
-      percentage: rec.percentage || (isPG ? '65%' : '92%'),
-      grade: rec.grade || (isPG ? 'GRADE - II' : 'Distinction'),
+      total_marks: rec.total_marks ?? (rec.score || (isPG ? 85 : 98)),
+      percentage: rec.percentage || (isPG ? '85%' : '98%'),
+      grade: rec.grade || (isPG ? 'GRADE - I' : 'Distinction'),
       pass_status: rec.pass_status || 'PASS',
-      pass_criteria_theory: 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.',
+      pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
       pass_criteria_practical: isPG 
         ? 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.'
         : 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
@@ -323,22 +358,96 @@ export class CertificatesTabComponent implements OnInit {
       this.designerForm.grade = 'Distinction';
       this.designerForm.pass_criteria_theory = 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.';
       this.designerForm.pass_criteria_practical = 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.';
+      if (this.designerForm.course_period_from === '06.02.2019') {
+        this.designerForm.course_period_from = '06.02.2018';
+        this.designerForm.course_period_to = '06.02.2019';
+        this.designerForm.exam_date = '28.01.2019';
+        this.designerForm.issue_date = '28.10.2019';
+        this.designerForm.academic_year = '2018 FEB to 2019 FEB';
+      }
     } else {
       this.designerForm.award_title_ta = 'ஜோதிட கலாநிதி';
       this.designerForm.award_title_en = 'JOTHIDA KALANITHI';
       this.designerForm.grade = 'GRADE - II';
       this.designerForm.pass_criteria_theory = 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.';
       this.designerForm.pass_criteria_practical = 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.';
+      if (this.designerForm.course_period_from === '06.02.2018') {
+        this.designerForm.course_period_from = '06.02.2019';
+        this.designerForm.course_period_to = '06.02.2020';
+        this.designerForm.exam_date = '07.02.2020';
+        this.designerForm.issue_date = '10.02.2020';
+        this.designerForm.academic_year = '2019 FEB to 2020 FEB';
+      }
     }
     this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  addMCQ2(): void {
+    this.designerForm.has_mcq2 = true;
+    if (this.designerForm.theory2_mark === null || this.designerForm.theory2_mark === undefined || this.designerForm.theory2_mark === 0) {
+      this.designerForm.theory2_mark = this.designerForm.course_level === 'PG' ? 75 : 90;
+    }
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  removeMCQ2(): void {
+    this.designerForm.has_mcq2 = false;
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  addPracticals(): void {
+    this.designerForm.has_practicals = true;
+    this.designerForm.has_practical2 = false;
+    this.designerForm.has_practical3 = false;
+    if (!this.designerForm.practical1_mark) this.designerForm.practical1_mark = this.designerForm.course_level === 'PG' ? 80 : 92;
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  removePracticals(): void {
+    this.designerForm.has_practicals = false;
+    this.designerForm.has_practical2 = false;
+    this.designerForm.has_practical3 = false;
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  addPractical2(): void {
+    this.designerForm.has_practical2 = true;
+    if (!this.designerForm.practical2_mark) this.designerForm.practical2_mark = this.designerForm.course_level === 'PG' ? 75 : 87;
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  removePractical2(): void {
+    this.designerForm.has_practical2 = false;
+    this.designerForm.has_practical3 = false;
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  addPractical3(): void {
+    this.designerForm.has_practical3 = true;
+    if (!this.designerForm.practical3_mark) this.designerForm.practical3_mark = this.designerForm.course_level === 'PG' ? 80 : 93;
+    this.calculateMarks();
+    this.cdr.markForCheck();
+  }
+
+  removePractical3(): void {
+    this.designerForm.has_practical3 = false;
+    this.calculateMarks();
+    this.cdr.markForCheck();
   }
 
   calculateMarks(): void {
     const t1 = Number(this.designerForm.theory1_mark) || 0;
-    const t2 = Number(this.designerForm.theory2_mark) || 0;
-    const p1 = Number(this.designerForm.practical1_mark) || 0;
-    const p2 = Number(this.designerForm.practical2_mark) || 0;
-    const p3 = Number(this.designerForm.practical3_mark) || 0;
+    const t2 = this.designerForm.has_mcq2 ? (Number(this.designerForm.theory2_mark) || 0) : 0;
+    const p1 = this.designerForm.has_practicals ? (Number(this.designerForm.practical1_mark) || 0) : 0;
+    const p2 = (this.designerForm.has_practicals && this.designerForm.has_practical2) ? (Number(this.designerForm.practical2_mark) || 0) : 0;
+    const p3 = (this.designerForm.has_practicals && this.designerForm.has_practical3) ? (Number(this.designerForm.practical3_mark) || 0) : 0;
 
     const total = t1 + t2 + p1 + p2 + p3;
     this.designerForm.total_marks = total;
@@ -346,49 +455,59 @@ export class CertificatesTabComponent implements OnInit {
     if (this.designerForm.theory1_status !== 'ABSENT') {
       this.designerForm.theory1_status = (t1 >= 35) ? 'PASS' : 'FAIL';
     }
-    if (this.designerForm.theory2_status !== 'ABSENT') {
+    if (this.designerForm.has_mcq2 && this.designerForm.theory2_status !== 'ABSENT') {
       this.designerForm.theory2_status = (t2 >= 35) ? 'PASS' : 'FAIL';
     }
 
-    if (this.designerForm.course_level === 'UG') {
+    if (this.designerForm.has_practicals) {
       if (this.designerForm.practical1_status !== 'ABSENT') {
         this.designerForm.practical1_status = (p1 >= 50) ? 'PASS' : 'FAIL';
       }
-      if (this.designerForm.practical2_status !== 'ABSENT') {
+      if (this.designerForm.has_practical2 && this.designerForm.practical2_status !== 'ABSENT') {
         this.designerForm.practical2_status = (p2 >= 50) ? 'PASS' : 'FAIL';
       }
-      if (this.designerForm.practical3_status !== 'ABSENT') {
+      if (this.designerForm.has_practical3 && this.designerForm.practical3_status !== 'ABSENT') {
         this.designerForm.practical3_status = (p3 >= 50) ? 'PASS' : 'FAIL';
       }
+    }
 
-      const pct = Math.round((total / 500) * 100);
-      this.designerForm.percentage = `${pct}%`;
-      const allPassed = (this.designerForm.theory1_status === 'PASS') &&
-                        (this.designerForm.theory2_status === 'PASS') &&
-                        (this.designerForm.practical1_status === 'PASS') &&
-                        (this.designerForm.practical2_status === 'PASS') &&
-                        (this.designerForm.practical3_status === 'PASS');
-      this.designerForm.pass_status = allPassed ? 'PASS' : 'FAIL';
+    // Dynamic Max Marks
+    let maxMarks = 100;
+    if (this.designerForm.has_mcq2) maxMarks += 100;
+    if (this.designerForm.has_practicals) maxMarks += 100;
+    if (this.designerForm.has_practicals && this.designerForm.has_practical2) maxMarks += 100;
+    if (this.designerForm.has_practicals && this.designerForm.has_practical3) maxMarks += 100;
+
+    const pct = Math.min(100, Math.round((total / maxMarks) * 100));
+    this.designerForm.percentage = `${pct}%`;
+
+    // Pass status
+    let allPassed = (this.designerForm.theory1_status === 'PASS');
+    if (this.designerForm.has_mcq2) {
+      allPassed = allPassed && (this.designerForm.theory2_status === 'PASS');
+    }
+    if (this.designerForm.has_practicals) {
+      allPassed = allPassed && (this.designerForm.practical1_status === 'PASS');
+      if (this.designerForm.has_practical2) {
+        allPassed = allPassed && (this.designerForm.practical2_status === 'PASS');
+      }
+      if (this.designerForm.has_practical3) {
+        allPassed = allPassed && (this.designerForm.practical3_status === 'PASS');
+      }
+    }
+    this.designerForm.pass_status = allPassed ? 'PASS' : 'FAIL';
+
+    // Auto Grade
+    if (!allPassed) {
+      this.designerForm.grade = 'Fail';
+    } else if (pct >= 85) {
+      this.designerForm.grade = this.designerForm.course_level === 'PG' ? 'GRADE - I' : 'Distinction';
+    } else if (pct >= 60) {
+      this.designerForm.grade = this.designerForm.course_level === 'PG' ? 'GRADE - II' : 'First Class';
+    } else if (pct >= 50) {
+      this.designerForm.grade = 'Second Class';
     } else {
-      // PG standard
-      if (this.designerForm.practical1_status !== 'ABSENT') {
-        this.designerForm.practical1_status = (p1 >= 50) ? 'PASS' : 'FAIL';
-      }
-      if (this.designerForm.practical2_status !== 'ABSENT') {
-        this.designerForm.practical2_status = (p2 >= 50) ? 'PASS' : 'FAIL';
-      }
-      if (this.designerForm.practical3_status !== 'ABSENT') {
-        this.designerForm.practical3_status = (p3 >= 50) ? 'PASS' : 'FAIL';
-      }
-
-      const pct = Math.round((total / 600) * 100) || 65;
-      this.designerForm.percentage = `${pct}%`;
-      const allPassed = (this.designerForm.theory1_status === 'PASS') &&
-                        (this.designerForm.theory2_status === 'PASS') &&
-                        (this.designerForm.practical1_status === 'PASS') &&
-                        (this.designerForm.practical2_status === 'PASS') &&
-                        (this.designerForm.practical3_status === 'PASS');
-      this.designerForm.pass_status = allPassed ? 'PASS' : 'FAIL';
+      this.designerForm.grade = 'Pass';
     }
   }
 
@@ -425,7 +544,18 @@ export class CertificatesTabComponent implements OnInit {
     this.isSaving = true;
     const headers = this.authService.getAuthHeaders();
 
-    this.http.post<any>(`${environment.apiUrl}/admin/certificates/save-custom`, this.designerForm, headers).subscribe({
+    const payload = {
+      ...this.designerForm,
+      score: parseInt(this.designerForm.percentage) || 100,
+      custom_data: {
+        has_mcq2: this.designerForm.has_mcq2,
+        has_practicals: this.designerForm.has_practicals,
+        has_practical2: this.designerForm.has_practical2,
+        has_practical3: this.designerForm.has_practical3
+      }
+    };
+
+    this.http.post<any>(`${environment.apiUrl}/admin/certificates/save-custom`, payload, headers).subscribe({
       next: (res) => {
         this.isSaving = false;
         this.toastService.success(res.message || 'சான்றிதழ் & மதிப்பெண் பட்டியல் சேமிக்கப்பட்டது!', 'வெற்றி');
