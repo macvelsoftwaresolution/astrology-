@@ -184,7 +184,10 @@ export class TranslationService {
         'Cancel': 'ரத்து',
         'Save': 'சேமி',
         'Edit': 'திருத்து',
-        'Delete': 'நீக்கு'
+        'Delete': 'நீக்கு',
+        'Ilanilai Astrology Course': 'இளநிலை ஜோதிடப் படிப்பு',
+        'Muthunilai Astrology Course': 'முதுநிலை ஜோதிடப் படிப்பு',
+        'Research Astrology Course': 'ஆராய்ச்சி ஜோதிடப் படிப்பு'
       };
 
       if (map[res]) return map[res];
@@ -218,6 +221,19 @@ export class TranslationService {
     } else {
       // PURE ENGLISH MODE
       let res = text;
+
+      const courseEnglishMap: Record<string, string> = {
+        'இளநிலை ஜோதிடப் படிப்பு': 'Ilanilai Astrology Course',
+        'இளநிலை ஜோதிடப் படிப்பு (Ilanilai)': 'Ilanilai Astrology Course',
+        'முதுநிலை ஜோதிடப் படிப்பு': 'Muthunilai Astrology Course',
+        'முதுநிலை ஜோதிடப் படிப்பு (Muthunilai)': 'Muthunilai Astrology Course',
+        'ஆராய்ச்சி ஜோதிடப் படிப்பு': 'Research Astrology Course',
+        'ஜோதிட இளநிலை படிப்பு': 'Ilanilai Astrology Course',
+        'ஜோதிடப் படிப்பு': 'Astrology Course'
+      };
+      if (courseEnglishMap[res.trim()]) {
+        return courseEnglishMap[res.trim()];
+      }
 
       // If string contains Tamil with English in brackets like "ரத்து (Cancel)" or "திருத்து (Edit)"
       const bracketMatch = res.match(/[\u0B80-\u0BFF]+[^(]*\(([^)]+)\)/);

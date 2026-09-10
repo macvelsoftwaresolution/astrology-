@@ -189,7 +189,19 @@
     "gracePeriod": "தாமத அனுமதி (நிமிடங்கள்)",
     "gracePeriodHint": "தொடங்கியதில் இருந்து இத்தனை நிமிடங்களுக்குள் வரும் மாணவர்கள் மட்டுமே அனுமதிக்கப்படுவர்",
     "certPreview": "சான்றிதழ் முன்னோட்டம்",
-    "marksheetPreview": "மதிப்பெண் பட்டியல் முன்னோட்டம்"
+    "marksheetPreview": "மதிப்பெண் பட்டியல் முன்னோட்டம்",
+    "historyTooltip": "முயற்சிகள் வரலாறு",
+    "attemptHistoryTitle": "தேர்வு முயற்சிகள் வரலாறு",
+    "attemptHistorySub": "மாணவர் எழுதிய அனைத்து முயற்சிகள் மற்றும் மதிப்பெண் விவரங்கள்",
+    "totalAttempts": "மொத்த முயற்சிகள்",
+    "bestScore": "அதிகபட்ச மதிப்பெண்",
+    "finalStatus": "இறுதி நிலை",
+    "attemptNo": "முயற்சி",
+    "dateTime": "தேதி & நேரம்",
+    "attemptsCountLabel": "முயற்சிகள்",
+    "allExamsFilter": "அனைத்து தேர்வுகள்",
+    "examFilterLabel": "தேர்வு வடிகட்டி",
+    "latestAttempt": "சமீபத்தியது"
   },
   "practical": {
     "title": "செய்முறைத் தேர்வு பில்டர்",

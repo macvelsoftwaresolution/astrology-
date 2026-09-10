@@ -42,6 +42,7 @@ export class ExamsEvalTabComponent implements OnInit {
   exams: any[] = [];
   batches: any[] = [];
   selectedBatchId: any = '';
+  selectedExamFilter: any = '';
 
   // 1. Exam Wizard State
   activeExamWizard: any = null;
@@ -61,6 +62,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   // 3. Evaluation & Submissions State
   submissions: any[] = [];
+  rawSubmissions: any[] = [];
   isLoadingSubmissions = false;
   selectedSubmissionForGrading: any = null;
   gradingForm = {
@@ -73,6 +75,25 @@ export class ExamsEvalTabComponent implements OnInit {
     evaluator_notes: '',
     is_published: true
   };
+
+  // Attempt History Modal State
+  showAttemptHistoryModal = false;
+  selectedStudentHistory: {
+    student_name: string;
+    student_code: string;
+    student_email: string;
+    student_phone: string;
+    course_title: string;
+    exam_title?: string;
+    batch_name: string;
+    batch_code: string;
+    totalAttempts: number;
+    highestScore: number;
+    latestScore: number;
+    finalStatus: string;
+    attempts: any[];
+    primarySub: any;
+  } | null = null;
 
   constructor() {}
 
@@ -196,7 +217,8 @@ export class ExamsEvalTabComponent implements OnInit {
     }
     this.http.get<any>(url, headers).subscribe({
       next: (res) => {
-        this.submissions = res.submissions || [];
+        this.rawSubmissions = res.submissions || [];
+        this.submissions = this.groupSubmissions(this.rawSubmissions);
         this.isLoadingSubmissions = false;
         this.cdr?.markForCheck();
       },
@@ -205,6 +227,126 @@ export class ExamsEvalTabComponent implements OnInit {
         this.cdr?.markForCheck();
       }
     });
+  }
+
+  onExamFilterChange(): void {
+    this.submissions = this.groupSubmissions(this.rawSubmissions);
+    this.cdr.detectChanges();
+  }
+
+  groupSubmissions(rawList: any[]): any[] {
+    if (!rawList || rawList.length === 0) return [];
+
+    let filtered = rawList;
+    if (this.selectedExamFilter) {
+      filtered = rawList.filter(s => String(s.exam_id) === String(this.selectedExamFilter));
+    }
+
+    const map = new Map<string, any[]>();
+    filtered.forEach(sub => {
+      const email = sub.student_email && sub.student_email !== '-' ? sub.student_email.trim().toLowerCase() : '';
+      const code = sub.student_code && sub.student_code !== '-' ? sub.student_code.trim().toUpperCase() : '';
+      const name = sub.student_name ? sub.student_name.trim().toLowerCase().replace(/[\s\.\_\-]/g, '') : '';
+      const studentKey = email ? `email_${email}` : (code ? `code_${code}` : (name ? `name_${name}` : `id_${sub.student_id || 'unknown'}`));
+
+      // Group strictly by Student + Exam/Subject so that multiple exams (Exam 1, Exam 2) stay separate and clear
+      const examKey = sub.exam_id ? `exam_${sub.exam_id}` : (sub.exam_title ? `title_${sub.exam_title.trim().toLowerCase()}` : `course_${sub.course_id || 'general'}`);
+      const compositeKey = `${studentKey}_${examKey}`;
+
+      if (!map.has(compositeKey)) {
+        map.set(compositeKey, []);
+      }
+      map.get(compositeKey)!.push(sub);
+    });
+
+    const result: any[] = [];
+    map.forEach((attempts) => {
+      attempts.sort((a, b) => {
+        const attA = Number(a.attempt_number || 1);
+        const attB = Number(b.attempt_number || 1);
+        if (attA !== attB) return attA - attB;
+        return (a.id || 0) - (b.id || 0);
+      });
+
+      let highestScore = 0;
+      attempts.forEach(a => {
+        const sc = Number(a.score !== null && a.score !== undefined && a.score > 0 ? a.score : ((a.mcq_score || 0) + (a.practical_score || 0)));
+        if (sc > highestScore) highestScore = sc;
+      });
+
+      const latestAttempt = attempts[attempts.length - 1];
+
+      const primary = {
+        ...latestAttempt,
+        attempts: attempts,
+        attemptsCount: attempts.length,
+        highestScore: highestScore
+      };
+
+      result.push(primary);
+    });
+
+    return result;
+  }
+
+  openAttemptHistory(sub: any): void {
+    const email = sub.student_email && sub.student_email !== '-' ? sub.student_email.trim().toLowerCase() : '';
+    const code = sub.student_code && sub.student_code !== '-' ? sub.student_code.trim().toUpperCase() : '';
+    const name = sub.student_name ? sub.student_name.trim().toLowerCase().replace(/[\s\.\_\-]/g, '') : '';
+
+    const attempts = (sub.attempts && sub.attempts.length > 0)
+      ? [...sub.attempts]
+      : this.rawSubmissions.filter(s => {
+          const sEmail = s.student_email && s.student_email !== '-' ? s.student_email.trim().toLowerCase() : '';
+          const sCode = s.student_code && s.student_code !== '-' ? s.student_code.trim().toUpperCase() : '';
+          const sName = s.student_name ? s.student_name.trim().toLowerCase().replace(/[\s\.\_\-]/g, '') : '';
+          const matchStudent = (email && sEmail === email) || (code && sCode === code) || (name && sName === name) || (sub.student_id && s.student_id === sub.student_id);
+          const matchExam = sub.exam_id ? (s.exam_id === sub.exam_id) : true;
+          return matchStudent && matchExam;
+        });
+
+    attempts.sort((a: any, b: any) => {
+      const attA = Number(a.attempt_number || 1);
+      const attB = Number(b.attempt_number || 1);
+      if (attA !== attB) return attA - attB;
+      return (a.id || 0) - (b.id || 0);
+    });
+
+    let highestScore = 0;
+    attempts.forEach((a: any) => {
+      const sc = Number(a.score !== null && a.score !== undefined && a.score > 0 ? a.score : ((a.mcq_score || 0) + (a.practical_score || 0)));
+      if (sc > highestScore) highestScore = sc;
+    });
+
+    const latest = attempts[attempts.length - 1] || sub;
+    const latestScore = Number(latest.score !== null && latest.score !== undefined && latest.score > 0 ? latest.score : ((latest.mcq_score || 0) + (latest.practical_score || 0)));
+    const isApproved = attempts.some((a: any) => (a.status || '').toLowerCase() === 'approved' || (Number(a.score || 0) >= 40));
+
+    this.selectedStudentHistory = {
+      student_name: sub.student_name,
+      student_code: sub.student_code,
+      student_email: sub.student_email,
+      student_phone: sub.student_phone,
+      course_title: sub.course_title,
+      exam_title: sub.exam_title || sub.title || 'ஆன்லைன் தேர்வு',
+      batch_name: sub.batch_name,
+      batch_code: sub.batch_code,
+      totalAttempts: attempts.length,
+      highestScore: highestScore,
+      latestScore: latestScore,
+      finalStatus: isApproved ? 'Approved' : (latest.status || 'Pending'),
+      attempts: attempts,
+      primarySub: sub
+    };
+
+    this.showAttemptHistoryModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closeAttemptHistory(): void {
+    this.showAttemptHistoryModal = false;
+    this.selectedStudentHistory = null;
+    this.cdr.detectChanges();
   }
 
 
@@ -303,7 +445,7 @@ export class ExamsEvalTabComponent implements OnInit {
     const now = new Date();
     const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
     this.reattemptForm = {
-      reattempt_exam_id: sub.exam_id || (this.exams[0]?.id || null),
+      reattempt_exam_id: sub.exam_id ? Number(sub.exam_id) : (this.exams[0]?.id ? Number(this.exams[0].id) : null),
       reattempt_start_time: localIso,
       notes: 'மறுதேர்வுக்கான அனுமதி வழங்கப்பட்டது. குறிப்பிட்ட நேரத்தில் தேர்வு எழுதலாம்.'
     };

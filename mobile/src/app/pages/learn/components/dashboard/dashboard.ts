@@ -698,36 +698,38 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isExamSubmitted(examId: number): boolean {
-    return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
+    return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId));
   }
 
   isExamApproved(examId: number): boolean {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
     return sub ? (sub.status === 'Approved' || sub.is_published === true || sub.is_published === 1) : false;
   }
 
   isExamRejected(examId: number): boolean {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
     return sub ? sub.status === 'Rejected' : false;
   }
 
   getExamScore(examId: number): number {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
     return sub ? (sub.score || 0) : 0;
   }
 
   isReattemptAllowed(examId: number): boolean {
-    return this.mySubmissions.some(s => 
-      (Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId)) &&
-      (s.is_reattempt_allowed === true || s.is_reattempt_allowed === 1 || s.is_reattempt_allowed === '1')
-    );
+    return this.mySubmissions.some(s => {
+      const targetExamId = Number(s.reattempt_exam_id || s.exam_id);
+      return targetExamId === Number(examId) &&
+        (s.is_reattempt_allowed === true || s.is_reattempt_allowed === 1 || s.is_reattempt_allowed === '1');
+    });
   }
 
   getReattemptDetails(examId: number): any {
-    return this.mySubmissions.find(s => 
-      (Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId)) &&
-      (s.is_reattempt_allowed === true || s.is_reattempt_allowed === 1 || s.is_reattempt_allowed === '1')
-    );
+    return this.mySubmissions.find(s => {
+      const targetExamId = Number(s.reattempt_exam_id || s.exam_id);
+      return targetExamId === Number(examId) &&
+        (s.is_reattempt_allowed === true || s.is_reattempt_allowed === 1 || s.is_reattempt_allowed === '1');
+    });
   }
 
   getFilteredRegularExams(): any[] {

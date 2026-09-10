@@ -189,7 +189,19 @@
     "gracePeriod": "Grace Period (Minutes)",
     "gracePeriodHint": "Students arriving within these minutes from start time will be permitted",
     "certPreview": "Certificate Preview",
-    "marksheetPreview": "Marksheet Preview"
+    "marksheetPreview": "Marksheet Preview",
+    "historyTooltip": "Attempt History",
+    "attemptHistoryTitle": "Exam Attempt History",
+    "attemptHistorySub": "All attempts and mark breakdown for this student",
+    "totalAttempts": "Total Attempts",
+    "bestScore": "Best Score",
+    "finalStatus": "Final Status",
+    "attemptNo": "Attempt",
+    "dateTime": "Date & Time",
+    "attemptsCountLabel": "Attempts",
+    "allExamsFilter": "All Exams",
+    "examFilterLabel": "Filter by Exam",
+    "latestAttempt": "Latest"
   },
   "practical": {
     "title": "Practical Test Builder",

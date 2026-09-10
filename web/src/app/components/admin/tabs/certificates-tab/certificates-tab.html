@@ -123,7 +123,9 @@
                   </div>
                   <div>
                     <div class="s-name-ta">{{ c.student_name_ta || c.student_name }}</div>
-                    <div class="s-name-en">{{ c.student_name_en || c.student_name }}</div>
+                    @if (c.student_name_en && c.student_name_ta && c.student_name_en.toLowerCase().trim() !== c.student_name_ta.toLowerCase().trim()) {
+                      <div class="s-name-en">{{ c.student_name_en }}</div>
+                    }
                   </div>
                 </div>
               </td>
@@ -140,7 +142,7 @@
               <td>
                 <div class="score-tag">
                   <strong>{{ c.total_marks || c.score || '-' }}</strong> 
-                  <span class="pct">({{ c.percentage || 'PASS' }})</span>
+                  <span class="pct"> ({{ c.percentage || 'PASS' }})</span>
                 </div>
                 <div class="grade-text">{{ c.grade || 'First Class' }}</div>
               </td>

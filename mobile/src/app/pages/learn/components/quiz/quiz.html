@@ -1,47 +1,12 @@
 <div class="quiz-overlay protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" (cut)="$event.preventDefault()">
   <div class="quiz-header">
-    <span class="quiz-title-txt">{{ isPracticalStep ? 'செய்முறைத் தேர்வு' : ('learn.quizTitle' | translate) }}</span>
+    <span class="quiz-title-txt">{{ 'learn.quizTitle' | translate }}</span>
     <button class="close-quiz-btn" (click)="handleQuizClose()"><i class="bi bi-x-lg"></i></button>
   </div>
 
   @if (!quizSubmitted) {
-    <!-- 1. Practical Chart Question Step -->
-    @if (isPracticalStep) {
-      <div class="quiz-content-body protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
-          <div class="practical-exam-header-badge" style="margin: 0;">
-            <i class="bi bi-patch-question-fill text-gold"></i>
-            <span>செய்முறை ஜாதக ஆய்வுத் தேர்வு</span>
-          </div>
-        </div>
-
-        @if (exam?.chart_image_url) {
-          <div class="exam-chart-card">
-            <span class="chart-badge"><i class="bi bi-file-earmark-text-fill"></i> கேள்வித்தாள் / ராசி கட்டம்</span>
-            <div class="chart-img-wrap" style="text-align: center; padding: 15px;">
-              @if (exam.chart_image_url.includes('.pdf')) {
-                <a [href]="exam.chart_image_url" target="_blank" class="btn btn-outline-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 8px 16px; border: 1px solid #3b82f6; border-radius: 8px; color: #1d4ed8; font-weight: 600;">
-                  <i class="bi bi-file-earmark-pdf-fill" style="font-size: 1.2rem; color: #dc2626;"></i> View Question Paper (PDF)
-                </a>
-              } @else {
-                <img [src]="exam.chart_image_url" alt="Question Paper / Chart" class="exam-chart-img" draggable="false" (contextmenu)="$event.preventDefault()" />
-              }
-            </div>
-          </div>
-        }
-
-        @if (exam?.practical_prompt) {
-          <div class="exam-prompt-card protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
-            <span class="prompt-badge"><i class="bi bi-info-circle-fill"></i> கேள்விகள் / குறிப்புகள்</span>
-            <p class="prompt-txt">{{ exam.practical_prompt }}</p>
-          </div>
-        }
-
-      </div>
-    }
-
-    <!-- 2. MCQ Questions Step -->
-    @else if (quizQuestions.length > 0) {
+    <!-- MCQ Questions Step -->
+    @if (quizQuestions.length > 0) {
       <div class="quiz-content-body protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
         <div class="question-tracker-row">
           <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 6px;">
@@ -54,35 +19,6 @@
           </div>
           <div class="q-progress-bar"><div class="q-progress-fill" [style.width.%]="((currentQuestionIndex + 1)/quizQuestions.length)*100"></div></div>
         </div>
-
-        <!-- PRACTICAL ASSIGNMENT SHOWN ABOVE QUESTIONS -->
-        @if (exam?.chart_image_url || exam?.practical_prompt) {
-          <div class="practical-exam-header-badge" style="margin: 0 0 10px 0;">
-            <i class="bi bi-diagram-3-fill text-gold"></i>
-            <span>Practical (செய்முறை)</span>
-          </div>
-
-          @if (exam?.chart_image_url) {
-            <div class="exam-chart-card">
-              <div class="chart-img-wrap" style="text-align: center; padding: 10px;">
-                @if (exam.chart_image_url.includes('.pdf')) {
-                  <a [href]="exam.chart_image_url" target="_blank" class="btn btn-outline-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 6px 12px; border: 1px solid #3b82f6; border-radius: 6px; color: #1d4ed8; font-weight: 600;">
-                    <i class="bi bi-file-earmark-pdf-fill" style="font-size: 1.1rem; color: #dc2626;"></i> View Question Paper (PDF)
-                  </a>
-                } @else {
-                  <img [src]="exam.chart_image_url" alt="Question Paper / Chart" class="exam-chart-img" draggable="false" (contextmenu)="$event.preventDefault()" />
-                }
-              </div>
-            </div>
-          }
-
-          @if (exam?.practical_prompt) {
-            <div class="exam-prompt-card protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" style="margin-bottom: 15px;">
-              <p class="prompt-txt">{{ exam.practical_prompt }}</p>
-            </div>
-          }
-        }
-
 
         <div class="question-box protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()">
           <span class="q-badge">{{ 'learn.question' | translate }} {{ currentQuestionIndex + 1 }}</span>
@@ -107,7 +43,7 @@
           }
         </div>
         <button class="submit-quiz-btn" [disabled]="(quizQuestions[currentQuestionIndex].type === 'mcq' && !selectedOption) || (quizQuestions[currentQuestionIndex].type === 'fillup' && !fillupAnswer)" (click)="submitAnswer()">
-          {{ currentQuestionIndex < quizQuestions.length - 1 ? ('learn.nextQuestion' | translate) : (hasPracticalSection() ? 'செய்முறைத் தேர்வுக்குச் செல்க' : ('learn.submitQuiz' | translate)) }}
+          {{ currentQuestionIndex < quizQuestions.length - 1 ? ('learn.nextQuestion' | translate) : ('learn.submitQuiz' | translate) }}
         </button>
       </div>
     } @else {

@@ -384,7 +384,7 @@
           <p class="table-sub">{{ 'exams.evaluateSub' | translate }}</p>
         </div>
 
-        <div class="table-filter-group">
+        <div class="table-filter-group" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
           <select [(ngModel)]="selectedBatchId" (change)="loadSubmissions()" class="ctrl font-bold">
             <option value="">{{ 'exams.allBatches' | translate }}</option>
             @for (b of batches; track b.id) {
@@ -392,6 +392,13 @@
             }
           </select>
 
+          <!-- EXAM FILTER (METHOD 2) -->
+          <select [(ngModel)]="selectedExamFilter" (change)="onExamFilterChange()" class="ctrl font-bold" style="background: #fffdfa; border-color: #d4af37; color: #4a0e17;">
+            <option value="">{{ 'exams.allExamsFilter' | translate }}</option>
+            @for (ex of exams; track ex.id) {
+              <option [value]="ex.id">{{ ex.title }}</option>
+            }
+          </select>
         </div>
       </div>
 
@@ -421,9 +428,15 @@
                         {{ s.student_code }}
                       </span>
                     }
-                    <span style="background: #e0e7ff; color: #3730a3; font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 4px; border: 1px solid #c7d2fe;">
-                      Attempt {{ s.attempt_number || 1 }}
-                    </span>
+                    @if (s.attemptsCount > 1) {
+                      <button type="button" (click)="openAttemptHistory(s)" class="badge-attempts-pill" [title]="'exams.historyTooltip' | translate">
+                        <i class="bi bi-clock-history"></i> {{ s.attemptsCount }} {{ 'exams.attemptsCountLabel' | translate }}
+                      </button>
+                    } @else {
+                      <button type="button" (click)="openAttemptHistory(s)" class="badge-attempts-pill" style="background: #e0e7ff; color: #3730a3; border-color: #c7d2fe;" [title]="'exams.historyTooltip' | translate">
+                        <i class="bi bi-clock-history"></i> {{ 'exams.attemptNo' | translate }} {{ s.attempt_number || 1 }}
+                      </button>
+                    }
                   </div>
                   <div class="text-xs text-slate-500">{{ s.student_email }}</div>
                   @if (s.student_phone) {
@@ -431,10 +444,17 @@
                   }
                 </td>
                 <td>
-                  <div class="font-bold text-sm text-slate-800">{{ s.course_title }}</div>
+                  @if (s.exam_title || s.title) {
+                    <div style="margin-bottom: 4px;">
+                      <span style="background: #fef3c7; color: #78350f; font-size: 11.5px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #fde68a; display: inline-flex; align-items: center; gap: 4px;">
+                        <i class="bi bi-journal-check text-gold"></i> {{ (s.exam_title || s.title) | translate }}
+                      </span>
+                    </div>
+                  }
+                  <div class="font-bold text-sm text-slate-800">{{ s.course_title | translate }}</div>
                   <div class="text-xs text-slate-500 mt-0.5">
                     <span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: 600; color: #475569;">
-                      <i class="bi bi-people me-1"></i> {{ s.batch_name ? (s.batch_name + (s.batch_code ? ' - ' + s.batch_code : '')) : ('exams.generalBatch' | translate) }}
+                      <i class="bi bi-people me-1"></i> {{ (s.batch_name ? (s.batch_name + (s.batch_code ? ' - ' + s.batch_code : '')) : ('exams.generalBatch' | translate)) | translate }}
                     </span>
                   </div>
                 </td>
@@ -585,6 +605,9 @@
                     }
                     <button type="button" (click)="openReattemptModal(s)" class="btn-action-icon btn-reexam-icon" [title]="'exams.reExamTooltip' | translate">
                       <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                    <button type="button" (click)="openAttemptHistory(s)" class="btn-action-icon btn-history-icon" [title]="'exams.historyTooltip' | translate">
+                      <i class="bi bi-clock-history"></i>
                     </button>
                     @if (s.is_reattempt_allowed) {
                       <span class="badge-reattempt-allowed" [title]="'exams.reExamAllowed' | translate">
@@ -1021,7 +1044,7 @@
             </label>
             <select [(ngModel)]="reattemptForm.reattempt_exam_id" name="reattemptExam" required class="ctrl w-full font-semibold" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-weight: 600;">
               @for (ex of exams; track ex.id) {
-                <option [value]="ex.id">{{ ex.title }} ({{ ex.duration }} Mins - {{ ex.questions?.length || 0 }} Qs)</option>
+                <option [ngValue]="ex.id">{{ ex.title }} ({{ ex.duration }} Mins - {{ ex.questions?.length || 0 }} Qs)</option>
               }
             </select>
           </div>
@@ -1049,6 +1072,184 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: ATTEMPT HISTORY (தேர்வு முயற்சிகள் & மதிப்பெண் வரலாறு) -->
+  @if (showAttemptHistoryModal && selectedStudentHistory) {
+    <div class="modal-overlay" (click)="closeAttemptHistory()" style="z-index: 999999; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <div class="modal-card history-modal-card" (click)="$event.stopPropagation()">
+        
+        <!-- Modal Topbar -->
+        <div class="modal-header-history">
+          <div class="history-title-wrap">
+            <div class="history-icon-badge">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div>
+              <h3 class="history-modal-title">
+                {{ 'exams.attemptHistoryTitle' | translate }}
+              </h3>
+              <p class="history-modal-sub">
+                {{ 'exams.attemptHistorySub' | translate }}
+              </p>
+            </div>
+          </div>
+          <button (click)="closeAttemptHistory()" class="btn-close-modal" [title]="'common.close' | translate">&times;</button>
+        </div>
+
+        <!-- Student Meta Header Ribbon -->
+        <div class="history-student-strip">
+          <div class="h-student-info">
+            <div class="h-student-name">
+              <i class="bi bi-person-circle text-gold me-1"></i> {{ selectedStudentHistory.student_name }}
+              @if (selectedStudentHistory.student_code) {
+                <span class="h-student-code">{{ selectedStudentHistory.student_code }}</span>
+              }
+            </div>
+            <div class="h-student-contact">
+              <span><i class="bi bi-envelope me-1"></i>{{ selectedStudentHistory.student_email }}</span>
+              @if (selectedStudentHistory.student_phone) {
+                <span class="ms-3"><i class="bi bi-telephone me-1"></i>{{ selectedStudentHistory.student_phone }}</span>
+              }
+            </div>
+          </div>
+          <div class="h-course-badge" style="text-align: right;">
+            @if (selectedStudentHistory.exam_title) {
+              <div style="margin-bottom: 3px;">
+                <span style="background: #fef3c7; color: #78350f; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; border: 1px solid #fde68a; display: inline-flex; align-items: center; gap: 4px;">
+                  <i class="bi bi-journal-check text-gold"></i> {{ selectedStudentHistory.exam_title | translate }}
+                </span>
+              </div>
+            }
+            <div class="font-bold text-xs text-slate-800">{{ selectedStudentHistory.course_title | translate }}</div>
+            <div class="text-[11px] text-slate-500">{{ (selectedStudentHistory.batch_name ? (selectedStudentHistory.batch_name + (selectedStudentHistory.batch_code ? ' - ' + selectedStudentHistory.batch_code : '')) : ('exams.generalBatch' | translate)) | translate }}</div>
+          </div>
+        </div>
+
+        <!-- 3 Quick KPI Cards -->
+        <div class="history-kpi-grid">
+          <div class="h-kpi-card">
+            <span class="h-kpi-label">{{ 'exams.totalAttempts' | translate }}</span>
+            <div class="h-kpi-val text-blue">
+              <i class="bi bi-repeat me-1"></i> {{ selectedStudentHistory.totalAttempts }}
+            </div>
+          </div>
+          <div class="h-kpi-card">
+            <span class="h-kpi-label">{{ 'exams.bestScore' | translate }}</span>
+            <div class="h-kpi-val text-gold">
+              <i class="bi bi-trophy-fill me-1"></i> {{ selectedStudentHistory.highestScore }} / 100
+            </div>
+          </div>
+          <div class="h-kpi-card">
+            <span class="h-kpi-label">{{ 'exams.finalStatus' | translate }}</span>
+            <div class="h-kpi-val">
+              @if (selectedStudentHistory.finalStatus === 'Approved' || selectedStudentHistory.highestScore >= 40) {
+                <span class="h-status-pass"><i class="bi bi-check-circle-fill me-1"></i> {{ 'exams.passBadge' | translate }}</span>
+              } @else {
+                <span class="h-status-fail"><i class="bi bi-x-circle-fill me-1"></i> {{ 'exams.failBadge' | translate }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Attempts Table List -->
+        <div class="history-table-container">
+          <table class="table-styled history-table w-full">
+            <thead>
+              <tr class="thead-maroon">
+                <th style="width: 110px;">{{ 'exams.attemptNo' | translate }}</th>
+                <th>{{ 'exams.dateTime' | translate }}</th>
+                <th>{{ 'exams.type' | translate }}</th>
+                <th>{{ 'exams.mcqPracMarks' | translate }}</th>
+                <th>{{ 'exams.totalScore' | translate }}</th>
+                <th>{{ 'exams.passStatus' | translate }}</th>
+                <th>{{ 'exams.pdfAnswer' | translate }}</th>
+                <th style="text-align: center;">{{ 'exams.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (att of selectedStudentHistory.attempts; track att.id; let idx = $index) {
+                <tr [class.highlight-best]="att.score === selectedStudentHistory.highestScore">
+                  <td>
+                    <span class="badge-attempt-index" [class.badge-latest]="idx === selectedStudentHistory.attempts.length - 1">
+                      {{ 'exams.attemptNo' | translate }} #{{ att.attempt_number || (idx + 1) }}
+                    </span>
+                    @if (idx === selectedStudentHistory.attempts.length - 1) {
+                      <span class="badge-latest-tag">{{ 'exams.latestAttempt' | translate }}</span>
+                    }
+                  </td>
+                  <td>
+                    <div class="font-semibold text-slate-800 text-xs">
+                      {{ att.created_at ? (att.created_at | date:'dd MMM yyyy, hh:mm a') : '10 Sep 2026' }}
+                    </div>
+                  </td>
+                  <td>
+                    @if (att.submission_type === 'online_quiz') {
+                      <span class="type-pill-blue"><i class="bi bi-laptop"></i> {{ 'exams.onlineQuizType' | translate }}</span>
+                    } @else if (att.submission_type === 'physical_courier') {
+                      <span class="type-pill-rose"><i class="bi bi-box-seam-fill"></i> {{ 'exams.courierType' | translate }}</span>
+                    } @else {
+                      <span class="type-pill-gold"><i class="bi bi-file-earmark-ruled-fill"></i> {{ 'exams.practicalType' | translate }}</span>
+                    }
+                  </td>
+                  <td class="text-xs font-semibold">
+                    @if (att.submission_type === 'online_quiz') {
+                      <span>MCQ: <strong>{{ att.score !== null ? att.score : (att.mcq_score || 0) }}</strong> / 100</span>
+                    } @else if (att.submission_type === 'physical_courier' || att.submission_type === 'practical_assignment') {
+                      <span>{{ 'exams.practicalLabel' | translate }}: <strong>{{ att.practical_score !== null ? att.practical_score : att.score }}</strong> / 100</span>
+                    } @else {
+                      <span>MCQ: <strong>{{ att.mcq_score || 0 }}</strong> | Practical: <strong>{{ att.practical_score || 0 }}</strong></span>
+                    }
+                  </td>
+                  <td>
+                    <span class="score-badge" style="font-weight: 800;">
+                      {{ (att.score !== null && att.score !== undefined && att.score > 0) ? att.score : ((att.mcq_score || 0) + (att.practical_score || 0)) }} / 100
+                    </span>
+                  </td>
+                  <td>
+                    @if (att.status?.toLowerCase() === 'approved' || (att.score >= 40 || ((att.mcq_score || 0) + (att.practical_score || 0)) >= 40)) {
+                      <span class="badge-pass" style="display: inline-flex; align-items: center; gap: 4px;"><i class="bi bi-check-circle-fill"></i> {{ 'exams.passBadge' | translate }}</span>
+                    } @else {
+                      <span class="badge-rejected" style="display: inline-flex; align-items: center; gap: 4px;"><i class="bi bi-x-circle-fill"></i> {{ 'exams.failBadge' | translate }}</span>
+                    }
+                  </td>
+                  <td>
+                    @if (att.pdf_url) {
+                      <a [href]="att.pdf_url" target="_blank" class="link-pdf" style="display: inline-flex; align-items: center; gap: 4px; color: #dc2626; font-weight: 700; font-size: 11px; text-decoration: none; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 6px; border-radius: 4px;">
+                        <i [class]="att.pdf_url.includes('.pdf') ? 'bi bi-file-earmark-pdf-fill' : 'bi bi-image-fill'"></i>
+                        <span>{{ att.pdf_url.includes('.pdf') ? ('exams.viewPdf' | translate) : 'Image' }}</span>
+                      </a>
+                    } @else if (att.courier_tracking_no) {
+                      <span style="font-size: 11px; font-weight: 700; color: #831843; background: #fdf2f8; padding: 2px 6px; border-radius: 4px; border: 1px solid #fbcfe8; display: inline-flex; align-items: center; gap: 4px;">
+                        <i class="bi bi-truck"></i> {{ att.courier_name || 'Courier' }}: {{ att.courier_tracking_no }}
+                      </span>
+                    } @else {
+                      <span class="text-slate-400 text-xs">-</span>
+                    }
+                  </td>
+                  <td style="text-align: center;">
+                    <button type="button" (click)="openGradingModal(att); closeAttemptHistory()" class="btn-action-icon btn-grade-edit" style="width: 30px; height: 30px; font-size: 13px;" [title]="'exams.editGradeTooltip' | translate">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="history-modal-footer">
+          <button type="button" (click)="openReattemptModal(selectedStudentHistory.primarySub); closeAttemptHistory()" class="btn-schedule-reexam">
+            <i class="bi bi-arrow-repeat me-1"></i> {{ 'exams.reExamTitle' | translate }}
+          </button>
+          <button type="button" (click)="closeAttemptHistory()" class="btn-cancel">
+            {{ 'common.close' | translate }}
+          </button>
+        </div>
+
       </div>
     </div>
   }

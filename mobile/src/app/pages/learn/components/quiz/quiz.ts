@@ -14,18 +14,9 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
 
   quizSubmitted: boolean = false;
-  isPracticalStep: boolean = false;
   currentQuestionIndex: number = 0;
   selectedOption: string | null = null;
   fillupAnswer: string = '';
-  
-  // Practical Handwritten Answer Sheet Upload State
-  uploadedAnswerUrl: string = '';
-  uploadedFileName: string = '';
-  uploadedFileType: string = ''; // 'image' | 'pdf'
-  isUploadingAnswerSheet: boolean = false;
-  uploadErrorMessage: string = '';
-  isSubmittingPractical: boolean = false;
   
   quizScore: number = 0;
   quizPassed: boolean = false;
@@ -36,15 +27,12 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
   timeRemaining: number = 0;
   timerInterval: any;
   timerDisplay: string = '';
+  showExitConfirmModal: boolean = false;
 
   constructor(
     private http: HttpClient,
     private authService: AuthService
   ) {}
-
-  hasPracticalSection(): boolean {
-    return !!(this.exam && (this.exam.is_practical || this.exam.chart_image_url || this.exam.practical_prompt));
-  }
 
   ngOnInit() {
     if (this.exam && this.exam.questions) {
@@ -58,11 +46,7 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
       }));
     }
 
-    if (this.quizQuestions.length === 0 && this.hasPracticalSection()) {
-      this.isPracticalStep = true;
-    }
-
-    if (this.exam && this.exam.duration && !this.exam.is_practical) {
+    if (this.exam && this.exam.duration) {
       this.timeRemaining = this.exam.duration * 60;
       this.updateTimerDisplay();
       this.startTimer();
@@ -91,12 +75,8 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
     this.timerDisplay = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
-  showExitConfirmModal: boolean = false;
-
   handleQuizClose() {
-    if (this.exam?.is_practical) {
-      this.close.emit();
-    } else if (!this.quizSubmitted) {
+    if (!this.quizSubmitted) {
       this.showExitConfirmModal = true;
     } else {
       this.close.emit();
@@ -125,12 +105,11 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
       const payload = {
         course_id: this.exam?.course_id || null,
         exam_id: this.exam?.id || null,
-        submission_type: this.uploadedAnswerUrl ? (this.uploadedFileType === 'pdf' ? 'pdf_upload' : 'practical_assignment') : 'online_quiz',
-        pdf_url: this.uploadedAnswerUrl || null,
+        submission_type: 'online_quiz',
         score: this.quizScore,
         mcq_score: mcqScore,
         practical_score: null,
-        notes: this.uploadedAnswerUrl ? 'Handwritten Answer Sheet Uploaded' : 'Student exited mid-exam (Auto-submitted)'
+        notes: 'Student exited mid-exam (Auto-submitted)'
       };
 
       this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload, this.authService.getAuthHeaders()).subscribe({
@@ -187,8 +166,6 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
       this.currentQuestionIndex++;
       this.selectedOption = null;
       this.fillupAnswer = '';
-    } else if (this.hasPracticalSection()) {
-      this.isPracticalStep = true;
     } else {
       this.finishQuiz();
     }
@@ -217,81 +194,5 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
         error: () => {}
       });
     }
-  }
-
-  onAnswerFileSelected(event: any) {
-    const file = event?.target?.files?.[0];
-    if (!file) return;
-
-    this.uploadErrorMessage = '';
-    this.isUploadingAnswerSheet = true;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'exam_answers');
-
-    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
-      next: (res) => {
-        this.isUploadingAnswerSheet = false;
-        if (res && res.url) {
-          this.uploadedAnswerUrl = res.url;
-          this.uploadedFileName = file.name;
-          this.uploadedFileType = file.type.includes('pdf') ? 'pdf' : 'image';
-        } else {
-          this.uploadErrorMessage = 'கோப்பை பதிவேற்ற முடியவில்லை.';
-        }
-      },
-      error: (err) => {
-        this.isUploadingAnswerSheet = false;
-        this.uploadErrorMessage = err?.error?.message || 'கோப்பை பதிவேற்றுவதில் பிழை ஏற்பட்டது.';
-      }
-    });
-  }
-
-  removeUploadedFile() {
-    this.uploadedAnswerUrl = '';
-    this.uploadedFileName = '';
-    this.uploadedFileType = '';
-    this.uploadErrorMessage = '';
-  }
-
-  submitPracticalExam() {
-    if (!this.uploadedAnswerUrl) {
-      this.uploadErrorMessage = 'தயவுசெய்து உங்கள் விடைத்தாளை (Image அல்லது PDF) பதிவேற்றவும்.';
-      return;
-    }
-
-    this.isSubmittingPractical = true;
-    if (this.timerInterval) clearInterval(this.timerInterval);
-
-    const totalMarks = this.quizQuestions.reduce((acc, q) => acc + (q.marks || 1), 0);
-    const mcqScore = totalMarks > 0 ? Math.round((this.correctAnswersCount / totalMarks) * 100) : null;
-    const totalScore = mcqScore !== null ? mcqScore : 100;
-
-    const payload = {
-      course_id: this.exam?.course_id || null,
-      exam_id: this.exam?.id || null,
-      submission_type: this.uploadedFileType === 'pdf' ? 'pdf_upload' : 'practical_assignment',
-      pdf_url: this.uploadedAnswerUrl,
-      score: totalScore,
-      mcq_score: mcqScore,
-      practical_score: null, // Practical marks will be given by Admin during evaluation
-      notes: 'Handwritten Answer Sheet Uploaded by Student'
-    };
-
-    this.http.post<any>(`${environment.apiUrl}/user/submissions`, payload, this.authService.getAuthHeaders()).subscribe({
-      next: () => {
-        this.isSubmittingPractical = false;
-        this.quizSubmitted = true;
-        this.quizPassed = true;
-        this.quizScore = totalScore;
-      },
-      error: () => {
-        this.isSubmittingPractical = false;
-        this.quizSubmitted = true;
-        this.quizPassed = true;
-        this.quizScore = totalScore;
-      }
-    });
   }
 }

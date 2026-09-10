@@ -21,6 +21,7 @@ export class CertificatesTabComponent implements OnInit {
   issuedCertificates: any[] = [];
   studentsList: any[] = [];
   coursesList: any[] = [];
+  studentSubmissions: any[] = [];
   
   isLoading = false;
   showDesignerModal = false;
@@ -110,7 +111,22 @@ export class CertificatesTabComponent implements OnInit {
     if (typeof window !== 'undefined') {
       this.loadIssuedCertificates();
       this.loadStudentsAndCourses();
+      this.loadSubmissions();
     }
+  }
+
+  loadSubmissions(): void {
+    const headers = this.authService.getAuthHeaders();
+    this.http.get<any>(`${environment.apiUrl}/admin/submissions`, headers).subscribe({
+      next: (res) => {
+        this.studentSubmissions = res.submissions || [];
+        if (this.designerForm.student_id) {
+          this.fetchMarksForStudent(this.designerForm.student_id, this.designerForm.course_level);
+        }
+        this.cdr.markForCheck();
+      },
+      error: () => {}
+    });
   }
 
   loadIssuedCertificates(): void {
@@ -168,6 +184,61 @@ export class CertificatesTabComponent implements OnInit {
       this.resetDesignerForm(level);
     }
     this.showDesignerModal = true;
+    this.cdr.markForCheck();
+  }
+
+  fetchMarksForStudent(studentId: any, level?: 'UG' | 'PG'): void {
+    if (!studentId) return;
+    const st = this.studentsList.find(s => s.id == studentId);
+    if (st) {
+      this.designerForm.student_name_ta = st.name || '';
+      this.designerForm.student_name_en = st.name ? st.name.toUpperCase() : '';
+      this.designerForm.registration_number = st.student_id || this.designerForm.registration_number;
+      this.designerForm.certificate_number = st.student_id || this.designerForm.certificate_number;
+      if (st.profile_photo_url) {
+        this.designerForm.photo_url = st.profile_photo_url;
+      }
+    }
+
+    // Match submission from studentSubmissions list
+    const sub = this.studentSubmissions.find(s => 
+      s.student_id == studentId || 
+      s.user_id == studentId || 
+      (st && s.student_code && s.student_code === st.student_id)
+    );
+
+    if (sub) {
+      const mcqScore = (sub.mcq_score !== null && sub.mcq_score !== undefined) 
+        ? Number(sub.mcq_score) 
+        : (sub.score !== null && sub.score !== undefined ? Number(sub.score) : null);
+      
+      const pracScore = (sub.practical_score !== null && sub.practical_score !== undefined)
+        ? Number(sub.practical_score)
+        : null;
+
+      if (mcqScore !== null) {
+        this.designerForm.theory1_mark = mcqScore;
+      }
+
+      if (pracScore !== null && pracScore > 0) {
+        this.designerForm.has_practicals = true;
+        this.designerForm.practical1_mark = pracScore;
+      } else {
+        this.designerForm.has_practicals = false;
+      }
+
+      if (sub.created_at || sub.submitted_at || sub.exam_date) {
+        const d = new Date(sub.exam_date || sub.submitted_at || sub.created_at);
+        if (!isNaN(d.getTime())) {
+          const dd = String(d.getDate()).padStart(2, '0');
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const yyyy = d.getFullYear();
+          this.designerForm.exam_date = `${dd}.${mm}.${yyyy}`;
+        }
+      }
+    }
+
+    this.calculateMarks();
     this.cdr.markForCheck();
   }
 
@@ -266,7 +337,11 @@ export class CertificatesTabComponent implements OnInit {
         marksheet_download_url: ''
       };
     }
-    this.calculateMarks();
+    if (selectedStudent) {
+      this.fetchMarksForStudent(selectedStudent.id, level);
+    } else {
+      this.calculateMarks();
+    }
   }
 
   populateFromRecord(rec: any): void {
@@ -340,16 +415,7 @@ export class CertificatesTabComponent implements OnInit {
 
   onStudentSelect(studentId: any): void {
     this.designerForm.student_id = studentId;
-    const st = this.studentsList.find(s => s.id == studentId);
-    if (st) {
-      this.designerForm.student_name_ta = st.name || '';
-      this.designerForm.student_name_en = st.name ? st.name.toUpperCase() : '';
-      this.designerForm.registration_number = st.student_id || '';
-      this.designerForm.certificate_number = st.student_id || '';
-      if (st.profile_photo_url) {
-        this.designerForm.photo_url = st.profile_photo_url;
-      }
-    }
+    this.fetchMarksForStudent(studentId, this.designerForm.course_level);
   }
 
   setCourseLevel(level: 'UG' | 'PG'): void {
