@@ -200,7 +200,7 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
     const totalMarks = this.quizQuestions.reduce((acc, q) => acc + (q.marks || 1), 0);
     this.quizScore = totalMarks > 0 ? Math.round((this.correctAnswersCount / totalMarks) * 100) : 0;
     this.quizSubmitted = true;
-    const passMark = this.exam?.pass_mark || 60;
+    const passMark = this.exam?.pass_mark || 40;
     this.quizPassed = this.quizScore >= passMark;
 
     if (this.authService.isLoggedIn()) {

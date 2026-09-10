@@ -7,10 +7,12 @@ import { ToastService } from '../../../../services/toast.service';
 import { ConfirmService } from '../../../../services/confirm.service';
 import { environment } from '../../../../../environments/environment';
 
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
+
 @Component({
   selector: 'app-certificates-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './certificates-tab.html',
   styleUrls: ['../../admin-dashboard.css', './certificates-tab.css']
 })

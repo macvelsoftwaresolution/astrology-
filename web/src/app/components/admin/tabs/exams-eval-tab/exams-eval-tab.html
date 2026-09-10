@@ -98,7 +98,7 @@
         <div class="exam-card">
           <div class="exam-card-header">
             <span class="badge-level">
-              {{ ex.level }}
+              {{ getLevelTranslationKey(ex.level) | translate }}
             </span>
             <span class="badge-duration">
               <i class="bi bi-clock-history"></i> {{ ex.duration || 60 }} Mins
@@ -168,8 +168,18 @@
             </div>
 
             <div>
-              <label class="form-label"><i class="bi bi-clock"></i> {{ 'exams.duration' | translate }}</label>
-              <input type="number" [(ngModel)]="activeExamWizard.duration" name="exDuration" class="ctrl w-full" placeholder="60" />
+              <label class="form-label"><i class="bi bi-calendar-event text-blue"></i> {{ 'exams.startTime' | translate }} *</label>
+              <input type="datetime-local" [(ngModel)]="activeExamWizard.start_time" name="exStartTime" class="ctrl w-full font-bold" />
+            </div>
+
+            <div>
+              <label class="form-label"><i class="bi bi-clock-history text-gold"></i> {{ 'exams.durationMins' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.duration" name="exDuration" class="ctrl w-full font-bold" placeholder="60" />
+            </div>
+
+            <div>
+              <label class="form-label"><i class="bi bi-door-open text-orange"></i> {{ 'exams.gracePeriod' | translate }}</label>
+              <input type="number" [(ngModel)]="activeExamWizard.grace_period_mins" name="exGracePeriod" class="ctrl w-full" placeholder="20" [title]="'exams.gracePeriodHint' | translate" />
             </div>
 
             <div>
@@ -397,6 +407,7 @@
               <th>{{ 'exams.totalScore' | translate }}</th>
               <th>{{ 'exams.passStatus' | translate }}</th>
               <th style="min-width: 220px;">{{ 'exams.certMarksheetCol' | translate }}</th>
+              <th style="min-width: 150px; text-align: center;">{{ 'exams.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -410,6 +421,9 @@
                         {{ s.student_code }}
                       </span>
                     }
+                    <span style="background: #e0e7ff; color: #3730a3; font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 4px; border: 1px solid #c7d2fe;">
+                      Attempt {{ s.attempt_number || 1 }}
+                    </span>
                   </div>
                   <div class="text-xs text-slate-500">{{ s.student_email }}</div>
                   @if (s.student_phone) {
@@ -420,38 +434,79 @@
                   <div class="font-bold text-sm text-slate-800">{{ s.course_title }}</div>
                   <div class="text-xs text-slate-500 mt-0.5">
                     <span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: 600; color: #475569;">
-                      <i class="bi bi-people me-1"></i> {{ s.batch_name ? (s.batch_name + (s.batch_code ? ' - ' + s.batch_code : '')) : 'பொது வகுப்பு (General)' }}
+                      <i class="bi bi-people me-1"></i> {{ s.batch_name ? (s.batch_name + (s.batch_code ? ' - ' + s.batch_code : '')) : ('exams.generalBatch' | translate) }}
                     </span>
                   </div>
                 </td>
                 <td>
-                  <span class="badge-type" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
-                    <i class="bi bi-file-earmark-text"></i> {{ s.submission_type === 'online_quiz' ? 'ஆன்லைன் தேர்வு (Online Quiz)' : s.submission_type === 'practical_assignment' ? 'செய்முறை விடைத்தாள் (Practical)' : s.submission_type === 'pdf_upload' ? 'PDF விடைத்தாள்' : s.submission_type }}
-                  </span>
+                  @if (s.submission_type === 'online_quiz') {
+                    <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
+                      <i class="bi bi-laptop"></i> {{ 'exams.onlineQuizType' | translate }}
+                    </span>
+                  } @else if (s.submission_type === 'physical_courier') {
+                    <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #fdf2f8; color: #9d174d; border: 1px solid #fbcfe8;">
+                      <i class="bi bi-box-seam-fill"></i> {{ 'exams.courierType' | translate }}
+                    </span>
+                  } @else if (s.submission_type === 'practical_assignment') {
+                    <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #fefce8; color: #854d0e; border: 1px solid #fef08a;">
+                      <i class="bi bi-file-earmark-ruled-fill"></i> {{ 'exams.practicalType' | translate }}
+                    </span>
+                  } @else {
+                    <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;">
+                      <i class="bi bi-file-earmark-text"></i> {{ s.submission_type }}
+                    </span>
+                  }
                 </td>
                 <td>
-                  @if (s.pdf_url) {
+                  @if (s.courier_tracking_no || s.submission_type === 'physical_courier') {
+                    <div style="font-size: 11px; font-weight: 700; color: #831843; background: #fdf2f8; padding: 3px 6px; border-radius: 4px; border: 1px solid #fbcfe8; display: inline-flex; align-items: center; gap: 4px;">
+                      <i class="bi bi-truck"></i> {{ s.courier_name || ('exams.courierType' | translate) }}: {{ s.courier_tracking_no || ('exams.courierReceived' | translate) }}
+                    </div>
+                  } @else if (s.pdf_url) {
                     <a [href]="s.pdf_url" target="_blank" class="link-pdf" style="display: inline-flex; align-items: center; gap: 4px; color: #dc2626; font-weight: 700; font-size: 12px; text-decoration: none; background: #fef2f2; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 6px;">
                       <i [class]="s.pdf_url.includes('.pdf') ? 'bi bi-file-earmark-pdf-fill' : 'bi bi-image-fill'"></i>
-                      <span>{{ s.pdf_url.includes('.pdf') ? 'PDF காண்க' : 'விடைத்தாள் படம்' }}</span>
+                      <span>{{ s.pdf_url.includes('.pdf') ? ('exams.viewPdf' | translate) : 'Image' }}</span>
                     </a>
                   } @else {
                     <span class="text-slate-400 text-xs font-semibold">-</span>
                   }
                 </td>
                 <td class="text-sm">
-                  <div style="font-size: 12px; color: #334155;">MCQ: <strong style="color: #0f172a;">{{ s.mcq_score !== null && s.mcq_score !== undefined ? s.mcq_score : '-' }}</strong></div>
+                  @if (s.submission_type === 'online_quiz') {
+                    <div style="font-weight: 800; color: #0f172a; font-size: 13px;">
+                      <i class="bi bi-check2-circle text-emerald me-1"></i> MCQ: {{ s.score !== null && s.score !== undefined ? s.score : (s.mcq_score || 0) }} / 100
+                    </div>
+                  } @else if (s.submission_type === 'physical_courier' || s.submission_type === 'practical_assignment') {
+                    <div style="font-weight: 800; color: #0f172a; font-size: 13px;">
+                      <i class="bi bi-pencil-fill text-gold me-1"></i> {{ 'exams.practicalLabel' | translate }}: {{ s.practical_score !== null && s.practical_score !== undefined ? s.practical_score : (s.score !== null ? s.score : '-') }} / 100
+                    </div>
+                  } @else {
+                    <div style="font-size: 12px; color: #334155;">MCQ: <strong style="color: #0f172a;">{{ s.mcq_score !== null ? s.mcq_score : '-' }}</strong></div>
+                    <div style="font-size: 12px; color: #334155;">{{ 'exams.practicalLabel' | translate }}: <strong style="color: #0f172a;">{{ s.practical_score !== null ? s.practical_score : '-' }}</strong></div>
+                  }
                 </td>
                 <td>
-                  <span class="score-badge" style="font-weight: 800;">{{ s.score !== null && s.score !== undefined ? s.score : '-' }} / 100</span>
-                </td>
-                <td>
-                  <span [class]="s.status === 'Approved' ? 'badge-pass' : 'badge-pending'">
-                    {{ s.status === 'Approved' ? ('exams.passBadge' | translate) : ('exams.pendingBadge' | translate) }}
+                  <span class="score-badge" style="font-weight: 800;">
+                    {{ (s.score !== null && s.score !== undefined && s.score > 0) ? s.score : ((s.mcq_score || 0) + (s.practical_score || 0)) }} / 100
                   </span>
+                </td>
+                <td>
+                  @if (s.status?.toLowerCase() === 'approved' || (s.score >= 40 || ((s.mcq_score || 0) + (s.practical_score || 0)) >= 40)) {
+                    <span class="badge-pass" style="display: inline-flex; align-items: center; gap: 4px;">
+                      <i class="bi bi-check-circle-fill"></i> {{ 'exams.passBadge' | translate }}
+                    </span>
+                  } @else if (s.status?.toLowerCase() === 'rejected') {
+                    <span class="badge-rejected" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+                      <i class="bi bi-x-circle-fill"></i> {{ 'exams.failBadge' | translate }}
+                    </span>
+                  } @else {
+                    <span class="badge-pending" style="display: inline-flex; align-items: center; gap: 4px;">
+                      <i class="bi bi-hourglass-split"></i> {{ 'exams.pendingBadge' | translate }}
+                    </span>
+                  }
                   @if (s.is_published) {
                     <span class="badge-published" style="display: block; margin-top: 4px;">
-                      <i class="bi bi-globe"></i> Published
+                      <i class="bi bi-globe"></i> {{ 'exams.publishedBadge' | translate }}
                     </span>
                   }
                 </td>
@@ -464,9 +519,9 @@
                       @if (s.certificate_number || s.cert_pdf_url) {
                         <div class="cert-pill-item">
                           <span class="cert-tag-title" [title]="s.certificate_number">
-                            <i class="bi bi-award-fill text-gold me-1"></i> {{ s.certificate_number || 'சான்றிதழ்' }}
+                            <i class="bi bi-award-fill text-gold me-1"></i> {{ s.certificate_number || ('exams.certificateBtn' | translate) }}
                           </span>
-                          <button type="button" (click)="previewDoc(s, 'certificate')" class="btn-cert-mini-view" title="சான்றிதழ் முன்னோட்டம் (Preview Certificate)">
+                          <button type="button" (click)="previewDoc(s, 'certificate')" class="btn-cert-mini-view" [title]="'exams.certificateBtn' | translate">
                             <i class="bi bi-eye-fill"></i>
                           </button>
                         </div>
@@ -476,9 +531,9 @@
                       @if (s.marksheet_number || s.marksheet_download_url) {
                         <div class="cert-pill-item mt-1">
                           <span class="marksheet-tag-title" [title]="s.marksheet_number">
-                            <i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i> {{ s.marksheet_number || 'மதிப்பெண் பட்டியல்' }}
+                            <i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i> {{ s.marksheet_number || ('exams.certMarksheetCol' | translate) }}
                           </span>
-                          <button type="button" (click)="previewDoc(s, 'marksheet')" class="btn-cert-mini-view" title="மதிப்பெண் பட்டியல் முன்னோட்டம் (Preview Marksheet)">
+                          <button type="button" (click)="previewDoc(s, 'marksheet')" class="btn-cert-mini-view" [title]="'exams.certMarksheetCol' | translate">
                             <i class="bi bi-eye-fill"></i>
                           </button>
                         </div>
@@ -487,7 +542,7 @@
                       <!-- Total Marks if available -->
                       @if (s.cert_total_marks) {
                         <div class="cert-mini-score">
-                          மதிப்பெண்: <strong>{{ s.cert_total_marks }}/500</strong> ({{ s.cert_percentage || 'தேர்ச்சி' }})
+                          {{ 'exams.marksLabel' | translate }}: <strong>{{ s.cert_total_marks }}/500</strong> ({{ s.cert_percentage || ('exams.passBadge' | translate) }})
                         </div>
                       }
 
@@ -509,18 +564,41 @@
                       <span class="no-cert-hint">
                         <i class="bi bi-clock-history me-1"></i> {{ 'exams.noCertCreated' | translate }}
                       </span>
-                      <button type="button" (click)="createCertificateFor(s)" class="btn-create-cert-link" title="சான்றிதழ் தயாரிப்பான் பக்கத்திற்கு செல்ல">
+                      <button type="button" (click)="createCertificateFor(s)" class="btn-create-cert-link" [title]="'exams.createCert' | translate">
                         <i class="bi bi-plus-circle-fill me-1"></i> {{ 'exams.createCert' | translate }}
                       </button>
                     </div>
                   }
                 </td>
 
+                <!-- COLUMN 9: ACTIONS & RE-EXAM -->
+                <td style="text-align: center; vertical-align: middle;">
+                  <div class="actions-cell-flex">
+                    @if (s.status?.toLowerCase() === 'approved' || (s.score >= 40 || ((s.mcq_score || 0) + (s.practical_score || 0)) >= 40)) {
+                      <button type="button" (click)="openGradingModal(s)" class="btn-action-icon btn-grade-edit" [title]="'exams.editGradeTooltip' | translate">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                    } @else {
+                      <button type="button" (click)="openGradingModal(s)" class="btn-action-icon btn-grade-unassessed" [title]="'exams.gradeTooltip' | translate">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                    }
+                    <button type="button" (click)="openReattemptModal(s)" class="btn-action-icon btn-reexam-icon" [title]="'exams.reExamTooltip' | translate">
+                      <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                    @if (s.is_reattempt_allowed) {
+                      <span class="badge-reattempt-allowed" [title]="'exams.reExamAllowed' | translate">
+                        <i class="bi bi-patch-check-fill" style="color: #2563eb; font-size: 18px;"></i>
+                      </span>
+                    }
+                  </div>
+                </td>
+
               </tr>
             }
             @if (submissions.length === 0) {
               <tr>
-                <td colspan="8">
+                <td colspan="9">
                   <div class="table-empty-box">
                     <i class="bi bi-file-earmark-excel text-slate-300" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;"></i>
                     <p style="font-weight: 700; color: #64748b; margin: 0; font-size: 14px;">{{ 'exams.noSubmissionsFound' | translate }}</p>
@@ -535,86 +613,7 @@
     </div>
   }
 
-  <!-- VIEW 4: TOP STUDENTS LEADERBOARD (தரவரிசைப் பட்டியல்) -->
-  @if (activeView === 'leaderboard') {
-    <div class="card-box-table">
-      <div class="table-header-flex">
-        <div>
-          <h3 class="table-title">
-            <i class="bi bi-trophy-fill text-gold"></i> {{ 'exams.leaderboardTitle' | translate }}
-          </h3>
-          <p class="table-sub">{{ 'exams.leaderboardSub' | translate }}</p>
-        </div>
-      </div>
 
-      <div class="table-responsive">
-        <table class="table-styled w-full">
-          <thead>
-            <tr class="thead-gold">
-              <th style="width: 80px;">{{ 'exams.rank' | translate }}</th>
-              <th>{{ 'exams.studentName' | translate }}</th>
-              <th>{{ 'exams.courseBatch' | translate }}</th>
-              <th>{{ 'exams.mcqMarks' | translate }}</th>
-              <th>{{ 'exams.practicalMarks' | translate }}</th>
-              <th>{{ 'exams.totalScore' | translate }}</th>
-              <th>{{ 'exams.percentage' | translate }}</th>
-              <th>{{ 'exams.passStatus' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of leaderboard; track item.id) {
-              <tr [class.row-top-rank]="item.rank <= 3">
-                <td class="font-bold text-center">
-                  <span class="rank-pill" [class.rank-1]="item.rank === 1" [class.rank-2]="item.rank === 2" [class.rank-3]="item.rank === 3">
-                    @if (item.rank === 1) {
-                      <i class="bi bi-trophy-fill"></i> #1
-                    } @else if (item.rank === 2) {
-                      <i class="bi bi-award-fill"></i> #2
-                    } @else if (item.rank === 3) {
-                      <i class="bi bi-award-fill"></i> #3
-                    } @else {
-                      #{{ item.rank }}
-                    }
-                  </span>
-                </td>
-                <td>
-                  <div class="font-bold text-slate-900">{{ item.student_name }}</div>
-                  <div class="text-xs text-slate-500">{{ item.student_email }}</div>
-                </td>
-                <td>
-                  <div class="font-semibold text-sm">{{ item.course_title }}</div>
-                  <div class="text-xs text-slate-400">{{ item.batch_name || item.course_title }}</div>
-                </td>
-                <td class="text-sm font-semibold">{{ item.mcq_score !== null ? item.mcq_score : '-' }} / 50</td>
-                <td class="text-sm font-semibold">{{ item.practical_score !== null ? item.practical_score : '-' }} / 50</td>
-                <td class="font-bold text-lg text-maroon">{{ item.score }} / 100</td>
-                <td>
-                  <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" [style.width.%]="item.percentage"></div>
-                  </div>
-                  <span class="text-xs font-bold text-slate-700">{{ item.percentage }}%</span>
-                </td>
-                <td>
-                  <span class="badge-pass">{{ 'exams.passBadge' | translate }}</span>
-                </td>
-              </tr>
-            }
-            @if (leaderboard.length === 0) {
-              <tr>
-                <td colspan="8">
-                  <div class="table-empty-box">
-                    <i class="bi bi-trophy text-slate-300" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;"></i>
-                    <p style="font-weight: 700; color: #64748b; margin: 0; font-size: 14px;">{{ 'exams.noLeaderboardFound' | translate }}</p>
-                    <span style="font-size: 12px; color: #94a3b8;">{{ 'exams.noLeaderboardSub' | translate }}</span>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  }
 
   <!-- VIEW 5: TOPIC-WISE PERFORMANCE ANALYTICS (செயல்திறன் பகுப்பாய்வு) -->
   @if (activeView === 'analytics') {
@@ -683,8 +682,27 @@
         </div>
 
         <div class="modal-student-info">
-          <div><strong>{{ 'exams.studentName' | translate }}:</strong> {{ selectedSubmissionForGrading.student_name }}</div>
-          <div><strong>{{ 'exams.courseBatch' | translate }}:</strong> {{ selectedSubmissionForGrading.course_title }}</div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <strong>{{ 'exams.studentName' | translate }}:</strong> 
+            <span>{{ selectedSubmissionForGrading.student_name }}</span>
+            @if (selectedSubmissionForGrading.student_code) {
+              <span style="font-size: 11px; font-weight: 800; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; border: 1px solid #fde68a;">
+                {{ selectedSubmissionForGrading.student_code }}
+              </span>
+            }
+            <span style="font-size: 11px; font-weight: 800; background: #e0e7ff; color: #3730a3; padding: 1px 6px; border-radius: 4px; border: 1px solid #c7d2fe;">
+              Attempt {{ selectedSubmissionForGrading.attempt_number || 1 }}
+            </span>
+          </div>
+          <div style="margin-top: 5px;">
+            <strong>{{ 'exams.examLabel' | translate }}:</strong> 
+            <span>{{ selectedSubmissionForGrading.exam_title || selectedSubmissionForGrading.course_title }}</span>
+            @if (selectedSubmissionForGrading.batch_name) {
+              <span style="color: #64748b; font-size: 12px; margin-left: 6px;">
+                ({{ selectedSubmissionForGrading.batch_name }}{{ selectedSubmissionForGrading.batch_code ? ' - ' + selectedSubmissionForGrading.batch_code : '' }})
+              </span>
+            }
+          </div>
           @if (selectedSubmissionForGrading.pdf_url) {
             <div class="mt-2">
               <a [href]="selectedSubmissionForGrading.pdf_url" target="_blank" class="link-pdf-bold">
@@ -695,16 +713,38 @@
         </div>
 
         <form (ngSubmit)="saveGrading()">
-          <div class="form-grid-2 mb-3">
-            <div>
-              <label class="form-label">{{ 'exams.mcqMax50' | translate }}</label>
-              <input type="number" [(ngModel)]="gradingForm.mcq_score" name="gMcq" (input)="updateTotalScore()" class="ctrl w-full font-bold" />
+          @if (selectedSubmissionForGrading.submission_type === 'online_quiz') {
+            <div class="mb-3">
+              <label class="form-label font-bold text-slate-700">{{ 'exams.mcqMax100' | translate }}</label>
+              <input type="number" [(ngModel)]="gradingForm.mcq_score" name="gMcq" (input)="updateTotalScore()" class="ctrl w-full font-bold text-lg" min="0" max="100" />
             </div>
-            <div>
-              <label class="form-label">{{ 'exams.practicalMax50' | translate }}</label>
-              <input type="number" [(ngModel)]="gradingForm.practical_score" name="gPrac" (input)="updateTotalScore()" class="ctrl w-full font-bold" />
+          } @else if (selectedSubmissionForGrading.submission_type === 'physical_courier' || selectedSubmissionForGrading.submission_type === 'practical_assignment') {
+            <div class="form-grid-2 mb-3">
+              <div>
+                <label class="form-label font-bold text-slate-700"><i class="bi bi-truck text-rose me-1"></i> {{ 'exams.courierName' | translate }}</label>
+                <input type="text" [(ngModel)]="gradingForm.courier_name" name="gCourierName" [placeholder]="'exams.courierNamePlaceholder' | translate" class="ctrl w-full" />
+              </div>
+              <div>
+                <label class="form-label font-bold text-slate-700"><i class="bi bi-upc-scan text-blue me-1"></i> {{ 'exams.trackingNo' | translate }}</label>
+                <input type="text" [(ngModel)]="gradingForm.courier_tracking_no" name="gCourierTrack" placeholder="TRK-98210" class="ctrl w-full" />
+              </div>
             </div>
-          </div>
+            <div class="mb-3">
+              <label class="form-label font-bold text-slate-700">{{ 'exams.practicalMax100' | translate }}</label>
+              <input type="number" [(ngModel)]="gradingForm.practical_score" name="gPrac" (input)="updateTotalScore()" class="ctrl w-full font-bold text-lg" min="0" max="100" />
+            </div>
+          } @else {
+            <div class="form-grid-2 mb-3">
+              <div>
+                <label class="form-label">{{ 'exams.mcqMax50' | translate }}</label>
+                <input type="number" [(ngModel)]="gradingForm.mcq_score" name="gMcq" (input)="updateTotalScore()" class="ctrl w-full font-bold" />
+              </div>
+              <div>
+                <label class="form-label">{{ 'exams.practicalMax50' | translate }}</label>
+                <input type="number" [(ngModel)]="gradingForm.practical_score" name="gPrac" (input)="updateTotalScore()" class="ctrl w-full font-bold" />
+              </div>
+            </div>
+          }
 
           <div class="total-score-box">
             <span class="total-score-label">{{ 'exams.totalScore' | translate }}:</span>
@@ -752,25 +792,25 @@
 
           <!-- Document Toggle Tabs -->
           <div class="level-switch-group">
-            <button type="button" [class.active]="activeDocPreview.type === 'certificate'" (click)="activeDocPreview.type = 'certificate'; activeDocPreview.title = 'சான்றிதழ் முன்னோட்டம் (Certificate Preview)'" class="lvl-btn">
-              <i class="bi bi-award-fill me-1"></i> சான்றிதழ்
+            <button type="button" [class.active]="activeDocPreview.type === 'certificate'" (click)="activeDocPreview.type = 'certificate'; activeDocPreview.title = (translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் முன்னோட்டம்' : 'Certificate Preview')" class="lvl-btn">
+              <i class="bi bi-award-fill me-1"></i> {{ 'exams.certificateBtn' | translate }}
             </button>
-            <button type="button" [class.active]="activeDocPreview.type === 'marksheet'" (click)="activeDocPreview.type = 'marksheet'; activeDocPreview.title = 'மதிப்பெண் பட்டியல் முன்னோட்டம் (Marksheet Preview)'" class="lvl-btn">
-              <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> மதிப்பெண் பட்டியல்
+            <button type="button" [class.active]="activeDocPreview.type === 'marksheet'" (click)="activeDocPreview.type = 'marksheet'; activeDocPreview.title = (translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல் முன்னோட்டம்' : 'Marksheet Preview')" class="lvl-btn">
+              <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> {{ 'exams.certMarksheetCol' | translate }}
             </button>
           </div>
 
           <!-- Modal Actions -->
           <div class="d-actions-group">
-            <button type="button" (click)="printDocPreview()" class="btn-print" title="அச்சிடு / Print">
-              <i class="bi bi-printer-fill me-1"></i> அச்சிடு (Print)
+            <button type="button" (click)="printDocPreview()" class="btn-print" [title]="'common.print' | translate">
+              <i class="bi bi-printer-fill me-1"></i> {{ 'common.print' | translate }}
             </button>
             @if (!activeDocPreview.sub?.is_published) {
               <button type="button" (click)="publishSingleSubmission(activeDocPreview.sub); closeDocPreview()" class="btn-save" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #059669;">
-                <i class="bi bi-send-fill me-1"></i> மாணவருக்கு வெளியிடு
+                <i class="bi bi-send-fill me-1"></i> {{ 'exams.publishToStudent' | translate }}
               </button>
             }
-            <button type="button" (click)="closeDocPreview()" class="btn-close-modal" title="வெளியேறு">
+            <button type="button" (click)="closeDocPreview()" class="btn-close-modal" [title]="'common.close' | translate">
               <i class="bi bi-x-circle-fill"></i>
             </button>
           </div>
@@ -942,6 +982,73 @@
 
         </div>
 
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: SCHEDULE RE-ATTEMPT (மறுதேர்வு அட்டவணை) -->
+  @if (showReattemptModal && selectedSubForReattempt) {
+    <div class="modal-overlay" (click)="closeReattemptModal()" style="z-index: 10000; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <div class="modal-card" (click)="$event.stopPropagation()" style="background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 2px solid #ecc876; max-width: 520px; width: 100%; position: relative; z-index: 10001;">
+        <div class="modal-header mb-4 flex justify-between items-center" style="border-bottom: 1.5px solid #f1f5f9; padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3 class="modal-title font-bold text-lg text-maroon flex items-center gap-2" style="color: #4a0e17; margin: 0; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+              <i class="bi bi-arrow-repeat text-gold"></i> {{ 'exams.reExamTitle' | translate }}
+            </h3>
+            <p class="text-xs text-slate-500 mt-1" style="margin: 0; font-size: 12px; color: #64748b;">{{ 'exams.reExamSub' | translate }}</p>
+          </div>
+          <button (click)="closeReattemptModal()" class="btn-close-modal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8; line-height: 1;">&times;</button>
+        </div>
+
+        <div class="student-info-strip mb-4" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;">
+          <div style="font-weight: 800; color: #78350f; font-size: 14px;">
+            {{ selectedSubForReattempt.student_name }}
+            @if (selectedSubForReattempt.student_code) {
+              <span style="font-size: 11px; background: #fef3c7; border: 1px solid #fde68a; padding: 1px 6px; border-radius: 4px; margin-left: 6px;">
+                {{ selectedSubForReattempt.student_code }}
+              </span>
+            }
+          </div>
+          <div style="font-size: 12px; color: #92400e; margin-top: 4px;">
+            {{ 'exams.prevAttempt' | translate }}: <strong>Attempt #{{ selectedSubForReattempt.attempt_number || 1 }}</strong> • {{ 'exams.marksLabel' | translate }}: <strong>{{ selectedSubForReattempt.score || 0 }}/100</strong>
+          </div>
+        </div>
+
+        <form (ngSubmit)="saveReattempt()">
+          <div class="form-group mb-3" style="margin-bottom: 14px;">
+            <label class="form-label text-sm font-bold text-slate-700 block mb-1" style="display: block; margin-bottom: 4px; font-weight: 700; font-size: 13px; color: #334155;">
+              <i class="bi bi-file-earmark-text text-blue me-1"></i> {{ 'exams.selectPaper' | translate }} *
+            </label>
+            <select [(ngModel)]="reattemptForm.reattempt_exam_id" name="reattemptExam" required class="ctrl w-full font-semibold" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-weight: 600;">
+              @for (ex of exams; track ex.id) {
+                <option [value]="ex.id">{{ ex.title }} ({{ ex.duration }} Mins - {{ ex.questions?.length || 0 }} Qs)</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group mb-3" style="margin-bottom: 14px;">
+            <label class="form-label text-sm font-bold text-slate-700 block mb-1" style="display: block; margin-bottom: 4px; font-weight: 700; font-size: 13px; color: #334155;">
+              <i class="bi bi-calendar-event text-emerald me-1"></i> {{ 'exams.reExamStartTime' | translate }} *
+            </label>
+            <input type="datetime-local" [(ngModel)]="reattemptForm.reattempt_start_time" name="reattemptStartTime" required class="ctrl w-full font-bold" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-weight: 700;" />
+          </div>
+
+          <div class="form-group mb-4" style="margin-bottom: 16px;">
+            <label class="form-label text-sm font-bold text-slate-700 block mb-1" style="display: block; margin-bottom: 4px; font-weight: 700; font-size: 13px; color: #334155;">
+              <i class="bi bi-chat-left-text text-slate-600 me-1"></i> {{ 'exams.adminNotes' | translate }}
+            </label>
+            <textarea [(ngModel)]="reattemptForm.notes" name="reattemptNotes" rows="2" class="ctrl w-full text-sm" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1;" [placeholder]="'exams.adminNotesPlaceholder' | translate"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-2" style="border-top: 1px solid #f1f5f9; padding-top: 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button type="button" (click)="closeReattemptModal()" style="background: #f1f5f9; color: #475569; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+              {{ 'exams.cancelBtn' | translate }}
+            </button>
+            <button type="submit" style="background: #4a0e17; color: #ecc876; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(74,14,23,0.3);">
+              <i class="bi bi-send-check-fill"></i> {{ 'exams.sendReExamBtn' | translate }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   }

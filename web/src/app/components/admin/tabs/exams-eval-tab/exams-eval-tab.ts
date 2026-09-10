@@ -27,7 +27,7 @@ export class ExamsEvalTabComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
-  activeView: 'list' | 'exam-wizard' | 'evaluation' | 'leaderboard' | 'analytics' = 'list';
+  activeView: 'list' | 'exam-wizard' | 'evaluation' | 'analytics' = 'list';
   selectedCategory = 'ILANILAI';
 
   // Certificate & Marksheet Quick Preview Modal State
@@ -68,6 +68,8 @@ export class ExamsEvalTabComponent implements OnInit {
     practical_score: 0,
     score: 0,
     status: 'Approved',
+    courier_name: '',
+    courier_tracking_no: '',
     evaluator_notes: '',
     is_published: true
   };
@@ -85,10 +87,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   // --- DYNAMIC METRICS COMPUTATION ---
   get filteredSubmissions(): any[] {
-    if (!this.selectedBatchId) {
-      return this.submissions;
-    }
-    return this.submissions.filter(s => String(s.batch_id) === String(this.selectedBatchId));
+    return this.submissions;
   }
 
   get totalExamsCount(): number {
@@ -96,15 +95,23 @@ export class ExamsEvalTabComponent implements OnInit {
   }
 
   get totalSubmissionsCount(): number {
-    return this.filteredSubmissions.length;
+    return this.submissions.length;
   }
 
   get passedSubmissionsCount(): number {
-    return this.filteredSubmissions.filter(s => s.status === 'Approved' || (s.score !== null && s.score >= 40)).length;
+    return this.submissions.filter(s => {
+      const st = (s.status || '').toLowerCase();
+      const score = Number(s.score !== null && s.score !== undefined && s.score > 0 ? s.score : ((s.mcq_score || 0) + (s.practical_score || 0)));
+      return st === 'approved' || score >= 40;
+    }).length;
   }
 
   get pendingEvaluationCount(): number {
-    return this.filteredSubmissions.filter(s => s.score === null || s.status === 'Pending' || !s.status).length;
+    return this.submissions.filter(s => {
+      const st = (s.status || '').toLowerCase();
+      const score = s.score !== null && s.score !== undefined && s.score > 0 ? Number(s.score) : ((s.mcq_score !== null || s.practical_score !== null) ? ((s.mcq_score || 0) + (s.practical_score || 0)) : null);
+      return (st === 'pending' || !s.status) && (score === null || score < 40 || s.submission_type === 'pdf_upload' || s.submission_type === 'practical_assignment');
+    }).length;
   }
 
   get passRatePercentage(): number {
@@ -113,32 +120,21 @@ export class ExamsEvalTabComponent implements OnInit {
   }
 
   get averageScore(): number {
-    const list = this.filteredSubmissions.filter(s => s.score !== null && s.score !== undefined);
+    const list = this.submissions.filter(s => s.score !== null && s.score !== undefined);
     if (list.length === 0) return 0;
     const total = list.reduce((acc, s) => acc + (Number(s.score) || 0), 0);
     return Math.round(total / list.length);
   }
 
-  // --- DYNAMIC LEADERBOARD ---
-  get leaderboard(): any[] {
-    const list = this.filteredSubmissions
-      .filter(s => s.score !== null && s.score !== undefined)
-      .map(s => {
-        const score = Number(s.score) || 0;
-        return {
-          ...s,
-          score,
-          percentage: Math.min(100, Math.round(score)),
-          mcqScoreDisplay: s.mcq_score !== null && s.mcq_score !== undefined ? s.mcq_score : Math.round(score * 0.45),
-          practicalScoreDisplay: s.practical_score !== null && s.practical_score !== undefined ? s.practical_score : Math.round(score * 0.55)
-        };
-      })
-      .sort((a, b) => b.score - a.score);
-
-    return list.map((item, idx) => {
-      return { ...item, rank: idx + 1, rankBadge: `#${idx + 1}` };
-    });
+  getLevelTranslationKey(level: string | undefined): string {
+    if (!level) return 'courses.ilanilai';
+    const l = level.toLowerCase();
+    if (l === 'muthunilai' || l === 'pg' || level === 'முதுநிலை') return 'courses.muthunilai';
+    if (l === 'research' || level === 'ஆராய்ச்சி') return 'courses.research';
+    return 'courses.ilanilai';
   }
+
+
 
   // --- DYNAMIC TOPIC-WISE PERFORMANCE ANALYTICS (100% DATABASE DRIVEN) ---
   backendAnalytics: any = null;
@@ -215,12 +211,16 @@ export class ExamsEvalTabComponent implements OnInit {
 
   // --- EXAM WIZARD ACTIONS ---
   openCreateExam(): void {
+    const now = new Date();
+    const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
     this.activeExamWizard = {
       id: null,
       level: this.selectedCategory,
       title: '',
       duration: 60,
+      grace_period_mins: 20,
+      start_time: localIso,
       total_marks: 100,
       pass_mark: 40,
       pass_percentage: 50,
@@ -233,8 +233,14 @@ export class ExamsEvalTabComponent implements OnInit {
   }
 
   editExam(exam: any): void {
+    let formattedDate = exam.start_time || exam.exam_date || '';
+    if (formattedDate && !formattedDate.includes('T') && formattedDate.includes(' ')) {
+      formattedDate = formattedDate.replace(' ', 'T').slice(0, 16);
+    }
     this.activeExamWizard = {
       ...exam,
+      start_time: formattedDate,
+      grace_period_mins: exam.grace_period_mins !== undefined ? exam.grace_period_mins : 20,
       pass_percentage: exam.pass_percentage || 50
     };
     if (!this.activeExamWizard.questions) this.activeExamWizard.questions = [];
@@ -257,6 +263,9 @@ export class ExamsEvalTabComponent implements OnInit {
       level: this.activeExamWizard.level || this.selectedCategory || 'ILANILAI',
       title: this.activeExamWizard.title,
       duration: Number(this.activeExamWizard.duration) || 60,
+      grace_period_mins: Number(this.activeExamWizard.grace_period_mins) || 20,
+      start_time: this.activeExamWizard.start_time || null,
+      exam_date: this.activeExamWizard.start_time || null,
       total_marks: Number(this.activeExamWizard.total_marks) || 100,
       pass_mark: Number(this.activeExamWizard.pass_mark) || 40,
       practical_prompt: this.activeExamWizard.practical_prompt || null,
@@ -277,6 +286,49 @@ export class ExamsEvalTabComponent implements OnInit {
         this.loadExams();
       },
       error: (err) => this.toastService.error(err?.error?.message || 'தேர்வை சேமிப்பதில் பிழை ஏற்பட்டது.')
+    });
+  }
+
+  // --- RE-ATTEMPT MANAGEMENT (OPTION 1 + 4) ---
+  selectedSubForReattempt: any = null;
+  showReattemptModal = false;
+  reattemptForm: any = {
+    reattempt_exam_id: null,
+    reattempt_start_time: '',
+    notes: ''
+  };
+
+  openReattemptModal(sub: any): void {
+    this.selectedSubForReattempt = sub;
+    const now = new Date();
+    const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    this.reattemptForm = {
+      reattempt_exam_id: sub.exam_id || (this.exams[0]?.id || null),
+      reattempt_start_time: localIso,
+      notes: 'மறுதேர்வுக்கான அனுமதி வழங்கப்பட்டது. குறிப்பிட்ட நேரத்தில் தேர்வு எழுதலாம்.'
+    };
+    this.showReattemptModal = true;
+    this.cdr.markForCheck();
+  }
+
+  closeReattemptModal(): void {
+    this.showReattemptModal = false;
+    this.selectedSubForReattempt = null;
+    this.cdr.markForCheck();
+  }
+
+  saveReattempt(): void {
+    if (!this.selectedSubForReattempt) return;
+    const headers = this.authService.getAuthHeaders();
+    this.http.post<any>(`${environment.apiUrl}/admin/submissions/${this.selectedSubForReattempt.id}/schedule-reattempt`, this.reattemptForm, headers).subscribe({
+      next: (res) => {
+        this.toastService.success(res?.message || 'மாணவருக்கு மறுதேர்வு வெற்றிகரமாக அட்டவணைப்படுத்தப்பட்டது!');
+        this.closeReattemptModal();
+        this.loadSubmissions();
+      },
+      error: (err) => {
+        this.toastService.error(err?.error?.message || 'மறுதேர்வு அட்டவணைப்படுத்துவதில் பிழை ஏற்பட்டது.');
+      }
     });
   }
 
@@ -497,27 +549,49 @@ export class ExamsEvalTabComponent implements OnInit {
     });
   }
 
-  // --- EVALUATION ACTIONS ---
   openGradingModal(sub: any): void {
     this.selectedSubmissionForGrading = sub;
-    const mcq = sub.mcq_score !== null && sub.mcq_score !== undefined ? Number(sub.mcq_score) : 40;
-    const prac = sub.practical_score !== null && sub.practical_score !== undefined ? Number(sub.practical_score) : 45;
-    const tot = sub.score !== null && sub.score !== undefined ? Number(sub.score) : (mcq + prac);
+    let mcq = 0;
+    let prac = 0;
+    let tot = 0;
+
+    if (sub.submission_type === 'online_quiz') {
+      mcq = sub.score !== null ? Number(sub.score) : Number(sub.mcq_score || 100);
+      prac = 0;
+      tot = mcq;
+    } else if (sub.submission_type === 'physical_courier' || sub.submission_type === 'practical_assignment') {
+      mcq = 0;
+      prac = sub.practical_score !== null ? Number(sub.practical_score) : Number(sub.score || 85);
+      tot = prac;
+    } else {
+      mcq = sub.mcq_score !== null ? Number(sub.mcq_score) : 40;
+      prac = sub.practical_score !== null ? Number(sub.practical_score) : 45;
+      tot = mcq + prac;
+    }
 
     this.gradingForm = {
       mcq_score: mcq,
       practical_score: prac,
       score: tot,
-      status: sub.status === 'Approved' ? 'Approved' : (tot >= 40 ? 'Approved' : 'Rejected'),
-      evaluator_notes: sub.evaluator_notes || 'ஜாதகக் கணிப்பு மதிப்பீடு செய்யப்பட்டது. தேர்ச்சி பெற்றார்.',
+      status: (sub.status === 'Approved' || tot >= 40) ? 'Approved' : 'Rejected',
+      courier_name: sub.courier_name || '',
+      courier_tracking_no: sub.courier_tracking_no || '',
+      evaluator_notes: sub.evaluator_notes || 'மதிப்பீடு செய்யப்பட்டது. தேர்ச்சி பெற்றார்.',
       is_published: sub.is_published !== undefined ? !!sub.is_published : true
     };
   }
 
   updateTotalScore(): void {
-    const mcq = Number(this.gradingForm.mcq_score) || 0;
-    const prac = Number(this.gradingForm.practical_score) || 0;
-    this.gradingForm.score = mcq + prac;
+    if (this.selectedSubmissionForGrading?.submission_type === 'online_quiz') {
+      this.gradingForm.score = Number(this.gradingForm.mcq_score) || 0;
+    } else if (this.selectedSubmissionForGrading?.submission_type === 'physical_courier' || this.selectedSubmissionForGrading?.submission_type === 'practical_assignment') {
+      this.gradingForm.score = Number(this.gradingForm.practical_score) || 0;
+    } else {
+      const mcq = Number(this.gradingForm.mcq_score) || 0;
+      const prac = Number(this.gradingForm.practical_score) || 0;
+      this.gradingForm.score = mcq + prac;
+    }
+
     if (this.gradingForm.score >= 40) {
       this.gradingForm.status = 'Approved';
     } else {
@@ -644,7 +718,9 @@ export class ExamsEvalTabComponent implements OnInit {
     };
 
     this.activeDocPreview = {
-      title: type === 'certificate' ? 'சான்றிதழ் முன்னோட்டம் (Certificate Preview)' : 'மதிப்பெண் பட்டியல் முன்னோட்டம் (Marksheet Preview)',
+      title: this.translationService.currentLanguage() === 'ta'
+        ? (type === 'certificate' ? 'சான்றிதழ் முன்னோட்டம்' : 'மதிப்பெண் பட்டியல் முன்னோட்டம்')
+        : (type === 'certificate' ? 'Certificate Preview' : 'Marksheet Preview'),
       type,
       sub,
       cert

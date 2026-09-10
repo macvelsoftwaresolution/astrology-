@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { TranslationService } from '../../../../services/translation.service';
 import { ToastService } from '../../../../services/toast.service';
+import { ConfirmService } from '../../../../services/confirm.service';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
 import { environment } from '../../../../../environments/environment';
 
@@ -13,13 +14,14 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './practical-tab.html',
-  styleUrls: ['../../admin-dashboard.css', '../exams-eval-tab/exams-eval-tab.css']
+  styleUrls: ['../../admin-dashboard.css', '../exams-eval-tab/exams-eval-tab.css', './practical-tab.css']
 })
 export class PracticalTabComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   public translationService = inject(TranslationService);
   private toastService = inject(ToastService);
+  private confirmService = inject(ConfirmService);
   private cdr = inject(ChangeDetectorRef);
 
   selectedCategory = 'ILANILAI';
@@ -60,10 +62,11 @@ export class PracticalTabComponent implements OnInit {
     this.activeExamWizard = {
       title: '',
       level: this.selectedCategory,
-      exam_date: '',
-      duration: 60,
+      exam_date: new Date().toISOString().substring(0, 10),
+      duration: 0,
       total_marks: 100,
       pass_mark: 40,
+      return_courier_address: 'ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயம், எண்: 1/346, ஸ்டேட் பாங்க் காலனி, கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.',
       practical_prompt: '',
       chart_image_url: '',
       is_practical: true
@@ -72,14 +75,20 @@ export class PracticalTabComponent implements OnInit {
 
   editPractical(exam: any): void {
     this.isEditing = true;
-    // Format date for datetime-local input if it exists
+    // Format date for date input (YYYY-MM-DD)
     let formattedDate = exam.exam_date;
-    if (formattedDate && !formattedDate.includes('T')) {
-      // rough conversion if it's purely yyyy-mm-dd hh:mm:ss
-      formattedDate = formattedDate.replace(' ', 'T').substring(0, 16);
+    if (formattedDate) {
+      formattedDate = formattedDate.substring(0, 10);
     }
     
-    this.activeExamWizard = { ...exam, exam_date: formattedDate };
+    this.activeExamWizard = { 
+      ...exam, 
+      exam_date: formattedDate,
+      return_courier_address: exam.return_courier_address || '',
+      total_marks: exam.total_marks || 100,
+      pass_mark: exam.pass_mark || 40,
+      duration: exam.duration || 0
+    };
   }
 
   cancelEdit(): void {
@@ -123,8 +132,9 @@ export class PracticalTabComponent implements OnInit {
   }
 
   savePracticalExam(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (!this.activeExamWizard || !this.activeExamWizard.title) {
-      this.toastService.error('தலைப்பு அவசியம் (Title is required)');
+      this.toastService.error(isTa ? 'தேர்வின் தலைப்பு அவசியம்!' : 'Exam title is required!');
       return;
     }
 
@@ -155,24 +165,33 @@ export class PracticalTabComponent implements OnInit {
 
     this.http.request<any>(method, url, { body: payload, ...options }).subscribe({
       next: (res: any) => {
-        this.toastService.success(res?.message || 'Practical exam saved successfully!');
+        this.toastService.success(res?.message || (isTa ? 'செய்முறைத் தேர்வு வெற்றிகரமாகச் சேமிக்கப்பட்டது!' : 'Practical exam saved successfully!'));
         this.cancelEdit();
         this.loadExams();
       },
-      error: (err) => this.toastService.error(err?.error?.message || 'Error saving practical exam.')
+      error: (err) => this.toastService.error(err?.error?.message || (isTa ? 'செய்முறைத் தேர்வைச் சேமிப்பதில் பிழை ஏற்பட்டது.' : 'Error saving practical exam.'))
     });
   }
   
-  deletePractical(examId: number): void {
-    if (confirm('Are you sure you want to delete this practical exam?')) {
-      const options = this.authService.getAuthHeaders();
-      this.http.delete<any>(`${environment.apiUrl}/admin/exams/${examId}`, options).subscribe({
-        next: (res: any) => {
-          this.toastService.success('Deleted successfully.');
-          this.loadExams();
-        },
-        error: (err) => this.toastService.error('Error deleting exam.')
-      });
-    }
+  async deletePractical(examId: number): Promise<void> {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const ok = await this.confirmService.confirm({
+      title: isTa ? 'செய்முறைத் தேர்வை நீக்கவா?' : 'Delete Practical Exam?',
+      message: isTa ? 'இந்த செய்முறைத் தேர்வை நிச்சயமாக நீக்க வேண்டுமா?' : 'Are you sure you want to delete this practical exam?',
+      confirmText: isTa ? 'ஆம், நீக்கு' : 'Yes, Delete',
+      cancelText: isTa ? 'ரத்து' : 'Cancel',
+      type: 'danger',
+      icon: 'bi bi-trash3-fill'
+    });
+    if (!ok) return;
+
+    const options = this.authService.getAuthHeaders();
+    this.http.delete<any>(`${environment.apiUrl}/admin/exams/${examId}`, options).subscribe({
+      next: (res: any) => {
+        this.toastService.success(isTa ? 'செய்முறைத் தேர்வு நீக்கப்பட்டது.' : 'Practical exam deleted successfully.');
+        this.loadExams();
+      },
+      error: (err) => this.toastService.error(isTa ? 'நீக்குவதில் பிழை ஏற்பட்டது.' : 'Error deleting exam.')
+    });
   }
 }

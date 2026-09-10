@@ -50,33 +50,41 @@ class ExamController extends Controller
             'title' => 'required|string',
             'level' => 'nullable|string',
             'duration' => 'nullable',
+            'grace_period_mins' => 'nullable',
             'total_marks' => 'nullable',
             'pass_mark' => 'nullable',
             'practical_prompt' => 'nullable|string',
+            'return_courier_address' => 'nullable|string',
             'chart_image_url' => 'nullable|string',
             'batch_id' => 'nullable',
-            'exam_date' => 'nullable|date',
+            'exam_date' => 'nullable',
+            'start_time' => 'nullable',
             'is_practical' => 'nullable|boolean'
         ]);
 
         $batchId = $request->batch_id ? (int)$request->batch_id : null;
         $duration = $request->duration ? (int)$request->duration : 60;
+        $gracePeriod = $request->has('grace_period_mins') ? (int)$request->grace_period_mins : 20;
         $totalMarks = $request->total_marks ? (int)$request->total_marks : 100;
         $passMark = $request->pass_mark ? (int)$request->pass_mark : 40;
         $level = $request->level ? strtoupper($request->level) : 'ILANILAI';
-        $examDate = $request->exam_date ?: null;
+        $startTime = $request->start_time ?: ($request->exam_date ?: null);
+        $examDate = $startTime;
         $isPractical = $request->is_practical ? true : false;
 
         $examId = DB::table('exams')->insertGetId([
             'level' => $level,
             'title' => $request->title,
             'duration' => $duration,
+            'grace_period_mins' => $gracePeriod,
             'total_marks' => $totalMarks,
             'pass_mark' => $passMark,
             'practical_prompt' => $request->practical_prompt ?: null,
+            'return_courier_address' => $request->return_courier_address ?: null,
             'chart_image_url' => $request->chart_image_url ?: null,
             'batch_id' => $batchId,
             'exam_date' => $examDate,
+            'start_time' => $startTime,
             'is_practical' => $isPractical,
             'created_at' => now(),
             'updated_at' => now(),
@@ -97,31 +105,39 @@ class ExamController extends Controller
         $request->validate([
             'title' => 'required|string',
             'duration' => 'nullable',
+            'grace_period_mins' => 'nullable',
             'total_marks' => 'nullable',
             'pass_mark' => 'nullable',
             'practical_prompt' => 'nullable|string',
+            'return_courier_address' => 'nullable|string',
             'chart_image_url' => 'nullable|string',
             'batch_id' => 'nullable',
-            'exam_date' => 'nullable|date',
+            'exam_date' => 'nullable',
+            'start_time' => 'nullable',
             'is_practical' => 'nullable|boolean'
         ]);
 
         $batchId = $request->batch_id ? (int)$request->batch_id : null;
         $duration = $request->duration ? (int)$request->duration : 60;
+        $gracePeriod = $request->has('grace_period_mins') ? (int)$request->grace_period_mins : 20;
         $totalMarks = $request->total_marks ? (int)$request->total_marks : 100;
         $passMark = $request->pass_mark ? (int)$request->pass_mark : 40;
-        $examDate = $request->exam_date ?: null;
+        $startTime = $request->start_time ?: ($request->exam_date ?: null);
+        $examDate = $startTime;
         $isPractical = $request->is_practical ? true : false;
 
         DB::table('exams')->where('id', $id)->update([
             'title' => $request->title,
             'duration' => $duration,
+            'grace_period_mins' => $gracePeriod,
             'total_marks' => $totalMarks,
             'pass_mark' => $passMark,
             'practical_prompt' => $request->practical_prompt ?: null,
+            'return_courier_address' => $request->return_courier_address ?: null,
             'chart_image_url' => $request->chart_image_url ?: null,
             'batch_id' => $batchId,
             'exam_date' => $examDate,
+            'start_time' => $startTime,
             'is_practical' => $isPractical,
             'updated_at' => now(),
         ]);

@@ -38,7 +38,7 @@ class GradingController extends Controller
                 'course_batches.name as batch_name',
                 'course_batches.batch_code as batch_code',
                 'exams.title as exam_title',
-                DB::raw("COALESCE(exams.title, courses.title, 'இளநிலை ஜோதிடப் படிப்பு (Ilanilai)') as course_title")
+                DB::raw("COALESCE(courses.title, 'இளநிலை ஜோதிடப் படிப்பு (Ilanilai)') as course_title")
             );
 
         if ($request->has('batch_id') && $request->batch_id) {
@@ -51,6 +51,28 @@ class GradingController extends Controller
         $submissions = $query->orderBy('student_submissions.created_at', 'desc')->get();
 
         foreach ($submissions as $s) {
+            if ($s->submission_type === 'online_quiz') {
+                $s->mcq_score = $s->score !== null ? (float)$s->score : (float)($s->mcq_score ?? 0);
+                $s->practical_score = null;
+            } elseif ($s->submission_type === 'physical_courier' || $s->submission_type === 'practical_assignment') {
+                $s->mcq_score = null;
+                $s->practical_score = $s->score !== null ? (float)$s->score : (float)($s->practical_score ?? 0);
+            } else {
+                // PDF upload / Hybrid
+                $rawMcq = $s->mcq_score !== null ? (float)$s->mcq_score : null;
+                $prac = $s->practical_score !== null ? (float)$s->practical_score : null;
+                $s->mcq_score = $rawMcq;
+                $s->practical_score = $prac;
+                if ($rawMcq !== null || $prac !== null) {
+                    $s->score = ($rawMcq ?: 0) + ($prac ?: 0);
+                }
+            }
+
+            // Auto-normalize status to Approved if score >= 40
+            if ($s->score >= 40 && (empty($s->status) || strtolower($s->status) === 'pending')) {
+                $s->status = 'Approved';
+            }
+
             $cert = DB::table('certificates')
                 ->where(function($q) use ($s) {
                     $q->where('student_id', $s->student_id);
@@ -130,7 +152,7 @@ class GradingController extends Controller
 
         $isPublished = $request->has('is_published') ? (bool)$request->is_published : ($submission->is_published ?? true);
 
-        DB::table('student_submissions')->where('id', $id)->update([
+        $updateData = [
             'mcq_score' => $mcqScore,
             'practical_score' => $practicalScore,
             'score' => $totalScore,
@@ -139,7 +161,16 @@ class GradingController extends Controller
             'evaluator_notes' => $request->evaluator_notes,
             'is_published' => $isPublished,
             'updated_at' => now()
-        ]);
+        ];
+
+        if ($request->has('courier_name')) {
+            $updateData['courier_name'] = $request->courier_name;
+        }
+        if ($request->has('courier_tracking_no')) {
+            $updateData['courier_tracking_no'] = $request->courier_tracking_no;
+        }
+
+        DB::table('student_submissions')->where('id', $id)->update($updateData);
 
         $certificate = null;
 
@@ -256,6 +287,67 @@ class GradingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'தேர்வு முடிவு & சான்றிதழ் மாணவருக்கு வெற்றிகரமாக வெளியிடப்பட்டது!'
+        ]);
+    }
+
+    /**
+     * Admin: Schedule Re-attempt for Student with Custom Paper & Schedule
+     */
+    public function scheduleReattempt(Request $request, $id)
+    {
+        $submission = DB::table('student_submissions')->where('id', $id)->first();
+        if (!$submission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'தேர்வு சமர்ப்பிப்பு விவரம் காணப்படவில்லை.'
+            ], 404);
+        }
+
+        $reattemptStartTime = $request->reattempt_start_time ?: now()->toDateTimeString();
+        $reattemptExamId = !empty($request->reattempt_exam_id) ? (int)$request->reattempt_exam_id : $submission->exam_id;
+        $notes = $request->notes ?: 'மறுதேர்வுக்கான அனுமதி நிர்வாகியால் வழங்கப்பட்டது.';
+
+        DB::table('student_submissions')->where('id', $id)->update([
+            'is_reattempt_allowed'  => true,
+            'reattempt_start_time'  => $reattemptStartTime,
+            'reattempt_exam_id'     => $reattemptExamId,
+            'reattempt_notes'       => $notes,
+            'updated_at'            => now()
+        ]);
+
+        // Send In-App Notification to Student
+        try {
+            $studentId = $submission->student_id;
+            $studentUser = DB::table('users')->where('id', $studentId)->first();
+            if (!$studentUser) {
+                $st = DB::table('students')->where('id', $studentId)->first();
+                if ($st && !empty($st->email)) {
+                    $studentUser = DB::table('users')->where('email', $st->email)->first();
+                }
+            }
+
+            if ($studentUser) {
+                $formattedTime = date('d-M-Y h:i A', strtotime($reattemptStartTime));
+                DB::table('notifications')->insert([
+                    'user_id' => $studentUser->id,
+                    'title' => '🔄 மறுதேர்வு அனுமதிக்கப்பட்டுள்ளது! (Re-Exam Scheduled)',
+                    'body' => "உங்களுக்கு மறுதேர்வு ({$formattedTime}) அன்று திட்டமிடப்பட்டுள்ளது. குறிப்பிட்ட நேரத்தில் மொபைல் ஆப்பில் தொடங்கி எழுதலாம்.",
+                    'type' => 'submission',
+                    'is_read' => 0,
+                    'data' => json_encode([
+                        'submission_id' => $submission->id,
+                        'exam_id' => $reattemptExamId,
+                        'scheduled_at' => $reattemptStartTime
+                    ]),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
+        return response()->json([
+            'success' => true,
+            'message' => 'மாணவருக்கு மறுதேர்வு வெற்றிகரமாக அட்டவணைப்படுத்தப்பட்டது!'
         ]);
     }
 
@@ -480,19 +572,38 @@ class GradingController extends Controller
                 $batchId = (int)$user->batch_id;
             }
 
-            // Prevent duplicate exam submissions (One-Time Exam Enforcement)
+            $attemptNumber = 1;
+            // Prevent duplicate exam submissions (Unless re-attempt is granted by Admin)
             if (!empty($request->exam_id) && Schema::hasColumn('student_submissions', 'exam_id')) {
-                $alreadySubmitted = DB::table('student_submissions')
+                $pastSubmissions = DB::table('student_submissions')
                     ->where('student_id', $studentId)
-                    ->where('exam_id', (int)$request->exam_id)
-                    ->first();
+                    ->where(function($q) use ($request) {
+                        $q->where('exam_id', (int)$request->exam_id)
+                          ->orWhere('reattempt_exam_id', (int)$request->exam_id);
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
 
-                if ($alreadySubmitted) {
-                    return response()->json([
-                        'success' => false,
-                        'already_submitted' => true,
-                        'message' => 'நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள். ஒரு முறை மட்டுமே எழுத அனுமதிக்கப்படும்.'
-                    ], 400);
+                if ($pastSubmissions->isNotEmpty()) {
+                    $latestSub = $pastSubmissions->first();
+                    $isReattemptAllowed = Schema::hasColumn('student_submissions', 'is_reattempt_allowed') && (bool)$latestSub->is_reattempt_allowed;
+
+                    if ($isReattemptAllowed) {
+                        // Increment attempt number
+                        $maxAttempt = (int)$pastSubmissions->max('attempt_number') ?: 1;
+                        $attemptNumber = $maxAttempt + 1;
+
+                        // Mark previous attempt's is_reattempt_allowed to false
+                        DB::table('student_submissions')
+                            ->where('id', $latestSub->id)
+                            ->update(['is_reattempt_allowed' => false, 'updated_at' => now()]);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'already_submitted' => true,
+                            'message' => 'நீங்கள் ஏற்கனவே இந்தத் தேர்வை எழுதிவிட்டீர்கள். ஒரு முறை மட்டுமே எழுத அனுமதிக்கப்படும். மறுதேர்வுக்கு நிர்வாகியை அணுகவும்.'
+                        ], 400);
+                    }
                 }
             }
 
@@ -525,6 +636,11 @@ class GradingController extends Controller
                 ? round((float)$request->score) 
                 : (($mcqScore ?: 0) + ($practicalScore ?: 0));
 
+            $status = 'Pending';
+            if ($request->submission_type === 'online_quiz') {
+                $status = ($totalScore >= 40) ? 'Approved' : 'Rejected';
+            }
+
             $insertData = [
                 'student_id' => $studentId,
                 'course_id' => $courseId,
@@ -533,10 +649,17 @@ class GradingController extends Controller
                 'courier_tracking_no' => $request->courier_tracking_no,
                 'courier_name' => $request->courier_name,
                 'score' => $totalScore,
-                'status' => 'Pending',
+                'status' => $status,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
+
+            if (Schema::hasColumn('student_submissions', 'attempt_number')) {
+                $insertData['attempt_number'] = $attemptNumber;
+            }
+            if (Schema::hasColumn('student_submissions', 'is_reattempt_allowed')) {
+                $insertData['is_reattempt_allowed'] = false;
+            }
 
             if (Schema::hasColumn('student_submissions', 'batch_id')) {
                 $insertData['batch_id'] = $batchId;

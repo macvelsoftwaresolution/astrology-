@@ -360,6 +360,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'lms-settings': 'nav.lmsSettings',
       'exams-eval': 'nav.exams',
       'certificates': 'nav.certificates',
+      'practical': 'nav.practicalBuilder',
       'courier': 'nav.courier',
       'grading': 'nav.grading',
       'payments': 'nav.payments',
@@ -401,7 +402,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   isLearnActive(): boolean {
-    return ['lms', 'lms-settings', 'exams-eval', 'certificates', 'grading'].includes(this.currentTab);
+    return ['lms', 'lms-settings', 'exams-eval', 'certificates', 'grading', 'practical'].includes(this.currentTab);
   }
 
   selectTab(tabName: string): void {

@@ -1,129 +1,173 @@
-<div class="exams-eval-container">
-  <div class="header-box">
+<div class="practical-container">
+
+  <!-- HEADER NAVIGATION & CATEGORY SELECTOR -->
+  <div class="practical-header-box">
     <div>
-      <h2 class="main-title">
-        <i class="bi bi-diagram-3-fill text-gold"></i> Practical Test Builder
+      <h2 class="practical-main-title">
+        <i class="bi bi-diagram-3-fill text-gold"></i> {{ 'practical.title' | translate }}
       </h2>
-      <p class="main-sub">
-        Create standalone practical exams with question paper uploads.
+      <p class="practical-main-sub">
+        {{ 'practical.subtitle' | translate }}
       </p>
     </div>
 
-    <!-- Category Filter -->
-    <div class="actions-wrapper">
-      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="category-select">
+    <div class="practical-actions-wrapper">
+      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="p-category-select">
         <option value="ILANILAI">{{ 'courses.ilanilai' | translate }}</option>
         <option value="MUTHUNILAI">{{ 'courses.muthunilai' | translate }}</option>
         <option value="RESEARCH">{{ 'courses.research' | translate }}</option>
       </select>
+
+      @if (!isEditing) {
+        <button type="button" class="btn-add-practical" (click)="createNewPractical()">
+          <i class="bi bi-plus-circle-fill"></i> {{ 'practical.addBtn' | translate }}
+        </button>
+      }
     </div>
   </div>
 
-  <div class="wizard-container" style="margin-top: 20px;">
-    
-    @if (!isEditing) {
-      <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-        <button type="button" class="btn-primary-gold" (click)="createNewPractical()">
-          <i class="bi bi-plus-lg"></i> Add New Practical Exam
-        </button>
-      </div>
-
-      <!-- List of Practical Exams -->
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover bg-white shadow-sm" style="border-radius: 8px; overflow: hidden; width: 100%; text-align: left;">
-          <thead style="background-color: #f8fafc;">
+  <!-- VIEW 1: TABLE LIST VIEW -->
+  @if (!isEditing) {
+    <div class="practical-card-box">
+      <div class="p-table-responsive">
+        <table class="p-table">
+          <thead>
             <tr>
-              <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Title</th>
-              <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Exam Date</th>
-              <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Question File</th>
-              <th class="text-center" style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Actions</th>
+              <th style="width: 60px;">#</th>
+              <th>{{ 'practical.tableTitle' | translate }}</th>
+              <th>{{ 'practical.tableDate' | translate }}</th>
+              <th>{{ 'practical.tableFile' | translate }}</th>
+              <th style="text-align: center; width: 120px;">{{ 'practical.tableActions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
-            @for (ex of exams; track ex.id) {
+            @for (ex of exams; track ex.id; let i = $index) {
               <tr>
-                <td class="font-bold text-slate-800" style="padding: 12px; border-bottom: 1px solid #e2e8f0;">{{ ex.title }}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">{{ ex.exam_date ? (ex.exam_date | date:'medium') : 'Not Set' }}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
+                <td style="font-weight: 800; color: #64748b;">{{ i + 1 }}</td>
+                <td>
+                  <div class="p-title-cell">
+                    <span class="p-exam-name">{{ ex.title }}</span>
+                    <span class="p-badge-level">{{ ex.level || selectedCategory }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="p-meta-pill">
+                    <i class="bi bi-calendar-event text-blue"></i>
+                    {{ ex.exam_date ? (ex.exam_date | date:'dd MMM yyyy') : ('practical.notSet' | translate) }}
+                  </span>
+                </td>
+                <td>
                   @if (ex.chart_image_url) {
-                    <a [href]="ex.chart_image_url" target="_blank" class="text-blue-600 hover:text-blue-800" style="text-decoration: none;">
-                      <i class="bi bi-file-earmark-text-fill"></i> View File
+                    <a [href]="ex.chart_image_url" target="_blank" class="p-file-link">
+                      <i class="bi bi-file-earmark-arrow-down-fill"></i> {{ 'practical.viewFile' | translate }}
                     </a>
                   } @else {
-                    <span class="text-slate-400">None</span>
+                    <span style="color: #94a3b8; font-weight: 600; font-size: 12px;">{{ 'practical.none' | translate }}</span>
                   }
                 </td>
-                <td class="text-center" style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
-                  <button class="btn btn-sm btn-outline-primary mx-1" (click)="editPractical(ex)">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger mx-1" (click)="deletePractical(ex.id)">
-                    <i class="bi bi-trash-fill"></i>
-                  </button>
+                <td style="text-align: center;">
+                  <div class="p-action-btns" style="justify-content: center;">
+                    <button class="btn-p-icon btn-p-edit" (click)="editPractical(ex)" [title]="'common.edit' | translate">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn-p-icon btn-p-delete" (click)="deletePractical(ex.id)" [title]="'common.delete' | translate">
+                      <i class="bi bi-trash3-fill"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="4" class="text-center text-slate-500 py-4">
-                  No practical exams found for this category. Click 'Add New Practical Exam' to create one.
+                <td colspan="5">
+                  <div class="p-empty-state">
+                    <i class="bi bi-journal-x p-empty-icon"></i>
+                    <h4 class="p-empty-title">{{ 'practical.noExamsFound' | translate }}</h4>
+                  </div>
                 </td>
               </tr>
             }
           </tbody>
         </table>
       </div>
-    } @else {
-      <!-- Form to Create/Edit Practical Exam -->
-      <div class="wizard-section" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
-          <h4 class="section-title text-maroon" style="margin: 0;">
-            <i class="bi bi-pencil-square text-gold"></i> {{ activeExamWizard.id ? 'Edit Practical Exam' : 'Create Practical Exam' }}
+    </div>
+  } @else {
+    <!-- VIEW 2: BEAUTIFUL LUXURY FORM / CREATOR STUDIO -->
+    <div class="p-wizard-card">
+      <div class="p-wizard-topbar">
+        <h3 class="p-wizard-title">
+          <i class="bi bi-pencil-square text-gold"></i>
+          {{ activeExamWizard.id ? ('practical.editTitle' | translate) : ('practical.createTitle' | translate) }}
+        </h3>
+        <button type="button" class="btn-p-cancel" (click)="cancelEdit()">
+          <i class="bi bi-x-lg"></i> {{ 'practical.cancel' | translate }}
+        </button>
+      </div>
+
+      <form (ngSubmit)="savePracticalExam()">
+        <!-- SECTION 1: GENERAL PRACTICAL SETTINGS -->
+        <div class="p-form-section">
+          <h4 class="p-section-heading">
+            <i class="bi bi-info-circle-fill text-blue"></i>
+            {{ 'exams.step1' | translate }}
           </h4>
-          <button class="btn btn-light" (click)="cancelEdit()"><i class="bi bi-x-lg"></i> Cancel</button>
+
+          <div class="p-grid-2 mb-3">
+            <div class="p-form-group">
+              <label class="p-form-label">
+                <i class="bi bi-file-earmark-text text-amber"></i> {{ 'practical.examTitle' | translate }} <span style="color: #dc2626;">*</span>
+              </label>
+              <div class="p-input-wrapper">
+                <i class="bi bi-pen p-input-icon"></i>
+                <input type="text" class="p-input font-bold" [(ngModel)]="activeExamWizard.title" name="pTitle" required [placeholder]="'practical.examTitlePlaceholder' | translate" />
+              </div>
+            </div>
+
+            <div class="p-form-group">
+              <label class="p-form-label">
+                <i class="bi bi-calendar2-event text-blue"></i> {{ 'practical.examDate' | translate }}
+              </label>
+              <div class="p-input-wrapper">
+                <i class="bi bi-calendar-check p-input-icon"></i>
+                <input type="date" class="p-input" [(ngModel)]="activeExamWizard.exam_date" name="pDate" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Return Courier Address -->
+          <div class="p-form-group">
+            <label class="p-form-label">
+              <i class="bi bi-truck text-rose"></i> {{ 'practical.returnCourierAddress' | translate }}
+            </label>
+            <textarea [(ngModel)]="activeExamWizard.return_courier_address" name="pCourierAddr" rows="2" class="p-input font-medium" style="height: auto; min-height: 65px; padding-left: 14px;" [placeholder]="'practical.returnCourierAddressPlaceholder' | translate"></textarea>
+            <span style="font-size: 11px; color: #64748b; margin-top: 3px; display: inline-flex; align-items: center; gap: 4px;">
+              <i class="bi bi-info-circle-fill text-blue"></i> {{ 'practical.returnCourierAddressHint' | translate }}
+            </span>
+          </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label font-bold text-slate-800">Exam Title <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="activeExamWizard.title" placeholder="E.g. Final Practical 2026" />
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label font-bold text-slate-800">Exam Date & Time</label>
-            <input type="datetime-local" class="form-control" [(ngModel)]="activeExamWizard.exam_date" />
+        <!-- SECTION 2: QUESTIONS & CONTENT -->
+        <div class="p-form-section">
+          <h4 class="p-section-heading">
+            <i class="bi bi-file-earmark-spreadsheet-fill text-emerald"></i>
+            {{ 'practical.questionsContent' | translate }} <span style="color: #dc2626;">*</span>
+          </h4>
+
+          <div class="p-form-group">
+            <textarea [(ngModel)]="activeExamWizard.practical_prompt" name="pPrompt" class="p-textarea" required [placeholder]="'practical.questionsPlaceholder' | translate"></textarea>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label class="form-label font-bold text-slate-800">Duration (Mins)</label>
-            <input type="number" class="form-control" [(ngModel)]="activeExamWizard.duration" />
-          </div>
-          <div class="col-md-4 mb-3">
-            <label class="form-label font-bold text-slate-800">Total Marks</label>
-            <input type="number" class="form-control" [(ngModel)]="activeExamWizard.total_marks" />
-          </div>
-          <div class="col-md-4 mb-3">
-            <label class="form-label font-bold text-slate-800">Pass Mark</label>
-            <input type="number" class="form-control" [(ngModel)]="activeExamWizard.pass_mark" />
-          </div>
-        </div>
-
-        <hr class="my-4">
-
-        <div class="mb-4">
-          <label class="form-label font-bold text-slate-800">
-            Questions / Content <span class="text-danger">*</span>
-          </label>
-          <textarea [(ngModel)]="activeExamWizard.practical_prompt" rows="12" class="form-control" style="resize: none; width: 100%; min-height: 250px; font-size: 1.05rem; padding: 15px;" placeholder="Type your questions here..."></textarea>
-        </div>
-
-        <!-- SAVE FOOTER -->
-        <div class="wizard-footer text-end mt-4 pt-3 border-top">
-          <button type="button" (click)="savePracticalExam()" class="btn-primary-gold px-4 py-2" style="font-size: 1.1rem;">
-            <i class="bi bi-check2-circle"></i> Save Practical Exam
+        <!-- WIZARD FOOTER -->
+        <div class="p-wizard-footer">
+          <button type="button" class="btn-p-cancel" (click)="cancelEdit()">
+            {{ 'practical.cancel' | translate }}
+          </button>
+          <button type="submit" class="btn-p-save">
+            <i class="bi bi-check2-circle"></i> {{ 'practical.saveBtn' | translate }}
           </button>
         </div>
-      </div>
-    }
-  </div>
+      </form>
+    </div>
+  }
+
 </div>

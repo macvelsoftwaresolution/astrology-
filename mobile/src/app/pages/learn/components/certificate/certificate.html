@@ -15,14 +15,14 @@
         [class.active]="activeDocumentTab === 'certificate'" 
         (click)="activeDocumentTab = 'certificate'">
         <i class="bi bi-award-fill"></i>
-        <span>சான்றிதழ் (Certificate)</span>
+        <span>{{ 'learn.tabCert' | translate }}</span>
       </button>
 
       <button class="segmented-tab-btn" 
         [class.active]="activeDocumentTab === 'marksheet'" 
         (click)="activeDocumentTab = 'marksheet'">
         <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-        <span>மதிப்பெண் பட்டியல் (Marksheet)</span>
+        <span>{{ 'learn.tabMarksheet' | translate }}</span>
       </button>
     </div>
 

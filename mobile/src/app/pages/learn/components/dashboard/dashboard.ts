@@ -698,66 +698,161 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isExamSubmitted(examId: number): boolean {
-    return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId));
+    return this.mySubmissions.some(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
   }
 
   isExamApproved(examId: number): boolean {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
     return sub ? (sub.status === 'Approved' || sub.is_published === true || sub.is_published === 1) : false;
   }
 
   isExamRejected(examId: number): boolean {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
     return sub ? sub.status === 'Rejected' : false;
   }
 
   getExamScore(examId: number): number {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
+    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId));
     return sub ? (sub.score || 0) : 0;
   }
 
-  getExamStatusText(examId: number): string {
-    const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(examId));
-    if (!sub) return '';
-    if (sub.status === 'Approved' || sub.is_published) {
-      return `தேர்ச்சி (${sub.score || 0}%)`;
-    } else if (sub.status === 'Rejected') {
-      return `மறுமதிப்பீடு தேவை`;
+  isReattemptAllowed(examId: number): boolean {
+    return this.mySubmissions.some(s => 
+      (Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId)) &&
+      (s.is_reattempt_allowed === true || s.is_reattempt_allowed === 1 || s.is_reattempt_allowed === '1')
+    );
+  }
+
+  getReattemptDetails(examId: number): any {
+    return this.mySubmissions.find(s => 
+      (Number(s.exam_id) === Number(examId) || Number(s.reattempt_exam_id) === Number(examId)) &&
+      (s.is_reattempt_allowed === true || s.is_reattempt_allowed === 1 || s.is_reattempt_allowed === '1')
+    );
+  }
+
+  getFilteredRegularExams(): any[] {
+    return this.regularExams.filter(ex => {
+      const isSubmitted = this.isExamSubmitted(ex.id);
+      const isReattempt = this.isReattemptAllowed(ex.id);
+      // Option B: Auto-hide completed exams unless Admin granted a re-attempt
+      if (isSubmitted && !isReattempt) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  getFilteredPracticalExams(): any[] {
+    return this.practicalExams.filter(ex => {
+      const isSubmitted = this.isExamSubmitted(ex.id);
+      const isReattempt = this.isReattemptAllowed(ex.id);
+      // Option B: Auto-hide completed exams unless Admin granted a re-attempt
+      if (isSubmitted && !isReattempt) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  getExamTimingState(ex: any): { status: 'open' | 'upcoming' | 'live' | 'grace_period' | 'missed' | 'reattempt', badgeText: string, iconClass: string, badgeClass: string, canStart: boolean, timeText?: string } {
+    const isReattempt = this.isReattemptAllowed(ex.id);
+    const reattemptSub = isReattempt ? this.getReattemptDetails(ex.id) : null;
+
+    if (isReattempt && reattemptSub) {
+      const reattemptTime = reattemptSub.reattempt_start_time ? new Date(reattemptSub.reattempt_start_time) : null;
+      if (reattemptTime && !isNaN(reattemptTime.getTime())) {
+        const now = new Date();
+        const diffMs = reattemptTime.getTime() - now.getTime();
+        if (diffMs > 0) {
+          const formatted = reattemptTime.toLocaleDateString('ta-IN', { month: 'short', day: 'numeric' }) + ' ' + reattemptTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          return {
+            status: 'upcoming',
+            badgeText: `மறுதேர்வு நேரம்: ${formatted}`,
+            iconClass: 'bi bi-clock-history',
+            badgeClass: 'badge-upcoming',
+            canStart: false,
+            timeText: formatted
+          };
+        }
+      }
+      return {
+        status: 'reattempt',
+        badgeText: 'மறுதேர்வு அனுமதி உண்டு (Re-Exam Active)',
+        iconClass: 'bi bi-arrow-repeat',
+        badgeClass: 'badge-reattempt',
+        canStart: true
+      };
+    }
+
+    const rawStartTime = ex.start_time || ex.exam_date;
+    if (!rawStartTime) {
+      return {
+        status: 'open',
+        badgeText: 'தேர்வு தயார் (Ready)',
+        iconClass: 'bi bi-play-circle-fill',
+        badgeClass: 'badge-open',
+        canStart: true
+      };
+    }
+
+    const startTime = new Date(rawStartTime);
+    if (isNaN(startTime.getTime())) {
+      return {
+        status: 'open',
+        badgeText: 'தேர்வு தயார் (Ready)',
+        iconClass: 'bi bi-play-circle-fill',
+        badgeClass: 'badge-open',
+        canStart: true
+      };
+    }
+
+    const now = new Date();
+    const diffMins = (now.getTime() - startTime.getTime()) / (1000 * 60);
+    const graceMins = ex.grace_period_mins || 20;
+
+    if (diffMins < 0) {
+      const formattedDate = startTime.toLocaleDateString('ta-IN', { month: 'short', day: 'numeric' }) + ' ' + startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return {
+        status: 'upcoming',
+        badgeText: `ஆரம்பம்: ${formattedDate}`,
+        iconClass: 'bi bi-calendar-event',
+        badgeClass: 'badge-upcoming',
+        canStart: false,
+        timeText: formattedDate
+      };
+    } else if (diffMins >= 0 && diffMins <= graceMins) {
+      const remainingGrace = Math.ceil(graceMins - diffMins);
+      return {
+        status: diffMins > 0 ? 'grace_period' : 'live',
+        badgeText: diffMins > 0 ? `நேரலை (இன்னும் ${remainingGrace} நிமிடம் வரை மட்டுமே அனுமதி)` : 'நேரலை (Live Now)',
+        iconClass: 'bi bi-broadcast',
+        badgeClass: 'badge-live',
+        canStart: true
+      };
     } else {
-      return `மதிப்பீட்டில் உள்ளது`;
+      return {
+        status: 'missed',
+        badgeText: 'தாமத அனுமதி முடிந்தது (Missed)',
+        iconClass: 'bi bi-x-circle-fill',
+        badgeClass: 'badge-missed',
+        canStart: false
+      };
     }
   }
 
   handleExamClick(ex: any) {
-    if (this.isExamSubmitted(ex.id) && !ex.is_practical) {
-      const sub = this.mySubmissions.find(s => Number(s.exam_id) === Number(ex.id));
-      const isApproved = sub ? (sub.status === 'Approved' || sub.is_published === true || sub.is_published === 1) : false;
-      const isRejected = sub ? sub.status === 'Rejected' : false;
-      const isPending = !isApproved && !isRejected;
-      const score = sub ? (sub.score !== null && sub.score !== undefined ? sub.score : 0) : 0;
-      const passMark = ex.pass_mark || 40;
-      const isPassed = isApproved && score >= passMark;
-      
-      this.selectedCompletedExam = {
-        exam: ex,
-        submission: sub,
-        score: score,
-        passMark: passMark,
-        isApproved: isApproved,
-        isRejected: isRejected,
-        isPending: isPending,
-        isPassed: isPassed,
-        status: sub?.status || 'Pending',
-        submittedAt: sub?.created_at || null,
-        notes: sub?.evaluator_notes || sub?.notes || null,
-        mcqScore: sub?.mcq_score,
-        practicalScore: sub?.practical_score,
-        submissionType: sub?.submission_type
-      };
-      this.showCompletedExamModal = true;
+    const timing = this.getExamTimingState(ex);
+    if (!timing.canStart) {
+      if (timing.status === 'upcoming') {
+        this.showToast(`தேர்வு ${timing.timeText || 'குறிப்பிட்ட நேரத்தில்'} தொடங்கும். தயவுசெய்து காத்திருக்கவும்.`, 'warning');
+      } else if (timing.status === 'missed') {
+        this.showToast('மன்னிக்கவும்! தேர்வுக்கான தாமத அனுமதி நேரம் (20 நிமிடங்கள்) முடிந்துவிட்டது. மறுதேர்வுக்கு நிர்வாகியை அணுகவும்.', 'danger');
+      }
       return;
     }
-    this.startQuiz.emit(ex);
+
+    const isReattempt = this.isReattemptAllowed(ex.id);
+    this.startQuiz.emit({ ...ex, isReattempt: isReattempt });
   }
 
   closeCompletedExamModal() {

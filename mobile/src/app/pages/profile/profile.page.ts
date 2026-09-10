@@ -236,12 +236,17 @@ declare var html2pdf: any;
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                     <div>
                       <h4 style="color: #fff; margin: 0 0 4px 0; font-size: 15px; font-weight: 700;">{{ r.course_title }}</h4>
-                      <span style="font-size: 11px; color: #ffd700; font-weight: 600;">{{ r.batch_name || (currentLang === 'en' ? 'General Batch' : 'பொது பேட்ச்') }}</span>
+                      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <span style="font-size: 11px; color: #ffd700; font-weight: 600;">{{ r.batch_name || (currentLang === 'en' ? 'General Batch' : 'பொது பேட்ச்') }}</span>
+                        <span style="font-size: 10px; background: rgba(99,102,241,0.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.4); padding: 1px 6px; border-radius: 4px; font-weight: 800;">
+                          Attempt #{{ r.attempt_number || 1 }}
+                        </span>
+                      </div>
                     </div>
-                    <span [style.background]="(r.status === 'Approved' || r.score >= 40) ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'"
-                          [style.color]="(r.status === 'Approved' || r.score >= 40) ? '#4ade80' : '#f87171'"
+                    <span [style.background]="(r.score >= 40 && (r.status === 'Approved' || r.is_published)) ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'"
+                          [style.color]="(r.score >= 40 && (r.status === 'Approved' || r.is_published)) ? '#4ade80' : '#f87171'"
                           style="padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800;">
-                      {{ (r.status === 'Approved' || r.score >= 40) ? (currentLang === 'ta' ? 'தேர்ச்சி' : 'PASS') : (currentLang === 'ta' ? 'மறுதேர்வு' : 'FAIL') }}
+                      {{ (r.score >= 40 && (r.status === 'Approved' || r.is_published)) ? (currentLang === 'ta' ? 'தேர்ச்சி' : 'PASS') : (currentLang === 'ta' ? 'தோல்வி (மறுதேர்வு தேவை)' : 'FAIL') }}
                     </span>
                   </div>
 

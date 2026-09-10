@@ -164,6 +164,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::post('/submissions/publish-batch',       [GradingController::class, 'publishBatchResults']);
     Route::post('/submissions/{id}/evaluate',       [GradingController::class, 'evaluateSubmission']);
     Route::post('/submissions/{id}/publish',        [GradingController::class, 'publishSubmission']);
+    Route::post('/submissions/{id}/schedule-reattempt', [GradingController::class, 'scheduleReattempt']);
     Route::get('/certificates',                     [GradingController::class, 'adminGetCertificates']);
     Route::post('/certificates',                    [GradingController::class, 'adminUploadCertificate']);
     Route::post('/certificates/save-custom',        [GradingController::class, 'adminSaveCustomCertificate']);

@@ -4,23 +4,23 @@
   <div class="cert-page-header">
     <div>
       <h2 class="page-title">
-        <i class="bi bi-award-fill text-gold"></i> சான்றிதழ் & மதிப்பெண் பட்டியல் மேலாண்மை (Certificates & Marksheets)
+        <i class="bi bi-award-fill text-gold"></i> {{ 'certificates.title' | translate }}
       </h2>
       <p class="page-subtitle">
-        ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம் அங்கீகரிக்கப்பட்ட இளநிலை (UG) மற்றும் முதுநிலை (PG) சான்றிதழ் & மதிப்பெண் பட்டியல் தயாரித்தல்
+        {{ 'certificates.subtitle' | translate }}
       </p>
     </div>
 
     <!-- Actions -->
     <div class="header-actions">
       <button (click)="openDesignerModal('UG')" class="btn-create-cert ug">
-        <i class="bi bi-patch-check-fill"></i> + புதிய இளநிலை (UG - ஜோதிட ரத்னா)
+        <i class="bi bi-patch-check-fill"></i> {{ 'certificates.newUgBtn' | translate }}
       </button>
       <button (click)="openDesignerModal('PG')" class="btn-create-cert pg">
-        <i class="bi bi-mortarboard-fill"></i> + புதிய முதுநிலை (PG - ஜோதிட கலாநிதி)
+        <i class="bi bi-mortarboard-fill"></i> {{ 'certificates.newPgBtn' | translate }}
       </button>
       <button (click)="toggleQuickUpload('certificate')" class="btn-secondary-action">
-        <i class="bi bi-cloud-arrow-up-fill"></i> கோப்பு பதிவேற்றம் (PDF)
+        <i class="bi bi-cloud-arrow-up-fill"></i> {{ 'certificates.uploadPdfBtn' | translate }}
       </button>
     </div>
   </div>
@@ -29,20 +29,20 @@
   @if (showQuickUpload) {
     <div class="quick-upload-card">
       <div class="qu-header">
-        <h3><i class="bi bi-upload"></i> சான்றிதழ் / மதிப்பெண் PDF பதிவேற்றம்</h3>
+        <h3><i class="bi bi-upload"></i> {{ 'certificates.quickUploadTitle' | translate }}</h3>
         <button (click)="showQuickUpload = false" class="close-btn">&times;</button>
       </div>
 
       <div class="qu-tabs">
-        <button [class.active]="uploadType === 'certificate'" (click)="uploadType = 'certificate'">சான்றிதழ் (Certificate)</button>
-        <button [class.active]="uploadType === 'marksheet'" (click)="uploadType = 'marksheet'">மதிப்பெண் பட்டியல் (Marksheet)</button>
+        <button [class.active]="uploadType === 'certificate'" (click)="uploadType = 'certificate'">{{ 'certificates.tabCert' | translate }}</button>
+        <button [class.active]="uploadType === 'marksheet'" (click)="uploadType = 'marksheet'">{{ 'certificates.tabMarksheet' | translate }}</button>
       </div>
 
       @if (uploadType === 'certificate') {
         <form (ngSubmit)="submitDirectCertificate()" class="qu-form">
           <div class="form-grid">
             <div>
-              <label>மாணவர் (Student)</label>
+              <label>{{ 'certificates.student' | translate }}</label>
               <select [(ngModel)]="directCertForm.student_id" name="cStudent" required class="ctrl">
                 @for (st of studentsList; track st.id) {
                   <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
@@ -50,24 +50,24 @@
               </select>
             </div>
             <div>
-              <label>சான்றிதழ் எண் (Cert Number)</label>
+              <label>{{ 'certificates.certNumber' | translate }}</label>
               <input type="text" [(ngModel)]="directCertForm.certificate_number" name="cNum" class="ctrl" placeholder="ASTRO-CERT-2026-XXXX" />
             </div>
             <div>
-              <label>சான்றிதழ் கோப்பு (PDF/Image)</label>
+              <label>{{ 'certificates.certFile' | translate }}</label>
               <input type="file" (change)="onCertificateFileSelected($event)" accept="application/pdf,image/*" class="ctrl" />
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" (click)="showQuickUpload = false" class="btn-cancel">ரத்து</button>
-            <button type="submit" [disabled]="isUploadingFile || !directCertForm.pdf_download_url" class="btn-submit">வழங்கு (Issue)</button>
+            <button type="button" (click)="showQuickUpload = false" class="btn-cancel">{{ 'certificates.cancel' | translate }}</button>
+            <button type="submit" [disabled]="isUploadingFile || !directCertForm.pdf_download_url" class="btn-submit">{{ 'certificates.issue' | translate }}</button>
           </div>
         </form>
       } @else {
         <form (ngSubmit)="submitDirectMarksheet()" class="qu-form">
           <div class="form-grid">
             <div>
-              <label>மாணவர் (Student)</label>
+              <label>{{ 'certificates.student' | translate }}</label>
               <select [(ngModel)]="directMarksheetForm.student_id" name="mStudent" required class="ctrl">
                 @for (st of studentsList; track st.id) {
                   <option [value]="st.id">{{ st.name }} ({{ st.student_id }})</option>
@@ -75,17 +75,17 @@
               </select>
             </div>
             <div>
-              <label>மதிப்பெண் பட்டியல் எண்</label>
+              <label>{{ 'certificates.marksheetNumber' | translate }}</label>
               <input type="text" [(ngModel)]="directMarksheetForm.marksheet_number" name="mNum" class="ctrl" placeholder="ASTRO-MRK-2026-XXXX" />
             </div>
             <div>
-              <label>மதிப்பெண் கோப்பு (PDF/Image)</label>
+              <label>{{ 'certificates.marksheetFile' | translate }}</label>
               <input type="file" (change)="onMarksheetFileSelected($event)" accept="application/pdf,image/*" class="ctrl" />
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" (click)="showQuickUpload = false" class="btn-cancel">ரத்து</button>
-            <button type="submit" [disabled]="isUploadingFile || !directMarksheetForm.marksheet_download_url" class="btn-submit">வழங்கு (Issue)</button>
+            <button type="button" (click)="showQuickUpload = false" class="btn-cancel">{{ 'certificates.cancel' | translate }}</button>
+            <button type="submit" [disabled]="isUploadingFile || !directMarksheetForm.marksheet_download_url" class="btn-submit">{{ 'certificates.issue' | translate }}</button>
           </div>
         </form>
       }
@@ -96,21 +96,21 @@
   <div class="card-box main-table-box">
     <div class="table-header-row">
       <h3>
-        <i class="bi bi-award text-gold"></i> வழங்கப்பட்ட சான்றிதழ்கள் & மதிப்பெண் பட்டியல்கள் (Issued Documents)
+        <i class="bi bi-award text-gold"></i> {{ 'certificates.issuedTitle' | translate }}
       </h3>
-      <span class="badge-count">{{ issuedCertificates.length }} பதிவுகள்</span>
+      <span class="badge-count">{{ issuedCertificates.length }} {{ 'certificates.recordsCount' | translate }}</span>
     </div>
 
     <div class="table-responsive">
       <table class="table-styled">
         <thead>
           <tr>
-            <th>மாணவர் விபரம்</th>
-            <th>படிப்பு & நிலை</th>
-            <th>பதிவு எண்</th>
-            <th>சான்றிதழ் எண்</th>
-            <th>மதிப்பெண் & கிரேடு</th>
-            <th>செயல்கள் (Actions)</th>
+            <th>{{ 'certificates.thStudent' | translate }}</th>
+            <th>{{ 'certificates.thCourseLevel' | translate }}</th>
+            <th>{{ 'certificates.thRegNo' | translate }}</th>
+            <th>{{ 'certificates.thCertNo' | translate }}</th>
+            <th>{{ 'certificates.thScoreGrade' | translate }}</th>
+            <th>{{ 'certificates.thActions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -146,10 +146,10 @@
               </td>
               <td>
                 <div class="actions-cell">
-                  <button (click)="openDesignerModal(c.course_level || 'UG', c)" class="action-btn edit" title="சான்றிதழை எடிட் செய்து அச்சிடு (Edit & Print)">
-                    <i class="bi bi-pencil-square"></i> எடிட் & அச்சு
+                  <button (click)="openDesignerModal(c.course_level || 'UG', c)" class="action-btn edit" [title]="'certificates.editAndPrint' | translate">
+                    <i class="bi bi-pencil-square"></i> {{ 'certificates.editAndPrint' | translate }}
                   </button>
-                  <button (click)="deleteRecord(c.id)" class="action-btn delete" title="நீக்குக (Delete)">
+                  <button (click)="deleteRecord(c.id)" class="action-btn delete" [title]="'certificates.delete' | translate">
                     <i class="bi bi-trash3-fill"></i>
                   </button>
                 </div>
@@ -160,7 +160,7 @@
             <tr>
               <td colspan="6" class="empty-row">
                 <i class="bi bi-folder2-open empty-icon"></i>
-                <p>இதுவரை சான்றிதழ்கள் எதுவும் வழங்கப்படவில்லை. மேலுள்ள பட்டன்களைப் பயன்படுத்தி புதிதாக உருவாக்கவும்.</p>
+                <p>{{ 'certificates.emptyMessage' | translate }}</p>
               </td>
             </tr>
           }
@@ -183,31 +183,31 @@
         <div class="d-title-group">
           <i class="bi bi-award-fill gold-icon"></i>
           <div>
-            <h2>அங்கீகரிக்கப்பட்ட சான்றிதழ் & மதிப்பெண் பட்டியல் தயாரிப்பான் (Certificate Studio)</h2>
-            <span>ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம் - அரசு பதிவு எண்: BK4/3/2018PKM</span>
+            <h2>{{ 'certificates.designerTitle' | translate }}</h2>
+            <span>{{ 'certificates.designerSub' | translate }}</span>
           </div>
         </div>
 
         <!-- Level selector pills -->
         <div class="level-switch-group">
           <button [class.active]="designerForm.course_level === 'UG'" (click)="setCourseLevel('UG')" class="lvl-btn">
-            🎓 இளநிலை (UG - ஜோதிட ரத்னா)
+            🎓 {{ 'certificates.newUgBtn' | translate }}
           </button>
           <button [class.active]="designerForm.course_level === 'PG'" (click)="setCourseLevel('PG')" class="lvl-btn">
-            🏆 முதுநிலை (PG - ஜோதிட கலாநிதி)
+            🏆 {{ 'certificates.newPgBtn' | translate }}
           </button>
         </div>
 
         <!-- Modal Action Buttons -->
         <div class="d-actions-group">
-          <button (click)="printDocument()" class="btn-print" title="நேரடியாக A4 தாளில் அச்சிட அல்லது PDF சேமிக்க">
-            <i class="bi bi-printer-fill"></i> A4 அச்சிடு / PDF (Print)
+          <button (click)="printDocument()" class="btn-print" [title]="'certificates.printBtn' | translate">
+            <i class="bi bi-printer-fill"></i> {{ 'certificates.printBtn' | translate }}
           </button>
           <button (click)="saveCustomCertificate()" [disabled]="isSaving" class="btn-save">
-            <i class="bi bi-check2-circle"></i> @if (isSaving) { சேமிக்கிறது... } @else { சேமி & வழங்கு (Save) }
+            <i class="bi bi-check2-circle"></i> @if (isSaving) { {{ 'certificates.saving' | translate }} } @else { {{ 'certificates.saveBtn' | translate }} }
           </button>
-          <button (click)="showDesignerModal = false" class="btn-close-modal" title="வெளியேறு (Back)">
-            <i class="bi bi-x-circle-fill"></i> வெளியேறு (Close)
+          <button (click)="showDesignerModal = false" class="btn-close-modal" [title]="'certificates.closeBtn' | translate">
+            <i class="bi bi-x-circle-fill"></i> {{ 'certificates.closeBtn' | translate }}
           </button>
         </div>
       </div>
