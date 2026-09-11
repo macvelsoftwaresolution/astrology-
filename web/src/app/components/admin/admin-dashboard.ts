@@ -154,7 +154,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     // Listen to URL Path parameter (:section e.g. /admin/rasi-editor)
     this.route.params.subscribe(params => {
       if (params['section']) {
-        this.currentTab = params['section'];
+        const sec = params['section'];
+        if (sec === 'grading') {
+          this.router.navigate(['/admin', 'exams-eval'], { replaceUrl: true });
+          return;
+        }
+        this.currentTab = sec;
         this.updateCategoryState();
         this.cdr.detectChanges();
       }
@@ -163,7 +168,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     // Backward compatibility for queryParams ?tab=... -> Auto-redirect to clean URL path /admin/:tab
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
-        const cleanTab = params['tab'];
+        const cleanTab = params['tab'] === 'grading' ? 'exams-eval' : params['tab'];
         this.currentTab = cleanTab;
         this.updateCategoryState();
         this.cdr.detectChanges();

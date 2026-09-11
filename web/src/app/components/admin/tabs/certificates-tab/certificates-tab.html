@@ -148,8 +148,8 @@
               </td>
               <td>
                 <div class="actions-cell">
-                  <button (click)="openDesignerModal(c.course_level || 'UG', c)" class="action-btn edit" [title]="'certificates.editAndPrint' | translate">
-                    <i class="bi bi-pencil-square"></i> {{ 'certificates.editAndPrint' | translate }}
+                  <button (click)="openDesignerModal(c.course_level || 'UG', c)" class="action-btn edit icon-only" [title]="'certificates.editAndPrint' | translate">
+                    <i class="bi bi-pencil-square"></i>
                   </button>
                   <button (click)="deleteRecord(c.id)" class="action-btn delete" [title]="'certificates.delete' | translate">
                     <i class="bi bi-trash3-fill"></i>
@@ -509,6 +509,98 @@
               }
             </div>
 
+            <!-- 6. SIGNATURES UPLOAD SECTION -->
+            <div class="control-section signatures-upload-section">
+              <div class="section-title">
+                <i class="bi bi-pen-fill" style="color: #b45309; margin-right: 4px;"></i> 6. கையொப்பங்கள் (Signatures Upload)
+              </div>
+              <p style="font-size: 11px; color: #64748b; margin: 0 0 12px 0; line-height: 1.4;">
+                சான்றிதழ் மற்றும் மதிப்பெண் பட்டியலில் அச்சிட கையொப்பங்களை பதிவேற்றவும் (PNG/JPG).
+              </p>
+
+              <div class="sig-upload-grid">
+                <!-- 1. Training Teacher -->
+                <div class="sig-upload-item">
+                  <div class="sig-upload-label">
+                    <span>பயிற்சி ஆசிரியர் (Teacher)</span>
+                    @if (designerForm.sig_teacher_url) {
+                      <button type="button" (click)="removeSignature('teacher')" class="btn-sig-clear" title="நீக்கு">✕</button>
+                    }
+                  </div>
+                  @if (designerForm.sig_teacher_url) {
+                    <div class="sig-preview-thumb">
+                      <img [src]="designerForm.sig_teacher_url" alt="Teacher Sig" />
+                    </div>
+                  }
+                  <input type="file" (change)="onSignatureSelected($event, 'teacher')" accept="image/*" class="ctrl-file-sm" />
+                </div>
+
+                <!-- 2. Treasurer -->
+                <div class="sig-upload-item">
+                  <div class="sig-upload-label">
+                    <span>பொருளாளர் (Treasurer)</span>
+                    @if (designerForm.sig_treasurer_url) {
+                      <button type="button" (click)="removeSignature('treasurer')" class="btn-sig-clear" title="நீக்கு">✕</button>
+                    }
+                  </div>
+                  @if (designerForm.sig_treasurer_url) {
+                    <div class="sig-preview-thumb">
+                      <img [src]="designerForm.sig_treasurer_url" alt="Treasurer Sig" />
+                    </div>
+                  }
+                  <input type="file" (change)="onSignatureSelected($event, 'treasurer')" accept="image/*" class="ctrl-file-sm" />
+                </div>
+
+                <!-- 3. Secretary -->
+                <div class="sig-upload-item">
+                  <div class="sig-upload-label">
+                    <span>செயலாளர் (Secretary)</span>
+                    @if (designerForm.sig_secretary_url) {
+                      <button type="button" (click)="removeSignature('secretary')" class="btn-sig-clear" title="நீக்கு">✕</button>
+                    }
+                  </div>
+                  @if (designerForm.sig_secretary_url) {
+                    <div class="sig-preview-thumb">
+                      <img [src]="designerForm.sig_secretary_url" alt="Secretary Sig" />
+                    </div>
+                  }
+                  <input type="file" (change)="onSignatureSelected($event, 'secretary')" accept="image/*" class="ctrl-file-sm" />
+                </div>
+
+                <!-- 4. Founder -->
+                <div class="sig-upload-item">
+                  <div class="sig-upload-label">
+                    <span>நிறுவனர் (Founder)</span>
+                    @if (designerForm.sig_founder_url) {
+                      <button type="button" (click)="removeSignature('founder')" class="btn-sig-clear" title="நீக்கு">✕</button>
+                    }
+                  </div>
+                  @if (designerForm.sig_founder_url) {
+                    <div class="sig-preview-thumb">
+                      <img [src]="designerForm.sig_founder_url" alt="Founder Sig" />
+                    </div>
+                  }
+                  <input type="file" (change)="onSignatureSelected($event, 'founder')" accept="image/*" class="ctrl-file-sm" />
+                </div>
+
+                <!-- 5. Student / Candidate (For Marksheet) -->
+                <div class="sig-upload-item">
+                  <div class="sig-upload-label">
+                    <span>மாணவர் கையொப்பம் (Candidate)</span>
+                    @if (designerForm.sig_student_url) {
+                      <button type="button" (click)="removeSignature('student')" class="btn-sig-clear" title="நீக்கு">✕</button>
+                    }
+                  </div>
+                  @if (designerForm.sig_student_url) {
+                    <div class="sig-preview-thumb">
+                      <img [src]="designerForm.sig_student_url" alt="Candidate Sig" />
+                    </div>
+                  }
+                  <input type="file" (change)="onSignatureSelected($event, 'student')" accept="image/*" class="ctrl-file-sm" />
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -674,22 +766,38 @@
 
                         <div class="signatures-grid-4">
                           <div class="sig-box">
-                            <div class="sig-space"></div>
+                            <div class="sig-space">
+                              @if (designerForm.sig_teacher_url) {
+                                <img [src]="designerForm.sig_teacher_url" alt="Teacher Signature" class="sig-img" />
+                              }
+                            </div>
                             <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
                             <div class="sig-role-en">Training Teacher</div>
                           </div>
                           <div class="sig-box">
-                            <div class="sig-space"></div>
+                            <div class="sig-space">
+                              @if (designerForm.sig_treasurer_url) {
+                                <img [src]="designerForm.sig_treasurer_url" alt="Treasurer Signature" class="sig-img" />
+                              }
+                            </div>
                             <div class="sig-role-ta">பொருளாளர்</div>
                             <div class="sig-role-en">Treasurer</div>
                           </div>
                           <div class="sig-box">
-                            <div class="sig-space"></div>
+                            <div class="sig-space">
+                              @if (designerForm.sig_secretary_url) {
+                                <img [src]="designerForm.sig_secretary_url" alt="Secretary Signature" class="sig-img" />
+                              }
+                            </div>
                             <div class="sig-role-ta">செயலாளர்</div>
                             <div class="sig-role-en">Secretary</div>
                           </div>
                           <div class="sig-box">
-                            <div class="sig-space"></div>
+                            <div class="sig-space">
+                              @if (designerForm.sig_founder_url) {
+                                <img [src]="designerForm.sig_founder_url" alt="Founder Signature" class="sig-img" />
+                              }
+                            </div>
                             <div class="sig-role-ta">நிறுவனர்</div>
                             <div class="sig-role-en">Founder</div>
                           </div>
@@ -866,22 +974,38 @@
                       <!-- 4 SIGNATURES -->
                       <div class="marksheet-signatures-grid">
                         <div class="sig-box">
-                          <div class="sig-space"></div>
+                          <div class="sig-space">
+                            @if (designerForm.sig_student_url) {
+                              <img [src]="designerForm.sig_student_url" alt="Candidate Signature" class="sig-img" />
+                            }
+                          </div>
                           <div class="sig-role-ta">மாணவர் கையொப்பம்:</div>
                           <div class="sig-role-en">Candidates Certified</div>
                         </div>
                         <div class="sig-box">
-                          <div class="sig-space"></div>
+                          <div class="sig-space">
+                            @if (designerForm.sig_teacher_url) {
+                              <img [src]="designerForm.sig_teacher_url" alt="Teacher Signature" class="sig-img" />
+                            }
+                          </div>
                           <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
                           <div class="sig-role-en">Training Teacher</div>
                         </div>
                         <div class="sig-box">
-                          <div class="sig-space"></div>
+                          <div class="sig-space">
+                            @if (designerForm.sig_secretary_url) {
+                              <img [src]="designerForm.sig_secretary_url" alt="Secretary Signature" class="sig-img" />
+                            }
+                          </div>
                           <div class="sig-role-ta">செயலாளர்</div>
                           <div class="sig-role-en">Secretary</div>
                         </div>
                         <div class="sig-box">
-                          <div class="sig-space"></div>
+                          <div class="sig-space">
+                            @if (designerForm.sig_founder_url) {
+                              <img [src]="designerForm.sig_founder_url" alt="Founder Signature" class="sig-img" />
+                            }
+                          </div>
                           <div class="sig-role-ta">நிறுவனர்</div>
                           <div class="sig-role-en">Founder</div>
                         </div>

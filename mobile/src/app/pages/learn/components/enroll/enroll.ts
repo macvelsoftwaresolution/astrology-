@@ -132,6 +132,44 @@ export class LearnEnrollComponent implements OnInit {
       return false;
     }
 
+    // Check Day range immediately if entered
+    if (dStr) {
+      const dNum = parseInt(dStr, 10);
+      if (!isNaN(dNum)) {
+        if (dNum > 31 || (dStr.length === 2 && dNum < 1)) {
+          this.dobError = isTa ? 'தேதி 1 முதல் 31 வரை மட்டுமே இருக்க வேண்டும் (DD).' : 'Day must be between 1 and 31 (DD).';
+          this.localForm.dob = '';
+          this.localForm.age = '';
+          return false;
+        }
+      }
+    }
+
+    // Check Month range immediately if entered
+    if (mStr) {
+      const mNum = parseInt(mStr, 10);
+      if (!isNaN(mNum)) {
+        if (mNum > 12 || (mStr.length === 2 && mNum < 1)) {
+          this.dobError = isTa ? 'மாதம் 1 முதல் 12 வரை மட்டுமே இருக்க வேண்டும் (MM).' : 'Month must be between 1 and 12 (MM).';
+          this.localForm.dob = '';
+          this.localForm.age = '';
+          return false;
+        }
+      }
+    }
+
+    // Check Year immediately if entered
+    const currentYear = new Date().getFullYear();
+    if (yStr && yStr.length === 4) {
+      const yNum = parseInt(yStr, 10);
+      if (!isNaN(yNum) && yNum > currentYear) {
+        this.dobError = isTa ? `பிறந்த வருடம் நடப்பு வருடத்திற்குள் (${currentYear}) மட்டுமே இருக்க வேண்டும்.` : `Birth year cannot exceed current year (${currentYear}).`;
+        this.localForm.dob = '';
+        this.localForm.age = '';
+        return false;
+      }
+    }
+
     // 2. Incomplete input check
     if (!dStr || !mStr || !yStr || yStr.length < 4) {
       if (markError || (dStr && !mStr && yStr.length === 4) || (dStr && mStr && yStr.length > 0 && yStr.length < 4)) {
@@ -158,23 +196,22 @@ export class LearnEnrollComponent implements OnInit {
 
     // 3. Day & Month ranges
     if (isNaN(d) || d < 1 || d > 31) {
-      this.dobError = isTa ? 'தேதி 1 முதல் 31 வரை மட்டுமே இருக்க வேண்டும்.' : 'Day must be between 1 and 31.';
+      this.dobError = isTa ? 'தேதி 1 முதல் 31 வரை மட்டுமே இருக்க வேண்டும் (DD).' : 'Day must be between 1 and 31 (DD).';
       this.localForm.dob = '';
       this.localForm.age = '';
       return false;
     }
 
     if (isNaN(m) || m < 1 || m > 12) {
-      this.dobError = isTa ? 'மாதம் 1 முதல் 12 வரை மட்டுமே இருக்க வேண்டும்.' : 'Month must be between 1 and 12.';
+      this.dobError = isTa ? 'மாதம் 1 முதல் 12 வரை மட்டுமே இருக்க வேண்டும் (MM).' : 'Month must be between 1 and 12 (MM).';
       this.localForm.dob = '';
       this.localForm.age = '';
       return false;
     }
 
-    const currentYear = new Date().getFullYear();
     if (isNaN(y) || y < 1920 || y > currentYear) {
       if (y > currentYear) {
-        this.dobError = isTa ? 'பிறந்த வருடம் எதிர்காலத்தில் இருக்கக்கூடாது.' : 'Birth year cannot be in the future.';
+        this.dobError = isTa ? `பிறந்த வருடம் நடப்பு வருடத்திற்குள் (${currentYear}) மட்டுமே இருக்க வேண்டும்.` : `Birth year cannot exceed current year (${currentYear}).`;
       } else {
         this.dobError = isTa ? `சரியான வருடத்தை உள்ளிடவும் (1920 முதல் ${currentYear} வரை).` : `Enter valid year (1920 to ${currentYear}).`;
       }
@@ -227,44 +264,76 @@ export class LearnEnrollComponent implements OnInit {
 
   onDayInput(event: any, monthInput: HTMLInputElement) {
     let val = (event.target.value || '').replace(/\D/g, '').slice(0, 2);
-    if (val.length === 1 && parseInt(val, 10) > 3) {
+    if (val.length === 2) {
+      const dNum = parseInt(val, 10);
+      if (dNum > 31) {
+        val = '31';
+      } else if (dNum === 0) {
+        val = '01';
+      }
+    } else if (val.length === 1 && parseInt(val, 10) > 3) {
       val = '0' + val;
       this.dobDay = val;
       if (monthInput) monthInput.focus();
-    } else {
-      this.dobDay = val;
-      if (val.length === 2 && monthInput) {
-        monthInput.focus();
-      }
+      this.validateDobSegments(false);
+      return;
+    }
+    this.dobDay = val;
+    if (val.length === 2 && monthInput) {
+      monthInput.focus();
     }
     this.validateDobSegments(false);
   }
 
   onDayBlur() {
-    if (this.dobDay && this.dobDay.length === 1 && this.dobDay !== '0') {
-      this.dobDay = '0' + this.dobDay;
+    if (this.dobDay) {
+      const dNum = parseInt(this.dobDay, 10);
+      if (isNaN(dNum) || dNum < 1 || dNum > 31) {
+        const isTa = this.translationService.currentLanguage() === 'ta';
+        this.dobError = isTa ? 'தேதி 1 முதல் 31 வரை மட்டுமே இருக்க வேண்டும் (DD).' : 'Day must be between 1 and 31 (DD).';
+        return;
+      }
+      if (this.dobDay.length === 1) {
+        this.dobDay = '0' + this.dobDay;
+      }
     }
     this.validateDobSegments(false);
   }
 
   onMonthInput(event: any, yearInput: HTMLInputElement) {
     let val = (event.target.value || '').replace(/\D/g, '').slice(0, 2);
-    if (val.length === 1 && parseInt(val, 10) > 1) {
+    if (val.length === 2) {
+      const mNum = parseInt(val, 10);
+      if (mNum > 12) {
+        val = '12';
+      } else if (mNum === 0) {
+        val = '01';
+      }
+    } else if (val.length === 1 && parseInt(val, 10) > 1) {
       val = '0' + val;
       this.dobMonth = val;
       if (yearInput) yearInput.focus();
-    } else {
-      this.dobMonth = val;
-      if (val.length === 2 && yearInput) {
-        yearInput.focus();
-      }
+      this.validateDobSegments(false);
+      return;
+    }
+    this.dobMonth = val;
+    if (val.length === 2 && yearInput) {
+      yearInput.focus();
     }
     this.validateDobSegments(false);
   }
 
   onMonthBlur() {
-    if (this.dobMonth && this.dobMonth.length === 1 && this.dobMonth !== '0') {
-      this.dobMonth = '0' + this.dobMonth;
+    if (this.dobMonth) {
+      const mNum = parseInt(this.dobMonth, 10);
+      if (isNaN(mNum) || mNum < 1 || mNum > 12) {
+        const isTa = this.translationService.currentLanguage() === 'ta';
+        this.dobError = isTa ? 'மாதம் 1 முதல் 12 வரை மட்டுமே இருக்க வேண்டும் (MM).' : 'Month must be between 1 and 12 (MM).';
+        return;
+      }
+      if (this.dobMonth.length === 1) {
+        this.dobMonth = '0' + this.dobMonth;
+      }
     }
     this.validateDobSegments(false);
   }
@@ -276,12 +345,38 @@ export class LearnEnrollComponent implements OnInit {
   }
 
   onYearInput(event: any) {
-    const val = (event.target.value || '').replace(/\D/g, '').slice(0, 4);
+    let val = (event.target.value || '').replace(/\D/g, '').slice(0, 4);
+    const currentYear = new Date().getFullYear();
+    const curYearPrefix3 = Math.floor(currentYear / 10);
+    const curYearPrefix1 = Math.floor(currentYear / 1000);
+
+    // Prevent typing higher prefixes for the current era
+    if (val.length === 1 && parseInt(val, 10) > curYearPrefix1) {
+      val = curYearPrefix1.toString();
+      if (event?.target) event.target.value = val;
+    } else if (val.length === 3 && parseInt(val, 10) > curYearPrefix3) {
+      val = curYearPrefix3.toString();
+      if (event?.target) event.target.value = val;
+    } else if (val.length === 4) {
+      const yNum = parseInt(val, 10);
+      if (yNum > currentYear) {
+        val = currentYear.toString();
+        if (event?.target) event.target.value = val;
+      }
+    }
+
     this.dobYear = val;
     this.validateDobSegments(false);
   }
 
   onYearBlur() {
+    if (this.dobYear) {
+      const currentYear = new Date().getFullYear();
+      const yNum = parseInt(this.dobYear, 10);
+      if (!isNaN(yNum) && yNum > currentYear) {
+        this.dobYear = currentYear.toString();
+      }
+    }
     this.validateDobSegments(false);
   }
 

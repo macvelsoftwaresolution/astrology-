@@ -291,7 +291,8 @@ class NotificationController extends Controller
                 $targetTab = 'overview';
                 if (in_array($n->type, ['booking', 'booking_confirmed', 'booking_fulfilled'])) $targetTab = 'services';
                 else if ($n->type === 'book_order') $targetTab = 'courier';
-                else if ($n->type === 'submission' || $n->type === 'certificate') $targetTab = 'grading';
+                else if ($n->type === 'submission') $targetTab = 'exams-eval';
+                else if ($n->type === 'certificate') $targetTab = 'certificates';
                 else if ($n->type === 'payment' || $n->type === 'transaction') $targetTab = 'payments';
                 else if ($n->type === 'marriage_match' || $n->type === 'marriage' || $n->type === 'matrimony' || $n->type === 'matrimony_registration') $targetTab = 'matrimony';
                 else if ($n->type === 'jathagam') $targetTab = 'services';

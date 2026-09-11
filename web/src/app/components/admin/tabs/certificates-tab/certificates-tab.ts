@@ -73,6 +73,11 @@ export class CertificatesTabComponent implements OnInit {
     pass_status: 'PASS',
     pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
     pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
+    sig_teacher_url: '',
+    sig_treasurer_url: '',
+    sig_secretary_url: '',
+    sig_founder_url: '',
+    sig_student_url: '',
     pdf_download_url: '',
     marksheet_download_url: ''
   };
@@ -245,6 +250,7 @@ export class CertificatesTabComponent implements OnInit {
   resetDesignerForm(level: 'UG' | 'PG'): void {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const selectedStudent = this.studentsList.find(s => s.id == this.designerForm.student_id) || this.studentsList[0];
+    const defaultSigs = this.loadDefaultSignatures();
 
     if (level === 'UG') {
       this.designerForm = {
@@ -288,6 +294,11 @@ export class CertificatesTabComponent implements OnInit {
         pass_status: 'PASS',
         pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
         pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
+        sig_teacher_url: defaultSigs.sig_teacher_url || '',
+        sig_treasurer_url: defaultSigs.sig_treasurer_url || '',
+        sig_secretary_url: defaultSigs.sig_secretary_url || '',
+        sig_founder_url: defaultSigs.sig_founder_url || '',
+        sig_student_url: '',
         pdf_download_url: '',
         marksheet_download_url: ''
       };
@@ -333,6 +344,11 @@ export class CertificatesTabComponent implements OnInit {
         pass_status: 'PASS',
         pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
         pass_criteria_practical: 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.',
+        sig_teacher_url: defaultSigs.sig_teacher_url || '',
+        sig_treasurer_url: defaultSigs.sig_treasurer_url || '',
+        sig_secretary_url: defaultSigs.sig_secretary_url || '',
+        sig_founder_url: defaultSigs.sig_founder_url || '',
+        sig_student_url: '',
         pdf_download_url: '',
         marksheet_download_url: ''
       };
@@ -364,6 +380,8 @@ export class CertificatesTabComponent implements OnInit {
     const hasPractical3 = customData.has_practical3 !== undefined 
       ? !!customData.has_practical3 
       : (rec.practical3_mark !== null && rec.practical3_mark !== undefined && Number(rec.practical3_mark) > 0);
+
+    const defaultSigs = this.loadDefaultSignatures();
 
     this.designerForm = {
       id: rec.id,
@@ -408,6 +426,11 @@ export class CertificatesTabComponent implements OnInit {
       pass_criteria_practical: isPG 
         ? 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.'
         : 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
+      sig_teacher_url: customData.sig_teacher_url || defaultSigs.sig_teacher_url || '',
+      sig_treasurer_url: customData.sig_treasurer_url || defaultSigs.sig_treasurer_url || '',
+      sig_secretary_url: customData.sig_secretary_url || defaultSigs.sig_secretary_url || '',
+      sig_founder_url: customData.sig_founder_url || defaultSigs.sig_founder_url || '',
+      sig_student_url: customData.sig_student_url || '',
       pdf_download_url: rec.pdf_download_url || '',
       marksheet_download_url: rec.marksheet_download_url || ''
     };
@@ -604,6 +627,83 @@ export class CertificatesTabComponent implements OnInit {
     });
   }
 
+  loadDefaultSignatures(): any {
+    if (typeof window === 'undefined') return {};
+    try {
+      const stored = localStorage.getItem('astro_default_signatures');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  saveDefaultSignatures(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const sigs = {
+        sig_teacher_url: this.designerForm.sig_teacher_url,
+        sig_treasurer_url: this.designerForm.sig_treasurer_url,
+        sig_secretary_url: this.designerForm.sig_secretary_url,
+        sig_founder_url: this.designerForm.sig_founder_url,
+      };
+      localStorage.setItem('astro_default_signatures', JSON.stringify(sigs));
+    } catch {}
+  }
+
+  onSignatureSelected(event: any, role: 'teacher' | 'treasurer' | 'secretary' | 'founder' | 'student'): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Instant local preview via FileReader
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const localUrl = e.target.result;
+      if (role === 'teacher') this.designerForm.sig_teacher_url = localUrl;
+      else if (role === 'treasurer') this.designerForm.sig_treasurer_url = localUrl;
+      else if (role === 'secretary') this.designerForm.sig_secretary_url = localUrl;
+      else if (role === 'founder') this.designerForm.sig_founder_url = localUrl;
+      else if (role === 'student') this.designerForm.sig_student_url = localUrl;
+      this.saveDefaultSignatures();
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
+
+    this.isUploadingFile = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = this.authService.getUploadHeaders();
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData, headers).subscribe({
+      next: (res) => {
+        this.isUploadingFile = false;
+        if (res.url) {
+          if (role === 'teacher') this.designerForm.sig_teacher_url = res.url;
+          else if (role === 'treasurer') this.designerForm.sig_treasurer_url = res.url;
+          else if (role === 'secretary') this.designerForm.sig_secretary_url = res.url;
+          else if (role === 'founder') this.designerForm.sig_founder_url = res.url;
+          else if (role === 'student') this.designerForm.sig_student_url = res.url;
+          this.saveDefaultSignatures();
+          this.toastService.success('கையொப்பம் பதிவேற்றப்பட்டது!');
+        }
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isUploadingFile = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  removeSignature(role: 'teacher' | 'treasurer' | 'secretary' | 'founder' | 'student'): void {
+    if (role === 'teacher') this.designerForm.sig_teacher_url = '';
+    else if (role === 'treasurer') this.designerForm.sig_treasurer_url = '';
+    else if (role === 'secretary') this.designerForm.sig_secretary_url = '';
+    else if (role === 'founder') this.designerForm.sig_founder_url = '';
+    else if (role === 'student') this.designerForm.sig_student_url = '';
+    this.saveDefaultSignatures();
+    this.cdr.markForCheck();
+  }
+
   saveCustomCertificate(): void {
     if (!this.designerForm.student_id) {
       this.toastService.warning('மாணவரை தேர்வு செய்யவும்.', 'விபரம் தேவை');
@@ -619,9 +719,16 @@ export class CertificatesTabComponent implements OnInit {
         has_mcq2: this.designerForm.has_mcq2,
         has_practicals: this.designerForm.has_practicals,
         has_practical2: this.designerForm.has_practical2,
-        has_practical3: this.designerForm.has_practical3
+        has_practical3: this.designerForm.has_practical3,
+        sig_teacher_url: this.designerForm.sig_teacher_url,
+        sig_treasurer_url: this.designerForm.sig_treasurer_url,
+        sig_secretary_url: this.designerForm.sig_secretary_url,
+        sig_founder_url: this.designerForm.sig_founder_url,
+        sig_student_url: this.designerForm.sig_student_url
       }
     };
+
+    this.saveDefaultSignatures();
 
     this.http.post<any>(`${environment.apiUrl}/admin/certificates/save-custom`, payload, headers).subscribe({
       next: (res) => {

@@ -129,10 +129,17 @@ export class SegmentedDobComponent implements OnInit, OnChanges {
   }
 
   onYearInput(event: any) {
-    let val = event.target.value.replace(/\D/g, '');
-    if (val.length === 4) {
+    let val = event.target.value.replace(/\D/g, '').slice(0, 4);
+    const currentYear = new Date().getFullYear();
+    const curYearPrefix3 = Math.floor(currentYear / 10);
+    const curYearPrefix1 = Math.floor(currentYear / 1000);
+
+    if (val.length === 1 && parseInt(val, 10) > curYearPrefix1) {
+      val = curYearPrefix1.toString();
+    } else if (val.length === 3 && parseInt(val, 10) > curYearPrefix3) {
+      val = curYearPrefix3.toString();
+    } else if (val.length === 4) {
       let num = parseInt(val, 10);
-      const currentYear = new Date().getFullYear();
       if (num > currentYear) num = currentYear;
       val = '' + num;
     }
