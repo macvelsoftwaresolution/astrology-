@@ -4,9 +4,9 @@
     <i class="bi bi-arrow-left"></i>
   </button>
   <h1 class="db-brand-title">
-    {{ enrollForm?.courseLevel === 'mudhunilai' ? 'முதுநிலை ஆருத்ரா' : 'இளநிலை ஆருத்ரா' }}
+    {{ translationService.currentLanguage() === 'ta' ? (enrollForm?.courseLevel === 'mudhunilai' ? 'முதுநிலை ஆருத்ரா' : 'இளநிலை ஆருத்ரா') : (enrollForm?.courseLevel === 'mudhunilai' ? 'Master Aruthra' : 'Diploma Aruthra') }}
   </h1>
-  <button class="db-header-action-btn bell-btn" (click)="openNotificationsModal()" title="அறிவிப்புகள்">
+  <button class="db-header-action-btn bell-btn" (click)="openNotificationsModal()" [title]="translationService.currentLanguage() === 'ta' ? 'அறிவிப்புகள்' : 'Notifications'">
     <i class="bi bi-bell-fill"></i>
     @if (unreadCount > 0) {
     <span class="notif-badge-count">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
@@ -26,7 +26,7 @@
       <span>{{ marqueeMessage }}</span>
     </div>
   </div>
-  <button type="button" class="ticker-close-btn" (click)="dismissTicker($event)" title="அறிவிப்பை மறை">
+  <button type="button" class="ticker-close-btn" (click)="dismissTicker($event)" [title]="translationService.currentLanguage() === 'ta' ? 'அறிவிப்பை மறை' : 'Dismiss'">
     <i class="bi bi-x"></i>
   </button>
 </div>
@@ -34,7 +34,7 @@
 
 <!-- ================= SUB-TAB 1: HOME ================= -->
 @if (dashboardTab === 'home') {
-<div class="dashboard-tab-content home-unified-layout">
+<div class="home-tab-wrapper">
   
   <!-- 1. LIVE CLASS BANNER SECTION (HORIZONTAL SLIDER) -->
   @if (liveClasses.length > 0) {
@@ -50,7 +50,7 @@
           } @else if (lc.is_expired) {
             <div class="live-badge" style="background: #64748b; color: #fff;"><i class="bi bi-check-circle-fill me-1"></i> {{ 'learn.classFinished' | translate }}</div>
           } @else if (lc.is_upcoming) {
-            <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> {{ 'learn.todayPrefix' | translate }} {{ lc.time_text || 'மாலை 06:00' }}</div>
+            <div class="live-badge" style="background: #0284c7; color: #fff;"><i class="bi bi-clock-history me-1"></i> {{ 'learn.todayPrefix' | translate }} {{ lc.time_text || (translationService.currentLanguage() === 'ta' ? 'மாலை 06:00' : '06:00 PM') }}</div>
           } @else {
             <div class="live-badge" style="background: #d97706; color: #fff;"><i class="bi bi-calendar-event me-1"></i> {{ lc.time_text || ('learn.scheduledLive' | translate) }}</div>
           }
@@ -75,15 +75,6 @@
       </div>
       }
     </div>
-    @if (liveClasses.length > 1) {
-      <div class="carousel-dots-container" style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
-        @for (lc of liveClasses; track lc.id; let i = $index) {
-          <span class="carousel-dot" [class.active]="i === currentLiveIndex" (click)="setLiveIndex(i)"
-            style="width:8px; height:8px; border-radius:50%; background:rgba(162,123,56,0.3); cursor:pointer; transition:all 0.3s ease;">
-          </span>
-        }
-      </div>
-    }
   </div>
   }
 
@@ -139,10 +130,10 @@
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <strong>{{ ex.title }}</strong>
             <span style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: #fef3c7; color: #b45309; border: 1px solid rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 4px;">
-              <i class="bi bi-truck"></i> நேரடி / கொரியர் தேர்வு
+              <i class="bi bi-truck"></i> {{ translationService.currentLanguage() === 'ta' ? 'நேரடி / கொரியர் தேர்வு' : 'Postal / Courier Exam' }}
             </span>
           </div>
-          <span>{{ ex.exam_date ? (ex.exam_date | date:'mediumDate') : 'காகிதத் தேர்வு' }} • வினாத்தாள் காண்க & கொரியர் முகவரி</span>
+          <span>{{ ex.exam_date ? (ex.exam_date | date:'mediumDate') : (translationService.currentLanguage() === 'ta' ? 'காகிதத் தேர்வு' : 'Written Paper') }} • {{ translationService.currentLanguage() === 'ta' ? 'வினாத்தாள் காண்க & கொரியர் முகவரி' : 'View Questions & Courier Address' }}</span>
         </div>
         <i class="bi bi-chevron-right qe-arrow-icon"></i>
       </div>
@@ -182,7 +173,7 @@
               {{ getExamTimingState(ex).badgeText }}
             </span>
           </div>
-          <span>{{ ex.questions?.length || 0 }} வினாக்கள் • {{ ex.duration }} நிமிடங்கள்</span>
+          <span>{{ ex.questions?.length || 0 }} {{ translationService.currentLanguage() === 'ta' ? 'வினாக்கள்' : 'Questions' }} • {{ ex.duration }} {{ translationService.currentLanguage() === 'ta' ? 'நிமிடங்கள்' : 'Mins' }}</span>
         </div>
         <i class="bi bi-chevron-right qe-arrow-icon"></i>
       </div>
@@ -869,116 +860,115 @@
 
 <!-- DAILY LESSON PLAYER MODAL OVERLAY -->
 @if (selectedCurriculumDay) {
-<div
-  style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #F8FAFC; z-index: 9999; display: flex; flex-direction: column;">
-  <div
-    style="background: #4A0E17; color: #FFFDF0; padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-    <button (click)="closeDayDetail()"
-      style="background: transparent; border: none; color: #FFFDF0; font-size: 1.5rem; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+<div class="lesson-player-modal-overlay">
+  <!-- Top Luxury Header Bar with Safe Area Inset -->
+  <div class="lpm-header-bar">
+    <button type="button" class="lpm-back-btn" (click)="closeDayDetail()" [title]="translationService.currentLanguage() === 'ta' ? 'பின்செல்' : 'Go Back'">
       <i class="bi bi-arrow-left"></i>
     </button>
-    <div style="display: flex; flex-direction: column; gap: 4px;">
-      <span
-        style="background: #ECC876; color: #4A0E17; font-weight: 800; font-size: 0.75rem; padding: 2px 10px; border-radius: 12px; align-self: flex-start;">
-        Day {{ selectedCurriculumDay.day_number }}
-      </span>
-      <h3
-        style="font-family: 'Noto Serif Tamil', serif; font-size: 1.1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
+    <div class="lpm-header-title-box">
+      <div class="lpm-day-pill">
+        <i class="bi bi-calendar2-check-fill me-1"></i>
+        <span>{{ translationService.currentLanguage() === 'ta' ? ('நாள் ' + selectedCurriculumDay.day_number) : ('Day ' + selectedCurriculumDay.day_number) }}</span>
+      </div>
+      <h3 class="lpm-lesson-title" [title]="selectedCurriculumDay.title">
         {{ selectedCurriculumDay.title }}
       </h3>
     </div>
+    <button type="button" class="lpm-close-btn" (click)="closeDayDetail()" [title]="translationService.currentLanguage() === 'ta' ? 'மூடுக' : 'Close'">
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 
-  <div style="flex: 1; padding: 20px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
-    <!-- Audio Player Section -->
-    @if (selectedCurriculumDay.audios_json && selectedCurriculumDay.audios_json.length > 0) {
-    @for (audio of selectedCurriculumDay.audios_json; track audio.url) {
-    <div class="protected-content" style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
-      <div
-        style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ audio.title ||
-        ('profile.voiceLecture' | translate) }}
+  <div class="lpm-content-body">
+    <div class="lpm-inner-wrap">
+      <!-- Audio Player Section -->
+      @if (selectedCurriculumDay.audios_json && selectedCurriculumDay.audios_json.length > 0) {
+      @for (audio of selectedCurriculumDay.audios_json; track audio.url) {
+      <div class="protected-content" style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
+        <div
+          style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ audio.title || ('profile.voiceLecture' | translate) }}
+        </div>
+        <audio [src]="audio.url" controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 40px;"></audio>
       </div>
-      <audio [src]="audio.url" controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 40px;"></audio>
-    </div>
-    }
-    } @else if (selectedCurriculumDay.audio_url) {
-    <div class="protected-content" style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
-      <div
-        style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-        <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ 'profile.voiceLecture' |
-        translate }}
+      }
+      } @else if (selectedCurriculumDay.audio_url) {
+      <div class="protected-content" style="background: #FFF9E6; border: 1.5px solid #ECC876; border-radius: 14px; padding: 14px;">
+        <div
+          style="font-weight: 700; color: #4A0E17; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <i class="bi bi-mic-fill" style="color: #059669; font-size: 1.1rem;"></i> {{ 'profile.voiceLecture' | translate }}
+        </div>
+        <audio [src]="selectedCurriculumDay.audio_url" controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 40px;"></audio>
       </div>
-      <audio [src]="selectedCurriculumDay.audio_url" controls controlsList="nodownload noplaybackrate" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 40px;"></audio>
-    </div>
-    }
+      }
 
-    <!-- Text Lesson Notes -->
-    <div class="protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px; user-select: none;">
-      <h4
-        style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
-        <i class="bi bi-journal-bookmark-fill me-1"></i> {{ 'profile.lessonNotes' | translate }}
-      </h4>
-      <div style="font-size: 0.88rem; color: #2A2421; line-height: 1.6; white-space: pre-wrap;">
-        {{ selectedCurriculumDay.description }}
-      </div>
-    </div>
-
-    <!-- Diagrams & Chart Gallery -->
-    @if (selectedCurriculumDay.images_json && selectedCurriculumDay.images_json.length > 0) {
-    <div class="protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
-      <h4
-        style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 10px 0;">
-        <i class="bi bi-images me-1"></i> {{ 'profile.chartDiagrams' | translate }}
-      </h4>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        @for (imgUrl of selectedCurriculumDay.images_json; track imgUrl) {
-        <a [href]="imgUrl" target="_blank"
-          style="display: block; width: 100px; height: 100px; border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876;">
-          <img [src]="imgUrl" draggable="false" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 100%; object-fit: cover;">
-        </a>
-        }
-      </div>
-    </div>
-    }
-
-    <!-- PDF Study Material -->
-    @if (selectedCurriculumDay.pdfs_json && selectedCurriculumDay.pdfs_json.length > 0) {
-    @for (pdf of selectedCurriculumDay.pdfs_json; track pdf.url) {
-    <div (click)="downloadPDF(pdf.title, pdf.url)"
-      style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
-        <div>
-          <strong style="color: #991B1B; font-size: 0.9rem; display: block;">{{ pdf.title || 'PDF' }}</strong>
-          <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
+      <!-- Text Lesson Notes -->
+      <div class="protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px; user-select: none;">
+        <h4
+          style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 6px;">
+          <i class="bi bi-journal-bookmark-fill me-1"></i> {{ 'profile.lessonNotes' | translate }}
+        </h4>
+        <div style="font-size: 0.88rem; color: #2A2421; line-height: 1.6; white-space: pre-wrap;">
+          {{ selectedCurriculumDay.description }}
         </div>
       </div>
-      <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
-    </div>
-    }
-    } @else if (selectedCurriculumDay.pdf_material_url) {
-    <div (click)="downloadPDF(selectedCurriculumDay.title + ' Notes', selectedCurriculumDay.pdf_material_url)"
-      style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
-        <div>
-          <strong style="color: #991B1B; font-size: 0.9rem; display: block;">PDF</strong>
-          <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
+
+      <!-- Diagrams & Chart Gallery -->
+      @if (selectedCurriculumDay.images_json && selectedCurriculumDay.images_json.length > 0) {
+      <div class="protected-content" (copy)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" style="background: #FFFFFF; border: 1px solid rgba(162,123,56,0.25); border-radius: 14px; padding: 14px;">
+        <h4
+          style="font-family: 'Noto Serif Tamil', serif; color: #4A0E17; font-size: 0.95rem; font-weight: 700; margin: 0 0 10px 0;">
+          <i class="bi bi-images me-1"></i> {{ 'profile.chartDiagrams' | translate }}
+        </h4>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          @for (imgUrl of selectedCurriculumDay.images_json; track imgUrl) {
+          <a [href]="imgUrl" target="_blank"
+            style="display: block; width: 100px; height: 100px; border-radius: 10px; overflow: hidden; border: 1.5px solid #ECC876;">
+            <img [src]="imgUrl" draggable="false" (contextmenu)="$event.preventDefault()" style="width: 100%; height: 100%; object-fit: cover;">
+          </a>
+          }
         </div>
       </div>
-      <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
-    </div>
-    }
+      }
 
-    <!-- Complete Action Button -->
-    <button (click)="markDayCompleted(selectedCurriculumDay)" [disabled]="selectedCurriculumDay.is_completed"
-      style="width: 100%; background: #4A0E17; color: #ECC876; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
-      <i class="bi" [class.bi-check-circle-fill]="selectedCurriculumDay.is_completed"
-        [class.bi-check-circle]="!selectedCurriculumDay.is_completed"></i>
-      {{ selectedCurriculumDay.is_completed ? ('profile.lessonCompleted' | translate) : ('profile.markCompleted' |
-      translate) }}
-    </button>
+      <!-- PDF Study Material -->
+      @if (selectedCurriculumDay.pdfs_json && selectedCurriculumDay.pdfs_json.length > 0) {
+      @for (pdf of selectedCurriculumDay.pdfs_json; track pdf.url) {
+      <div (click)="downloadPDF(pdf.title, pdf.url)"
+        style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
+          <div>
+            <strong style="color: #991B1B; font-size: 0.9rem; display: block;">{{ pdf.title || 'PDF' }}</strong>
+            <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
+          </div>
+        </div>
+        <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
+      </div>
+      }
+      } @else if (selectedCurriculumDay.pdf_material_url) {
+      <div (click)="downloadPDF(selectedCurriculumDay.title + ' Notes', selectedCurriculumDay.pdf_material_url)"
+        style="background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="bi bi-file-earmark-pdf-fill" style="color: #DC2626; font-size: 1.6rem;"></i>
+          <div>
+            <strong style="color: #991B1B; font-size: 0.9rem; display: block;">PDF</strong>
+            <span style="font-size: 0.75rem; color: #7F1D1D;">{{ 'common.download' | translate }}</span>
+          </div>
+        </div>
+        <i class="bi bi-download" style="color: #DC2626; font-size: 1.2rem;"></i>
+      </div>
+      }
+
+      <!-- Complete Action Button -->
+      <button (click)="markDayCompleted(selectedCurriculumDay)" [disabled]="selectedCurriculumDay.is_completed"
+        style="width: 100%; background: #4A0E17; color: #ECC876; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 12px rgba(74, 14, 23, 0.18);">
+        <i class="bi" [class.bi-check-circle-fill]="selectedCurriculumDay.is_completed"
+          [class.bi-check-circle]="!selectedCurriculumDay.is_completed"></i>
+        {{ selectedCurriculumDay.is_completed ? ('profile.lessonCompleted' | translate) : ('profile.markCompleted' | translate) }}
+      </button>
+    </div>
   </div>
 </div>
 }
@@ -1226,6 +1216,96 @@
       </button>
     </div>
 
+  </div>
+</div>
+}
+
+<!-- ================= PRACTICAL EXAM DETAILS MODAL ================= -->
+@if (showPracticalModal && selectedPracticalExam) {
+<div class="practical-modal-overlay" (click)="closePracticalModal()">
+  <div class="practical-modal-card" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="pm-header">
+      <div class="pm-badge">
+        <i class="bi bi-truck text-amber"></i>
+        <span>{{ translationService.currentLanguage() === 'ta' ? 'நேரடி / கொரியர் தேர்வு' : 'Postal / Courier Exam' }}</span>
+      </div>
+      <button class="pm-close-btn" (click)="closePracticalModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Title & Meta -->
+    <div class="pm-title-section">
+      <h3>{{ selectedPracticalExam.title }}</h3>
+      <div class="pm-meta-row">
+        <span><i class="bi bi-calendar-event"></i> {{ selectedPracticalExam.exam_date ? (selectedPracticalExam.exam_date | date:'mediumDate') : (translationService.currentLanguage() === 'ta' ? 'அறிவிப்பு நாள்' : 'Exam Date') }}</span>
+        <span><i class="bi bi-mortarboard"></i> {{ selectedPracticalExam.level || enrollForm?.courseLevel || 'ILANILAI' }}</span>
+      </div>
+    </div>
+
+    <div class="pm-body-scroll">
+      <!-- 1. Questions / Practical Prompt -->
+      <div class="pm-section-box">
+        <div class="pm-sec-title">
+          <i class="bi bi-file-earmark-text-fill"></i>
+          <h4>{{ translationService.currentLanguage() === 'ta' ? 'செய்முறை வினாக்கள் / குறிப்புகள்' : 'Practical Questions / Instructions' }}</h4>
+        </div>
+        <div class="pm-prompt-content">
+          <p>{{ selectedPracticalExam.practical_prompt || (translationService.currentLanguage() === 'ta' ? 'வினாக்கள் ஏதுமில்லை.' : 'No questions specified.') }}</p>
+        </div>
+      </div>
+
+      <!-- 2. Chart or Attachment Image (if present) -->
+      @if (selectedPracticalExam.chart_image_url) {
+      <div class="pm-section-box">
+        <div class="pm-sec-title">
+          <i class="bi bi-image-fill"></i>
+          <h4>{{ translationService.currentLanguage() === 'ta' ? 'ஜாதகக் கட்டம் / இணைப்பு ஆவணம்' : 'Chart / Attachment Document' }}</h4>
+        </div>
+        <div class="pm-file-preview">
+          <a [href]="selectedPracticalExam.chart_image_url" target="_blank" class="pm-download-link">
+            <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>
+            {{ translationService.currentLanguage() === 'ta' ? 'இணைப்பு ஆவணத்தைக் காண்க / பதிவிறக்கு' : 'View / Download Attachment File' }}
+          </a>
+        </div>
+      </div>
+      }
+
+      <!-- 3. Return Courier Address -->
+      <div class="pm-section-box courier-box">
+        <div class="pm-sec-title">
+          <i class="bi bi-geo-alt-fill text-rose"></i>
+          <h4>{{ translationService.currentLanguage() === 'ta' ? 'விடைத்தாள் அனுப்ப வேண்டிய கொரியர் முகவரி' : 'Answer Sheet Return Courier Address' }}</h4>
+        </div>
+        <div class="courier-address-card">
+          <p class="courier-addr-text">
+            {{ selectedPracticalExam.return_courier_address || 'ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயம், எண்: 1/346, ஸ்டேட் பாங்க் காலனி, கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.' }}
+          </p>
+          <button type="button" class="btn-copy-address" (click)="copyCourierAddress(selectedPracticalExam.return_courier_address || 'ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயம், எண்: 1/346, ஸ்டேட் பாங்க் காலனி, கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.')">
+            <i class="bi bi-clipboard-check me-1"></i>
+            {{ translationService.currentLanguage() === 'ta' ? 'முகவரியை நகலெடு' : 'Copy Address' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Instructions note -->
+      <div class="pm-info-note">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>
+          {{ translationService.currentLanguage() === 'ta' 
+            ? 'மாணவர்கள் தங்கள் வினாக்களுக்கான விடைகளைத் தாளில் கைப்பட எழுதி, மேலே உள்ள முகவரிக்கு குறிப்பிட்ட தேதிக்குள் கொரியர் அல்லது தபால் மூலம் அனுப்பி வைக்கவும்.' 
+            : 'Please write down your answers clearly by hand and mail them via postal courier to the address mentioned above on or before the due date.' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="pm-footer">
+      <button type="button" class="pm-done-btn" (click)="closePracticalModal()">
+        {{ translationService.currentLanguage() === 'ta' ? 'சரி, புரிந்தது' : 'Understood' }}
+      </button>
+    </div>
   </div>
 </div>
 }

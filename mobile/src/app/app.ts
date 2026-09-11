@@ -9,6 +9,7 @@ import { ExitModalService } from './services/exit-modal.service';
 import { NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { LoadingService } from './services/loading.service';
 import { SecureScreenService } from './services/secure-screen.service';
+import { TranslationService } from './services/translation.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,8 @@ export class AppComponent implements OnInit {
     private backButtonService: BackButtonService,
     public exitModalService: ExitModalService,
     private loadingService: LoadingService,
-    private secureScreenService: SecureScreenService
+    private secureScreenService: SecureScreenService,
+    public translationService: TranslationService
   ) {
     this.initializeApp();
     this.initRouterLoading();

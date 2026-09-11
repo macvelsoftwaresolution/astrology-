@@ -1,3 +1,4 @@
+
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -96,7 +97,7 @@ export class ExamsEvalTabComponent implements OnInit {
     primarySub: any;
   } | null = null;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -182,7 +183,7 @@ export class ExamsEvalTabComponent implements OnInit {
         }
         this.cdr?.markForCheck();
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -190,11 +191,14 @@ export class ExamsEvalTabComponent implements OnInit {
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/public/exams/${this.selectedCategory}`, headers).subscribe({
       next: (res) => {
-        this.exams = res.exams || [];
+        // Only include non-practical (regular online theory/MCQ) exams
+        this.exams = (res.exams || []).filter((e: any) =>
+          !e.is_practical || e.is_practical == 0 || e.is_practical === false || e.is_practical === '0'
+        );
         this.loadAnalytics();
         this.cdr?.markForCheck();
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -205,7 +209,7 @@ export class ExamsEvalTabComponent implements OnInit {
         this.batches = res.batches || res || [];
         this.cdr?.markForCheck();
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -298,13 +302,13 @@ export class ExamsEvalTabComponent implements OnInit {
     const attempts = (sub.attempts && sub.attempts.length > 0)
       ? [...sub.attempts]
       : this.rawSubmissions.filter(s => {
-          const sEmail = s.student_email && s.student_email !== '-' ? s.student_email.trim().toLowerCase() : '';
-          const sCode = s.student_code && s.student_code !== '-' ? s.student_code.trim().toUpperCase() : '';
-          const sName = s.student_name ? s.student_name.trim().toLowerCase().replace(/[\s\.\_\-]/g, '') : '';
-          const matchStudent = (email && sEmail === email) || (code && sCode === code) || (name && sName === name) || (sub.student_id && s.student_id === sub.student_id);
-          const matchExam = sub.exam_id ? (s.exam_id === sub.exam_id) : true;
-          return matchStudent && matchExam;
-        });
+        const sEmail = s.student_email && s.student_email !== '-' ? s.student_email.trim().toLowerCase() : '';
+        const sCode = s.student_code && s.student_code !== '-' ? s.student_code.trim().toUpperCase() : '';
+        const sName = s.student_name ? s.student_name.trim().toLowerCase().replace(/[\s\.\_\-]/g, '') : '';
+        const matchStudent = (email && sEmail === email) || (code && sCode === code) || (name && sName === name) || (sub.student_id && s.student_id === sub.student_id);
+        const matchExam = sub.exam_id ? (s.exam_id === sub.exam_id) : true;
+        return matchStudent && matchExam;
+      });
 
     attempts.sort((a: any, b: any) => {
       const attA = Number(a.attempt_number || 1);
@@ -387,7 +391,7 @@ export class ExamsEvalTabComponent implements OnInit {
       pass_percentage: exam.pass_percentage || 50
     };
     if (!this.activeExamWizard.questions) this.activeExamWizard.questions = [];
-    
+
     this.activeView = 'exam-wizard';
   }
 
@@ -413,7 +417,8 @@ export class ExamsEvalTabComponent implements OnInit {
       pass_mark: Number(this.activeExamWizard.pass_mark) || 40,
       practical_prompt: this.activeExamWizard.practical_prompt || null,
       chart_image_url: this.activeExamWizard.chart_image_url || null,
-      batch_id: this.activeExamWizard.batch_id ? Number(this.activeExamWizard.batch_id) : null
+      batch_id: this.activeExamWizard.batch_id ? Number(this.activeExamWizard.batch_id) : null,
+      is_practical: false
     };
 
     const request$ = isEdit
@@ -618,7 +623,7 @@ export class ExamsEvalTabComponent implements OnInit {
       try {
         const parsed = JSON.parse(options);
         if (Array.isArray(parsed)) return parsed;
-      } catch (e) {}
+      } catch (e) { }
       return options.split(',').map(s => s.trim()).filter(s => !!s);
     }
     return [];
@@ -642,7 +647,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   downloadSampleCsv(): void {
     let csvRows = ['Question,Option A,Option B,Option C,Option D,Correct Answer'];
-    
+
     // If current exam has questions in database/wizard, export those dynamically
     if (this.activeExamWizard?.questions && this.activeExamWizard.questions.length > 0) {
       this.activeExamWizard.questions.forEach((q: any) => {

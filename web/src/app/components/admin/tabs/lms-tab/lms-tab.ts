@@ -526,7 +526,10 @@ export class LmsTabComponent implements OnInit {
     if (this.selectedCategory) {
       this.http.get<any>(`${environment.apiUrl}/public/exams/${this.selectedCategory}`, headers).subscribe({
         next: (res) => {
-          this.exams = res.exams || [];
+          // Filter out practical exams so only regular theory/MCQ course exams are shown
+          this.exams = (res.exams || []).filter((e: any) => 
+            !e.is_practical || e.is_practical == 0 || e.is_practical === false || e.is_practical === '0'
+          );
           // If we are currently in exam-studio and editing an exam, update its questions
           if (this.activeView === 'exam-studio' && this.activeExamWizard && this.activeExamWizard.id) {
             const updatedExam = this.exams.find(e => e.id === this.activeExamWizard.id);
@@ -542,7 +545,10 @@ export class LmsTabComponent implements OnInit {
   }
 
   getFilteredExams(): any[] {
-    return this.exams.filter(e => e.level === this.selectedCategory);
+    return this.exams.filter(e => 
+      e.level === this.selectedCategory && 
+      (!e.is_practical || e.is_practical == 0 || e.is_practical === false || e.is_practical === '0')
+    );
   }
 
   openNewExamWizard(): void {
@@ -806,16 +812,35 @@ export class LmsTabComponent implements OnInit {
     { label: 'இரவு 08:00 - 09:30', start: '20:00', end: '21:30', text: 'இரவு 08:00 - 09:30' }
   ];
 
+  getDayLabel(d: any): string {
+    return this.translationService.currentLanguage() === 'ta' ? d.label : d.short;
+  }
+
+  getTimePresetLabel(tp: any): string {
+    if (this.translationService.currentLanguage() === 'ta') {
+      return tp.label;
+    }
+    const mapping: Record<string, string> = {
+      'காலை 06:00 - 07:30': '06:00 AM - 07:30 AM',
+      'காலை 10:00 - 11:30': '10:00 AM - 11:30 AM',
+      'மாலை 06:00 - 07:30': '06:00 PM - 07:30 PM',
+      'இரவு 07:30 - 09:00': '07:30 PM - 09:00 PM',
+      'இரவு 08:00 - 09:30': '08:00 PM - 09:30 PM'
+    };
+    return mapping[tp.label] || tp.label;
+  }
+
   openNewLiveClass(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     this.editingLiveClass = {
       id: null,
       title: '',
       description: '',
       days_of_week: ['mon', 'tue', 'wed', 'thu', 'fri'],
-      date_text: 'திங்கள் - வெள்ளி',
+      date_text: isTa ? 'திங்கள் - வெள்ளி' : 'Mon - Fri',
       start_time: '18:00',
       end_time: '19:30',
-      time_text: 'மாலை 06:00 - 07:30',
+      time_text: isTa ? 'மாலை 06:00 - 07:30' : '06:00 PM - 07:30 PM',
       link: '',
       is_active: true
     };
@@ -835,13 +860,14 @@ export class LmsTabComponent implements OnInit {
       days = ['mon', 'tue', 'wed', 'thu', 'fri'];
     }
 
+    const isTa = this.translationService.currentLanguage() === 'ta';
     this.editingLiveClass = {
       ...liveClass,
       days_of_week: days,
       start_time: liveClass.start_time || '18:00',
       end_time: liveClass.end_time || '19:30',
-      date_text: liveClass.date_text || 'திங்கள் - வெள்ளி',
-      time_text: liveClass.time_text || 'மாலை 06:00 - 07:30'
+      date_text: liveClass.date_text || (isTa ? 'திங்கள் - வெள்ளி' : 'Mon - Fri'),
+      time_text: liveClass.time_text || (isTa ? 'மாலை 06:00 - 07:30' : '06:00 PM - 07:30 PM')
     };
     this.activeView = 'live-class-studio';
   }
@@ -876,42 +902,49 @@ export class LmsTabComponent implements OnInit {
 
   updateDaysSummary(): void {
     const days = this.editingLiveClass.days_of_week || [];
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (days.length === 7) {
-      this.editingLiveClass.date_text = 'தினசரி (அனைத்து நாட்களும்)';
+      this.editingLiveClass.date_text = isTa ? 'தினசரி' : 'Daily';
     } else if (days.length === 5 && !days.includes('sat') && !days.includes('sun')) {
-      this.editingLiveClass.date_text = 'திங்கள் - வெள்ளி (Mon - Fri)';
+      this.editingLiveClass.date_text = isTa ? 'திங்கள் - வெள்ளி' : 'Mon - Fri';
     } else if (days.length === 2 && days.includes('sat') && days.includes('sun')) {
-      this.editingLiveClass.date_text = 'சனி, ஞாயிறு (வார இறுதி)';
+      this.editingLiveClass.date_text = isTa ? 'சனி - ஞாயிறு' : 'Sat - Sun';
     } else if (days.length === 0) {
-      this.editingLiveClass.date_text = 'நாட்கள் தேர்வு செய்யப்படவில்லை';
+      this.editingLiveClass.date_text = isTa ? 'நாட்கள் தேர்வு செய்யப்படவில்லை' : 'No days selected';
     } else {
-      const labels = this.weekDaysList.filter(d => days.includes(d.key)).map(d => d.label);
+      const labels = this.weekDaysList.filter(d => days.includes(d.key)).map(d => isTa ? d.label : d.short);
       this.editingLiveClass.date_text = labels.join(', ');
     }
   }
 
   selectTimePreset(preset: any): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     this.editingLiveClass.start_time = preset.start;
     this.editingLiveClass.end_time = preset.end;
-    this.editingLiveClass.time_text = preset.text;
+    this.editingLiveClass.time_text = isTa ? preset.text : this.getTimePresetLabel(preset);
   }
 
   onCustomTimeChange(): void {
     const start = this.editingLiveClass.start_time || '18:00';
     const end = this.editingLiveClass.end_time || '19:30';
+    const isTa = this.translationService.currentLanguage() === 'ta';
 
     const formatHour = (t: string) => {
       const [h, m] = t.split(':').map(Number);
       const isPm = h >= 12;
       const h12 = h % 12 || 12;
       const padM = String(m).padStart(2, '0');
-      const prefix = h < 12 ? 'காலை' : (h < 16 ? 'மதியம்' : (h < 20 ? 'மாலை' : 'இரவு'));
-      return { str: `${String(h12).padStart(2, '0')}:${padM}`, prefix };
+      const prefixTa = h < 12 ? 'காலை' : (h < 16 ? 'மதியம்' : (h < 20 ? 'மாலை' : 'இரவு'));
+      const ampmEn = isPm ? 'PM' : 'AM';
+      return { 
+        ta: `${prefixTa} ${String(h12).padStart(2, '0')}:${padM}`,
+        en: `${String(h12).padStart(2, '0')}:${padM} ${ampmEn}`
+      };
     };
 
     const s = formatHour(start);
     const e = formatHour(end);
-    this.editingLiveClass.time_text = `${s.prefix} ${s.str} - ${e.str}`;
+    this.editingLiveClass.time_text = isTa ? `${s.ta} - ${e.ta.split(' ')[1]}` : `${s.en} - ${e.en}`;
   }
 
   saveLiveClass(): void {
@@ -985,13 +1018,29 @@ export class LmsTabComponent implements OnInit {
     });
   }
 
+  seminarDatePickerValue: string = '';
+  seminarStartTime: string = '18:00';
+  seminarEndTime: string = '19:30';
+
   openNewSeminar(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    this.seminarDatePickerValue = `${yyyy}-${mm}-${dd}`;
+    this.seminarStartTime = '18:00';
+    this.seminarEndTime = '19:30';
+
     this.editingSeminar = {
       id: null,
       title: '',
       speaker: '',
-      date_text: 'இன்று',
-      time_text: 'மாலை 06:00 - 07:30',
+      date: this.seminarDatePickerValue,
+      date_text: isTa ? 'இன்று' : 'Today',
+      start_time: '18:00',
+      end_time: '19:30',
+      time_text: isTa ? 'மாலை 06:00 - 07:30' : '06:00 PM - 07:30 PM',
       status: 'upcoming',
       join_url: '',
       recording_video_url: '',
@@ -1003,46 +1052,92 @@ export class LmsTabComponent implements OnInit {
 
   editSeminar(seminar: any): void {
     this.editingSeminar = { ...seminar };
+    if (seminar.date) {
+      this.seminarDatePickerValue = String(seminar.date).substring(0, 10);
+    }
+    this.seminarStartTime = seminar.start_time || '18:00';
+    this.seminarEndTime = seminar.end_time || '19:30';
     this.formValidationError = '';
     this.activeView = 'seminar-studio';
   }
 
   setSeminarDatePreset(preset: 'today' | 'tomorrow' | 'sunday' | 'next_sunday'): void {
     if (!this.editingSeminar) return;
+    const isTa = this.translationService.currentLanguage() === 'ta';
     const now = new Date();
+    let target = new Date();
+
     if (preset === 'today') {
-      this.editingSeminar.date_text = 'இன்று';
+      target = now;
+      this.editingSeminar.date_text = isTa ? 'இன்று' : 'Today';
     } else if (preset === 'tomorrow') {
-      this.editingSeminar.date_text = 'நாளை';
-    } else if (preset === 'sunday') {
-      const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
-      const sun = new Date(now.getTime() + daysUntilSunday * 24 * 60 * 60 * 1000);
-      const d = String(sun.getDate()).padStart(2, '0');
-      const m = String(sun.getMonth() + 1).padStart(2, '0');
-      this.editingSeminar.date_text = `${d}-${m}-${sun.getFullYear()} (ஞாயிறு)`;
-    } else if (preset === 'next_sunday') {
-      const daysUntilSunday = ((7 - now.getDay()) % 7 || 7) + 7;
-      const sun = new Date(now.getTime() + daysUntilSunday * 24 * 60 * 60 * 1000);
-      const d = String(sun.getDate()).padStart(2, '0');
-      const m = String(sun.getMonth() + 1).padStart(2, '0');
-      this.editingSeminar.date_text = `${d}-${m}-${sun.getFullYear()} (ஞாயிறு)`;
+      target = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      this.editingSeminar.date_text = isTa ? 'நாளை' : 'Tomorrow';
+    } else if (preset === 'sunday' || preset === 'next_sunday') {
+      const extra = preset === 'next_sunday' ? 7 : 0;
+      const daysUntilSunday = ((7 - now.getDay()) % 7 || 7) + extra;
+      target = new Date(now.getTime() + daysUntilSunday * 24 * 60 * 60 * 1000);
+      const d = String(target.getDate()).padStart(2, '0');
+      const m = String(target.getMonth() + 1).padStart(2, '0');
+      this.editingSeminar.date_text = `${d}-${m}-${target.getFullYear()} (${isTa ? 'ஞாயிறு' : 'Sunday'})`;
     }
+    const yyyy = target.getFullYear();
+    const mm = String(target.getMonth() + 1).padStart(2, '0');
+    const dd = String(target.getDate()).padStart(2, '0');
+    this.seminarDatePickerValue = `${yyyy}-${mm}-${dd}`;
+    this.editingSeminar.date = this.seminarDatePickerValue;
   }
 
   onSeminarDatePickerChange(event: any): void {
     if (!this.editingSeminar || !event.target.value) return;
-    const selectedDate = new Date(event.target.value);
-    const dayNames = ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
-    const dayName = dayNames[selectedDate.getDay()];
+    const val = event.target.value;
+    this.seminarDatePickerValue = val;
+    this.editingSeminar.date = val;
+    const selectedDate = new Date(val);
+    const dayNamesTa = ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'];
+    const dayNamesEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const dayName = isTa ? dayNamesTa[selectedDate.getDay()] : dayNamesEn[selectedDate.getDay()];
     const d = String(selectedDate.getDate()).padStart(2, '0');
     const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const y = selectedDate.getFullYear();
     this.editingSeminar.date_text = `${d}-${m}-${y} (${dayName})`;
   }
 
-  setSeminarTimePreset(preset: string): void {
+  setSeminarTimePreset(start: string, end: string): void {
     if (!this.editingSeminar) return;
-    this.editingSeminar.time_text = preset;
+    this.seminarStartTime = start;
+    this.seminarEndTime = end;
+    this.editingSeminar.start_time = start;
+    this.editingSeminar.end_time = end;
+    this.updateSeminarTimeText();
+  }
+
+  onSeminarCustomTimeChange(): void {
+    if (!this.editingSeminar) return;
+    this.editingSeminar.start_time = this.seminarStartTime;
+    this.editingSeminar.end_time = this.seminarEndTime;
+    this.updateSeminarTimeText();
+  }
+
+  updateSeminarTimeText(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const formatHour = (t: string) => {
+      const [h, m] = (t || '18:00').split(':').map(Number);
+      const isPm = h >= 12;
+      const h12 = h % 12 || 12;
+      const padM = String(m || 0).padStart(2, '0');
+      const prefixTa = h < 12 ? 'காலை' : (h < 16 ? 'மதியம்' : (h < 20 ? 'மாலை' : 'இரவு'));
+      const ampmEn = isPm ? 'PM' : 'AM';
+      return {
+        ta: `${prefixTa} ${String(h12).padStart(2, '0')}:${padM}`,
+        en: `${String(h12).padStart(2, '0')}:${padM} ${ampmEn}`
+      };
+    };
+
+    const s = formatHour(this.seminarStartTime);
+    const e = formatHour(this.seminarEndTime);
+    this.editingSeminar.time_text = isTa ? `${s.ta} - ${e.ta.split(' ')[1]}` : `${s.en} - ${e.en}`;
   }
 
   isUploadingSeminarVideo = false;

@@ -46,9 +46,9 @@
                   </div>
                 </td>
                 <td style="text-align: center;">
-                  <span class="badge-service-type" [ngClass]="(p.payment_type || 'astrology').toLowerCase().includes('course') ? 'course' : ((p.payment_type || '').toLowerCase().includes('book') ? 'book' : 'astrology')">
-                    <i class="bi" [ngClass]="(p.payment_type || '').toLowerCase().includes('course') ? 'bi-mortarboard-fill' : ((p.payment_type || '').toLowerCase().includes('book') ? 'bi-book-half' : 'bi-stars')"></i>
-                    {{ formatPaymentType(p.payment_type) }}
+                  <span class="badge-service-type" [ngClass]="(p.payment_type || p.order_type || 'astrology').toLowerCase().includes('course') ? 'course' : ((p.payment_type || p.order_type || '').toLowerCase().includes('book') ? 'book' : 'astrology')">
+                    <i class="bi" [ngClass]="(p.payment_type || p.order_type || '').toLowerCase().includes('course') ? 'bi-mortarboard-fill' : ((p.payment_type || p.order_type || '').toLowerCase().includes('book') ? 'bi-book-half' : 'bi-stars')"></i>
+                    {{ formatPaymentType(p.payment_type || p.order_type) }}
                   </span>
                 </td>
                 <td style="text-align: center;">

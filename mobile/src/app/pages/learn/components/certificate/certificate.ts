@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
+import { TranslationService } from '../../../../services/translation.service';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -23,7 +24,8 @@ export class LearnCertificateComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    public translationService: TranslationService
   ) {}
 
   ngOnInit() {
@@ -165,15 +167,18 @@ export class LearnCertificateComponent implements OnInit {
   }
 
   downloadDocument(docUrl: string, docName: string) {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (docUrl) {
       window.open(docUrl, '_blank');
     } else {
       const prefix = docName ? `${docName} ` : '';
-      this.toastService.warning(`${prefix}பதிவிறக்க இணைப்பு கிடைக்கவில்லை (Download link not available)`);
+      const msg = isTa ? `${prefix}பதிவிறக்க இணைப்பு கிடைக்கவில்லை.` : `${prefix}Download link not available.`;
+      this.toastService.warning(msg);
     }
   }
 
   shareDocument(docUrl: string, title: string) {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     const url = docUrl || window.location.href;
     if (navigator.share) {
       navigator.share({
@@ -184,7 +189,7 @@ export class LearnCertificateComponent implements OnInit {
     } else {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
-          this.toastService.success('இணைப்பு நகலெடுக்கப்பட்டது (Link copied to clipboard)');
+          this.toastService.success(isTa ? 'இணைப்பு நகலெடுக்கப்பட்டது!' : 'Link copied to clipboard!');
         });
       } else {
         this.toastService.info(url);

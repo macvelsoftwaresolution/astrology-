@@ -438,7 +438,7 @@
         <!-- ACTION BUTTONS -->
         <div style="display:flex;gap:8px;margin-top:auto;">
           <button class="btn-xs-pro gold" style="flex:1;" (click)="editCourse(course)">
-            <i class="bi bi-pencil-square"></i> திருத்து (Edit)
+            <i class="bi bi-pencil-square"></i> {{ translationService.currentLanguage() === 'ta' ? 'திருத்து' : 'Edit' }}
           </button>
           <button class="btn-xs-pro danger" (click)="deleteCourse(course.id)" [title]="'common.delete' | translate">
             <i class="bi bi-trash3-fill"></i>
@@ -655,79 +655,98 @@
   <div class="card-box" style="margin: 0; padding: 32px;">
     <div class="modal-header">
       <h3 style="margin:0;"><i class="bi bi-broadcast" style="color:#d97706;margin-right:6px;"></i>{{ editingSeminar.id
-        ? 'கருத்தரங்கம் திருத்து' : 'புதிய கருத்தரங்கம்' }}</h3>
+        ? (translationService.currentLanguage() === 'ta' ? 'கருத்தரங்கம் திருத்து' : 'Edit Seminar') : (translationService.currentLanguage() === 'ta' ? 'புதிய கருத்தரங்கம்' : 'New Seminar') }}</h3>
       <button class="close-btn" (click)="activeView = 'dashboard'"><i class="bi bi-x-lg"></i></button>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;margin:14px 0;">
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">தலைப்பு *</label>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ translationService.currentLanguage() === 'ta' ? 'தலைப்பு *' : 'Title *' }}</label>
         <input type="text" [(ngModel)]="editingSeminar.title" class="ctrl"
-          placeholder="எ.கா. வாஸ்து சாஸ்திர சிறப்பு வகுப்பு" />
+          [placeholder]="translationService.currentLanguage() === 'ta' ? 'எ.கா. வாஸ்து சாஸ்திர சிறப்பு வகுப்பு' : 'e.g. Special Vastu Seminar'" />
       </div>
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">வழங்குபவர்
-          (Speaker) *</label>
-        <input type="text" [(ngModel)]="editingSeminar.speaker" class="ctrl" placeholder="எ.கா. குரு சீனிவாசன்" />
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ translationService.currentLanguage() === 'ta' ? 'வழங்குபவர் *' : 'Speaker *' }}</label>
+        <input type="text" [(ngModel)]="editingSeminar.speaker" class="ctrl" [placeholder]="translationService.currentLanguage() === 'ta' ? 'எ.கா. குரு சீனிவாசன்' : 'e.g. Guru Srinivasan'" />
       </div>
-      <!-- DATE & TIME ADVANCED CONTROL ROW -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;background:#f8fafc;padding:14px;border-radius:12px;border:1px solid #e2e8f0;">
+
+      <!-- DATE & TIME INTUITIVE CONTROL ROW -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;background:#f8fafc;padding:16px;border-radius:12px;border:1.5px solid #e2e8f0;">
         <!-- Date Column -->
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <label style="font-size:12px;font-weight:700;color:#334155;display:flex;align-items:center;gap:5px;margin:0;">
-              <i class="bi bi-calendar-event-fill" style="color:#d97706;"></i> தேதி (Date) *
+            <label style="font-size:12.5px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:6px;margin:0;">
+              <i class="bi bi-calendar-event-fill" style="color:#d97706;"></i> {{ translationService.currentLanguage() === 'ta' ? 'தேதி *' : 'Date *' }}
             </label>
-            <span style="font-size:11px;color:#64748b;font-weight:600;">விரைவுத் தேர்வு</span>
+            <span style="font-size:11px;color:#64748b;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'விரைவுத் தேர்வு' : 'Quick Pick' }}</span>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;position:relative;">
-            <input type="text" [(ngModel)]="editingSeminar.date_text" class="ctrl" style="flex:1;font-weight:700;"
-              placeholder="இன்று / 25-08-2026 (ஞாயிறு)" />
-            <label style="background:#fff;border:1.5px solid #cbd5e1;padding:7px 10px;border-radius:8px;cursor:pointer;display:flex;align-items:center;color:#475569;margin:0;" title="காலெண்டர் தேர்வு">
-              <i class="bi bi-calendar3"></i>
-              <input type="date" (change)="onSeminarDatePickerChange($event)" style="position:absolute;opacity:0;width:0;height:0;" />
-            </label>
+
+          <!-- Clean Native Date Picker -->
+          <div style="margin-bottom: 8px;">
+            <input type="date" [(ngModel)]="seminarDatePickerValue" (change)="onSeminarDatePickerChange($event)" class="ctrl" style="width:100%;font-weight:700;padding:8px 10px;border-radius:8px;font-size:13.5px;" />
           </div>
+
           <!-- Quick Date Presets -->
-          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('today')">
-              <i class="bi bi-calendar-check me-1"></i> இன்று
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarDatePreset('today')">
+              <i class="bi bi-calendar-check me-1 text-primary"></i> {{ translationService.currentLanguage() === 'ta' ? 'இன்று' : 'Today' }}
             </button>
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('tomorrow')">
-              நாளை
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarDatePreset('tomorrow')">
+              {{ translationService.currentLanguage() === 'ta' ? 'நாளை' : 'Tomorrow' }}
             </button>
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('sunday')">
-              இந்த ஞாயிறு
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarDatePreset('sunday')">
+              {{ translationService.currentLanguage() === 'ta' ? 'இந்த ஞாயிறு' : 'This Sun' }}
             </button>
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarDatePreset('next_sunday')">
-              அடுத்த ஞாயிறு
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarDatePreset('next_sunday')">
+              {{ translationService.currentLanguage() === 'ta' ? 'அடுத்த ஞாயிறு' : 'Next Sun' }}
             </button>
+          </div>
+
+          <div style="margin-top:8px;font-size:11.5px;color:#d97706;font-weight:700;display:flex;align-items:center;gap:4px;">
+            <i class="bi bi-calendar2-check-fill"></i>
+            <span>{{ translationService.currentLanguage() === 'ta' ? 'தேர்வு: ' : 'Selected: ' }}{{ editingSeminar.date_text }}</span>
           </div>
         </div>
 
         <!-- Time Column -->
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <label style="font-size:12px;font-weight:700;color:#334155;display:flex;align-items:center;gap:5px;margin:0;">
-              <i class="bi bi-clock-fill" style="color:#d97706;"></i> நேரம் (Time Range) *
+            <label style="font-size:12.5px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:6px;margin:0;">
+              <i class="bi bi-clock-fill" style="color:#d97706;"></i> {{ translationService.currentLanguage() === 'ta' ? 'நேரம் *' : 'Time Range *' }}
             </label>
-            <span style="font-size:11px;color:#64748b;font-weight:600;">விரைவுத் தேர்வு</span>
+            <span style="font-size:11px;color:#64748b;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'விரைவுத் தேர்வு' : 'Quick Pick' }}</span>
           </div>
-          <input type="text" [(ngModel)]="editingSeminar.time_text" class="ctrl" style="width:100%;font-weight:700;" placeholder="மாலை 06:00 - 07:30" />
+
+          <!-- Clean Start & End Time Controls -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div>
+              <span style="font-size:11px;color:#64748b;font-weight:600;display:block;margin-bottom:2px;">{{ translationService.currentLanguage() === 'ta' ? 'தொடக்கம்' : 'Start' }}</span>
+              <input type="time" [(ngModel)]="seminarStartTime" (change)="onSeminarCustomTimeChange()" class="ctrl" style="width:100%;font-weight:700;padding:6px 8px;border-radius:8px;font-size:13px;" />
+            </div>
+            <div>
+              <span style="font-size:11px;color:#64748b;font-weight:600;display:block;margin-bottom:2px;">{{ translationService.currentLanguage() === 'ta' ? 'முடிவு' : 'End' }}</span>
+              <input type="time" [(ngModel)]="seminarEndTime" (change)="onSeminarCustomTimeChange()" class="ctrl" style="width:100%;font-weight:700;padding:6px 8px;border-radius:8px;font-size:13px;" />
+            </div>
+          </div>
           
           <!-- Quick Time Presets -->
-          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('மாலை 06:00 - 07:30')">
-              <i class="bi bi-clock me-1"></i> மாலை 06:00 - 07:30
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarTimePreset('18:00', '19:30')">
+              {{ translationService.currentLanguage() === 'ta' ? 'மாலை 06:00 - 07:30' : '06:00 PM - 07:30 PM' }}
             </button>
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('மாலை 05:00 - 06:30')">
-              மாலை 05:00 - 06:30
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarTimePreset('17:00', '18:30')">
+              {{ translationService.currentLanguage() === 'ta' ? 'மாலை 05:00 - 06:30' : '05:00 PM - 06:30 PM' }}
             </button>
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('இரவு 07:00 - 08:30')">
-              இரவு 07:00 - 08:30
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarTimePreset('19:00', '20:30')">
+              {{ translationService.currentLanguage() === 'ta' ? 'இரவு 07:00 - 08:30' : '07:00 PM - 08:30 PM' }}
             </button>
-            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:3px 8px;cursor:pointer;" (click)="setSeminarTimePreset('காலை 10:00 - 11:30')">
-              காலை 10:00 - 11:30
+            <button type="button" class="btn-xs" style="background:#fff;border:1px solid #cbd5e1;color:#1e293b;border-radius:6px;font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;" (click)="setSeminarTimePreset('10:00', '11:30')">
+              {{ translationService.currentLanguage() === 'ta' ? 'காலை 10:00 - 11:30' : '10:00 AM - 11:30 AM' }}
             </button>
+          </div>
+
+          <div style="margin-top:8px;font-size:11.5px;color:#0284c7;font-weight:700;display:flex;align-items:center;gap:4px;">
+            <i class="bi bi-clock-history"></i>
+            <span>{{ translationService.currentLanguage() === 'ta' ? 'அட்டவணை நேரம்: ' : 'Schedule Time: ' }}{{ editingSeminar.time_text }}</span>
           </div>
         </div>
       </div>
@@ -735,7 +754,7 @@
       <!-- STATUS INTERACTIVE SEGMENTED SELECTOR -->
       <div>
         <label style="font-size:12px;font-weight:700;color:#334155;display:flex;align-items:center;gap:5px;margin-bottom:6px;">
-          <i class="bi bi-activity" style="color:#d97706;"></i> வகுப்பு நிலை (Class Status) *
+          <i class="bi bi-activity" style="color:#d97706;"></i> {{ translationService.currentLanguage() === 'ta' ? 'வகுப்பு நிலை *' : 'Class Status *' }}
         </label>
         <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;">
           <!-- Upcoming -->
@@ -745,7 +764,7 @@
                   [style.color]="editingSeminar.status === 'upcoming' ? '#92400e' : '#475569'"
                   style="padding:10px 8px;border:1.5px solid #cbd5e1;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
             <i class="bi bi-clock-history" style="font-size:14px;"></i>
-            <span>வரவிருப்பது (Upcoming)</span>
+            <span>{{ translationService.currentLanguage() === 'ta' ? 'வரவிருப்பது' : 'Upcoming' }}</span>
           </button>
           <!-- Live -->
           <button type="button" (click)="editingSeminar.status = 'live'" 
@@ -754,7 +773,7 @@
                   [style.color]="editingSeminar.status === 'live' ? '#991b1b' : '#475569'"
                   style="padding:10px 8px;border:1.5px solid #cbd5e1;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
             <i class="bi bi-broadcast" style="font-size:14px;color:#dc2626;"></i>
-            <span>நேரலை (Live Now)</span>
+            <span>{{ translationService.currentLanguage() === 'ta' ? 'நேரலை' : 'Live Now' }}</span>
           </button>
           <!-- Past -->
           <button type="button" (click)="editingSeminar.status = 'past'" 
@@ -763,49 +782,49 @@
                   [style.color]="editingSeminar.status === 'past' ? '#166534' : '#475569'"
                   style="padding:10px 8px;border:1.5px solid #cbd5e1;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
             <i class="bi bi-check-circle-fill" style="font-size:14px;color:#16a34a;"></i>
-            <span>முடிந்தது (Past)</span>
+            <span>{{ translationService.currentLanguage() === 'ta' ? 'முடிந்தது' : 'Completed' }}</span>
           </button>
         </div>
         <div style="margin-top:4px;font-size:11px;color:#64748b;padding-left:2px;">
           @if (editingSeminar.status === 'upcoming') {
-            <span><i class="bi bi-info-circle me-1 text-amber"></i> மாணவர்கள் நினைவூட்டல் (Reminder) அமைக்கலாம். தொடங்குவதற்கு 15 நிமிடம் முன் நேரலை இணைப்பு தோன்றும்.</span>
+            <span><i class="bi bi-info-circle me-1 text-amber"></i> {{ translationService.currentLanguage() === 'ta' ? 'மாணவர்கள் நினைவூட்டல் அமைக்கலாம். தொடங்குவதற்கு 15 நிமிடம் முன் நேரலை இணைப்பு தோன்றும்.' : 'Students can set a reminder. Live link appears 15 minutes before the session starts.' }}</span>
           } @else if (editingSeminar.status === 'live') {
-            <span><i class="bi bi-broadcast me-1 text-danger"></i> மாணவர்கள் இப்போது உடனடியாக Zoom / Meet இணைப்பில் இணையலாம்.</span>
+            <span><i class="bi bi-broadcast me-1 text-danger"></i> {{ translationService.currentLanguage() === 'ta' ? 'மாணவர்கள் இப்போது உடனடியாக Zoom / Meet இணைப்பில் இணையலாம்.' : 'Students can now join the live Zoom / Meet link immediately.' }}</span>
           } @else {
-            <span><i class="bi bi-play-circle-fill me-1 text-success"></i> வகுப்பு முடிந்தது. மாணவர்கள் பதிவு செய்யப்பட்ட வீடியோவை மட்டுமே பார்க்க முடியும்.</span>
+            <span><i class="bi bi-play-circle-fill me-1 text-success"></i> {{ translationService.currentLanguage() === 'ta' ? 'வகுப்பு முடிந்தது. மாணவர்கள் பதிவு செய்யப்பட்ட வீடியோவை மட்டுமே பார்க்க முடியும்.' : 'Class has completed. Students can watch the recorded video.' }}</span>
           }
         </div>
       </div>
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Join Link (Meet / Zoom URL)</label>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ translationService.currentLanguage() === 'ta' ? 'நேரலை இணைப்பு (Meet / Zoom முகவரி)' : 'Join Link (Meet / Zoom URL)' }}</label>
         <input type="text" [(ngModel)]="editingSeminar.join_url" class="ctrl"
           placeholder="https://meet.google.com/..." />
       </div>
       <div>
         <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">
-          பதிவுசெய்யப்பட்ட வீடியோ (Recorded Video Link / Upload)
+          {{ translationService.currentLanguage() === 'ta' ? 'பதிவுசெய்யப்பட்ட வீடியோ (வீடியோ இணைப்பு / பதிவேற்றம்)' : 'Recorded Video (Video Link / Upload)' }}
         </label>
         <div style="display:flex;gap:8px;align-items:center;">
           <input type="text" [(ngModel)]="editingSeminar.recording_video_url" class="ctrl" style="flex:1;"
-            placeholder="https://... அல்லது MP4 Video URL / Cloudinary Link" />
+            [placeholder]="translationService.currentLanguage() === 'ta' ? 'https://... அல்லது MP4 வீடியோ முகவரி' : 'https://... or MP4 Video URL'" />
           <input type="file" #seminarVideoFile (change)="uploadSeminarVideo($event)" accept="video/*" style="display:none;" />
           <button type="button" class="btn-cancel" style="padding:6px 12px;font-size:12px;display:flex;align-items:center;gap:4px;" (click)="seminarVideoFile.click()">
-            <i class="bi bi-upload"></i> {{ isUploadingSeminarVideo ? 'பதிவேற்றுகிறது...' : 'வீடியோ தேர்வு' }}
+            <i class="bi bi-upload"></i> {{ isUploadingSeminarVideo ? (translationService.currentLanguage() === 'ta' ? 'பதிவேற்றுகிறது...' : 'Uploading...') : (translationService.currentLanguage() === 'ta' ? 'வீடியோ தேர்வு' : 'Choose Video') }}
           </button>
         </div>
         @if (editingSeminar.recording_video_url) {
           <div style="margin-top:4px;font-size:11px;color:#16a34a;display:flex;align-items:center;gap:4px;">
-            <i class="bi bi-check-circle-fill"></i> பதிவு செய்யப்பட்ட வீடியோ சேர்க்கப்பட்டுவிட்டது!
+            <i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'பதிவு செய்யப்பட்ட வீடியோ சேர்க்கப்பட்டுவிட்டது!' : 'Recorded video added successfully!' }}
           </div>
 
           <!-- Cinema Video Preview Frame for Admin -->
           <div style="margin-top:10px; border-radius:12px; overflow:hidden; border:1px solid #cbd5e1; background:#000; box-shadow:0 4px 14px rgba(0,0,0,0.12);">
             <div style="background:#1e293b; color:#f8fafc; padding:8px 12px; font-size:11.5px; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
               <span style="display:flex;align-items:center;gap:6px;">
-                <i class="bi bi-camera-reels-fill text-warning"></i> வீடியோ முன்னோட்டம் (Video Preview)
+                <i class="bi bi-camera-reels-fill text-warning"></i> {{ translationService.currentLanguage() === 'ta' ? 'வீடியோ முன்னோட்டம்' : 'Video Preview' }}
               </span>
               <span style="color:#94a3b8; font-size:10.5px; font-weight:600;">
-                {{ isYouTubeUrl(editingSeminar.recording_video_url) ? 'YouTube Player' : 'Direct Video / Cloudinary' }}
+                {{ isYouTubeUrl(editingSeminar.recording_video_url) ? 'YouTube Player' : 'Direct Video' }}
               </span>
             </div>
             <div style="aspect-ratio:16/9; width:100%; max-height:260px; display:flex; align-items:center; justify-content:center; background:#000;">
@@ -825,8 +844,8 @@
       </div>
     </div>
     <div class="modal-btns">
-      <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">ரத்து</button>
-      <button type="button" class="btn-primary" (click)="saveSeminar()"><i class="bi bi-check2"></i> சேமி</button>
+      <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">{{ translationService.currentLanguage() === 'ta' ? 'ரத்து' : 'Cancel' }}</button>
+      <button type="button" class="btn-primary" (click)="saveSeminar()"><i class="bi bi-check2"></i> {{ translationService.currentLanguage() === 'ta' ? 'சேமி' : 'Save' }}</button>
     </div>
   </div>
   }
@@ -841,10 +860,8 @@
           <i class="bi bi-camera-video-fill"></i>
         </div>
         <div>
-          <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">{{ editingLiveClass.id ? 'வகுப்பு
-            திருத்து (Edit Live Class)' : 'புதிய நேரலை வகுப்பு (New Live Class)' }}</h3>
-          <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">மாணவர்களுக்கான நேரலை வகுப்பு விவரங்களை
-            உள்ளிடவும்</p>
+          <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">{{ editingLiveClass.id ? (translationService.currentLanguage() === 'ta' ? 'நேரலை வகுப்பு திருத்து' : 'Edit Live Class') : (translationService.currentLanguage() === 'ta' ? 'புதிய நேரலை வகுப்பு' : 'New Live Class') }}</h3>
+          <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">{{ translationService.currentLanguage() === 'ta' ? 'மாணவர்களுக்கான நேரலை வகுப்பு விவரங்களை உள்ளிடவும்' : 'Enter live class session details for students' }}</p>
         </div>
       </div>
       <button class="close-btn" (click)="activeView = 'dashboard'"><i class="bi bi-x-lg"></i></button>
@@ -854,19 +871,19 @@
       <!-- Title -->
       <div>
         <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
-          வகுப்பு தலைப்பு (Class Title) <span style="color: #dc2626;">*</span>
+          {{ translationService.currentLanguage() === 'ta' ? 'வகுப்பு தலைப்பு *' : 'Class Title *' }}
         </label>
         <input type="text" [(ngModel)]="editingLiveClass.title" class="ctrl"
-          placeholder="எ.கா. நேரடி வகுப்பு - கிரக மாற்றங்கள்" style="border-radius: 8px; font-size: 13.5px;" />
+          [placeholder]="translationService.currentLanguage() === 'ta' ? 'எ.கா. நேரடி வகுப்பு - கிரக மாற்றங்கள்' : 'e.g. Live Class - Planetary Movements'" style="border-radius: 8px; font-size: 13.5px;" />
       </div>
 
       <!-- Description -->
       <div>
         <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
-          சுருக்க விளக்கம் (Short Description)
+          {{ translationService.currentLanguage() === 'ta' ? 'சுருக்க விளக்கம்' : 'Short Description' }}
         </label>
         <input type="text" [(ngModel)]="editingLiveClass.description" class="ctrl"
-          placeholder="இன்றைய கிரக பெயர்ச்சி மற்றும் அதன் பலன்கள்" style="border-radius: 8px; font-size: 13.5px;" />
+          [placeholder]="translationService.currentLanguage() === 'ta' ? 'இன்றைய கிரக பெயர்ச்சி மற்றும் அதன் பலன்கள்' : 'Today planetary transitions and their effects'" style="border-radius: 8px; font-size: 13.5px;" />
       </div>
 
       <!-- DAYS OF WEEK SELECTOR (Clean Card) -->
@@ -875,21 +892,21 @@
           <label
             style="font-size: 12.5px; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 6px;">
             <i class="bi bi-calendar-week" style="color: #4f46e5;"></i>
-            <span>நடைபெறும் நாட்கள் (Live Days) <span style="color: #dc2626;">*</span></span>
+            <span>{{ translationService.currentLanguage() === 'ta' ? 'நடைபெறும் நாட்கள் *' : 'Live Days *' }}</span>
           </label>
           <!-- Quick Presets -->
           <div style="display: flex; gap: 5px;">
             <button type="button" (click)="selectDaysPreset('all')"
               style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.15s;">
-              தினசரி
+              {{ translationService.currentLanguage() === 'ta' ? 'தினசரி' : 'Daily' }}
             </button>
             <button type="button" (click)="selectDaysPreset('weekdays')"
               style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.15s;">
-              திங்கள் - வெள்ளி
+              {{ translationService.currentLanguage() === 'ta' ? 'திங்கள் - வெள்ளி' : 'Mon - Fri' }}
             </button>
             <button type="button" (click)="selectDaysPreset('weekends')"
               style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.15s;">
-              சனி - ஞாயிறு
+              {{ translationService.currentLanguage() === 'ta' ? 'சனி - ஞாயிறு' : 'Sat - Sun' }}
             </button>
           </div>
         </div>
@@ -906,7 +923,7 @@
             @if (isDaySelected(d.key)) {
             <i class="bi bi-check-lg" style="font-weight: bold;"></i>
             }
-            {{ d.label }}
+            {{ getDayLabel(d) }}
           </button>
           }
         </div>
@@ -914,7 +931,7 @@
         <div
           style="display: flex; align-items: center; gap: 6px; background: #e0e7ff; color: #3730a3; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600;">
           <i class="bi bi-info-circle-fill"></i>
-          <span>தேர்வு: {{ editingLiveClass.date_text }}</span>
+          <span>{{ translationService.currentLanguage() === 'ta' ? 'தேர்வு: ' : 'Selected: ' }}{{ editingLiveClass.date_text }}</span>
         </div>
       </div>
 
@@ -923,7 +940,7 @@
         <label
           style="font-size: 12.5px; font-weight: 700; color: #1e293b; margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;">
           <i class="bi bi-clock-history" style="color: #0284c7;"></i>
-          <span>வகுப்பு நேரம் (Class Timing) <span style="color: #dc2626;">*</span></span>
+          <span>{{ translationService.currentLanguage() === 'ta' ? 'வகுப்பு நேரம் *' : 'Class Timing *' }}</span>
         </label>
 
         <!-- Quick Time Presets -->
@@ -935,7 +952,7 @@
             [style.border-color]="editingLiveClass.start_time === tp.start && editingLiveClass.end_time === tp.end ? '#0284c7' : '#bae6fd'"
             [style.box-shadow]="editingLiveClass.start_time === tp.start && editingLiveClass.end_time === tp.end ? '0 2px 6px rgba(2, 132, 199, 0.25)' : 'none'"
             style="border: 1px solid; border-radius: 8px; padding: 5px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s;">
-            {{ tp.label }}
+            {{ getTimePresetLabel(tp) }}
           </button>
           }
         </div>
@@ -944,14 +961,14 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
           <div>
             <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">
-              <i class="bi bi-play-circle me-1"></i>தொடங்கும் நேரம் (Start Time)
+              <i class="bi bi-play-circle me-1"></i>{{ translationService.currentLanguage() === 'ta' ? 'தொடங்கும் நேரம்' : 'Start Time' }}
             </label>
             <input type="time" [(ngModel)]="editingLiveClass.start_time" (change)="onCustomTimeChange()" class="ctrl"
               style="font-size: 13px; padding: 7px; border-radius: 8px;" />
           </div>
           <div>
             <label style="font-size: 11.5px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">
-              <i class="bi bi-stop-circle me-1"></i>முடியும் நேரம் (End Time)
+              <i class="bi bi-stop-circle me-1"></i>{{ translationService.currentLanguage() === 'ta' ? 'முடியும் நேரம்' : 'End Time' }}
             </label>
             <input type="time" [(ngModel)]="editingLiveClass.end_time" (change)="onCustomTimeChange()" class="ctrl"
               style="font-size: 13px; padding: 7px; border-radius: 8px;" />
@@ -961,23 +978,23 @@
         <div
           style="display: flex; align-items: center; gap: 6px; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600;">
           <i class="bi bi-clock-fill"></i>
-          <span>அட்டவணை நேரம்: {{ editingLiveClass.time_text }}</span>
+          <span>{{ translationService.currentLanguage() === 'ta' ? 'அட்டவணை நேரம்: ' : 'Schedule Time: ' }}{{ editingLiveClass.time_text }}</span>
         </div>
       </div>
 
       <!-- Banner Image Upload (Optional) -->
       <div>
         <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
-          பேனர் படம் (Banner Image - Optional)
+          {{ translationService.currentLanguage() === 'ta' ? 'பேனர் படம் (விருப்பத்தேர்வு)' : 'Banner Image (Optional)' }}
         </label>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
           <input type="file" (change)="onLiveBannerSelected($event)" accept="image/*" class="ctrl" style="flex: 1; font-size: 12px;" />
           @if (isUploadingLiveBanner) {
-            <span style="color: #d97706; font-size: 12px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> படம் பதிவேறுகிறது...</span>
+            <span style="color: #d97706; font-size: 12px; font-weight: 700;"><i class="bi bi-hourglass-split"></i> {{ translationService.currentLanguage() === 'ta' ? 'படம் பதிவேறுகிறது...' : 'Uploading image...' }}</span>
           }
           @if (editingLiveClass.banner_image_url) {
             <a [href]="editingLiveClass.banner_image_url" target="_blank" style="color: #16a34a; font-weight: 700; font-size: 12px; text-decoration: none;">
-              <i class="bi bi-check-circle-fill"></i> படத்தை காண்க
+              <i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'படத்தை காண்க' : 'View Image' }}
             </a>
           }
         </div>
@@ -986,7 +1003,7 @@
       <!-- Meet Link -->
       <div>
         <label style="font-size: 12.5px; font-weight: 600; color: #334155; display: block; margin-bottom: 5px;">
-          இணைப்பு (Meet / Zoom Link) <span style="color: #dc2626;">*</span>
+          {{ translationService.currentLanguage() === 'ta' ? 'இணைப்பு (Meet / Zoom முகவரி) *' : 'Meet / Zoom Link *' }}
         </label>
         <div style="position: relative;">
           <input type="text" [(ngModel)]="editingLiveClass.link" class="ctrl"
@@ -1003,7 +1020,7 @@
         <input type="checkbox" [(ngModel)]="editingLiveClass.is_active" id="lc_active"
           style="width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer;">
         <label for="lc_active" style="font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; margin: 0;">
-          Active (பயனர்களுக்கு நேரலை அட்டவணையில் காண்பி)
+          {{ translationService.currentLanguage() === 'ta' ? 'செயலில் (பயனர்களுக்கு நேரலை அட்டவணையில் காண்பி)' : 'Active (Display in live schedule for users)' }}
         </label>
       </div>
     </div>
@@ -1016,11 +1033,11 @@
     }
 
     <div class="modal-btns" style="border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 14px;">
-      <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">ரத்து</button>
+      <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">{{ translationService.currentLanguage() === 'ta' ? 'ரத்து' : 'Cancel' }}</button>
       <button type="button" class="btn-primary"
         style="background: #4f46e5; border: none; border-radius: 8px; padding: 9px 18px; font-weight: 600; display: flex; align-items: center; gap: 6px;"
         (click)="saveLiveClass()">
-        <i class="bi bi-floppy"></i> சேமி (Save)
+        <i class="bi bi-floppy"></i> {{ translationService.currentLanguage() === 'ta' ? 'சேமி' : 'Save' }}
       </button>
     </div>
   </div>
@@ -1030,42 +1047,34 @@
   @if (activeView === 'material-studio' && editingMaterial) {
   <div class="card-box" style="margin: 0; padding: 32px;">
     <div class="modal-header">
-      <h3 style="margin:0;"><i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:6px;"></i>புதிய
-        குறிப்பேடு சேர்க்க</h3>
+      <h3 style="margin:0;"><i class="bi bi-file-earmark-pdf-fill" style="color:#dc2626;margin-right:6px;"></i>{{ translationService.currentLanguage() === 'ta' ? 'புதிய குறிப்பேடு சேர்க்க' : 'Add New Study Material' }}</h3>
       <button class="close-btn" (click)="activeView = 'dashboard'"><i class="bi bi-x-lg"></i></button>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;margin:14px 0;">
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">குறிப்பின் பெயர்
-          (Title) *</label>
-        <input type="text" [(ngModel)]="editingMaterial.title" class="ctrl" placeholder="எ.கா. ராசி பலன் குறிப்பு" />
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ translationService.currentLanguage() === 'ta' ? 'குறிப்பின் பெயர் *' : 'Note Title *' }}</label>
+        <input type="text" [(ngModel)]="editingMaterial.title" class="ctrl" [placeholder]="translationService.currentLanguage() === 'ta' ? 'எ.கா. ராசி பலன் குறிப்பு' : 'e.g. Rasi Palan Notes'" />
       </div>
       <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">பக்கங்கள் (Pages
-          Text)</label>
-        <input type="text" [(ngModel)]="editingMaterial.pages_text" class="ctrl" placeholder="45 பக்கங்கள்" />
-      </div>
-      <div>
-        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">PDF கோப்பு
-          பதிவேற்றம் (Upload PDF File) *</label>
+        <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">{{ translationService.currentLanguage() === 'ta' ? 'PDF கோப்பு பதிவேற்றம் *' : 'Upload PDF File *' }}</label>
         <input type="file" accept=".pdf,application/pdf" (change)="uploadMaterialPdf($event)" class="ctrl"
           style="padding:6px;" />
         @if (isUploadingMaterial) {
         <span style="font-size:11px;color:#dc2626;font-weight:600;margin-top:4px;display:block;">
-          <i class="bi bi-hourglass-split"></i> PDF பதிவேற்றப்படுகிறது...
+          <i class="bi bi-hourglass-split"></i> {{ translationService.currentLanguage() === 'ta' ? 'PDF பதிவேற்றப்படுகிறது...' : 'Uploading PDF...' }}
         </span>
         }
         @if (editingMaterial.file_url) {
         <div
           style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
-          <i class="bi bi-check-circle-fill"></i> கோப்பு பதிவேற்றப்பட்டது
+          <i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'கோப்பு பதிவேற்றப்பட்டது' : 'File uploaded successfully' }}
         </div>
         }
       </div>
     </div>
     <div class="modal-btns">
-      <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">ரத்து</button>
-      <button type="button" class="btn-primary" (click)="saveMaterial()"><i class="bi bi-check2"></i> சேமி</button>
+      <button type="button" class="btn-cancel" (click)="activeView = 'dashboard'">{{ translationService.currentLanguage() === 'ta' ? 'ரத்து' : 'Cancel' }}</button>
+      <button type="button" class="btn-primary" (click)="saveMaterial()"><i class="bi bi-check2"></i> {{ translationService.currentLanguage() === 'ta' ? 'சேமி' : 'Save' }}</button>
     </div>
   </div>
   }
@@ -1177,17 +1186,17 @@
           </select>
         </div>
         <div class="form-group">
-          <label>பாடம் / வீடியோ / ஆடியோ கோப்பு பதிவேற்றம் (Upload Lesson File)</label>
+          <label>{{ translationService.currentLanguage() === 'ta' ? 'பாடம் / வீடியோ / ஆடியோ கோப்பு பதிவேற்றம்' : 'Upload Lesson File' }}</label>
           <input type="file" (change)="uploadLessonFile($event)" class="ctrl" style="padding:6px;" />
           @if (isUploadingLessonFile) {
           <span style="font-size:11px;color:#2563eb;font-weight:600;margin-top:4px;display:block;">
-            <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
+            <i class="bi bi-hourglass-split"></i> {{ translationService.currentLanguage() === 'ta' ? 'கோப்பு பதிவேற்றப்படுகிறது...' : 'Uploading file...' }}
           </span>
           }
           @if (newLesson.content_url) {
           <div
             style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
-            <i class="bi bi-check-circle-fill"></i> கோப்பு பதிவேற்றப்பட்டது
+            <i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'கோப்பு பதிவேற்றப்பட்டது' : 'File uploaded successfully' }}
           </div>
           }
         </div>
@@ -1215,7 +1224,7 @@
         <button class="btn-xs"
           style="background: #f1f5f9; color: #475569; border: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; margin-bottom: 16px;"
           (click)="cancelCourseWizard()">
-          <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+          <i class="bi bi-arrow-left me-2"></i> {{ translationService.currentLanguage() === 'ta' ? 'பலகைக்கு திரும்பு' : 'Back to Dashboard' }}
         </button>
         <h2
           style="margin:0; font-size: 28px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
@@ -1228,7 +1237,7 @@
     <div style="max-width: 800px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 40px;">
       <!-- Course Details Section -->
       <div>
-        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 20px 0;">1. Course Details</h3>
+        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 20px 0;">1. {{ translationService.currentLanguage() === 'ta' ? 'பாட விவரங்கள்' : 'Course Details' }}</h3>
         <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
           <div class="form-group">
             <label>{{ 'lms.lessonTitle' | translate }}</label>
@@ -1245,19 +1254,19 @@
               <input type="number" [(ngModel)]="newCourse.price" class="ctrl" />
             </div>
             <div class="form-group">
-              <label>{{ 'lms.level' | translate }} (Course Level)</label>
+              <label>{{ 'lms.level' | translate }}</label>
               <select [(ngModel)]="newCourse.level" class="ctrl">
-                <option value="ILANILAI">இளநிலை (Ilanilai)</option>
-                <option value="MUTHUNILAI">முதுநிலை (Muthunilai)</option>
+                <option value="ILANILAI">{{ translationService.currentLanguage() === 'ta' ? 'இளநிலை' : 'Undergraduate (Ilanilai)' }}</option>
+                <option value="MUTHUNILAI">{{ translationService.currentLanguage() === 'ta' ? 'முதுநிலை' : 'Postgraduate (Muthunilai)' }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Category</label>
+              <label>{{ translationService.currentLanguage() === 'ta' ? 'வகை' : 'Category' }}</label>
               <input [(ngModel)]="newCourse.category" class="ctrl" placeholder="Astrology" />
             </div>
           </div>
           <div class="form-group">
-            <label>பாடப் படம் பதிவேற்றம் (Upload Course Thumbnail Image)</label>
+            <label>{{ translationService.currentLanguage() === 'ta' ? 'பாடப் படம் பதிவேற்றம்' : 'Upload Course Thumbnail Image' }}</label>
             <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
               @if (newCourse.thumbnail) {
               <img [src]="newCourse.thumbnail" alt="Thumbnail Preview"
@@ -1314,35 +1323,35 @@
                 @if (activeLessonForm && activeLessonForm.moduleId === m.id) {
                 <div
                   style="background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                  <h4 style="margin:0 0 12px 0;font-size:14px;">உள்ளடக்கம் சேர்க்க (Add Content)</h4>
+                  <h4 style="margin:0 0 12px 0;font-size:14px;">{{ translationService.currentLanguage() === 'ta' ? 'உள்ளடக்கம் சேர்க்க' : 'Add Content' }}</h4>
                   <div class="form-group" style="margin-bottom: 12px;">
-                    <label>தலைப்பு (Title)</label>
+                    <label>{{ translationService.currentLanguage() === 'ta' ? 'தலைப்பு' : 'Title' }}</label>
                     <input [(ngModel)]="newInlineLesson.title" class="ctrl" placeholder="e.g. Introduction" />
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
-                    <label>வகை (Type)</label>
+                    <label>{{ translationService.currentLanguage() === 'ta' ? 'வகை' : 'Type' }}</label>
                     <select [(ngModel)]="newInlineLesson.content_type" class="ctrl">
-                      <option value="video">வீடியோ (Video - MP4)</option>
-                      <option value="audio">ஆடியோ (Audio - MP3)</option>
-                      <option value="image">படம் (Image)</option>
-                      <option value="pdf">பி.டி.எப் (PDF)</option>
-                      <option value="text">உரை (Text / Article)</option>
+                      <option value="video">{{ translationService.currentLanguage() === 'ta' ? 'வீடியோ (MP4)' : 'Video (MP4)' }}</option>
+                      <option value="audio">{{ translationService.currentLanguage() === 'ta' ? 'ஆடியோ (MP3)' : 'Audio (MP3)' }}</option>
+                      <option value="image">{{ translationService.currentLanguage() === 'ta' ? 'படம்' : 'Image' }}</option>
+                      <option value="pdf">{{ translationService.currentLanguage() === 'ta' ? 'பி.டி.எப் (PDF)' : 'PDF Document' }}</option>
+                      <option value="text">{{ translationService.currentLanguage() === 'ta' ? 'உரை / கட்டுரை' : 'Text / Article' }}</option>
                     </select>
                   </div>
 
                   @if (newInlineLesson.content_type !== 'text') {
                   <div class="form-group" style="margin-bottom: 12px;">
-                    <label>கோப்பு பதிவேற்றம் (Upload File)</label>
+                    <label>{{ translationService.currentLanguage() === 'ta' ? 'கோப்பு பதிவேற்றம்' : 'Upload File' }}</label>
                     <input type="file" (change)="uploadLessonFile($event, true)" class="ctrl" style="padding:6px;" />
                     @if (isUploadingLessonFile) {
                     <span style="font-size:11px;color:#2563eb;font-weight:600;margin-top:4px;display:block;">
-                      <i class="bi bi-hourglass-split"></i> கோப்பு பதிவேற்றப்படுகிறது...
+                      <i class="bi bi-hourglass-split"></i> {{ translationService.currentLanguage() === 'ta' ? 'கோப்பு பதிவேற்றப்படுகிறது...' : 'Uploading file...' }}
                     </span>
                     }
                     @if (newInlineLesson.content_url) {
                     <div
                       style="font-size:11px;color:#059669;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;">
-                      <i class="bi bi-check-circle-fill"></i> கோப்பு பதிவேற்றப்பட்டது (File Uploaded)
+                      <i class="bi bi-check-circle-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'கோப்பு பதிவேற்றப்பட்டது' : 'File uploaded successfully' }}
                     </div>
                     }
                   </div>
@@ -1350,7 +1359,7 @@
 
                   @if (newInlineLesson.content_type === 'text') {
                   <div class="form-group" style="margin-bottom: 12px;">
-                    <label>உள்ளடக்கம் (Content)</label>
+                    <label>{{ translationService.currentLanguage() === 'ta' ? 'உள்ளடக்கம்' : 'Content' }}</label>
                     <textarea [(ngModel)]="newInlineLesson.description" class="ctrl" rows="6"
                       placeholder="Type your article or text lesson here..."></textarea>
                   </div>
@@ -1409,7 +1418,7 @@
             @if (wizardModules.length === 0) {
             <div
               style="text-align:center;padding:16px;color:#64748b;font-size:12px; border: 2px dashed #cbd5e1; border-radius: 8px;">
-              நிலைகள் ஏதுமில்லை (No levels added yet)</div>
+              {{ translationService.currentLanguage() === 'ta' ? 'நிலைகள் ஏதுமில்லை' : 'No levels added yet' }}</div>
             }
           </div>
         </div>
@@ -1421,7 +1430,7 @@
         <button type="button" class="btn-cancel" (click)="cancelCourseWizard()">{{ 'common.cancel' | translate
           }}</button>
         <button type="button" class="btn-primary" (click)="publishWizardCourse()">
-          <i class="bi bi-cloud-arrow-up-fill"></i> Save & Publish Course
+          <i class="bi bi-cloud-arrow-up-fill"></i> {{ translationService.currentLanguage() === 'ta' ? 'பாடத்தை வெளியிட்டு சேமி' : 'Save & Publish Course' }}
         </button>
       </div>
     </div>
@@ -1438,14 +1447,13 @@
         <button class="btn-xs"
           style="background: #f1f5f9; color: #475569; border: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; margin-bottom: 16px;"
           (click)="cancelExamWizard()">
-          <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+          <i class="bi bi-arrow-left me-2"></i> {{ translationService.currentLanguage() === 'ta' ? 'பலகைக்கு திரும்பு' : 'Back to Dashboard' }}
         </button>
         <h2
           style="margin:0; font-size: 28px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
-          <i class="bi bi-ui-checks-grid" style="color:#8b5cf6;"></i> Exam Studio
+          <i class="bi bi-ui-checks-grid" style="color:#8b5cf6;"></i> {{ translationService.currentLanguage() === 'ta' ? 'தேர்வு பில்டர்' : 'Exam Studio' }}
         </h2>
-        <span style="font-size:14px; color:#64748b; font-weight: 500;">Create or edit your {{ selectedCategory }} exam,
-          and add questions all in one place.</span>
+        <span style="font-size:14px; color:#64748b; font-weight: 500;">{{ translationService.currentLanguage() === 'ta' ? 'தேர்வை உருவாக்கி வினாக்களை நிர்வகிக்கவும்.' : 'Create or edit your course exam and questions.' }}</span>
       </div>
     </div>
 
@@ -1453,30 +1461,30 @@
       <!-- Left Column: Exam Details -->
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">1. Exam Details</h3>
+          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">1. {{ translationService.currentLanguage() === 'ta' ? 'தேர்வு விவரங்கள்' : 'Exam Details' }}</h3>
           <button type="button" class="btn-xs" style="background: #8b5cf6; color: #fff; border: none; font-weight: 600;"
             (click)="saveExamDetails()">
-            <i class="bi bi-check2"></i> Save Details
+            <i class="bi bi-check2"></i> {{ translationService.currentLanguage() === 'ta' ? 'விவரங்களை சேமி' : 'Save Details' }}
           </button>
         </div>
         <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
           <div class="form-group">
-            <label style="font-weight: 600;">தேர்வின் தலைப்பு (Title) *</label>
+            <label style="font-weight: 600;">{{ translationService.currentLanguage() === 'ta' ? 'தேர்வின் தலைப்பு *' : 'Exam Title *' }}</label>
             <input type="text" [(ngModel)]="activeExamWizard.title" class="ctrl"
-              placeholder="எ.கா. அடிப்படைகள் தேர்வு 1" />
+              [placeholder]="translationService.currentLanguage() === 'ta' ? 'எ.கா. அடிப்படைகள் தேர்வு 1' : 'e.g. Basics Assessment 1'" />
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div class="form-group">
-              <label style="font-weight: 600;">கால அளவு (நிமிடங்கள்)</label>
+              <label style="font-weight: 600;">{{ translationService.currentLanguage() === 'ta' ? 'கால அளவு (நிமிடங்கள்)' : 'Duration (Mins)' }}</label>
               <input type="number" [(ngModel)]="activeExamWizard.duration" class="ctrl" placeholder="30" />
             </div>
             <div class="form-group">
-              <label style="font-weight: 600;">மொத்த மதிப்பெண்கள்</label>
+              <label style="font-weight: 600;">{{ translationService.currentLanguage() === 'ta' ? 'மொத்த மதிப்பெண்கள்' : 'Total Marks' }}</label>
               <input type="number" [(ngModel)]="activeExamWizard.total_marks" class="ctrl" placeholder="100" />
             </div>
           </div>
           <div class="form-group" style="margin-top: 16px;">
-            <label style="font-weight: 600;">Course Level</label>
+            <label style="font-weight: 600;">{{ translationService.currentLanguage() === 'ta' ? 'நிலை' : 'Course Level' }}</label>
             <select [(ngModel)]="activeExamWizard.level" class="ctrl" disabled
               style="background: #e2e8f0; font-weight: 700;">
               <option [value]="selectedCategory">{{ selectedCategory }}</option>
@@ -1489,76 +1497,31 @@
       <div>
         <div
           style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">2. Questions Builder</h3>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label class="btn-xs" [style.opacity]="activeExamWizard.id ? '1' : '0.5'"
-              style="background: #f59e0b; color: #fff; cursor: pointer; margin: 0; padding: 6px 12px; border-radius: 6px; font-weight: 600;"
-              (click)="!activeExamWizard.id ? $event.preventDefault() : null" [title]="!activeExamWizard.id ? 'Save Exam Details first' : 'Upload CSV'">
-              <i class="bi bi-file-earmark-excel me-1"></i> Upload CSV Questions
-              <input type="file" accept=".csv" (change)="importQuestionsFromCsv($event)"
-                style="display:none;" />
-            </label>
-            @if (isImportingCsv) {
-            <span style="font-size: 12px; color: #f59e0b; font-weight: 600;"><i class="bi bi-hourglass-split"></i>
-              Importing...</span>
-            }
-            <label class="btn-xs" [style.opacity]="activeExamWizard.id ? '1' : '0.5'"
-              style="background: #10b981; color: #fff; cursor: pointer; margin: 0; padding: 6px 12px; border-radius: 6px; font-weight: 600;"
-              (click)="!activeExamWizard.id ? $event.preventDefault() : null" [title]="!activeExamWizard.id ? 'Save Exam Details first' : 'Upload PDF'">
-              <i class="bi bi-file-earmark-pdf me-1"></i> Upload PDF Questions
-              <input type="file" accept="application/pdf" (change)="importQuestionsFromPdf($event)"
-                style="display:none;" />
-            </label>
-            @if (isImportingPdf) {
-            <span style="font-size: 12px; color: #10b981; font-weight: 600;"><i class="bi bi-hourglass-split"></i>
-              Importing...</span>
-            }
-            @if (!activeExamWizard.id) {
-            <span style="font-size: 12px; color: #ef4444; font-weight: 600; margin-left: 8px;">* Save Details first</span>
-            }
-          </div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">2. {{ translationService.currentLanguage() === 'ta' ? 'வினாக்கள்' : 'Questions' }} ({{
+            activeExamWizard.questions?.length || 0 }})</h3>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-          <!-- LIST OF QUESTIONS -->
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            @if (activeExamWizard.questions && activeExamWizard.questions.length > 0) {
-            <h4 style="margin: 10px 0 0;font-size:15px; color: #475569;">சேர்க்கப்பட்ட வினாக்கள் ({{
-              activeExamWizard.questions.length }})</h4>
-            }
-            @for (q of activeExamWizard.questions; track q.id; let i = $index) {
-            <div style="border:1px solid #e2e8f0;padding:16px;border-radius:12px;background:#f8fafc;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                <div>
-                  <strong style="font-size:14px; color: #0f172a;">{{ i + 1 }}. {{ q.question_text }}</strong>
-                  <span
-                    style="font-size:10px;background:#e2e8f0;color:#475569;padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:700;">{{
-                    q.type | uppercase }}</span>
-                </div>
-                <button class="btn-xs danger" (click)="deleteQuestion(q.id)"><i class="bi bi-trash"></i></button>
+        <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;">
+          <!-- Questions List -->
+          <div style="margin-bottom: 24px; max-height: 350px; overflow-y: auto;">
+            @for (q of activeExamWizard.questions; track $index; let qIdx = $index) {
+            <div
+              style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">{{ qIdx + 1 }}. {{ q.question_text
+                  }}</div>
+                <div style="font-size: 12px; color: #64748b;">{{ translationService.currentLanguage() === 'ta' ? 'விடை: ' : 'Answer: ' }}<span style="color: #10b981; font-weight: 700;">{{
+                    q.correct_answer }}</span> • {{ q.marks || 1 }} {{ translationService.currentLanguage() === 'ta' ? 'மதிப்பெண்கள்' : 'Marks' }}</div>
               </div>
-
-              @if (q.type === 'mcq') {
-              <div style="display:flex;gap:10px;margin-top:12px;font-size:13px;color:#64748b;">
-                @for (opt of q.options; track opt) {
-                <span style="background:#fff;padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;">{{ opt
-                  }}</span>
-                }
-              </div>
-              }
-
-              <div
-                style="margin-top:12px;font-size:13px;color:#059669;font-weight:700; background: #ecfdf5; padding: 8px 12px; border-radius: 6px; display: inline-block;">
-                <i class="bi bi-check-lg me-1"></i> விடை: {{ q.correct_answer }} ({{ q.marks }} Marks)
-              </div>
+              <button class="btn-xs danger" (click)="deleteQuestion(q.id || qIdx)" [title]="'common.delete' | translate">
+                <i class="bi bi-trash3"></i>
+              </button>
             </div>
             }
             @if (!activeExamWizard.questions || activeExamWizard.questions.length === 0) {
             <div
-              style="text-align:center;color:#64748b;font-size:14px;padding:30px; border: 2px dashed #e2e8f0; border-radius: 12px;">
-              <i class="bi bi-question-square"
-                style="font-size: 24px; color: #cbd5e1; display: block; margin-bottom: 10px;"></i>
-              கேள்விகள் ஏதுமில்லை.
+              style="text-align: center; padding: 20px; color: #94a3b8; border: 2px dashed #cbd5e1; border-radius: 10px; font-size: 13px;">
+              {{ translationService.currentLanguage() === 'ta' ? 'கேள்விகள் ஏதுமில்லை.' : 'No questions added yet.' }}
             </div>
             }
           </div>
@@ -1566,25 +1529,25 @@
           <!-- ADD QUESTION FORM -->
           <div
             style="border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-            <h4 style="margin:0 0 16px;font-size:16px; color: #334155;">புதிய வினா சேர்க்க (Add Question)</h4>
+            <h4 style="margin:0 0 16px;font-size:16px; color: #334155;">{{ translationService.currentLanguage() === 'ta' ? 'புதிய வினா சேர்க்க' : 'Add Question' }}</h4>
 
             <div style="margin-bottom:12px;">
-              <label style="font-size:13px;font-weight:600;">கேள்வி வகை (Type)</label>
+              <label style="font-size:13px;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'கேள்வி வகை' : 'Question Type' }}</label>
               <select [(ngModel)]="newQuestion.type" class="ctrl" style="background: #f8fafc;">
-                <option value="mcq">பலவுள் தெரிவு வினா (MCQ)</option>
-                <option value="fillup">கோடிட்ட இடங்களை நிரப்புக (Fill-up)</option>
+                <option value="mcq">{{ translationService.currentLanguage() === 'ta' ? 'பலவுள் தெரிவு வினா (MCQ)' : 'Multiple Choice (MCQ)' }}</option>
+                <option value="fillup">{{ translationService.currentLanguage() === 'ta' ? 'கோடிட்ட இடங்களை நிரப்புக' : 'Fill in the blanks' }}</option>
               </select>
             </div>
 
             <div style="margin-bottom:12px;">
-              <label style="font-size:13px;font-weight:600;">கேள்வி (Question)</label>
+              <label style="font-size:13px;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'கேள்வி' : 'Question' }}</label>
               <textarea [(ngModel)]="newQuestion.question_text" class="ctrl" rows="2"
                 style="background: #f8fafc;"></textarea>
             </div>
 
             @if (newQuestion.type === 'mcq') {
             <div style="margin-bottom:12px;">
-              <label style="font-size:13px;font-weight:600;">Options (A, B, C, D)</label>
+              <label style="font-size:13px;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'விடைக் குறிப்புகள் (A, B, C, D)' : 'Options (A, B, C, D)' }}</label>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <input type="text" [(ngModel)]="newQuestion.options[0]" class="ctrl" placeholder="Option A"
                   style="background: #f8fafc;" />
@@ -1600,13 +1563,13 @@
 
             <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px;">
               <div>
-                <label style="font-size:13px;font-weight:600;">சரியான விடை (Correct Answer)</label>
+                <label style="font-size:13px;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'சரியான விடை' : 'Correct Answer' }}</label>
                 <input type="text" [(ngModel)]="newQuestion.correct_answer" class="ctrl"
                   placeholder="{{ newQuestion.type === 'mcq' ? 'e.g. Option A' : 'Exact answer text' }}"
                   style="background: #f8fafc;" />
               </div>
               <div>
-                <label style="font-size:13px;font-weight:600;">மதிப்பெண்</label>
+                <label style="font-size:13px;font-weight:600;">{{ translationService.currentLanguage() === 'ta' ? 'மதிப்பெண்' : 'Marks' }}</label>
                 <input type="number" [(ngModel)]="newQuestion.marks" class="ctrl" placeholder="1"
                   style="background: #f8fafc;" />
               </div>
@@ -1615,7 +1578,7 @@
             <button class="btn-sm"
               style="background:#8b5cf6;color:#fff;border:none; width: 100%; justify-content: center;"
               (click)="saveQuestion()">
-              <i class="bi bi-floppy"></i> வினாவை சேமி (Save Question)
+              <i class="bi bi-floppy"></i> {{ translationService.currentLanguage() === 'ta' ? 'வினாவை சேமி' : 'Save Question' }}
             </button>
           </div>
         </div>

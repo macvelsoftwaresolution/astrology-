@@ -16,25 +16,30 @@ class GradingController extends Controller
     public function getSubmissions(Request $request)
     {
         $query = DB::table('student_submissions')
-            ->leftJoin('students', 'student_submissions.student_id', '=', 'students.id')
-            ->leftJoin('users', function($join) {
-                $join->on('student_submissions.student_id', '=', 'users.id')
-                     ->whereNull('students.id');
+            ->leftJoin('users', 'student_submissions.student_id', '=', 'users.id')
+            ->leftJoin('students', function($join) {
+                $join->on('users.student_id', '=', 'students.student_id')
+                     ->orOn('users.email', '=', 'students.email')
+                     ->orWhere(function($q) {
+                         $q->whereNull('users.id')
+                           ->whereColumn('student_submissions.student_id', '=', 'students.id');
+                     });
             })
             ->leftJoin('courses', 'student_submissions.course_id', '=', 'courses.id')
             ->leftJoin('course_batches', function($join) {
                 $join->on('student_submissions.batch_id', '=', 'course_batches.id')
-                     ->orOn('students.batch_id', '=', 'course_batches.id');
+                     ->orOn('students.batch_id', '=', 'course_batches.id')
+                     ->orOn('users.batch_id', '=', 'course_batches.id');
             })
             ->leftJoin('exams', 'student_submissions.exam_id', '=', 'exams.id')
             ->select(
                 'student_submissions.*',
                 DB::raw("COALESCE(student_submissions.mcq_score, CASE WHEN student_submissions.submission_type = 'online_quiz' THEN student_submissions.score ELSE NULL END) as mcq_score"),
                 DB::raw("COALESCE(student_submissions.practical_score, CASE WHEN student_submissions.submission_type = 'practical_assignment' THEN student_submissions.score ELSE NULL END) as practical_score"),
-                DB::raw("COALESCE(students.name, users.name, 'மாணவர் (Student)') as student_name"),
-                DB::raw("COALESCE(students.email, users.email, '-') as student_email"),
-                DB::raw("COALESCE(students.phone, users.phone, '-') as student_phone"),
-                DB::raw("COALESCE(students.student_id, '') as student_code"),
+                DB::raw("COALESCE(users.name, students.name, 'மாணவர் (Student)') as student_name"),
+                DB::raw("COALESCE(users.email, students.email, '-') as student_email"),
+                DB::raw("COALESCE(users.phone, students.phone, '-') as student_phone"),
+                DB::raw("COALESCE(users.student_id, students.student_id, '') as student_code"),
                 'course_batches.name as batch_name',
                 'course_batches.batch_code as batch_code',
                 'exams.title as exam_title',
@@ -44,7 +49,8 @@ class GradingController extends Controller
         if ($request->has('batch_id') && $request->batch_id) {
             $query->where(function($q) use ($request) {
                 $q->where('student_submissions.batch_id', $request->batch_id)
-                  ->orWhere('students.batch_id', $request->batch_id);
+                  ->orWhere('students.batch_id', $request->batch_id)
+                  ->orWhere('users.batch_id', $request->batch_id);
             });
         }
 
@@ -923,18 +929,22 @@ class GradingController extends Controller
     public function adminGetCertificates()
     {
         $certificates = DB::table('certificates')
-            ->leftJoin('students', 'certificates.student_id', '=', 'students.id')
-            ->leftJoin('users', function($join) {
-                $join->on('certificates.student_id', '=', 'users.id')
-                     ->whereNull('students.id');
+            ->leftJoin('users', 'certificates.student_id', '=', 'users.id')
+            ->leftJoin('students', function($join) {
+                $join->on('users.student_id', '=', 'students.student_id')
+                     ->orOn('users.email', '=', 'students.email')
+                     ->orWhere(function($q) {
+                         $q->whereNull('users.id')
+                           ->whereColumn('certificates.student_id', '=', 'students.id');
+                     });
             })
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
                 'certificates.*',
-                DB::raw("COALESCE(students.name, users.name, 'மாணவர் (Student)') as student_name"),
-                DB::raw("COALESCE(students.email, users.email, '-') as student_email"),
-                DB::raw("COALESCE(students.phone, users.phone, '-') as student_phone"),
-                DB::raw("COALESCE(students.student_id, users.student_id, '') as student_reg_id"),
+                DB::raw("COALESCE(certificates.student_name_ta, users.name, students.name, 'மாணவர் (Student)') as student_name"),
+                DB::raw("COALESCE(users.email, students.email, '-') as student_email"),
+                DB::raw("COALESCE(users.phone, students.phone, '-') as student_phone"),
+                DB::raw("COALESCE(certificates.registration_number, users.student_id, students.student_id, '') as student_reg_id"),
                 DB::raw("COALESCE(courses.title, 'இளநிலை ஜோதிட மணி') as course_title")
             )
             ->orderBy('certificates.created_at', 'desc')
@@ -1154,17 +1164,21 @@ class GradingController extends Controller
             ->where('certificates.id', $id)
             ->orWhere('certificates.certificate_number', $id)
             ->orWhere('certificates.marksheet_number', $id)
-            ->leftJoin('students', 'certificates.student_id', '=', 'students.id')
-            ->leftJoin('users', function($join) {
-                $join->on('certificates.student_id', '=', 'users.id')
-                     ->whereNull('students.id');
+            ->leftJoin('users', 'certificates.student_id', '=', 'users.id')
+            ->leftJoin('students', function($join) {
+                $join->on('users.student_id', '=', 'students.student_id')
+                     ->orOn('users.email', '=', 'students.email')
+                     ->orWhere(function($q) {
+                         $q->whereNull('users.id')
+                           ->whereColumn('certificates.student_id', '=', 'students.id');
+                     });
             })
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
                 'certificates.*',
-                DB::raw("COALESCE(certificates.student_name_ta, students.name, users.name, 'மாணவர்') as student_name"),
+                DB::raw("COALESCE(certificates.student_name_ta, users.name, students.name, 'மாணவர்') as student_name"),
                 DB::raw("COALESCE(certificates.student_name_en, users.name, students.name, 'STUDENT') as student_name_english"),
-                DB::raw("COALESCE(certificates.registration_number, students.student_id, users.student_id, '') as student_reg_id"),
+                DB::raw("COALESCE(certificates.registration_number, users.student_id, students.student_id, '') as student_reg_id"),
                 'courses.title as course_title'
             )
             ->first();
@@ -1213,17 +1227,21 @@ class GradingController extends Controller
                   ->orWhere('certificates.marksheet_download_url', 'LIKE', '%' . $cleanId . '%')
                   ->orWhere('certificates.pdf_download_url', 'LIKE', '%' . $cleanId . '%');
             })
-            ->leftJoin('students', 'certificates.student_id', '=', 'students.id')
-            ->leftJoin('users', function($join) {
-                $join->on('certificates.student_id', '=', 'users.id')
-                     ->whereNull('students.id');
+            ->leftJoin('users', 'certificates.student_id', '=', 'users.id')
+            ->leftJoin('students', function($join) {
+                $join->on('users.student_id', '=', 'students.student_id')
+                     ->orOn('users.email', '=', 'students.email')
+                     ->orWhere(function($q) {
+                         $q->whereNull('users.id')
+                           ->whereColumn('certificates.student_id', '=', 'students.id');
+                     });
             })
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
                 'certificates.*',
-                DB::raw("COALESCE(certificates.student_name_ta, students.name, users.name, 'மாணவர்') as student_name_ta"),
+                DB::raw("COALESCE(certificates.student_name_ta, users.name, students.name, 'மாணவர்') as student_name_ta"),
                 DB::raw("COALESCE(certificates.student_name_en, users.name, students.name, 'STUDENT') as student_name_en"),
-                DB::raw("COALESCE(certificates.registration_number, students.student_id, users.student_id, '') as registration_number"),
+                DB::raw("COALESCE(certificates.registration_number, users.student_id, students.student_id, '') as registration_number"),
                 'courses.title as course_title'
             )
             ->first();

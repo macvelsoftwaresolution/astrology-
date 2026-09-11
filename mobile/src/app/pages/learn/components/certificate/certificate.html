@@ -3,7 +3,7 @@
     <button class="cert-back-btn" (click)="close.emit()">
       <i class="bi bi-arrow-left me-1"></i>
     </button>
-    <h2>சான்றிதழ் & மதிப்பெண் பட்டியல்</h2>
+    <h2>{{ translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் & மதிப்பெண் பட்டியல்' : 'Certificate & Marksheet' }}</h2>
     <div style="width: 32px;"></div>
   </div>
 
@@ -15,20 +15,20 @@
         [class.active]="activeDocumentTab === 'certificate'" 
         (click)="activeDocumentTab = 'certificate'">
         <i class="bi bi-award-fill"></i>
-        <span>{{ 'learn.tabCert' | translate }}</span>
+        <span>{{ translationService.currentLanguage() === 'ta' ? 'சான்றிதழ்' : 'Certificate' }}</span>
       </button>
 
       <button class="segmented-tab-btn" 
         [class.active]="activeDocumentTab === 'marksheet'" 
         (click)="activeDocumentTab = 'marksheet'">
         <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-        <span>{{ 'learn.tabMarksheet' | translate }}</span>
+        <span>{{ translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல்' : 'Marksheet' }}</span>
       </button>
     </div>
 
     @if (isLoading) {
       <div class="cert-loading-box">
-        <i class="bi bi-hourglass-split me-1"></i> ஏற்றுகிறது...
+        <i class="bi bi-hourglass-split me-1"></i> {{ translationService.currentLanguage() === 'ta' ? 'ஏற்றுகிறது...' : 'Loading...' }}
       </div>
     } @else {
 
@@ -39,7 +39,7 @@
             <button (click)="selectCertificate(c)"
               [class.active]="selectedCert?.id === c.id"
               class="course-chip">
-              <i class="bi bi-mortarboard-fill me-1"></i> {{ c.award_title_ta || c.course_title }}
+              <i class="bi bi-mortarboard-fill me-1"></i> {{ translationService.currentLanguage() === 'ta' ? (c.award_title_ta || c.course_title) : (c.award_title_en || c.course_title) }}
             </button>
           }
         </div>
@@ -52,15 +52,15 @@
           <div class="learner-doc-card certificate">
             <div class="doc-header-strip gold">
               <div class="doc-badge-pill">
-                <i class="bi bi-patch-check-fill text-gold me-1"></i> அதிகாரப்பூர்வ சான்றிதழ்
+                <i class="bi bi-patch-check-fill text-gold me-1"></i> {{ translationService.currentLanguage() === 'ta' ? 'அதிகாரப்பூர்வ சான்றிதழ்' : 'Official Certificate' }}
               </div>
-              <span class="doc-status-tag">வெளியிடப்பட்டது</span>
+              <span class="doc-status-tag">{{ translationService.currentLanguage() === 'ta' ? 'வெளியிடப்பட்டது' : 'Published' }}</span>
             </div>
 
             <div class="doc-content-body">
               <div class="inst-mini-info">
-                <span class="inst-nam">ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்</span>
-                <span class="inst-loc">பெரியகுளம் • அறக்கட்டளை அரசு பதிவு எண்: BK4/3/2018PKM</span>
+                <span class="inst-nam">{{ translationService.currentLanguage() === 'ta' ? 'ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்' : 'Sri Aruthra Institute of Astrology' }}</span>
+                <span class="inst-loc">{{ translationService.currentLanguage() === 'ta' ? 'பெரியகுளம் • அறக்கட்டளை அரசு பதிவு எண்: BK4/3/2018PKM' : 'Periyakulam • Govt Reg No: BK4/3/2018PKM' }}</span>
               </div>
 
               <div class="award-hero-block">
@@ -68,7 +68,7 @@
                   <i class="bi bi-award-fill"></i>
                 </div>
                 <div class="award-text-wrap">
-                  <span class="award-prefix">வழங்கப்படும் சிறப்புப்பட்டயம்:</span>
+                  <span class="award-prefix">{{ translationService.currentLanguage() === 'ta' ? 'வழங்கப்படும் சிறப்புப்பட்டயம்:' : 'Conferred Title of Honour:' }}</span>
                   <h2 class="award-title">“{{ selectedCert?.award_title_ta || (selectedCert?.course_level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா') }}”</h2>
                   <div class="award-en-title">{{ selectedCert?.award_title_en || (selectedCert?.course_level === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA') }}</div>
                 </div>
@@ -76,20 +76,20 @@
 
               <div class="learner-meta-grid">
                 <div class="meta-item">
-                  <span class="meta-lbl">மாணவர் பெயர் (Student Name)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'மாணவர் பெயர்' : 'Student Name' }}</span>
                   <span class="meta-val highlight">{{ selectedCert?.student_name_ta || studentName }}</span>
                   <small class="meta-sub">{{ selectedCert?.student_name_en || studentName }}</small>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-lbl">பதிவு எண் (Reg. No)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'பதிவு எண்' : 'Reg. No' }}</span>
                   <span class="meta-val reg-code">{{ selectedCert?.registration_number || selectedCert?.certificate_number }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-lbl">பயிற்சி மையம் (Center)</span>
-                  <span class="meta-val">{{ selectedCert?.center_name || 'பல்லடம்' }}</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'பயிற்சி மையம்' : 'Study Center' }}</span>
+                  <span class="meta-val">{{ selectedCert?.center_name || (translationService.currentLanguage() === 'ta' ? 'பல்லடம்' : 'Palladam') }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-lbl">வழங்கப்பட்ட நாள் (Issue Date)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'வழங்கப்பட்ட நாள்' : 'Issue Date' }}</span>
                   <span class="meta-val">{{ selectedCert?.issue_date || '28.10.2019' }}</span>
                 </div>
               </div>
@@ -101,14 +101,14 @@
                     <i class="bi bi-file-earmark-pdf-fill"></i>
                   </div>
                   <div class="dl-btn-text">
-                    <span class="btn-main-txt">சான்றிதழ் PDF பதிவிறக்கம் (Download Certificate PDF)</span>
-                    <span class="btn-sub-txt">ஸ்ரீ ஆருத்ரா அசல் சான்றிதழை அச்சிட / சேமிக்க</span>
+                    <span class="btn-main-txt">{{ translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் PDF பதிவிறக்கம்' : 'Download Certificate PDF' }}</span>
+                    <span class="btn-sub-txt">{{ translationService.currentLanguage() === 'ta' ? 'ஸ்ரீ ஆருத்ரா அசல் சான்றிதழை அச்சிட / சேமிக்க' : 'Print / Save official certificate' }}</span>
                   </div>
                   <i class="bi bi-download dl-arrow"></i>
                 </button>
 
                 <button type="button" class="btn-secondary-share" (click)="shareCertificate(selectedCert)">
-                  <i class="bi bi-share-fill me-2"></i> சான்றிதழ் இணைப்பு பகிர் (Share)
+                  <i class="bi bi-share-fill me-2"></i> {{ translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் இணைப்பு பகிர்' : 'Share Certificate Link' }}
                 </button>
               </div>
             </div>
@@ -120,8 +120,8 @@
             <div class="empty-doc-icon-wrap gold">
               <i class="bi bi-clock-history"></i>
             </div>
-            <h3>சான்றிதழ் இன்னும் வெளியிடப்படவில்லை</h3>
-            <p>நிர்வாகியால் சான்றிதழ் வெளியிடப்பட்டதும் இங்கு தோன்றும். உடனடியாக PDF பதிவிறக்கம் செய்துகொள்ளலாம்.</p>
+            <h3>{{ translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் இன்னும் வெளியிடப்படவில்லை' : 'Certificate Not Yet Published' }}</h3>
+            <p>{{ translationService.currentLanguage() === 'ta' ? 'நிர்வாகியால் சான்றிதழ் வெளியிடப்பட்டதும் இங்கு தோன்றும். உடனடியாக PDF பதிவிறக்கம் செய்துகொள்ளலாம்.' : 'Once published by the administrator, your certificate will appear here. You can immediately download it as a PDF.' }}</p>
           </div>
         }
       }
@@ -133,15 +133,15 @@
           <div class="learner-doc-card marksheet">
             <div class="doc-header-strip blue">
               <div class="doc-badge-pill">
-                <i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i> தேர்வு மதிப்பெண் பட்டியல்
+                <i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i> {{ translationService.currentLanguage() === 'ta' ? 'தேர்வு மதிப்பெண் பட்டியல்' : 'Examination Marksheet' }}
               </div>
-              <span class="doc-status-tag pass">தேர்ச்சி (PASS)</span>
+              <span class="doc-status-tag pass">{{ translationService.currentLanguage() === 'ta' ? 'தேர்ச்சி (PASS)' : 'Passed (PASS)' }}</span>
             </div>
 
             <div class="doc-content-body">
               <div class="inst-mini-info">
-                <span class="inst-nam">ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்</span>
-                <span class="inst-loc">பெரியகுளம் • அதிகாரப்பூர்வ மதிப்பெண் விபரம்</span>
+                <span class="inst-nam">{{ translationService.currentLanguage() === 'ta' ? 'ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம்' : 'Sri Aruthra Institute of Astrology' }}</span>
+                <span class="inst-loc">{{ translationService.currentLanguage() === 'ta' ? 'பெரியகுளம் • அதிகாரப்பூர்வ மதிப்பெண் விபரம்' : 'Periyakulam • Official Marksheet Statement' }}</span>
               </div>
 
               <div class="marks-summary-hero">
@@ -150,28 +150,28 @@
                   <span class="score-den">/ 100</span>
                 </div>
                 <div class="hero-score-info">
-                  <div class="score-pct">சதவீதம்: <strong>{{ selectedCert?.percentage || '100%' }}</strong></div>
-                  <div class="score-grd">தகுதி நிலை: <span class="grade-pill">{{ selectedCert?.grade || 'Distinction' }}</span></div>
+                  <div class="score-pct">{{ translationService.currentLanguage() === 'ta' ? 'சதவீதம்:' : 'Percentage:' }} <strong>{{ selectedCert?.percentage || '100%' }}</strong></div>
+                  <div class="score-grd">{{ translationService.currentLanguage() === 'ta' ? 'தகுதி நிலை:' : 'Grade / Division:' }} <span class="grade-pill">{{ selectedCert?.grade || 'Distinction' }}</span></div>
                   <div class="score-title">“{{ selectedCert?.award_title_ta || (selectedCert?.course_level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா') }}”</div>
                 </div>
               </div>
 
               <div class="learner-meta-grid">
                 <div class="meta-item">
-                  <span class="meta-lbl">மாணவர் பெயர் (Student Name)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'மாணவர் பெயர்' : 'Student Name' }}</span>
                   <span class="meta-val highlight">{{ selectedCert?.student_name_ta || studentName }}</span>
                   <small class="meta-sub">{{ selectedCert?.student_name_en || studentName }}</small>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-lbl">பதிவு எண் (Reg. No)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'பதிவு எண்' : 'Reg. No' }}</span>
                   <span class="meta-val reg-code">{{ selectedCert?.registration_number || selectedCert?.certificate_number }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-lbl">தேர்வு நாள் (Exam Date)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'தேர்வு நாள்' : 'Exam Date' }}</span>
                   <span class="meta-val">{{ selectedCert?.exam_date || '28-01-2019' }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-lbl">கல்வியாண்டு (Year of Study)</span>
+                  <span class="meta-lbl">{{ translationService.currentLanguage() === 'ta' ? 'கல்வியாண்டு' : 'Academic Year' }}</span>
                   <span class="meta-val">{{ selectedCert?.academic_year || '2018 FEB to 2019 FEB' }}</span>
                 </div>
               </div>
@@ -183,14 +183,14 @@
                     <i class="bi bi-file-earmark-spreadsheet-fill"></i>
                   </div>
                   <div class="dl-btn-text">
-                    <span class="btn-main-txt">மதிப்பெண் பட்டியல் PDF பதிவிறக்கம் (Download Marksheet PDF)</span>
-                    <span class="btn-sub-txt">பாடவாரியான முழு மதிப்பெண் பட்டியல் & கையொப்பங்கள்</span>
+                    <span class="btn-main-txt">{{ translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல் PDF பதிவிறக்கம்' : 'Download Marksheet PDF' }}</span>
+                    <span class="btn-sub-txt">{{ translationService.currentLanguage() === 'ta' ? 'பாடவாரியான முழு மதிப்பெண் பட்டியல் & கையொப்பங்கள்' : 'Complete subject-wise marks and signatures' }}</span>
                   </div>
                   <i class="bi bi-download dl-arrow"></i>
                 </button>
 
                 <button type="button" class="btn-secondary-share" (click)="shareMarksheet(selectedCert)">
-                  <i class="bi bi-share-fill me-2"></i> மதிப்பெண் பட்டியல் பகிர் (Share)
+                  <i class="bi bi-share-fill me-2"></i> {{ translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல் பகிர்' : 'Share Marksheet' }}
                 </button>
               </div>
             </div>
@@ -202,8 +202,8 @@
             <div class="empty-doc-icon-wrap blue">
               <i class="bi bi-file-earmark-spreadsheet-fill"></i>
             </div>
-            <h3>மதிப்பெண் பட்டியல் இன்னும் தயாராகவில்லை</h3>
-            <p>தேர்வு முடிவுகள் வெளியிடப்பட்டதும் உங்கள் மதிப்பெண் பட்டியல் இங்கு தோன்றும்.</p>
+            <h3>{{ translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல் இன்னும் தயாராகவில்லை' : 'Marksheet Not Yet Ready' }}</h3>
+            <p>{{ translationService.currentLanguage() === 'ta' ? 'தேர்வு முடிவுகள் வெளியிடப்பட்டதும் உங்கள் மதிப்பெண் பட்டியல் இங்கு தோன்றும்.' : 'Once examination results are announced, your marksheet will appear here.' }}</p>
           </div>
         }
       }

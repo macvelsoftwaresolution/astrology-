@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, Input, OnInit, OnDestroy } from '@angu
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../services/auth.service';
+import { TranslationService } from '../../../../services/translation.service';
 
 @Component({
   selector: 'app-learn-quiz',
@@ -31,7 +32,8 @@ export class LearnQuizComponent implements OnInit, OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    public translationService: TranslationService
   ) {}
 
   ngOnInit() {

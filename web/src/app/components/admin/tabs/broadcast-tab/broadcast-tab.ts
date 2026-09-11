@@ -191,19 +191,45 @@ export class BroadcastTabComponent implements OnInit {
     let clean = this.stripEmojis(title);
     const isTa = this.translationService.currentLanguage() === 'ta';
     if (isTa) {
-      // Remove bracketed English like (Booking Completed), (Booking Received), etc.
+      // PURE TAMIL MODE
       clean = clean.replace(/\s*\([A-Za-z\s0-9#\-_:]+\)/g, '').trim();
+      if (clean.includes('Exam Submitted')) return 'தேர்வு சமர்ப்பிக்கப்பட்டது';
+      if (clean.includes('Re-Exam Scheduled')) return 'மறுதேர்வு திட்டமிடப்பட்டது';
+      if (clean.includes('Exam Submission')) return 'தேர்வு சமர்ப்பிப்பு';
+      if (clean.includes('Booking Completed')) return 'முன்பதிவு நிறைவுற்றது';
+      if (clean.includes('Booking Received')) return 'முன்பதிவு பெறப்பட்டது';
+      if (clean.includes('Book Order Received')) return 'புத்தக ஆர்டர் பெறப்பட்டது';
       clean = clean.replace(/புத்தக ஆர்டர் நிலை:\s*Shipped/gi, 'புத்தக ஆர்டர் நிலை: அனுப்பி வைக்கப்பட்டது')
                    .replace(/புத்தக ஆர்டர் நிலை:\s*Packed/gi, 'புத்தக ஆர்டர் நிலை: பேக் செய்யப்பட்டது')
                    .replace(/புத்தக ஆர்டர் நிலை:\s*Processing/gi, 'புத்தக ஆர்டர் நிலை: செயலாக்கத்தில் உள்ளது')
                    .replace(/புத்தக ஆர்டர் நிலை:\s*Delivered/gi, 'புத்தக ஆர்டர் நிலை: விநியோகிக்கப்பட்டது');
       return clean;
     } else {
-      // English Mode
-      if (clean.includes('Booking Completed')) return 'Booking Completed!';
-      if (clean.includes('Booking Received')) return 'Booking Received!';
+      // PURE ENGLISH MODE
+      if (clean.includes('தேர்வு முடிவு & சான்றிதழ் வெளியிடப்பட்டது') || clean.includes('தேர்வு முடிவு')) {
+        return 'Exam Results & Certificate Published!';
+      }
+      if (clean.includes('தேர்வு சமர்ப்பிக்கப்பட்டது') || clean.includes('Exam Submitted')) {
+        return 'Exam Submitted';
+      }
+      if (clean.includes('மறுதேர்வு திட்டமிடப்பட்டது') || clean.includes('Re-Exam Scheduled')) {
+        return 'Re-Exam Scheduled';
+      }
+      if (clean.includes('Booking Completed') || clean.includes('முன்பதிவு நிறைவுற்றது')) {
+        return 'Booking Completed!';
+      }
+      if (clean.includes('Booking Received') || clean.includes('முன்பதிவு பெறப்பட்டது')) {
+        return 'Booking Received!';
+      }
       if (clean.includes('புத்தக ஆர்டர் நிலை')) {
-        return clean.replace(/புத்தக ஆர்டர் நிலை:\s*/g, 'Book Order Status: ');
+        return clean.replace(/புத்தக ஆர்டர் நிலை:\s*அனுப்பி வைக்கப்பட்டது/gi, 'Book Order Status: Shipped')
+                    .replace(/புத்தக ஆர்டர் நிலை:\s*பேக் செய்யப்பட்டது/gi, 'Book Order Status: Packed')
+                    .replace(/புத்தக ஆர்டர் நிலை:\s*செயலாக்கத்தில் உள்ளது/gi, 'Book Order Status: Processing')
+                    .replace(/புத்தக ஆர்டர் நிலை:\s*விநியோகிக்கப்பட்டது/gi, 'Book Order Status: Delivered')
+                    .replace(/புத்தக ஆர்டர் நிலை:\s*/gi, 'Book Order Status: ');
+      }
+      if (clean.includes('புத்தக ஆர்டர் பெறப்பட்டது')) {
+        return 'Book Order Received!';
       }
       return clean;
     }
@@ -214,13 +240,43 @@ export class BroadcastTabComponent implements OnInit {
     let clean = this.stripEmojis(body);
     const isTa = this.translationService.currentLanguage() === 'ta';
     if (isTa) {
+      // PURE TAMIL MODE
       clean = clean.replace(/நிலை:\s*Shipped/gi, 'நிலை: அனுப்பி வைக்கப்பட்டது')
                    .replace(/நிலை:\s*Packed/gi, 'நிலை: பேக் செய்யப்பட்டது')
                    .replace(/நிலை:\s*Processing/gi, 'நிலை: செயலாக்கத்தில் உள்ளது')
                    .replace(/நிலை:\s*Delivered/gi, 'நிலை: விநியோகிக்கப்பட்டது');
+      if (clean.includes('Your exam answer sheet was submitted successfully')) {
+        return 'உங்கள் தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது. விரைவில் மதிப்பீடு செய்யப்படும்.';
+      }
+      if (clean.includes('Your exam results and certificate')) {
+        return 'உங்கள் தேர்வு முடிவுகள் மற்றும் சான்றிதழ் / மதிப்பெண் பட்டியல் வெளியிடப்பட்டுள்ளது. "My Certificates" பகுதியில் பார்வையிட்டு பதிவிறக்கம் செய்துகொள்ளலாம்.';
+      }
+      return clean;
+    } else {
+      // PURE ENGLISH MODE
+      if (clean.includes('உங்கள் தேர்வு முடிவுகள் மற்றும் சான்றிதழ்') || clean.includes('My Certificates')) {
+        return 'Your exam results and certificate / marksheet have been published. You can view and download them in the "My Certificates" section.';
+      }
+      if (clean.includes('உங்கள் தேர்வு விடைத்தாள் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது') || clean.includes('மதிப்பீடு செய்யப்படும்')) {
+        return 'Your exam answer sheet was submitted successfully. It will be evaluated shortly.';
+      }
+      if (clean.includes('மறுதேர்வுக்கான அனுமதி வழங்கப்பட்டது')) {
+        return 'Permission for re-examination has been granted. You can take the exam at the scheduled time.';
+      }
+      if (clean.includes('உங்கள் முன்பதிவு') && clean.includes('ஆய்வு செய்யப்பட்டு')) {
+        return 'Your booking has been reviewed and completed by the astrologer. Your horoscope chart file is attached.';
+      }
+      if (clean.includes('உங்கள்') && clean.includes('முன்பதிவு') && clean.includes('பெறப்பட்டது')) {
+        return 'Your booking request has been received.';
+      }
+      if (clean.includes('புத்தக ஆர்டர்')) {
+        return clean.replace(/உங்கள் புத்தக ஆர்டர் நிலை:\s*அனுப்பி வைக்கப்பட்டது/gi, 'Your book order status: Shipped')
+                    .replace(/உங்கள் புத்தக ஆர்டர் நிலை:\s*பேக் செய்யப்பட்டது/gi, 'Your book order status: Packed')
+                    .replace(/உங்கள் புத்தக ஆர்டர் நிலை:\s*செயலாக்கத்தில் உள்ளது/gi, 'Your book order status: Processing')
+                    .replace(/உங்கள் புத்தக ஆர்டர் நிலை:\s*விநியோகிக்கப்பட்டது/gi, 'Your book order status: Delivered');
+      }
       return clean;
     }
-    return clean;
   }
 
   formatDate(rawDate: any): string {

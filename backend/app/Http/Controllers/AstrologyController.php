@@ -331,7 +331,13 @@ class AstrologyController extends Controller
 
             $payId = $request->razorpay_payment_id ?: ('pay_' . uniqid());
             $orderId = $request->order_id ?: ($request->razorpay_order_id ?: ('order_' . uniqid()));
-            $userToLink = $booking->user_id ?? ($userId ?? 1);
+            $userToLink = $booking->user_id ?? $userId;
+            if (!$userToLink && $booking && !empty($booking->user_phone)) {
+                $userByPhone = DB::table('users')->where('phone', $booking->user_phone)->where('role', '!=', 'admin')->first();
+                if ($userByPhone) {
+                    $userToLink = $userByPhone->id;
+                }
+            }
             $amountToLog = $request->amount ?? ($booking->price ?? 100);
             $descToLog = $request->description ?? ($booking ? 'ஜோதிட ஆலோசனை முன்பதிவு கட்டணம்' : 'திருமணப் பொருத்தம் கணிப்பு கட்டணம்');
             $orderTypeToLog = $request->order_type ?? ($booking ? 'booking' : 'marriage_matching');

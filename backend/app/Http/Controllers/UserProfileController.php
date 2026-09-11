@@ -271,15 +271,106 @@ class UserProfileController extends Controller
     }
 
     /**
-     * Admin: Get all payment transactions
+     * Admin: Get all payment transactions with accurate customer details
      */
     public function adminGetPayments()
     {
         $payments = DB::table('payment_transactions')
-            ->leftJoin('users', 'payment_transactions.user_id', '=', 'users.id')
-            ->select('payment_transactions.*', 'users.name as user_name', 'users.email as user_email')
             ->orderBy('payment_transactions.created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($p) {
+                $userName = null;
+                $userPhone = null;
+                $userEmail = null;
+
+                // 1. If LMS / course admission
+                if (str_starts_with($p->booking_id ?? '', 'LMS-') || in_array($p->order_type ?? '', ['course_admission', 'course', 'lms'])) {
+                    $cleanStudentCode = str_replace('LMS-', '', $p->booking_id ?? '');
+
+                    $student = DB::table('students')
+                        ->where('student_id', $cleanStudentCode)
+                        ->first();
+
+                    if (!$student && !empty($p->user_id)) {
+                        $student = DB::table('students')->where('id', $p->user_id)->first();
+                    }
+
+                    if ($student) {
+                        $userName = $student->name;
+                        $userPhone = $student->phone;
+                        $userEmail = $student->email;
+                    }
+
+                    if (!$userName && !empty($cleanStudentCode)) {
+                        $u = DB::table('users')->where('student_id', $cleanStudentCode)->first();
+                        if ($u) {
+                            $userName = $u->name;
+                            $userPhone = $u->phone;
+                            $userEmail = $u->email;
+                        }
+                    }
+                }
+
+                // 2. If booking (astrology consultation)
+                if (!$userName && !empty($p->booking_id)) {
+                    $booking = DB::table('bookings')->where('id', $p->booking_id)->first();
+                    if ($booking) {
+                        $userName = $booking->user_name;
+                        $userPhone = $booking->user_phone;
+                    }
+                }
+
+                // 3. If book order
+                if (!$userName && (!empty($p->booking_id) || ($p->order_type ?? '') === 'book')) {
+                    $bookOrder = DB::table('book_orders')
+                        ->where('id', $p->booking_id)
+                        ->orWhere('order_number', $p->booking_id)
+                        ->first();
+                    if ($bookOrder) {
+                        $userName = $bookOrder->customer_name ?? ($bookOrder->name ?? null);
+                        $userPhone = $bookOrder->customer_phone ?? ($bookOrder->phone ?? null);
+                    }
+                }
+
+                // 4. If jathagam writing
+                if (!$userName && (($p->order_type ?? '') === 'jathagam_writing' || str_contains($p->description ?? '', 'ஜாதகம்'))) {
+                    $jw = DB::table('jathagam_writing_orders')
+                        ->where('id', $p->booking_id)
+                        ->orWhere('order_number', $p->booking_id)
+                        ->first();
+                    if ($jw) {
+                        $userName = $jw->name ?? ($jw->customer_name ?? null);
+                        $userPhone = $jw->phone ?? ($jw->customer_phone ?? null);
+                    }
+                }
+
+                // 5. Look up users table by user_id, but only if not admin
+                if (!$userName && !empty($p->user_id)) {
+                    $user = DB::table('users')->where('id', $p->user_id)->first();
+                    if ($user && $user->role !== 'admin') {
+                        $userName = $user->name;
+                        $userPhone = $user->phone;
+                        $userEmail = $user->email;
+                    }
+                }
+
+                // 6. Fallback if user_id was set to admin
+                if (!$userName && !empty($p->user_id)) {
+                    $st = DB::table('students')->where('id', $p->user_id)->first();
+                    if ($st) {
+                        $userName = $st->name;
+                        $userPhone = $st->phone;
+                        $userEmail = $st->email;
+                    }
+                }
+
+                $p->user_name = $userName ?: 'பயனர்';
+                $p->user_phone = $userPhone;
+                $p->user_email = $userEmail;
+                $p->payment_type = $p->order_type ?? 'astrology';
+
+                return $p;
+            });
 
         return response()->json(['payments' => $payments]);
     }

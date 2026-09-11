@@ -50,7 +50,7 @@
       <div class="quiz-content-body" style="display:flex;justify-content:center;align-items:center;height:100%;">
         <div style="text-align:center;color:#64748b;padding:20px;">
           <i class="bi bi-exclamation-circle" style="font-size:40px;display:block;margin-bottom:10px;"></i>
-          No questions available for this exam.
+          {{ translationService.currentLanguage() === 'ta' ? 'இந்த தேர்விற்கு வினாக்கள் ஏதுமில்லை.' : 'No questions available for this exam.' }}
         </div>
       </div>
     }
@@ -63,31 +63,33 @@
         <div class="result-badge-icon passed">
           <i class="bi bi-patch-check-fill"></i>
         </div>
-        <h3 class="result-title">தேர்வு சமர்ப்பிக்கப்பட்டது!</h3>
+        <h3 class="result-title">{{ translationService.currentLanguage() === 'ta' ? 'தேர்வு சமர்ப்பிக்கப்பட்டது!' : 'Exam Submitted Successfully!' }}</h3>
         <p class="result-desc">
-          உங்கள் தேர்வு விடைத்தாள் வெற்றிகரமாக பெறப்பட்டது. நிர்வாகி / ஆசிரியர் மதிப்பீடு செய்த பின் முடிவுகள் மற்றும் சான்றிதழ் முகப்புப் பக்கத்தில் வெளியிடப்படும்.
+          {{ translationService.currentLanguage() === 'ta' 
+            ? 'உங்கள் தேர்வு விடைத்தாள் வெற்றிகரமாக பெறப்பட்டது. நிர்வாகி / ஆசிரியர் மதிப்பீடு செய்த பின் முடிவுகள் மற்றும் சான்றிதழ் முகப்புப் பக்கத்தில் வெளியிடப்படும்.' 
+            : 'Your examination answers have been received successfully. Results and certificate will be published on your dashboard after teacher/admin evaluation.' }}
         </p>
 
         <div class="score-card-row">
           <div class="score-box status-received">
-            <span class="score-label">விடைத்தாள்</span>
+            <span class="score-label">{{ translationService.currentLanguage() === 'ta' ? 'விடைத்தாள்' : 'Answer Sheet' }}</span>
             <div class="score-value">
               <i class="bi bi-check-circle-fill"></i>
-              <span>பெறப்பட்டது</span>
+              <span>{{ translationService.currentLanguage() === 'ta' ? 'பெறப்பட்டது' : 'Received' }}</span>
             </div>
           </div>
           <div class="score-box status-pending">
-            <span class="score-label">நிலை</span>
+            <span class="score-label">{{ translationService.currentLanguage() === 'ta' ? 'நிலை' : 'Status' }}</span>
             <div class="score-value">
               <i class="bi bi-hourglass-split"></i>
-              <span>மதிப்பீட்டில் உள்ளது</span>
+              <span>{{ translationService.currentLanguage() === 'ta' ? 'மதிப்பீட்டில் உள்ளது' : 'Under Evaluation' }}</span>
             </div>
           </div>
         </div>
 
         <div class="results-info-banner">
           <i class="bi bi-info-circle-fill"></i>
-          <span>முடிவுகள் வெளியிடப்பட்டதும் உங்கள் செயலியில் அறிவிப்பு (Notification) தோன்றும்.</span>
+          <span>{{ translationService.currentLanguage() === 'ta' ? 'முடிவுகள் வெளியிடப்பட்டதும் உங்கள் செயலியில் அறிவிப்பு தோன்றும்.' : 'You will receive an in-app notification once results are published.' }}</span>
         </div>
       </div>
 
@@ -106,16 +108,18 @@
         <div class="dialog-icon-glow amber">
           <i class="bi bi-exclamation-triangle-fill"></i>
         </div>
-        <h3 class="dialog-title">தேர்விலிருந்து வெளியேற வேண்டுமா?</h3>
+        <h3 class="dialog-title">{{ translationService.currentLanguage() === 'ta' ? 'தேர்விலிருந்து வெளியேற வேண்டுமா?' : 'Exit Examination?' }}</h3>
         <p class="dialog-description">
-          தேர்வை இடையில் நிறுத்தினால் அது முடிவுற்றதாகவே (Completed) கருதப்பட்டு தானாக சமர்ப்பிக்கப்படும். மீண்டும் எழுத இயலாது.
+          {{ translationService.currentLanguage() === 'ta' 
+            ? 'தேர்வை இடையில் நிறுத்தினால் அது முடிவுற்றதாகவே (Completed) கருதப்பட்டு தானாக சமர்ப்பிக்கப்படும். மீண்டும் எழுத இயலாது.' 
+            : 'If you exit now, your exam will be automatically submitted as completed. You cannot re-take this exam.' }}
         </p>
         <div class="dialog-actions-row">
           <button type="button" class="dialog-btn btn-cancel" (click)="cancelExitExam()">
-            <i class="bi bi-x-lg me-1"></i> தேர்வைத் தொடர்க
+            <i class="bi bi-x-lg me-1"></i> {{ translationService.currentLanguage() === 'ta' ? 'தேர்வைத் தொடர்க' : 'Continue Exam' }}
           </button>
           <button type="button" class="dialog-btn btn-danger" (click)="confirmExitExam()">
-            <i class="bi bi-box-arrow-right me-1"></i> ஆம், வெளியேறு
+            <i class="bi bi-box-arrow-right me-1"></i> {{ translationService.currentLanguage() === 'ta' ? 'ஆம், வெளியேறு' : 'Yes, Exit' }}
           </button>
         </div>
       </div>

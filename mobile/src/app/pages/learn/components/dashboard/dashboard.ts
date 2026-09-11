@@ -92,6 +92,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   showCompletedExamModal = false;
   selectedCompletedExam: any = null;
 
+  // Practical Exam Details Modal State
+  showPracticalModal = false;
+  selectedPracticalExam: any = null;
+
   // Notifications & Announcements State
   notifications: any[] = [];
   unreadCount: number = 0;
@@ -756,20 +760,31 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  parseDateString(dateStr: any): Date {
+    if (!dateStr) return new Date(NaN);
+    if (dateStr instanceof Date) return dateStr;
+    let s = String(dateStr).trim();
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(s)) {
+      s = s.replace(' ', 'T');
+    }
+    return new Date(s);
+  }
+
   getExamTimingState(ex: any): { status: 'open' | 'upcoming' | 'live' | 'grace_period' | 'missed' | 'reattempt', badgeText: string, iconClass: string, badgeClass: string, canStart: boolean, timeText?: string } {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     const isReattempt = this.isReattemptAllowed(ex.id);
     const reattemptSub = isReattempt ? this.getReattemptDetails(ex.id) : null;
 
     if (isReattempt && reattemptSub) {
-      const reattemptTime = reattemptSub.reattempt_start_time ? new Date(reattemptSub.reattempt_start_time) : null;
+      const reattemptTime = reattemptSub.reattempt_start_time ? this.parseDateString(reattemptSub.reattempt_start_time) : null;
       if (reattemptTime && !isNaN(reattemptTime.getTime())) {
         const now = new Date();
         const diffMs = reattemptTime.getTime() - now.getTime();
         if (diffMs > 0) {
-          const formatted = reattemptTime.toLocaleDateString('ta-IN', { month: 'short', day: 'numeric' }) + ' ' + reattemptTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const formatted = reattemptTime.toLocaleDateString(isTa ? 'ta-IN' : 'en-US', { month: 'short', day: 'numeric' }) + ' ' + reattemptTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           return {
             status: 'upcoming',
-            badgeText: `மறுதேர்வு நேரம்: ${formatted}`,
+            badgeText: isTa ? `மறுதேர்வு நேரம்: ${formatted}` : `Re-Exam: ${formatted}`,
             iconClass: 'bi bi-clock-history',
             badgeClass: 'badge-upcoming',
             canStart: false,
@@ -779,7 +794,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
       }
       return {
         status: 'reattempt',
-        badgeText: 'மறுதேர்வு அனுமதி உண்டு (Re-Exam Active)',
+        badgeText: isTa ? 'மறுதேர்வு அனுமதி உண்டு' : 'Re-Exam Active',
         iconClass: 'bi bi-arrow-repeat',
         badgeClass: 'badge-reattempt',
         canStart: true
@@ -790,18 +805,18 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     if (!rawStartTime) {
       return {
         status: 'open',
-        badgeText: 'தேர்வு தயார் (Ready)',
+        badgeText: isTa ? 'தேர்வு தயார்' : 'Ready',
         iconClass: 'bi bi-play-circle-fill',
         badgeClass: 'badge-open',
         canStart: true
       };
     }
 
-    const startTime = new Date(rawStartTime);
+    const startTime = this.parseDateString(rawStartTime);
     if (isNaN(startTime.getTime())) {
       return {
         status: 'open',
-        badgeText: 'தேர்வு தயார் (Ready)',
+        badgeText: isTa ? 'தேர்வு தயார்' : 'Ready',
         iconClass: 'bi bi-play-circle-fill',
         badgeClass: 'badge-open',
         canStart: true
@@ -813,10 +828,10 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     const graceMins = ex.grace_period_mins || 20;
 
     if (diffMins < 0) {
-      const formattedDate = startTime.toLocaleDateString('ta-IN', { month: 'short', day: 'numeric' }) + ' ' + startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const formattedDate = startTime.toLocaleDateString(isTa ? 'ta-IN' : 'en-US', { month: 'short', day: 'numeric' }) + ' ' + startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       return {
         status: 'upcoming',
-        badgeText: `ஆரம்பம்: ${formattedDate}`,
+        badgeText: isTa ? `ஆரம்பம்: ${formattedDate}` : `Starts: ${formattedDate}`,
         iconClass: 'bi bi-calendar-event',
         badgeClass: 'badge-upcoming',
         canStart: false,
@@ -826,7 +841,9 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
       const remainingGrace = Math.ceil(graceMins - diffMins);
       return {
         status: diffMins > 0 ? 'grace_period' : 'live',
-        badgeText: diffMins > 0 ? `நேரலை (இன்னும் ${remainingGrace} நிமிடம் வரை மட்டுமே அனுமதி)` : 'நேரலை (Live Now)',
+        badgeText: diffMins > 0 
+          ? (isTa ? `நேரலை (இன்னும் ${remainingGrace} நிமிடம் மட்டுமே அனுமதி)` : `Live (Entry closes in ${remainingGrace}m)`)
+          : (isTa ? 'நேரலை' : 'Live Now'),
         iconClass: 'bi bi-broadcast',
         badgeClass: 'badge-live',
         canStart: true
@@ -834,7 +851,7 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       return {
         status: 'missed',
-        badgeText: 'தாமத அனுமதி முடிந்தது (Missed)',
+        badgeText: isTa ? 'தாமத அனுமதி முடிந்தது' : 'Late Entry Expired',
         iconClass: 'bi bi-x-circle-fill',
         badgeClass: 'badge-missed',
         canStart: false
@@ -843,18 +860,53 @@ export class LearnDashboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   handleExamClick(ex: any) {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const isPractical = ex.is_practical == 1 || ex.is_practical === true || ex.is_practical === '1' || ex.is_practical === 'true';
+    if (isPractical) {
+      this.openPracticalModal(ex);
+      return;
+    }
+
     const timing = this.getExamTimingState(ex);
     if (!timing.canStart) {
       if (timing.status === 'upcoming') {
-        this.showToast(`தேர்வு ${timing.timeText || 'குறிப்பிட்ட நேரத்தில்'} தொடங்கும். தயவுசெய்து காத்திருக்கவும்.`, 'warning');
+        const msg = isTa
+          ? `தேர்வு ${timing.timeText || 'குறிப்பிட்ட நேரத்தில்'} தொடங்கும். தயவுசெய்து காத்திருக்கவும்.`
+          : `Exam will start at ${timing.timeText || 'the scheduled time'}. Please wait.`;
+        this.showToast(msg, 'warning');
       } else if (timing.status === 'missed') {
-        this.showToast('மன்னிக்கவும்! தேர்வுக்கான தாமத அனுமதி நேரம் (20 நிமிடங்கள்) முடிந்துவிட்டது. மறுதேர்வுக்கு நிர்வாகியை அணுகவும்.', 'danger');
+        const msg = isTa
+          ? 'மன்னிக்கவும்! தேர்வுக்கான தாமத அனுமதி நேரம் (20 நிமிடங்கள்) முடிந்துவிட்டது. மறுதேர்வுக்கு நிர்வாகியை அணுகவும்.'
+          : 'Sorry! The late entry grace period (20 minutes) has expired. Please contact admin for re-attempt.';
+        this.showToast(msg, 'danger');
       }
       return;
     }
 
     const isReattempt = this.isReattemptAllowed(ex.id);
     this.startQuiz.emit({ ...ex, isReattempt: isReattempt });
+  }
+
+  openPracticalModal(ex: any) {
+    this.selectedPracticalExam = ex;
+    this.showPracticalModal = true;
+  }
+
+  closePracticalModal() {
+    this.showPracticalModal = false;
+    this.selectedPracticalExam = null;
+  }
+
+  copyCourierAddress(addr: string) {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    if (!addr) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(addr).then(() => {
+        this.showToast(isTa ? 'கொரியர் முகவரி நகலெடுக்கப்பட்டது!' : 'Courier address copied!', 'success');
+      });
+    } else {
+      this.showToast(addr, 'info');
+    }
   }
 
   closeCompletedExamModal() {

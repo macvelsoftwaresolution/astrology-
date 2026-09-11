@@ -465,7 +465,7 @@ class AuthController extends Controller
 
             $userRecord->update($userUpdateData);
         } else {
-            User::create([
+            $userRecord = User::create([
                 'name'             => $fullName,
                 'email'            => $email,
                 'student_id'       => $loginId,
@@ -490,10 +490,11 @@ class AuthController extends Controller
         // Log payment transaction if Razorpay details are present
         if ($request->filled('razorpay_payment_id')) {
             $feeAmount = ($courseLevel === 'muthunilai') ? 3500 : 2500;
+            $targetUserId = $userRecord ? $userRecord->id : ($student ? $student->id : null);
             DB::table('payment_transactions')->updateOrInsert(
                 ['razorpay_payment_id' => $request->input('razorpay_payment_id')],
                 [
-                    'user_id' => isset($userRecord) ? $userRecord->id : $student->id,
+                    'user_id' => $targetUserId,
                     'booking_id' => 'LMS-' . $loginId,
                     'order_type' => 'course_admission',
                     'razorpay_order_id' => $request->input('razorpay_order_id'),

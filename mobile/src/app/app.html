@@ -16,16 +16,16 @@
         </div>
 
         <!-- Title & Subtitle -->
-        <h2 class="exit-modal-title">வெளியேற வேண்டுமா?</h2>
-        <p class="exit-modal-desc">செயலியிலிருந்து வெளியேற நிச்சயமாக விரும்புகிறீர்களா?</p>
+        <h2 class="exit-modal-title">{{ translationService.currentLanguage() === 'ta' ? 'வெளியேற வேண்டுமா?' : 'Exit App?' }}</h2>
+        <p class="exit-modal-desc">{{ translationService.currentLanguage() === 'ta' ? 'செயலியிலிருந்து வெளியேற நிச்சயமாக விரும்புகிறீர்களா?' : 'Are you sure you want to exit the app?' }}</p>
 
         <!-- Actions -->
         <div class="exit-actions-row">
           <button type="button" class="btn-cancel" (click)="cancelExit()">
-            ரத்து
+            {{ translationService.currentLanguage() === 'ta' ? 'ரத்து' : 'Cancel' }}
           </button>
           <button type="button" class="btn-confirm-exit" (click)="confirmExit()">
-            வெளியேறு
+            {{ translationService.currentLanguage() === 'ta' ? 'வெளியேறு' : 'Exit' }}
           </button>
         </div>
       </div>
