@@ -226,14 +226,17 @@ class GradingController extends Controller
             $query->where('batch_id', $request->batch_id);
         }
 
-        $count = $query->update([
-            'is_published' => true,
-            'updated_at' => now()
-        ]);
+        $submissions = $query->get();
+        $count = 0;
+
+        foreach ($submissions as $sub) {
+            $this->publishSubmission($sub->id);
+            $count++;
+        }
 
         return response()->json([
             'success' => true,
-            'message' => "Published results for {$count} student submission(s)."
+            'message' => "Published results and certificates for {$count} student submission(s)."
         ]);
     }
 
@@ -256,17 +259,101 @@ class GradingController extends Controller
             'updated_at' => now()
         ]);
 
-        // Send In-App Notification to Student
-        try {
-            $studentId = $submission->student_id;
-            $studentUser = DB::table('users')->where('id', $studentId)->first();
-            if (!$studentUser) {
-                $st = DB::table('students')->where('id', $studentId)->first();
-                if ($st && !empty($st->email)) {
-                    $studentUser = DB::table('users')->where('email', $st->email)->first();
+        $studentId = $submission->student_id;
+        $courseId  = $submission->course_id;
+
+        // Resolve student & user mapping
+        $studentUser = DB::table('users')->where('id', $studentId)->first();
+        $studentRow = null;
+        if ($studentUser && !empty($studentUser->student_id)) {
+            $studentRow = DB::table('students')->where('student_id', $studentUser->student_id)->first();
+        } elseif (!$studentUser) {
+            $studentRow = DB::table('students')->where('id', $studentId)->first();
+            if ($studentRow && !empty($studentRow->email)) {
+                $studentUser = DB::table('users')->where('email', $studentRow->email)->first();
+            }
+        }
+
+        $allStudentIds = array_values(array_unique(array_filter([$studentId, $studentUser?->id, $studentRow?->id])));
+        $allRegNumbers = array_values(array_unique(array_filter([$studentUser?->student_id, $studentRow?->student_id])));
+
+        // Check if certificate exists for this student & course
+        $existingCert = DB::table('certificates')
+            ->where(function($q) use ($allStudentIds, $allRegNumbers) {
+                $q->whereIn('student_id', $allStudentIds);
+                if (!empty($allRegNumbers)) {
+                    $q->orWhereIn('registration_number', $allRegNumbers);
                 }
+            })
+            ->where(function($q) use ($courseId) {
+                if ($courseId) {
+                    $q->where('course_id', $courseId)->orWhereNull('course_id');
+                }
+            })
+            ->first();
+
+        if ($existingCert) {
+            // Update existing certificate to published and clean placeholder avatar
+            $photoUrl = $existingCert->photo_url;
+            if ($photoUrl && (str_contains($photoUrl, 'user_avatar') || str_contains($photoUrl, 'placeholder'))) {
+                $photoUrl = null;
             }
 
+            DB::table('certificates')->where('id', $existingCert->id)->update([
+                'is_published' => 1,
+                'photo_url'    => $photoUrl,
+                'updated_at'   => now()
+            ]);
+        } else {
+            // Auto-create certificate for this student
+            $studentName = $studentUser?->name ?: ($studentRow?->name ?: 'மாணவர்');
+            $regNo = $studentUser?->student_id ?: ($studentRow?->student_id ?: ('ASTRO-' . date('y') . '-' . strtoupper(Str::random(4))));
+            $courseLevel = ($submission->course_id == 2) ? 'PG' : 'UG';
+            $defaultCertNum = 'ASTRO-CERT-' . $courseLevel . '-' . date('Y') . '-' . strtoupper(Str::random(5));
+            $defaultMarkNum = 'ASTRO-MRK-' . $courseLevel . '-' . date('Y') . '-' . strtoupper(Str::random(5));
+            $score = $submission->total_score ?: ($submission->score ?: 100);
+
+            DB::table('certificates')->insert([
+                'certificate_number'     => $regNo ?: $defaultCertNum,
+                'student_id'             => $studentId,
+                'course_id'              => $courseId ?: 1,
+                'course_level'           => $courseLevel,
+                'student_name_ta'        => $studentName,
+                'student_name_en'        => strtoupper($studentName),
+                'photo_url'              => null,
+                'registration_number'    => $regNo,
+                'center_name'            => 'பல்லடம்',
+                'center_name_en'         => 'PALLADAM',
+                'course_period_from'     => '06.02.2018',
+                'course_period_to'       => '06.02.2019',
+                'exam_date'              => date('d.m.Y'),
+                'academic_year'          => '2018 FEB to 2019 FEB',
+                'award_title_ta'         => $courseLevel === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா',
+                'award_title_en'         => $courseLevel === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA',
+                'issue_place'            => 'பெரியகுளம்',
+                'marksheet_number'       => $defaultMarkNum,
+                'marksheet_download_url' => "/api/marksheets/{$defaultMarkNum}/download",
+                'theory1_mark'           => $submission->mcq_score ?: ($submission->score ?: 90),
+                'theory2_mark'           => 90,
+                'practical1_mark'        => 92,
+                'practical2_mark'        => 87,
+                'practical3_mark'        => 93,
+                'total_marks'            => $score,
+                'percentage'             => '100%',
+                'grade'                  => 'Distinction',
+                'pass_status'            => 'PASS',
+                'is_published'           => 1,
+                'score'                  => $score,
+                'issue_date'             => date('Y-m-d'),
+                'verification_code'      => 'VERIFY-' . strtoupper(Str::random(8)),
+                'pdf_download_url'       => "/api/certificates/{$defaultCertNum}/download",
+                'created_at'             => now(),
+                'updated_at'             => now()
+            ]);
+        }
+
+        // Send In-App Notification to Student
+        try {
             if ($studentUser) {
                 DB::table('notifications')->insert([
                     'user_id' => $studentUser->id,
@@ -725,9 +812,7 @@ class GradingController extends Controller
     public function getMyCertificates(Request $request)
     {
         $user = $request->user();
-        $studentId = $user ? $user->id : null;
-
-        if (!$studentId) {
+        if (!$user) {
             return response()->json([
                 'success' => true,
                 'certificates' => [],
@@ -735,26 +820,56 @@ class GradingController extends Controller
             ]);
         }
 
+        $allStudentIds = [$user->id];
+        $allRegCodes = array_filter([$user->student_id ?? null]);
+
+        // Cross-match between `students` table and `users` table
+        if ($user instanceof \App\Models\Student || isset($user->batch_id)) {
+            $matchedUser = DB::table('users')
+                ->where(function($q) use ($user) {
+                    if (!empty($user->student_id)) {
+                        $q->where('student_id', $user->student_id);
+                    }
+                    if (!empty($user->email)) {
+                        $q->orWhere('email', $user->email);
+                    }
+                })->first();
+            if ($matchedUser) {
+                $allStudentIds[] = $matchedUser->id;
+                if (!empty($matchedUser->student_id)) {
+                    $allRegCodes[] = $matchedUser->student_id;
+                }
+            }
+        } else {
+            $matchedStudent = DB::table('students')
+                ->where(function($q) use ($user) {
+                    if (!empty($user->student_id)) {
+                        $q->where('student_id', $user->student_id);
+                    }
+                    if (!empty($user->email)) {
+                        $q->orWhere('email', $user->email);
+                    }
+                })->first();
+            if ($matchedStudent) {
+                $allStudentIds[] = $matchedStudent->id;
+                if (!empty($matchedStudent->student_id)) {
+                    $allRegCodes[] = $matchedStudent->student_id;
+                }
+            }
+        }
+
+        $allStudentIds = array_values(array_unique(array_filter($allStudentIds)));
+        $allRegCodes   = array_values(array_unique(array_filter($allRegCodes)));
+
+        // Strictly check that certificate is marked as published
         $certificates = DB::table('certificates')
-            ->where(function($q) use ($studentId, $user) {
-                $q->where('certificates.student_id', $studentId);
-                if (!empty($user->student_id)) {
-                    $q->orWhere('certificates.registration_number', $user->student_id);
+            ->where(function($q) use ($allStudentIds, $allRegCodes) {
+                $q->whereIn('certificates.student_id', $allStudentIds);
+                if (!empty($allRegCodes)) {
+                    $q->orWhereIn('certificates.registration_number', $allRegCodes);
                 }
             })
-            ->where(function($q) use ($studentId, $user) {
-                // If an exam submission exists for this student, only show certificate if published
-                $q->whereExists(function($sub) use ($studentId, $user) {
-                    $sub->select(DB::raw(1))
-                        ->from('student_submissions')
-                        ->where('student_submissions.student_id', $studentId)
-                        ->where('student_submissions.is_published', 1);
-                })->orWhereNotExists(function($sub) use ($studentId, $user) {
-                    $sub->select(DB::raw(1))
-                        ->from('student_submissions')
-                        ->where('student_submissions.student_id', $studentId);
-                });
-            })
+            ->where('certificates.is_published', 1)
             ->leftJoin('users', 'certificates.student_id', '=', 'users.id')
             ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
             ->select(
@@ -767,14 +882,22 @@ class GradingController extends Controller
             ->orderBy('certificates.created_at', 'desc')
             ->get();
 
+        // Ensure no static avatar placeholder is sent
+        $certificates = $certificates->map(function($c) {
+            if ($c->photo_url && (str_contains($c->photo_url, 'user_avatar') || str_contains($c->photo_url, 'placeholder'))) {
+                $c->photo_url = null;
+            }
+            return $c;
+        });
+
         $results = DB::table('student_submissions')
-            ->where('student_submissions.student_id', $studentId)
+            ->whereIn('student_submissions.student_id', $allStudentIds)
             ->where('student_submissions.is_published', 1)
             ->leftJoin('courses', 'student_submissions.course_id', '=', 'courses.id')
             ->leftJoin('course_batches', 'student_submissions.batch_id', '=', 'course_batches.id')
-            ->leftJoin('certificates', function($join) {
-                $join->on('student_submissions.student_id', '=', 'certificates.student_id')
-                     ->on('student_submissions.course_id', '=', 'certificates.course_id');
+            ->leftJoin('certificates', function($join) use ($allStudentIds) {
+                $join->on('student_submissions.course_id', '=', 'certificates.course_id')
+                     ->whereIn('certificates.student_id', $allStudentIds);
             })
             ->select(
                 'student_submissions.*',
@@ -1070,5 +1193,697 @@ class GradingController extends Controller
             'success' => true,
             'message' => 'Record deleted successfully.'
         ]);
+    }
+
+    /**
+     * Public / Learner: Download Official Certificate or Mark Sheet as Printable A4 HTML / PDF
+     */
+    public function downloadCertificateDoc(Request $request, $id)
+    {
+        $cleanId = trim($id);
+        $cert = DB::table('certificates')
+            ->where(function($q) use ($cleanId) {
+                if (is_numeric($cleanId)) {
+                    $q->where('certificates.id', (int)$cleanId);
+                }
+                $q->orWhere('certificates.certificate_number', $cleanId)
+                  ->orWhere('certificates.marksheet_number', $cleanId)
+                  ->orWhere('certificates.registration_number', $cleanId)
+                  ->orWhere('certificates.verification_code', $cleanId)
+                  ->orWhere('certificates.marksheet_download_url', 'LIKE', '%' . $cleanId . '%')
+                  ->orWhere('certificates.pdf_download_url', 'LIKE', '%' . $cleanId . '%');
+            })
+            ->leftJoin('students', 'certificates.student_id', '=', 'students.id')
+            ->leftJoin('users', function($join) {
+                $join->on('certificates.student_id', '=', 'users.id')
+                     ->whereNull('students.id');
+            })
+            ->leftJoin('courses', 'certificates.course_id', '=', 'courses.id')
+            ->select(
+                'certificates.*',
+                DB::raw("COALESCE(certificates.student_name_ta, students.name, users.name, 'மாணவர்') as student_name_ta"),
+                DB::raw("COALESCE(certificates.student_name_en, users.name, students.name, 'STUDENT') as student_name_en"),
+                DB::raw("COALESCE(certificates.registration_number, students.student_id, users.student_id, '') as registration_number"),
+                'courses.title as course_title'
+            )
+            ->first();
+
+        if (!$cert) {
+            return response("<h3>சான்றிதழ் விபரம் காணப்படவில்லை (Certificate record not found).</h3>", 404)
+                ->header('Content-Type', 'text/html; charset=UTF-8');
+        }
+
+        if (empty($cert->is_published)) {
+            return response("<h3>சான்றிதழ் இன்னும் நிர்வாகியால் வெளியிடப்படவில்லை (Certificate is not published yet).</h3>", 403)
+                ->header('Content-Type', 'text/html; charset=UTF-8');
+        }
+
+        $type = strtolower($request->input('type', 'certificate'));
+        if (str_contains($request->path(), 'marksheets') || $type === 'marksheet') {
+            $type = 'marksheet';
+        } else {
+            $type = 'certificate';
+        }
+
+        // Parse custom_data
+        $customData = [];
+        if (!empty($cert->custom_data)) {
+            $customData = is_string($cert->custom_data) ? json_decode($cert->custom_data, true) : (array)$cert->custom_data;
+        }
+
+        $hasMcq2 = !empty($customData['has_mcq2']);
+        $hasPracticals = !empty($customData['has_practicals']);
+        $hasPractical2 = !empty($customData['has_practical2']);
+        $hasPractical3 = !empty($customData['has_practical3']);
+        $passCriteriaTheory = !empty($customData['pass_criteria_theory']) 
+            ? $customData['pass_criteria_theory'] 
+            : 'Minimum for pass: - 35% Marks (theory) out of in the divisional Subject out of 100 obtained the marks.';
+        $passCriteriaPractical = !empty($customData['pass_criteria_practical']) 
+            ? $customData['pass_criteria_practical'] 
+            : ($cert->course_level === 'PG' ? 'Minimum for pass: - 70% Marks (practical) out of in the Work Book I & III Subject out of 400 Obtained the marks.' : 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.');
+
+        // Base64 Nataraja seal
+        $logoBase64 = '';
+        $sealPath = base_path('../web/public/assets/images/nataraja.png');
+        if (!file_exists($sealPath)) {
+            $sealPath = base_path('../mobile/src/assets/images/nataraja.png');
+        }
+        if (file_exists($sealPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($sealPath));
+        }
+
+        // Student photo
+        $photoHtml = '';
+        if (!empty($cert->photo_url) && !str_contains($cert->photo_url, 'user_avatar') && !str_contains($cert->photo_url, 'placeholder')) {
+            $photoHtml = '<div class="passport-photo-floating"><img src="' . htmlspecialchars($cert->photo_url) . '" alt="Photo" /></div>';
+        }
+
+        $title = $type === 'marksheet' ? 'மதிப்பெண் பட்டியல் - ' . $cert->registration_number : 'சான்றிதழ் - ' . $cert->registration_number;
+
+        // Render HTML
+        $html = '<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>' . htmlspecialchars($title) . '</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #e2e8f0;
+    font-family: "Noto Serif Tamil", "Outfit", "Segoe UI", serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    color: #000;
+  }
+  .no-print-toolbar {
+    margin: 0 auto 20px auto;
+    background: #1e293b;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    width: fit-content;
+  }
+  .btn-action {
+    background: #d97706;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-action:hover { background: #b45309; }
+  .btn-close {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid #475569;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .btn-close:hover { color: #fff; border-color: #fff; }
+
+  .a4-page-sheet {
+    width: 210mm;
+    min-height: 297mm;
+    height: 297mm;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+    padding: 8mm;
+    color: #000;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* CERTIFICATE STYLES (EXACT MATCH WITH ADMIN SIDE) */
+  .official-cert-layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .ornate-outer-border {
+    border: 10px double #C48E2E;
+    padding: 5px;
+    background: #fffdf9;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+  .ornate-inner-border {
+    border: 2px solid #8e2a37;
+    padding: 24px 28px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  .top-invocation {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e3a8a;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+  .inst-header-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .inst-logo-wrap {
+    position: absolute;
+    left: 4px;
+    top: 0;
+  }
+  .inst-seal-img {
+    width: 98px;
+    height: 98px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 3px solid #D4AF37;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+    background: #000000;
+  }
+  .inst-text-wrap {
+    text-align: center;
+  }
+  .inst-main-title {
+    font-family: "Noto Serif Tamil", serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: #dc2626;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+  }
+  .inst-sub-title {
+    font-family: "Noto Serif Tamil", serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: #854d0e;
+    margin: 4px 0 0 0;
+  }
+  .inst-trust-reg {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #dc2626;
+    margin-top: 5px;
+  }
+  .inst-address {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 3px;
+  }
+  .inst-email {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #1d4ed8;
+    margin-top: 1px;
+  }
+  .ribbon-banner-wrap {
+    text-align: center;
+    margin: 16px 0 20px 0;
+  }
+  .ribbon-pill {
+    display: inline-block;
+    background: linear-gradient(180deg, #1e3a8a, #0f172a);
+    color: #fef08a;
+    font-size: 16px;
+    font-weight: 900;
+    padding: 7px 40px;
+    border-radius: 20px;
+    border: 1.5px solid #facc15;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .cert-body-flow {
+    position: relative;
+    clear: both;
+    margin: 10px 0;
+  }
+  .passport-photo-floating {
+    float: right;
+    width: 95px;
+    height: 118px;
+    border: 2px solid #b91c1c;
+    border-radius: 6px;
+    padding: 2px;
+    background: #fff;
+    margin: 0 0 10px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .passport-photo-floating img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .reg-no-line {
+    font-size: 15px;
+    font-weight: 800;
+    color: #047857;
+    margin-bottom: 12px;
+  }
+  .val-reg {
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 16px;
+    margin-left: 6px;
+    color: #047857;
+  }
+  .body-para-ta {
+    font-family: "Noto Serif Tamil", serif;
+    font-size: 16px;
+    line-height: 2.2;
+    color: #1e293b;
+    text-align: justify;
+    margin: 14px 0 24px 0;
+  }
+  .student-name-ta-highlight {
+    color: #b91c1c;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .award-box-gold {
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 50%, #fef3c7 100%);
+    border: 2px solid #d97706;
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    margin: 24px auto;
+    max-width: 520px;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15);
+  }
+  .award-pre {
+    font-size: 13px;
+    color: #78350f;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .award-ta-text {
+    font-family: "Noto Serif Tamil", serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #dc2626;
+    letter-spacing: 1px;
+  }
+  .award-en-text {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1e3a8a;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+  .cert-bottom-section {
+    border-top: 1.5px dashed #cbd5e1;
+    padding-top: 14px;
+    margin-top: auto;
+  }
+  .date-place-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #1e293b;
+  }
+  .dp-item {
+    font-size: 13.5px;
+  }
+
+  /* MARKSHEET STYLES (EXACT MATCH WITH ADMIN SIDE) */
+  .marksheet-outer-border {
+    border: 8px solid #b45309;
+    padding: 4px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    background: #ffffff;
+  }
+  .marksheet-inner-border {
+    border: 2px solid #451a03;
+    padding: 20px 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  .marksheet-ribbon-title {
+    background: #991b1b;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    text-align: center;
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin: 12px 0 16px 0;
+    letter-spacing: 0.5px;
+  }
+  .student-meta-table-box {
+    background: #fffdf5;
+    border: 1px solid #d97706;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .meta-row-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+  }
+  .marks-table-clean {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+    border: 1.5px solid #78350f;
+  }
+  .marks-table-clean th {
+    background: #7f1d1d;
+    color: #ffffff;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    font-weight: 800;
+    border: 1px solid #991b1b;
+    text-align: left;
+  }
+  .marks-table-clean td {
+    border: 1px solid #fed7aa;
+    padding: 7px 10px;
+    color: #1e293b;
+  }
+  .marks-table-clean .total-row td {
+    background: #fef3c7;
+    font-weight: 900;
+    border-top: 2px solid #d97706;
+  }
+  .marks-summary-bar {
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 12px 0;
+  }
+  .pass-text { color: #15803d; font-weight: 900; }
+  .gold-text { color: #b45309; }
+  .text-center { text-align: center; }
+  .bold { font-weight: 800; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .no-print-toolbar { display: none !important; }
+    .a4-page-sheet {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 6mm;
+    }
+  }
+</style>
+<script>
+  window.onload = function() {
+    setTimeout(function() {
+      window.print();
+    }, 500);
+  };
+</script>
+</head>
+<body>
+
+<div class="no-print-toolbar">
+  <button onclick="window.print()" class="btn-action">
+    🖨️ அச்சிடு / PDF சேமி (Print / Save as PDF)
+  </button>
+  <button onclick="window.close()" class="btn-close">
+    ✖ மூடு (Close)
+  </button>
+</div>
+
+<div class="a4-page-sheet">';
+
+        if ($type === 'certificate') {
+            $courseLvlText = $cert->course_level === 'PG' ? 'ஜோதிட மேல்நிலை சிறப்பு தகுநிலை சான்றிதழ்' : 'ஜோதிட சிறப்பு தகுநிலை சான்றிதழ்';
+            $awardTitleTa = $cert->award_title_ta ?: ($cert->course_level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா');
+            $awardTitleEn = $cert->award_title_en ?: ($cert->course_level === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA');
+            $studentNameTa = $cert->student_name_ta ?: 'மாணவர்';
+            $centerName = $cert->center_name ?: 'பல்லடம்';
+            $issueDate = $cert->issue_date ?: date('d.m.Y');
+            $issuePlace = $cert->issue_place ?: 'பெரியகுளம்';
+            $certNum = $cert->certificate_number ?: $cert->registration_number;
+
+            $html .= '
+  <div class="official-cert-layout">
+    <div class="ornate-outer-border">
+      <div class="ornate-inner-border">
+        
+        <div>
+          <div class="top-invocation">ஓம் நமச்சிவாய</div>
+          <div class="inst-header-block">
+            <div class="inst-logo-wrap">
+              <img src="' . $logoBase64 . '" alt="Sri Aaruthraa Seal" class="inst-seal-img" />
+            </div>
+            <div class="inst-text-wrap">
+              <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
+              <h2 class="inst-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+              <div class="inst-trust-reg">அறக்கட்டளை அரசு பதிவு எண் : (BK4/3/2018PKM)</div>
+              <div class="inst-address">எண் : 1/346,ஸ்டேட் பாங்க் காலனி, சுந்தரராஜநகர், கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.</div>
+              <div class="inst-email">(www.sriaaruthraaastro@gmail.com)</div>
+            </div>
+          </div>
+
+          <div class="ribbon-banner-wrap">
+            <div class="ribbon-pill">' . $courseLvlText . '</div>
+          </div>
+        </div>
+
+        <div class="cert-body-flow">
+          ' . $photoHtml . '
+          <div class="reg-no-line">
+            <span class="lbl-ta">பதிவு எண் :</span> 
+            <span class="val-reg">' . htmlspecialchars($cert->registration_number) . '</span>
+          </div>
+
+          <div class="body-para-ta">
+            திரு / திருமதி <strong class="student-name-ta-highlight">' . htmlspecialchars($studentNameTa) . '</strong> என்பவர் எமது ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயத்தின் <strong>' . htmlspecialchars($centerName) . '</strong> மையத்தில் நடத்தப்பட்ட ஜோதிடப் பயிற்சி வகுப்பில் பயின்று தேர்வினை நிறைவு செய்தமைக்காக இப்பாராட்டுச் சான்றிதழ் வழங்கப்படுகிறது.
+          </div>
+
+          <div class="award-box-gold">
+            <div class="award-pre">வழங்கப்படும் சிறப்புப் பட்டம்</div>
+            <div class="award-ta-text">' . htmlspecialchars($awardTitleTa) . '</div>
+            <div class="award-en-text">' . htmlspecialchars($awardTitleEn) . '</div>
+          </div>
+        </div>
+
+        <div class="cert-bottom-section">
+          <div class="date-place-row">
+            <div class="dp-item"><strong>நாள் :</strong> ' . htmlspecialchars($issueDate) . '</div>
+            <div class="dp-item"><strong>இடம் :</strong> ' . htmlspecialchars($issuePlace) . '</div>
+            <div class="dp-item"><strong>சான்றிதழ் எண் :</strong> ' . htmlspecialchars($certNum) . '</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>';
+        } else {
+            // MARKSHEET (MATCHING ADMIN SIDE EXACTLY)
+            $theory1Title = $hasMcq2
+                ? ($cert->course_level === 'PG' ? 'PGE - I (MCQ தேர்வு)' : 'UGE - I (MCQ தேர்வு)')
+                : ($cert->course_level === 'PG' ? 'PGE - கொள்குறி வகை தேர்வு (MCQ THEORY)' : 'UGE - கொள்குறி வகை தேர்வு (MCQ THEORY)');
+
+            $rowsHtml = '
+              <tr>
+                <td>' . $theory1Title . '</td>
+                <td class="text-center">100</td>
+                <td class="text-center bold">' . htmlspecialchars($cert->theory1_mark ?: ($cert->total_marks ?: 100)) . '</td>
+                <td class="text-center pass-text">PASS</td>
+              </tr>';
+
+            $maxTotal = 100;
+            if ($hasMcq2) {
+                $maxTotal += 100;
+                $theory2Title = $cert->course_level === 'PG' ? 'PGE - II (MCQ தேர்வு)' : 'UGE - II (MCQ தேர்வு)';
+                $rowsHtml .= '
+              <tr>
+                <td>' . $theory2Title . '</td>
+                <td class="text-center">100</td>
+                <td class="text-center bold">' . htmlspecialchars($cert->theory2_mark ?: 90) . '</td>
+                <td class="text-center pass-text">PASS</td>
+              </tr>';
+            }
+
+            if ($hasPracticals) {
+                $maxTotal += 100;
+                $p1Title = ($hasPractical2 || $hasPractical3) ? 'செய்முறைப் பயிற்சி - 1 (Practical - 1)' : 'செய்முறைத் தேர்வு (Practical)';
+                $rowsHtml .= '
+              <tr>
+                <td>' . $p1Title . '</td>
+                <td class="text-center">100</td>
+                <td class="text-center bold">' . htmlspecialchars($cert->practical1_mark ?: 92) . '</td>
+                <td class="text-center pass-text">PASS</td>
+              </tr>';
+
+                if ($hasPractical2) {
+                    $maxTotal += 100;
+                    $rowsHtml .= '
+              <tr>
+                <td>செய்முறைப் பயிற்சி - 2 (Practical - 2)</td>
+                <td class="text-center">100</td>
+                <td class="text-center bold">' . htmlspecialchars($cert->practical2_mark ?: 87) . '</td>
+                <td class="text-center pass-text">PASS</td>
+              </tr>';
+                }
+
+                if ($hasPractical3) {
+                    $maxTotal += 100;
+                    $rowsHtml .= '
+              <tr>
+                <td>செய்முறைப் பயிற்சி - 3 (Practical - 3)</td>
+                <td class="text-center">100</td>
+                <td class="text-center bold">' . htmlspecialchars($cert->practical3_mark ?: 93) . '</td>
+                <td class="text-center pass-text">PASS</td>
+              </tr>';
+                }
+            }
+
+            $courseTitle = $cert->course_title ?: ($cert->course_level === 'PG' ? 'முதுநிலை ஜோதிடப் படிப்பு' : 'இளநிலை ஜோதிடப் படிப்பு');
+            $marksheetNum = $cert->marksheet_number ?: ('MRK-' . ($cert->course_level ?: 'UG') . '-' . ($cert->registration_number ?: '2026'));
+
+            $html .= '
+  <div class="official-marksheet-layout">
+    <div class="marksheet-outer-border">
+      <div class="marksheet-inner-border">
+        
+        <div>
+          <div class="top-invocation">ஓம் நமச்சிவாய</div>
+          
+          <div class="inst-header-block">
+            <div class="inst-logo-wrap">
+              <img src="' . $logoBase64 . '" alt="Sri Aaruthraa Seal" class="inst-seal-img" />
+            </div>
+            <div class="inst-text-wrap">
+              <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
+              <h2 class="inst-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+              <div class="inst-trust-reg">(அறக்கட்டளை அரசு பதிவு எண் : BK4/3/2018PKM)</div>
+              <div class="inst-address">பெரியகுளம் – 625 605, தேனி மாவட்டம்.</div>
+            </div>
+          </div>
+
+          <div class="marksheet-ribbon-title">
+            மதிப்பெண் பட்டியல் (STATEMENT OF MARKS)
+          </div>
+
+          <div class="student-meta-table-box">
+            <div class="meta-row-line">
+              <div><strong>மாணவர் பெயர் :</strong> ' . htmlspecialchars($cert->student_name_ta) . '</div>
+              <div><strong>பதிவு எண் :</strong> <span style="font-family: monospace; color: #b91c1c; font-weight: 900;">' . htmlspecialchars($cert->registration_number) . '</span></div>
+            </div>
+            <div class="meta-row-line">
+              <div><strong>பாடப்பிரிவு :</strong> ' . htmlspecialchars($courseTitle) . '</div>
+              <div><strong>மதிப்பெண் எண் :</strong> ' . htmlspecialchars($marksheetNum) . '</div>
+            </div>
+          </div>
+
+          <table class="marks-table-clean">
+            <thead>
+              <tr>
+                <th style="width: 50%;">பாடம் (Subject)</th>
+                <th style="width: 16%;" class="text-center">அதிகபட்சம்</th>
+                <th style="width: 18%;" class="text-center">பெற்றவை</th>
+                <th style="width: 16%;" class="text-center">முடிவு</th>
+              </tr>
+            </thead>
+            <tbody>
+              ' . $rowsHtml . '
+              <tr class="total-row">
+                <td><strong>மொத்தம் (Total)</strong></td>
+                <td class="text-center"><strong>' . $maxTotal . '</strong></td>
+                <td class="text-center bold gold-text"><strong>' . htmlspecialchars($cert->total_marks ?: ($cert->score ?: 100)) . '</strong></td>
+                <td class="text-center pass-text"><strong>' . htmlspecialchars($cert->pass_status ?: 'PASS') . '</strong></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="marks-summary-bar">
+            <div>சதவீதம்: <strong>' . htmlspecialchars($cert->percentage ?: '100%') . '</strong></div>
+            <div>தகுதி நிலை: <strong>' . htmlspecialchars($cert->grade ?: 'Distinction') . '</strong></div>
+            <div>முடிவு: <strong class="pass-text">தேர்ச்சி (' . htmlspecialchars($cert->pass_status ?: 'PASS') . ')</strong></div>
+          </div>
+        </div>
+
+        <div class="cert-bottom-section">
+          <div class="date-place-row">
+            <div class="dp-item"><strong>நாள் :</strong> ' . htmlspecialchars($cert->issue_date ?: date('d.m.Y')) . '</div>
+            <div class="dp-item"><strong>இடம் :</strong> ' . htmlspecialchars($cert->issue_place ?: 'பெரியகுளம்') . '</div>
+            <div class="dp-item"><strong>சிறப்புப் பட்டம் :</strong> “' . htmlspecialchars($cert->award_title_ta) . '”</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>';
+        }
+
+        $html .= '
+</div>
+</body>
+</html>';
+
+        return response($html)->header('Content-Type', 'text/html; charset=UTF-8');
     }
 }

@@ -800,37 +800,57 @@
 
   <!-- QUICK DOCUMENT PREVIEW MODAL (CERTIFICATE & MARKSHEET) -->
   @if (showDocPreviewModal && activeDocPreview) {
-    <div class="designer-modal-backdrop" style="z-index: 9999;">
-      <div class="designer-modal-container" style="max-width: 900px; width: 95%;">
+    <div class="designer-modal-backdrop">
+      <div class="designer-modal-container">
         
         <!-- Modal Topbar -->
         <div class="designer-topbar">
           <div class="d-title-group">
-            <i [class]="activeDocPreview.type === 'certificate' ? 'bi bi-award-fill gold-icon' : 'bi bi-file-earmark-spreadsheet-fill text-blue'" style="font-size: 24px;"></i>
+            <i [class]="activeDocPreview.type === 'certificate' ? 'bi bi-award-fill gold-icon' : 'bi bi-file-earmark-spreadsheet-fill text-blue'"></i>
             <div>
-              <h2 style="font-size: 16px; margin: 0; font-weight: 800; color: #0f172a;">{{ activeDocPreview.title }}</h2>
-              <span style="font-size: 12px; color: #64748b;">{{ activeDocPreview.sub?.student_name }} ({{ activeDocPreview.sub?.student_code || activeDocPreview.cert?.registration_number }})</span>
+              <h2>{{ activeDocPreview.title }}</h2>
+              <span>{{ activeDocPreview.sub?.student_name }} ({{ activeDocPreview.sub?.student_code || activeDocPreview.cert?.registration_number }})</span>
             </div>
           </div>
 
-          <!-- Document Toggle Tabs -->
+          <!-- Level selector pills (UG / PG) -->
           <div class="level-switch-group">
-            <button type="button" [class.active]="activeDocPreview.type === 'certificate'" (click)="activeDocPreview.type = 'certificate'; activeDocPreview.title = (translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் முன்னோட்டம்' : 'Certificate Preview')" class="lvl-btn">
-              <i class="bi bi-award-fill me-1"></i> {{ 'exams.certificateBtn' | translate }}
+            <button type="button" [class.active]="activeDocPreview.cert?.course_level === 'UG'" (click)="setPreviewLevel('UG')" class="lvl-btn">
+              🎓 {{ 'certificates.newUgBtn' | translate }}
             </button>
-            <button type="button" [class.active]="activeDocPreview.type === 'marksheet'" (click)="activeDocPreview.type = 'marksheet'; activeDocPreview.title = (translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல் முன்னோட்டம்' : 'Marksheet Preview')" class="lvl-btn">
-              <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> {{ 'exams.certMarksheetCol' | translate }}
+            <button type="button" [class.active]="activeDocPreview.cert?.course_level === 'PG'" (click)="setPreviewLevel('PG')" class="lvl-btn">
+              🏆 {{ 'certificates.newPgBtn' | translate }}
             </button>
+          </div>
+
+          <!-- Document Toggle Tabs -->
+          <div class="preview-tabs">
+            <button type="button" [class.active]="activeDocPreview.type === 'certificate'" (click)="activeDocPreview.type = 'certificate'; activeDocPreview.title = (translationService.currentLanguage() === 'ta' ? 'சான்றிதழ் முன்னோட்டம்' : 'Certificate Preview')" class="p-tab">
+              <i class="bi bi-award-fill"></i> 1. {{ 'exams.certificateBtn' | translate }}
+            </button>
+            <button type="button" [class.active]="activeDocPreview.type === 'marksheet'" (click)="activeDocPreview.type = 'marksheet'; activeDocPreview.title = (translationService.currentLanguage() === 'ta' ? 'மதிப்பெண் பட்டியல் முன்னோட்டம்' : 'Marksheet Preview')" class="p-tab">
+              <i class="bi bi-file-earmark-spreadsheet-fill"></i> 2. {{ 'exams.certMarksheetCol' | translate }}
+            </button>
+          </div>
+
+          <!-- Zoom buttons -->
+          <div class="preview-status-zoom">
+            <div class="zoom-btn-group">
+              <button type="button" (click)="previewScale = 0.7" [class.active]="previewScale === 0.7">70%</button>
+              <button type="button" (click)="previewScale = 0.85" [class.active]="previewScale === 0.85">85%</button>
+              <button type="button" (click)="previewScale = 1.0" [class.active]="previewScale === 1.0">100%</button>
+            </div>
+            <span class="badge-live"><i class="bi bi-dot"></i> Live A4</span>
           </div>
 
           <!-- Modal Actions -->
           <div class="d-actions-group">
             <button type="button" (click)="printDocPreview()" class="btn-print" [title]="'common.print' | translate">
-              <i class="bi bi-printer-fill me-1"></i> {{ 'common.print' | translate }}
+              <i class="bi bi-printer-fill"></i> {{ 'common.print' | translate }}
             </button>
             @if (!activeDocPreview.sub?.is_published) {
               <button type="button" (click)="publishSingleSubmission(activeDocPreview.sub); closeDocPreview()" class="btn-save" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #059669;">
-                <i class="bi bi-send-fill me-1"></i> {{ 'exams.publishToStudent' | translate }}
+                <i class="bi bi-send-fill"></i> {{ 'exams.publishToStudent' | translate }}
               </button>
             }
             <button type="button" (click)="closeDocPreview()" class="btn-close-modal" [title]="'common.close' | translate">
@@ -839,170 +859,364 @@
           </div>
         </div>
 
-        <!-- Modal Body Preview Area -->
-        <div style="padding: 20px; overflow-y: auto; max-height: calc(88vh - 80px); background: #f8fafc; display: flex; justify-content: center;">
-          
-          <!-- VIEW 1: CERTIFICATE PREVIEW -->
-          @if (activeDocPreview.type === 'certificate') {
-            <div class="official-cert-layout" [class.pg-cert]="activeDocPreview.cert?.course_level === 'PG'" style="box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 100%; max-width: 790px;">
-              <div class="ornate-outer-border">
-                <div class="ornate-inner-border">
-                  
-                  <div class="cert-header-section">
-                    <div class="top-invocation">ஓம் நமச்சிவாய</div>
-                    <div class="inst-header-block">
-                      <div class="inst-logo-wrap">
-                        <img src="/assets/images/nataraja.png" alt="Seal" class="inst-seal-img" (error)="false" />
+        <!-- THE PRINTABLE A4 CONTAINER -->
+        <div class="a4-stage-wrapper">
+          <div id="printDocumentArea" class="a4-page-sheet" [style.transform]="'scale(' + previewScale + ')'">
+            
+            <!-- ================================================= -->
+            <!-- VIEW 1: AUTHENTIC SRI AARUTHRAA CERTIFICATE (A4)  -->
+            <!-- ================================================= -->
+            @if (activeDocPreview.type === 'certificate') {
+              <div class="official-cert-layout" [class.pg-cert]="activeDocPreview.cert?.course_level === 'PG'">
+                
+                <!-- Double Ornate Border Box -->
+                <div class="ornate-outer-border">
+                  <div class="ornate-inner-border">
+                    
+                    <!-- Header Section: Om Namachivaya & Institute Details -->
+                    <div class="cert-header-section">
+                      <div class="top-invocation">ஓம் நமச்சிவாய</div>
+
+                      <!-- Institute Seal & Header Block -->
+                      <div class="inst-header-block">
+                        <div class="inst-logo-wrap">
+                          <img src="/assets/images/nataraja.png" alt="Sri Aaruthraa Seal" class="inst-seal-img" (error)="false" />
+                        </div>
+                        <div class="inst-text-wrap">
+                          <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
+                          <h2 class="inst-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
+                          <div class="inst-trust-reg">அறக்கட்டளை அரசு பதிவு எண் : (BK4/3/2018PKM)</div>
+                          <div class="inst-address">
+                            எண் : 1/346,ஸ்டேட் பாங்க் காலனி, சுந்தரராஜநகர், கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.
+                          </div>
+                          <div class="inst-email">(www.sriaaruthraaastro@gmail.com)</div>
+                        </div>
                       </div>
-                      <div class="inst-text-wrap">
+
+                      <!-- Certificate Ribbon Banner -->
+                      <div class="ribbon-banner-wrap">
+                        <div class="ribbon-pill">
+                          @if (activeDocPreview.cert?.course_level === 'UG') {
+                            ஜோதிட சிறப்பு தகுநிலை சான்றிதழ்
+                          } @else {
+                            ஜோதிட மேல்நிலை சிறப்பு தகுநிலை சான்றிதழ்
+                          }
+                        </div>
+                        @if (activeDocPreview.cert?.course_level === 'PG') {
+                          <div class="pg-merit-title">Meritorius Certificate</div>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Main Body Flow with Floating Photo -->
+                    <div class="cert-body-flow">
+                      <!-- Passport Photo Floated Right -->
+                      @if (activeDocPreview.cert?.photo_url && !activeDocPreview.cert.photo_url.includes('user_avatar')) {
+                        <div class="passport-photo-floating">
+                          <img [src]="activeDocPreview.cert.photo_url" alt="Student" (error)="activeDocPreview.cert.photo_url = ''" />
+                        </div>
+                      }
+
+                      <!-- Reg Number Line -->
+                      <div class="reg-no-line">
+                        <span class="lbl-ta">பதிவு எண் :</span> 
+                        <span class="val-reg">{{ activeDocPreview.cert?.registration_number || activeDocPreview.cert?.certificate_number }}</span>
+                      </div>
+
+                      <!-- TAMIL STATEMENT -->
+                      <div class="tamil-flow-para">
+                        @if (activeDocPreview.cert?.course_level === 'PG') {
+                          திரு / திருமதி <span class="fill-line name">{{ activeDocPreview.cert?.student_name_ta || activeDocPreview.sub?.student_name }}</span> என்பவர் நமது 
+                          <strong>ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயத்தின்</strong> <span class="fill-line center">{{ activeDocPreview.cert?.center_name || 'பல்லடம்' }}</span> மையத்தில், 
+                          ஜோதிடவியல் வித்தக மேல்நிலை சாஸ்திர கல்வி பயிற்சியான <span class="fill-line date">{{ activeDocPreview.cert?.course_period_from || '06.02.2019' }}</span> முதல் 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.course_period_to || '06.02.2020' }}</span> வரை நடைபெற்ற 
+                          முதுநிலை பயிற்சியை வெற்றிகரமாக நிறைவு செய்து <span class="fill-line date">{{ activeDocPreview.cert?.exam_date || '07.02.2020' }}</span> ஆண்டில் 
+                          நடைபெற்ற பொதுத் தேர்வில் கலந்து கொண்டு தேர்ச்சி பெற்றமைக்காக அவரை பாராட்டி சான்றளிப்பதுடன்
+                        } @else {
+                          திரு / திருமதி <span class="fill-line name">{{ activeDocPreview.cert?.student_name_ta || activeDocPreview.sub?.student_name }}</span> என்பவர் 
+                          எமது <strong>ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயத்தின்</strong> <span class="fill-line center">{{ activeDocPreview.cert?.center_name || 'பல்லடம்' }}</span> மையத்தில், 
+                          ஜோதிடவியல் சாஸ்திர கல்வி பயிற்சியான <span class="fill-line date">{{ activeDocPreview.cert?.course_period_from || '06.02.2018' }}</span> முதல் 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.course_period_to || '06.02.2019' }}</span> வரை நடைபெற்ற 
+                          இளநிலை பயிற்சியை வெற்றிகரமாக நிறைவு செய்து <span class="fill-line date">{{ activeDocPreview.cert?.exam_date || '28.01.2019' }}</span> ஆண்டில் 
+                          நடைபெற்ற பொதுத்தேர்வில் கலந்து கொண்டு தேர்ச்சி பெற்றமைக்காக சான்றளிப்பதுடன்
+                        }
+                      </div>
+                    </div>
+
+                    <!-- PROMINENT TITLE BADGE -->
+                    <div class="awarded-title-box">
+                      <h2 class="title-tamil">“{{ activeDocPreview.cert?.award_title_ta || (activeDocPreview.cert?.course_level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா') }}”</h2>
+                      <div class="title-sub-ta">
+                        @if (activeDocPreview.cert?.course_level === 'PG') {
+                          என்ற உயரிய சிறப்பு பட்டயத்தையும், மனநிறைவுடனும், மகிழ்வுடனும் வழங்கி அவரை பாராட்டி வாழ்த்துகின்றோம்.
+                        } @else {
+                          என்ற சிறப்புப்பட்டயத்தையும் மனநிறைவுடனும் மகிழ்வுடனும் வழங்கி வாழ்த்துகிறோம்.
+                        }
+                      </div>
+                    </div>
+
+                    <!-- ENGLISH CERTIFICATION STATEMENT -->
+                    <div class="cert-statement-english">
+                      @if (activeDocPreview.cert?.course_level === 'PG') {
+                        <div class="eng-para">
+                          We Certify that <span class="fill-line name">{{ activeDocPreview.cert?.student_name_en || (activeDocPreview.sub?.student_name || '').toUpperCase() }}</span> Studied in our 
+                          <strong>SRI AARUTHRAA JOTHIDA SASTHIRA VIDHYALAYAM</strong> has Successfully Completed the Post Graduate Astrology Course, During the Period from 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.course_period_from || '06.02.2019' }}</span> to 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.course_period_to || '06.02.2020' }}</span> at 
+                          <span class="fill-line center">{{ activeDocPreview.cert?.center_name_en || 'PALLADAM' }}</span> Centre and Passed the Public higher Examination Conducted on 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.exam_date || '07.02.2020' }}</span>.
+                        </div>
+                        <div class="eng-sub-statement">
+                          He has brought forward the full efforts of Studies in Astrology and rendered an exemplary learning the course. Hence he is awarded with great pleasure and proud the rich Title.
+                        </div>
+                      } @else {
+                        <div class="eng-para">
+                          We Certify that <span class="fill-line name">{{ activeDocPreview.cert?.student_name_en || (activeDocPreview.sub?.student_name || '').toUpperCase() }}</span> has successfully Completed 
+                          the Undergraduate Astrology Course during the Period from 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.course_period_from || '06.02.2018' }}</span> to 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.course_period_to || '06.02.2019' }}</span> at 
+                          <span class="fill-line center">{{ activeDocPreview.cert?.center_name_en || 'PALLADAM' }}</span> Centre, and passed the Examination conducted on 
+                          <span class="fill-line date">{{ activeDocPreview.cert?.exam_date || '28.01.2019' }}</span> with great pleasure and proud we award him a title.
+                        </div>
+                      }
+
+                      <div class="eng-title-highlight">
+                        “{{ activeDocPreview.cert?.award_title_en || (activeDocPreview.cert?.course_level === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA') }}”
+                      </div>
+                      <div class="eng-congrats">
+                        {{ activeDocPreview.cert?.course_level === 'PG' ? 'and Congrates,' : 'and Congratulation,' }}
+                      </div>
+                    </div>
+
+                    <!-- BOTTOM FOOTER: DATE, PLACE & 4 SIGNATURES -->
+                    <div class="cert-bottom-section">
+                      <div class="date-place-row">
+                        <div class="dp-item"><strong>நாள் :</strong> {{ activeDocPreview.cert?.issue_date || (activeDocPreview.cert?.course_level === 'PG' ? '10.02.2020' : '28.10.2019') }}</div>
+                        <div class="dp-item"><strong>இடம் :</strong> {{ activeDocPreview.cert?.issue_place || 'பெரியகுளம்' }}</div>
+                        <div class="dp-item"><strong>சான்றிதழ் எண் :</strong> {{ activeDocPreview.cert?.certificate_number || activeDocPreview.cert?.registration_number }}</div>
+                      </div>
+
+                      <div class="signatures-grid-4">
+                        <div class="sig-box">
+                          <div class="sig-space"></div>
+                          <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
+                          <div class="sig-role-en">Training Teacher</div>
+                        </div>
+                        <div class="sig-box">
+                          <div class="sig-space"></div>
+                          <div class="sig-role-ta">பொருளாளர்</div>
+                          <div class="sig-role-en">Treasurer</div>
+                        </div>
+                        <div class="sig-box">
+                          <div class="sig-space"></div>
+                          <div class="sig-role-ta">செயலாளர்</div>
+                          <div class="sig-role-en">Secretary</div>
+                        </div>
+                        <div class="sig-box">
+                          <div class="sig-space"></div>
+                          <div class="sig-role-ta">நிறுவனர்</div>
+                          <div class="sig-role-en">Founder</div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- ================================================= -->
+            <!-- VIEW 2: AUTHENTIC SRI AARUTHRAA MARKSHEET (A4)    -->
+            <!-- ================================================= -->
+            @if (activeDocPreview.type === 'marksheet') {
+              <div class="official-marksheet-layout" [class.pg-marksheet]="activeDocPreview.cert?.course_level === 'PG'">
+                
+                <div class="marksheet-outer-border">
+                  <div class="marksheet-inner-border">
+                    
+                    <!-- Header: Invocation & Authority -->
+                    <div class="top-invocation">ஓம் நமச்சிவாய</div>
+                    
+                    <div class="marksheet-header-block">
+                      <div class="ms-logo-wrap">
+                        <img src="/assets/images/nataraja.png" alt="Sri Aaruthraa Seal" class="inst-seal-img" (error)="false" />
+                      </div>
+                      <div class="ms-text-wrap">
                         <h1 class="inst-main-title">ஸ்ரீ ஆருத்ரா</h1>
                         <h2 class="inst-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
-                        <div class="inst-trust-reg">அறக்கட்டளை அரசு பதிவு எண் : (BK4/3/2018PKM)</div>
-                        <div class="inst-address">எண் : 1/346,ஸ்டேட் பாங்க் காலனி, சுந்தரராஜநகர், கீழவடகரை, பெரியகுளம் – 625 605, தேனி மாவட்டம்.</div>
-                        <div class="inst-email">(www.sriaaruthraaastro@gmail.com)</div>
+                        <div class="inst-trust-reg">(அறக்கட்டளை அரசு பதிவு எண் : BK4/3/2018PKM)</div>
+                        <div class="ms-heading-ta">ஜோதிடவியல் தேர்வு மதிப்பெண் பட்டியல்</div>
+                        <div class="ms-heading-en">(ASTROLOGY COURSE EXAM MARK SHEET)</div>
+                        <div class="ms-auth-line">The Certified Mark Sheet under Authority of <strong>SRI AARUTHRAA JOTHIDA SASTHIRA VIDHYALAYAM</strong></div>
                       </div>
                     </div>
-                    <div class="ribbon-banner-wrap">
-                      <div class="ribbon-pill">
-                        {{ activeDocPreview.cert?.course_level === 'PG' ? 'ஜோதிட மேல்நிலை சிறப்பு தகுநிலை சான்றிதழ்' : 'ஜோதிட சிறப்பு தகுநிலை சான்றிதழ்' }}
+
+                    <!-- STUDENT META & PHOTO -->
+                    <div style="display: flex; gap: 15px; margin: 8px 0; align-items: flex-start;">
+                      <div class="student-meta-grid" style="margin: 0; flex: 1;">
+                        <div class="meta-item">
+                          <span class="m-lbl">மாணவர் பெயர்:</span>
+                          <span class="m-val-ta">{{ activeDocPreview.cert?.student_name_ta || activeDocPreview.sub?.student_name }}</span>
+                          <div class="m-sub">(STUDENT NAME): <strong>{{ activeDocPreview.cert?.student_name_en || (activeDocPreview.sub?.student_name || '').toUpperCase() }}</strong></div>
+                        </div>
+                        <div class="meta-item">
+                          <span class="m-lbl">தேர்வு நாள்:</span>
+                          <span class="m-val">{{ activeDocPreview.cert?.exam_date || '28-01-2019' }}</span>
+                          <div class="m-sub">(EXAM DATE): <strong>{{ activeDocPreview.cert?.exam_date || '28-01-2019' }}</strong></div>
+                        </div>
+                        <div class="meta-item">
+                          <span class="m-lbl">பதிவு எண்:</span>
+                          <span class="m-val code">{{ activeDocPreview.cert?.registration_number || activeDocPreview.cert?.certificate_number }}</span>
+                          <div class="m-sub">(REGISTRATION NUMBER)</div>
+                        </div>
+                        <div class="meta-item">
+                          <span class="m-lbl">கல்வியாண்டு:</span>
+                          <span class="m-val">{{ activeDocPreview.cert?.academic_year || '2018 FEB to 2019 FEB' }}</span>
+                          <div class="m-sub">(YEAR OF STUDY)</div>
+                        </div>
+                      </div>
+                      @if (activeDocPreview.cert?.photo_url && !activeDocPreview.cert.photo_url.includes('user_avatar')) {
+                        <div class="passport-photo-floating" style="float: none; margin: 0; flex-shrink: 0; width: 105px; height: 125px; border: 2px solid #334155;">
+                          <img [src]="activeDocPreview.cert.photo_url" alt="Student" (error)="activeDocPreview.cert.photo_url = ''" />
+                        </div>
+                      }
+                    </div>
+
+                    <!-- TABLE SECTION BANNER -->
+                    <div class="marks-table-banner">
+                      @if (activeDocPreview.cert?.course_level === 'UG') {
+                        <div class="t-banner-ta">இளநிலை தேர்வு மாணவர் மதிப்பெண் பட்டியல்</div>
+                        <div class="t-banner-en">(Under Graduate Examination and Alliend the Following Marks)</div>
+                      } @else {
+                        <div class="t-banner-ta">முதுநிலை தேர்வு மாணவர் மதிப்பெண் பட்டியல்</div>
+                        <div class="t-banner-en">(Post Graduate Examination and Alliend the Following Marks)</div>
+                      }
+                    </div>
+
+                    <!-- MARKS TABLE -->
+                    <table class="marks-official-table">
+                      <thead>
+                        <tr>
+                          <th style="width: 10%;">வ. எண்<br><small>S.No</small></th>
+                          <th style="width: 45%;">பாடப்பிரிவு<br><small>(SUBJECT)</small></th>
+                          <th style="width: 25%;">மதிப்பெண் உள்ளடக்கம்<br><small>(TOTAL MARKS OBTAINED)</small></th>
+                          <th style="width: 20%;">தேர்ச்சி நிலை<br><small>(PASSED OBTAINED)</small></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- ROW 1: MCQ Exam 1 -->
+                        <tr>
+                          <td class="text-center">1.</td>
+                          <td>
+                            @if (activeDocPreview.cert?.has_mcq2) {
+                              {{ activeDocPreview.cert?.course_level === 'UG' ? 'UGE - I (MCQ தேர்வு)' : 'PGE - I (MCQ தேர்வு)' }}
+                            } @else {
+                              {{ activeDocPreview.cert?.course_level === 'UG' ? 'UGE - கொள்குறி வகை தேர்வு (MCQ THEORY)' : 'PGE - கொள்குறி வகை தேர்வு (MCQ THEORY)' }}
+                            }
+                          </td>
+                          <td class="text-center mark-val">{{ activeDocPreview.cert?.theory1_mark }}</td>
+                          <td class="text-center pass-tag" [style.color]="(activeDocPreview.cert?.theory1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ activeDocPreview.cert?.theory1_status || 'PASS' }}</td>
+                        </tr>
+
+                        <!-- ROW 2: MCQ Exam 2 (Conditional) -->
+                        @if (activeDocPreview.cert?.has_mcq2) {
+                          <tr>
+                            <td class="text-center">2.</td>
+                            <td>{{ activeDocPreview.cert?.course_level === 'UG' ? 'UGE - II (MCQ தேர்வு)' : 'PGE - II (MCQ தேர்வு)' }}</td>
+                            <td class="text-center mark-val">{{ activeDocPreview.cert?.theory2_mark }}</td>
+                            <td class="text-center pass-tag" [style.color]="(activeDocPreview.cert?.theory2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ activeDocPreview.cert?.theory2_status || 'PASS' }}</td>
+                          </tr>
+                        }
+
+                        <!-- PRACTICAL ROWS (Conditional) -->
+                        @if (activeDocPreview.cert?.has_practicals) {
+                          <tr class="section-row">
+                            <td colspan="4"><strong>PRACTICAL (செய்முறை)</strong></td>
+                          </tr>
+                          <tr>
+                            <td class="text-center">{{ activeDocPreview.cert?.has_mcq2 ? 3 : 2 }}.</td>
+                            <td>
+                              {{ (activeDocPreview.cert?.has_practical2 || activeDocPreview.cert?.has_practical3) ? 'செய்முறை பகுதி - I' : 'செய்முறை தேர்வு (PRACTICAL)' }}
+                            </td>
+                            <td class="text-center mark-val">{{ activeDocPreview.cert?.practical1_mark }}</td>
+                            <td class="text-center pass-tag" [style.color]="(activeDocPreview.cert?.practical1_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ activeDocPreview.cert?.practical1_status || 'PASS' }}</td>
+                          </tr>
+                          @if (activeDocPreview.cert?.has_practical2) {
+                            <tr>
+                              <td class="text-center">{{ activeDocPreview.cert?.has_mcq2 ? 4 : 3 }}.</td>
+                              <td>செய்முறை பகுதி - II</td>
+                              <td class="text-center mark-val">{{ activeDocPreview.cert?.practical2_mark }}</td>
+                              <td class="text-center pass-tag" [style.color]="(activeDocPreview.cert?.practical2_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ activeDocPreview.cert?.practical2_status || 'PASS' }}</td>
+                            </tr>
+                          }
+                          @if (activeDocPreview.cert?.has_practical3) {
+                            <tr>
+                              <td class="text-center">{{ activeDocPreview.cert?.has_mcq2 ? 5 : 4 }}.</td>
+                              <td>செய்முறை பகுதி - III</td>
+                              <td class="text-center mark-val">{{ activeDocPreview.cert?.practical3_mark }}</td>
+                              <td class="text-center pass-tag" [style.color]="(activeDocPreview.cert?.practical3_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'">{{ activeDocPreview.cert?.practical3_status || 'PASS' }}</td>
+                            </tr>
+                          }
+                        }
+                        
+                        <!-- TOTALS & SUMMARY -->
+                        <tr class="summary-total-row">
+                          <td colspan="2"><strong>மொத்த மதிப்பெண்கள் (TOTAL MARKS)</strong></td>
+                          <td class="text-center total-val"><strong>{{ activeDocPreview.cert?.total_marks }}</strong></td>
+                          <td class="text-center pass-tag" [style.color]="(activeDocPreview.cert?.pass_status || 'PASS') === 'PASS' ? '#15803d' : '#dc2626'"><strong>{{ activeDocPreview.cert?.pass_status || 'PASS' }}</strong></td>
+                        </tr>
+                        <tr class="summary-pct-row">
+                          <td colspan="2"><strong>மொத்த சதவீதம் (TOTAL PERCENTAGE)</strong></td>
+                          <td class="text-center pct-val"><strong>{{ activeDocPreview.cert?.percentage }}</strong></td>
+                          <td class="text-center grade-val"><strong>{{ activeDocPreview.cert?.grade }}</strong></td>
+                        </tr>
+                        <tr class="summary-award-row">
+                          <td colspan="2"><strong>வித்யாலயம் வழங்கிய தகுநிலை (AWARDED TITLE)</strong></td>
+                          <td colspan="2" class="text-center award-val">
+                            <strong>“{{ activeDocPreview.cert?.award_title_ta }}”</strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <!-- PASS CRITERIA NOTES -->
+                    <div class="pass-criteria-notes">
+                      <div class="pass-crit-line">{{ activeDocPreview.cert?.pass_criteria_theory }}</div>
+                      @if (activeDocPreview.cert?.has_practicals) {
+                        <div class="pass-crit-line">{{ activeDocPreview.cert?.pass_criteria_practical }}</div>
+                      }
+                    </div>
+
+                    <!-- 4 SIGNATURES -->
+                    <div class="marksheet-signatures-grid">
+                      <div class="sig-box">
+                        <div class="sig-space"></div>
+                        <div class="sig-role-ta">மாணவர் கையொப்பம்:</div>
+                        <div class="sig-role-en">Candidates Certified</div>
+                      </div>
+                      <div class="sig-box">
+                        <div class="sig-space"></div>
+                        <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
+                        <div class="sig-role-en">Training Teacher</div>
+                      </div>
+                      <div class="sig-box">
+                        <div class="sig-space"></div>
+                        <div class="sig-role-ta">செயலாளர்</div>
+                        <div class="sig-role-en">Secretary</div>
+                      </div>
+                      <div class="sig-box">
+                        <div class="sig-space"></div>
+                        <div class="sig-role-ta">நிறுவனர்</div>
+                        <div class="sig-role-en">Founder</div>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="cert-body-flow">
-                    <div class="passport-photo-floating">
-                      <img [src]="activeDocPreview.cert?.photo_url || '/assets/images/user_avatar.png'" alt="Student" (error)="false" />
-                    </div>
-                    <div class="reg-no-line">
-                      <span class="lbl-ta">பதிவு எண் :</span> 
-                      <span class="val-reg">{{ activeDocPreview.cert?.registration_number || activeDocPreview.cert?.certificate_number }}</span>
-                    </div>
-                    <div class="body-para-ta">
-                      திரு / திருமதி <strong class="student-name-ta-highlight">{{ activeDocPreview.cert?.student_name_ta || activeDocPreview.sub?.student_name }}</strong> 
-                      என்பவர் எமது ஸ்ரீ ஆருத்ரா ஜோதிட வித்யாலயத்தின் <strong>{{ activeDocPreview.cert?.center_name || 'பல்லடம்' }}</strong> மையத்தில் 
-                      நடத்தப்பட்ட ஜோதிடப் பயிற்சி வகுப்பில் பயின்று தேர்வினை நிறைவு செய்தமைக்காக இப்பாராட்டுச் சான்றிதழ் வழங்கப்படுகிறது.
-                    </div>
-                    <div class="award-box-gold">
-                      <div class="award-pre">வழங்கப்படும் சிறப்புப் பட்டம்</div>
-                      <div class="award-ta-text">{{ activeDocPreview.cert?.award_title_ta || 'ஜோதிட ரத்னா' }}</div>
-                      <div class="award-en-text">{{ activeDocPreview.cert?.award_title_en || 'JOTHIDA RATHNA' }}</div>
-                    </div>
                   </div>
-
-                  <div class="cert-bottom-section">
-                    <div class="date-place-row">
-                      <div class="dp-item"><strong>நாள் :</strong> {{ activeDocPreview.cert?.issue_date || '10.09.2026' }}</div>
-                      <div class="dp-item"><strong>இடம் :</strong> {{ activeDocPreview.cert?.issue_place || 'பெரியகுளம்' }}</div>
-                      <div class="dp-item"><strong>சான்றிதழ் எண் :</strong> {{ activeDocPreview.cert?.certificate_number }}</div>
-                    </div>
-                  </div>
-
                 </div>
               </div>
-            </div>
-          }
+            }
 
-          <!-- VIEW 2: MARKSHEET PREVIEW -->
-          @if (activeDocPreview.type === 'marksheet') {
-            <div class="official-marksheet-layout" [class.pg-marksheet]="activeDocPreview.cert?.course_level === 'PG'" style="box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 100%; max-width: 790px;">
-              <div class="marksheet-outer-border">
-                <div class="marksheet-inner-border">
-                  
-                  <div class="marksheet-header-flow">
-                    <div class="top-invocation">ஓம் நமச்சிவாய</div>
-                    <div class="inst-brand-row">
-                      <img src="/assets/images/nataraja.png" alt="Seal" class="m-brand-logo" (error)="false" />
-                      <div class="m-brand-text">
-                        <h1 class="m-main-title">ஸ்ரீ ஆருத்ரா</h1>
-                        <h2 class="m-sub-title">ஜோதிட சாஸ்திர வித்யாலயம்</h2>
-                        <div class="m-trust-line">அறக்கட்டளை அரசு பதிவு எண் : (BK4/3/2018PKM)</div>
-                        <div class="m-addr-line">பெரியகுளம் – 625 605, தேனி மாவட்டம்.</div>
-                      </div>
-                    </div>
-                    <div class="marksheet-ribbon-title">
-                      மதிப்பெண் பட்டியல் (STATEMENT OF MARKS)
-                    </div>
-                  </div>
-
-                  <div class="student-meta-table-box" style="margin: 10px 0;">
-                    <div class="meta-row-line" style="display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0;">
-                      <div class="meta-col"><strong>மாணவர் பெயர் :</strong> {{ activeDocPreview.cert?.student_name_ta || activeDocPreview.sub?.student_name }}</div>
-                      <div class="meta-col"><strong>பதிவு எண் :</strong> {{ activeDocPreview.cert?.registration_number || activeDocPreview.cert?.marksheet_number }}</div>
-                    </div>
-                    <div class="meta-row-line" style="display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0;">
-                      <div class="meta-col"><strong>பாடப்பிரிவு :</strong> {{ activeDocPreview.sub?.course_title || 'ஜோதிடப் படிப்பு' }}</div>
-                      <div class="meta-col"><strong>மதிப்பெண் எண் :</strong> {{ activeDocPreview.cert?.marksheet_number }}</div>
-                    </div>
-                  </div>
-
-                  <!-- Subjects Table -->
-                  <table class="marks-table-clean" style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px;">
-                    <thead>
-                      <tr style="background: #7f1d1d; color: #fff;">
-                        <th style="padding: 6px 10px; text-align: left;">பாடம் (Subject)</th>
-                        <th style="padding: 6px 10px; text-align: center;">அதிகபட்சம்</th>
-                        <th style="padding: 6px 10px; text-align: center;">பெற்றவை</th>
-                        <th style="padding: 6px 10px; text-align: center;">முடிவு</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 6px 10px;">கோட்பாடுத் தேர்வு - 1 (Theory - 1)</td>
-                        <td style="text-align: center;">100</td>
-                        <td style="text-align: center; font-weight: 700;">{{ activeDocPreview.cert?.theory1_mark || 98 }}</td>
-                        <td style="text-align: center; color: #15803d; font-weight: 700;">PASS</td>
-                      </tr>
-                      <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 6px 10px;">கோட்பாடுத் தேர்வு - 2 (Theory - 2)</td>
-                        <td style="text-align: center;">100</td>
-                        <td style="text-align: center; font-weight: 700;">{{ activeDocPreview.cert?.theory2_mark || 90 }}</td>
-                        <td style="text-align: center; color: #15803d; font-weight: 700;">PASS</td>
-                      </tr>
-                      <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 6px 10px;">செய்முறைப் பயிற்சி - 1 (Practical - 1)</td>
-                        <td style="text-align: center;">100</td>
-                        <td style="text-align: center; font-weight: 700;">{{ activeDocPreview.cert?.practical1_mark || 92 }}</td>
-                        <td style="text-align: center; color: #15803d; font-weight: 700;">PASS</td>
-                      </tr>
-                      <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 6px 10px;">செய்முறைப் பயிற்சி - 2 (Practical - 2)</td>
-                        <td style="text-align: center;">100</td>
-                        <td style="text-align: center; font-weight: 700;">{{ activeDocPreview.cert?.practical2_mark || 87 }}</td>
-                        <td style="text-align: center; color: #15803d; font-weight: 700;">PASS</td>
-                      </tr>
-                      <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 6px 10px;">செய்முறைப் பயிற்சி - 3 (Practical - 3)</td>
-                        <td style="text-align: center;">100</td>
-                        <td style="text-align: center; font-weight: 700;">{{ activeDocPreview.cert?.practical3_mark || 93 }}</td>
-                        <td style="text-align: center; color: #15803d; font-weight: 700;">PASS</td>
-                      </tr>
-                      <tr style="background: #fef3c7; font-weight: 800;">
-                        <td style="padding: 6px 10px;">மொத்தம் (Total)</td>
-                        <td style="text-align: center;">500</td>
-                        <td style="text-align: center; color: #b45309;">{{ activeDocPreview.cert?.total_marks || 460 }}</td>
-                        <td style="text-align: center; color: #15803d;">{{ activeDocPreview.cert?.pass_status || 'PASS' }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <div style="display: flex; gap: 12px; justify-content: space-between; background: #fff; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px; font-size: 13px; margin: 10px 0;">
-                    <div>சதவீதம்: <strong>{{ activeDocPreview.cert?.percentage || '92%' }}</strong></div>
-                    <div>தகுதி நிலை: <strong>{{ activeDocPreview.cert?.grade || 'First Class' }}</strong></div>
-                    <div>முடிவு: <strong style="color: #15803d;">தேர்ச்சி (PASS)</strong></div>
-                  </div>
-
-                  <div class="cert-bottom-section mt-3">
-                    <div class="date-place-row">
-                      <div class="dp-item"><strong>நாள் :</strong> {{ activeDocPreview.cert?.issue_date || '10.09.2026' }}</div>
-                      <div class="dp-item"><strong>இடம் :</strong> {{ activeDocPreview.cert?.issue_place || 'பெரியகுளம்' }}</div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          }
-
+          </div>
         </div>
 
       </div>

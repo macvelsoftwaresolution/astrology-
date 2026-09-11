@@ -80,6 +80,7 @@ export class LearnEnrollComponent implements OnInit {
   dobDay: string = '';
   dobMonth: string = '';
   dobYear: string = '';
+  dobError: string = '';
 
   ngOnInit() {
     if (this.form) {
@@ -93,7 +94,6 @@ export class LearnEnrollComponent implements OnInit {
     }
     if (this.localForm.dob) {
       this.syncSegmentsFromIso(this.localForm.dob);
-      this.calculateAge();
     }
     this.loadBatches();
   }
@@ -110,47 +110,163 @@ export class LearnEnrollComponent implements OnInit {
       this.dobYear = parts[0];
       this.dobMonth = parts[1];
       this.dobDay = parts[2];
+      this.validateDobSegments(false);
     }
   }
 
-  updateDobFromSegments() {
-    const d = (this.dobDay || '').trim();
-    const m = (this.dobMonth || '').trim();
-    const y = (this.dobYear || '').trim();
+  validateDobSegments(markError: boolean = false): boolean {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    const dStr = (this.dobDay || '').trim();
+    const mStr = (this.dobMonth || '').trim();
+    const yStr = (this.dobYear || '').trim();
 
-    if (d && m && y && y.length === 4) {
-      const dayNum = parseInt(d, 10);
-      const monthNum = parseInt(m, 10);
-      const yearNum = parseInt(y, 10);
-
-      if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= 2099) {
-        const dd = d.padStart(2, '0');
-        const mm = m.padStart(2, '0');
-        this.localForm.dob = `${y}-${mm}-${dd}`;
-        this.calculateAge();
-        return;
+    // 1. If empty
+    if (!dStr && !mStr && !yStr) {
+      if (markError) {
+        this.dobError = isTa ? 'பிறந்த தேதி கட்டாயம் உள்ளிட வேண்டும்.' : 'Date of birth is required.';
+      } else {
+        this.dobError = '';
       }
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
     }
-    this.localForm.dob = '';
-    this.calculateAge();
+
+    // 2. Incomplete input check
+    if (!dStr || !mStr || !yStr || yStr.length < 4) {
+      if (markError || (dStr && !mStr && yStr.length === 4) || (dStr && mStr && yStr.length > 0 && yStr.length < 4)) {
+        if (!mStr && dStr && yStr) {
+          this.dobError = isTa ? 'மாதம் (MM) உள்ளிடப்படவில்லை. பிறந்த தேதியை முழுமையாக உள்ளிடவும்.' : 'Month is missing. Please enter full DOB (DD/MM/YYYY).';
+        } else if (!dStr) {
+          this.dobError = isTa ? 'தேதி (DD) உள்ளிடப்படவில்லை. பிறந்த தேதியை முழுமையாக உள்ளிடவும்.' : 'Day is missing. Please enter full DOB (DD/MM/YYYY).';
+        } else if (yStr.length < 4) {
+          this.dobError = isTa ? 'வருடம் 4 இலக்கங்களில் இருக்க வேண்டும் (உதா: 2004).' : 'Year must be 4 digits (e.g. 2004).';
+        } else {
+          this.dobError = isTa ? 'பிறந்த தேதியை முழுமையாக உள்ளிடவும் (DD / MM / YYYY).' : 'Please enter full DOB (DD / MM / YYYY).';
+        }
+      } else {
+        this.dobError = '';
+      }
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    const d = parseInt(dStr, 10);
+    const m = parseInt(mStr, 10);
+    const y = parseInt(yStr, 10);
+
+    // 3. Day & Month ranges
+    if (isNaN(d) || d < 1 || d > 31) {
+      this.dobError = isTa ? 'தேதி 1 முதல் 31 வரை மட்டுமே இருக்க வேண்டும்.' : 'Day must be between 1 and 31.';
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    if (isNaN(m) || m < 1 || m > 12) {
+      this.dobError = isTa ? 'மாதம் 1 முதல் 12 வரை மட்டுமே இருக்க வேண்டும்.' : 'Month must be between 1 and 12.';
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    const currentYear = new Date().getFullYear();
+    if (isNaN(y) || y < 1920 || y > currentYear) {
+      if (y > currentYear) {
+        this.dobError = isTa ? 'பிறந்த வருடம் எதிர்காலத்தில் இருக்கக்கூடாது.' : 'Birth year cannot be in the future.';
+      } else {
+        this.dobError = isTa ? `சரியான வருடத்தை உள்ளிடவும் (1920 முதல் ${currentYear} வரை).` : `Enter valid year (1920 to ${currentYear}).`;
+      }
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    // 4. Valid calendar date (e.g. leap year, 30 vs 31 days)
+    const birthDate = new Date(y, m - 1, d);
+    if (birthDate.getFullYear() !== y || birthDate.getMonth() !== (m - 1) || birthDate.getDate() !== d) {
+      this.dobError = isTa ? 'செல்லுபடியாகாத தேதி (நாட்களின் எண்ணிக்கை தவறாக உள்ளது).' : 'Invalid calendar date. Please check day and month.';
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    // 5. Future date check
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (birthDate > today) {
+      this.dobError = isTa ? 'பிறந்த தேதி எதிர்காலத்தில் இருக்கக்கூடாது.' : 'Date of birth cannot be in the future.';
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    // 6. Age calculation
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 5) {
+      this.dobError = isTa ? 'மாணவர் வயது குறைந்தது 5 ஆக இருக்க வேண்டும்.' : 'Student must be at least 5 years old.';
+      this.localForm.dob = '';
+      this.localForm.age = '';
+      return false;
+    }
+
+    // Valid date and age
+    this.dobError = '';
+    const dd = String(d).padStart(2, '0');
+    const mm = String(m).padStart(2, '0');
+    this.localForm.dob = `${y}-${mm}-${dd}`;
+    this.localForm.age = age.toString();
+    return true;
   }
 
   onDayInput(event: any, monthInput: HTMLInputElement) {
-    const val = (event.target.value || '').replace(/[^0-9]/g, '').slice(0, 2);
-    this.dobDay = val;
-    if (val.length === 2 && monthInput) {
-      monthInput.focus();
+    let val = (event.target.value || '').replace(/\D/g, '').slice(0, 2);
+    if (val.length === 1 && parseInt(val, 10) > 3) {
+      val = '0' + val;
+      this.dobDay = val;
+      if (monthInput) monthInput.focus();
+    } else {
+      this.dobDay = val;
+      if (val.length === 2 && monthInput) {
+        monthInput.focus();
+      }
     }
-    this.updateDobFromSegments();
+    this.validateDobSegments(false);
+  }
+
+  onDayBlur() {
+    if (this.dobDay && this.dobDay.length === 1 && this.dobDay !== '0') {
+      this.dobDay = '0' + this.dobDay;
+    }
+    this.validateDobSegments(false);
   }
 
   onMonthInput(event: any, yearInput: HTMLInputElement) {
-    const val = (event.target.value || '').replace(/[^0-9]/g, '').slice(0, 2);
-    this.dobMonth = val;
-    if (val.length === 2 && yearInput) {
-      yearInput.focus();
+    let val = (event.target.value || '').replace(/\D/g, '').slice(0, 2);
+    if (val.length === 1 && parseInt(val, 10) > 1) {
+      val = '0' + val;
+      this.dobMonth = val;
+      if (yearInput) yearInput.focus();
+    } else {
+      this.dobMonth = val;
+      if (val.length === 2 && yearInput) {
+        yearInput.focus();
+      }
     }
-    this.updateDobFromSegments();
+    this.validateDobSegments(false);
+  }
+
+  onMonthBlur() {
+    if (this.dobMonth && this.dobMonth.length === 1 && this.dobMonth !== '0') {
+      this.dobMonth = '0' + this.dobMonth;
+    }
+    this.validateDobSegments(false);
   }
 
   onMonthKeydown(event: KeyboardEvent, dayInput: HTMLInputElement) {
@@ -160,9 +276,13 @@ export class LearnEnrollComponent implements OnInit {
   }
 
   onYearInput(event: any) {
-    const val = (event.target.value || '').replace(/[^0-9]/g, '').slice(0, 4);
+    const val = (event.target.value || '').replace(/\D/g, '').slice(0, 4);
     this.dobYear = val;
-    this.updateDobFromSegments();
+    this.validateDobSegments(false);
+  }
+
+  onYearBlur() {
+    this.validateDobSegments(false);
   }
 
   onYearKeydown(event: KeyboardEvent, monthInput: HTMLInputElement) {
@@ -326,10 +446,11 @@ export class LearnEnrollComponent implements OnInit {
       this.errorMessage = 'errors.enterStudentName';
       return false;
     }
-    if (!this.localForm.dob) {
-      this.errorMessage = 'errors.selectDob';
+    if (!this.validateDobSegments(true)) {
+      this.errorMessage = this.dobError || 'errors.selectDob';
       return false;
     }
+    this.dobError = '';
     return true;
   }
 

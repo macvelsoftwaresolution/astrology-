@@ -32,6 +32,7 @@ export class ExamsEvalTabComponent implements OnInit {
 
   // Certificate & Marksheet Quick Preview Modal State
   showDocPreviewModal = false;
+  previewScale = 0.85;
   activeDocPreview: {
     title: string;
     type: 'certificate' | 'marksheet';
@@ -828,33 +829,123 @@ export class ExamsEvalTabComponent implements OnInit {
   // CERTIFICATE & MARKSHEET ACTIONS
   // ==========================================
 
+  setPreviewLevel(level: 'UG' | 'PG'): void {
+    if (!this.activeDocPreview || !this.activeDocPreview.cert) return;
+    this.activeDocPreview.cert.course_level = level;
+    if (level === 'PG') {
+      this.activeDocPreview.cert.award_title_ta = 'ஜோதிட கலாநிதி';
+      this.activeDocPreview.cert.award_title_en = 'JOTHIDA KALANITHI';
+      this.activeDocPreview.cert.course_period_from = '06.02.2019';
+      this.activeDocPreview.cert.course_period_to = '06.02.2020';
+      this.activeDocPreview.cert.exam_date = '07.02.2020';
+      this.activeDocPreview.cert.academic_year = '2019 FEB to 2020 FEB';
+      this.activeDocPreview.cert.issue_date = '10.02.2020';
+    } else {
+      this.activeDocPreview.cert.award_title_ta = 'ஜோதிட ரத்னா';
+      this.activeDocPreview.cert.award_title_en = 'JOTHIDA RATHNA';
+      this.activeDocPreview.cert.course_period_from = '06.02.2018';
+      this.activeDocPreview.cert.course_period_to = '06.02.2019';
+      this.activeDocPreview.cert.exam_date = '28.01.2019';
+      this.activeDocPreview.cert.academic_year = '2018 FEB to 2019 FEB';
+      this.activeDocPreview.cert.issue_date = '28.10.2019';
+    }
+    this.cdr.markForCheck();
+  }
+
   previewDoc(sub: any, type: 'certificate' | 'marksheet'): void {
-    const cert = sub.certificate || {
-      certificate_number: sub.certificate_number || 'ASTRO-CERT-2026',
-      marksheet_number: sub.marksheet_number || 'ASTRO-MRK-2026',
-      student_name_ta: sub.student_name,
-      student_name_en: (sub.student_name || '').toUpperCase(),
-      registration_number: sub.student_code || '26AR01',
-      center_name: 'பல்லடம்',
-      center_name_en: 'PALLADAM',
-      course_level: 'UG',
-      award_title_ta: sub.award_title_ta || 'ஜோதிட ரத்னா',
-      award_title_en: sub.award_title_en || 'JOTHIDA RATHNA',
-      course_period_from: '06.02.2018',
-      course_period_to: '06.02.2019',
-      exam_date: '28.01.2019',
-      academic_year: '2018 FEB to 2019 FEB',
-      issue_date: new Date().toLocaleDateString('en-GB'),
+    const isPG = sub.course_level === 'PG' ||
+      this.selectedCategory === 'MUTHUNILAI' ||
+      (sub.course_title || sub.exam_title || '').includes('முதுநிலை') ||
+      (sub.course_title || sub.exam_title || '').includes('PG');
+    const level: 'UG' | 'PG' = isPG ? 'PG' : 'UG';
+
+    const mcq1 = (sub.mcq_score !== null && sub.mcq_score !== undefined)
+      ? Number(sub.mcq_score)
+      : (sub.score !== null && sub.score !== undefined ? Number(sub.score) : 98);
+    const hasMcq2 = !!sub.has_mcq2 || (sub.theory2_mark !== null && sub.theory2_mark !== undefined);
+    const mcq2 = hasMcq2 ? (Number(sub.theory2_mark) || 90) : 0;
+    const prac1 = (sub.practical_score !== null && sub.practical_score !== undefined)
+      ? Number(sub.practical_score)
+      : (sub.practical1_mark ? Number(sub.practical1_mark) : 0);
+    const hasPracticals = !!sub.has_practicals || prac1 > 0;
+    const hasPrac2 = !!sub.has_practical2;
+    const prac2 = hasPrac2 ? (Number(sub.practical2_mark) || 87) : 0;
+    const hasPrac3 = !!sub.has_practical3;
+    const prac3 = hasPrac3 ? (Number(sub.practical3_mark) || 93) : 0;
+
+    const total = mcq1 + (hasMcq2 ? mcq2 : 0) + (hasPracticals ? prac1 : 0) + (hasPrac2 ? prac2 : 0) + (hasPrac3 ? prac3 : 0);
+    let maxMarks = 100;
+    if (hasMcq2) maxMarks += 100;
+    if (hasPracticals) maxMarks += 100;
+    if (hasPrac2) maxMarks += 100;
+    if (hasPrac3) maxMarks += 100;
+    const pct = Math.min(100, Math.round((total / maxMarks) * 100));
+
+    let examDateStr = level === 'PG' ? '07.02.2020' : '28.01.2019';
+    if (sub.exam_date || sub.submitted_at || sub.created_at) {
+      const d = new Date(sub.exam_date || sub.submitted_at || sub.created_at);
+      if (!isNaN(d.getTime())) {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        examDateStr = `${dd}.${mm}.${yyyy}`;
+      }
+    }
+
+    const regNo = sub.student_code || sub.registration_number || sub.student_id || '26AR01';
+
+    const cert = sub.certificate ? {
+      ...sub.certificate,
+      has_mcq2: sub.certificate.has_mcq2 ?? hasMcq2,
+      has_practicals: sub.certificate.has_practicals ?? hasPracticals,
+      has_practical2: sub.certificate.has_practical2 ?? hasPrac2,
+      has_practical3: sub.certificate.has_practical3 ?? hasPrac3,
+      theory1_mark: sub.certificate.theory1_mark ?? mcq1,
+      theory1_status: sub.certificate.theory1_status ?? (mcq1 >= 35 ? 'PASS' : 'FAIL'),
+      total_marks: sub.certificate.total_marks ?? total,
+      percentage: sub.certificate.percentage ?? `${pct}%`,
+      grade: sub.certificate.grade ?? (pct >= 85 ? 'Distinction' : (pct >= 60 ? 'First Class' : 'Second Class')),
+      pass_status: sub.certificate.pass_status ?? ((pct >= 35 && mcq1 >= 35) ? 'PASS' : 'FAIL'),
+      pass_criteria_theory: sub.certificate.pass_criteria_theory || 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
+      pass_criteria_practical: sub.certificate.pass_criteria_practical || 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.'
+    } : {
+      certificate_number: sub.certificate_number || regNo,
+      marksheet_number: sub.marksheet_number || (`MRK-${level}-${regNo}`),
+      student_name_ta: sub.student_name_ta || sub.student_name || 'மாணவர் பெயர்',
+      student_name_en: (sub.student_name_en || sub.student_name || 'STUDENT NAME').toUpperCase(),
+      registration_number: regNo,
+      photo_url: sub.photo_url || sub.user?.profile_photo_url || sub.student?.profile_photo_url || null,
+      center_name: sub.center_name || 'பல்லடம்',
+      center_name_en: sub.center_name_en || 'PALLADAM',
+      course_level: level,
+      award_title_ta: level === 'PG' ? 'ஜோதிட கலாநிதி' : 'ஜோதிட ரத்னா',
+      award_title_en: level === 'PG' ? 'JOTHIDA KALANITHI' : 'JOTHIDA RATHNA',
+      course_period_from: level === 'PG' ? '06.02.2019' : '06.02.2018',
+      course_period_to: level === 'PG' ? '06.02.2020' : '06.02.2019',
+      exam_date: examDateStr,
+      academic_year: level === 'PG' ? '2019 FEB to 2020 FEB' : '2018 FEB to 2019 FEB',
+      issue_date: level === 'PG' ? '10.02.2020' : '28.10.2019',
       issue_place: 'பெரியகுளம்',
-      theory1_mark: 98,
-      theory2_mark: 90,
-      practical1_mark: 92,
-      practical2_mark: 87,
-      practical3_mark: 93,
-      total_marks: sub.cert_total_marks || 460,
-      percentage: sub.cert_percentage || '92%',
-      grade: sub.cert_grade || 'First Class',
-      pass_status: sub.cert_pass_status || 'PASS',
+      has_mcq2: hasMcq2,
+      has_practicals: hasPracticals,
+      has_practical2: hasPrac2,
+      has_practical3: hasPrac3,
+      theory1_mark: mcq1,
+      theory1_status: mcq1 >= 35 ? 'PASS' : 'FAIL',
+      theory2_mark: mcq2,
+      theory2_status: mcq2 >= 35 ? 'PASS' : 'FAIL',
+      practical1_mark: prac1 || 92,
+      practical1_status: (prac1 || 92) >= 50 ? 'PASS' : 'FAIL',
+      practical2_mark: prac2 || 87,
+      practical2_status: (prac2 || 87) >= 50 ? 'PASS' : 'FAIL',
+      practical3_mark: prac3 || 93,
+      practical3_status: (prac3 || 93) >= 50 ? 'PASS' : 'FAIL',
+      total_marks: total,
+      percentage: `${pct}%`,
+      grade: pct >= 85 ? 'Distinction' : (pct >= 60 ? 'First Class' : 'Second Class'),
+      pass_status: (pct >= 35 && mcq1 >= 35) ? 'PASS' : 'FAIL',
+      pass_criteria_theory: 'Minimum for pass: - 35% Marks (MCQ / Theory) out of 100 obtained the marks.',
+      pass_criteria_practical: 'Minimum for pass: - 50% Marks (practical) out of in the Work Book Subject out of 100 obtained the marks.',
       pdf_download_url: sub.cert_pdf_url,
       marksheet_download_url: sub.marksheet_download_url
     };

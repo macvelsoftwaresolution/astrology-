@@ -48,6 +48,10 @@ Route::get('/public/exams/{level}', [\App\Http\Controllers\ExamController::class
 Route::get('/rasi-icons',           [SystemSettingsController::class, 'getRasiIcons']);
 Route::get('/settings/{key}',        [SystemSettingsController::class, 'getSetting']);
 
+// Certificate & Marksheet Direct Downloads (Printable A4 / PDF)
+Route::get('/certificates/{id}/download', [GradingController::class, 'downloadCertificateDoc']);
+Route::get('/marksheets/{id}/download',   [GradingController::class, 'downloadCertificateDoc']);
+
 // Jathagam Public (no auth — para-jathagam & porutham matching work without login too)
 Route::post('/jathagam/match',        [JathagamController::class, 'calculateMatch']);
 Route::get('/jathagam/match/{id}',    [JathagamController::class, 'getMatch']);

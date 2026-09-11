@@ -588,9 +588,11 @@
                       <!-- Main Body Flow with Floating Photo -->
                       <div class="cert-body-flow">
                         <!-- Passport Photo Floated Right -->
-                        <div class="passport-photo-floating">
-                          <img [src]="designerForm.photo_url || '/assets/images/user_avatar.png'" alt="Student" (error)="designerForm.photo_url = '/assets/images/user_avatar.png'" />
-                        </div>
+                        @if (designerForm.photo_url && !designerForm.photo_url.includes('user_avatar')) {
+                          <div class="passport-photo-floating">
+                            <img [src]="designerForm.photo_url" alt="Student" (error)="designerForm.photo_url = ''" />
+                          </div>
+                        }
 
                         <!-- Reg Number Line -->
                         <div class="reg-no-line">
@@ -672,32 +674,22 @@
 
                         <div class="signatures-grid-4">
                           <div class="sig-box">
-                            <div class="sig-space">
-                              @if (designerForm.course_level === 'PG') {
-                                <span class="sig-handwritten teacher">U.S. Raja</span>
-                              }
-                            </div>
+                            <div class="sig-space"></div>
                             <div class="sig-role-ta">பயிற்சி ஆசிரியர்</div>
                             <div class="sig-role-en">Training Teacher</div>
                           </div>
                           <div class="sig-box">
-                            <div class="sig-space">
-                              <span class="sig-handwritten">M. Kaly</span>
-                            </div>
+                            <div class="sig-space"></div>
                             <div class="sig-role-ta">பொருளாளர்</div>
                             <div class="sig-role-en">Treasurer</div>
                           </div>
                           <div class="sig-box">
-                            <div class="sig-space">
-                              <span class="sig-handwritten sec">U.S. Raja</span>
-                            </div>
+                            <div class="sig-space"></div>
                             <div class="sig-role-ta">செயலாளர்</div>
                             <div class="sig-role-en">Secretary</div>
                           </div>
                           <div class="sig-box">
-                            <div class="sig-space">
-                              <span class="sig-handwritten founder">K. Hari</span>
-                            </div>
+                            <div class="sig-space"></div>
                             <div class="sig-role-ta">நிறுவனர்</div>
                             <div class="sig-role-en">Founder</div>
                           </div>
@@ -759,9 +751,11 @@
                             <div class="m-sub">(YEAR OF STUDY)</div>
                           </div>
                         </div>
-                        <div class="passport-photo-floating" style="float: none; margin: 0; flex-shrink: 0; width: 105px; height: 125px; border: 2px solid #334155;">
-                          <img [src]="designerForm.photo_url || '/assets/images/user_avatar.png'" alt="Student" (error)="designerForm.photo_url = '/assets/images/user_avatar.png'" />
-                        </div>
+                        @if (designerForm.photo_url && !designerForm.photo_url.includes('user_avatar')) {
+                          <div class="passport-photo-floating" style="float: none; margin: 0; flex-shrink: 0; width: 105px; height: 125px; border: 2px solid #334155;">
+                            <img [src]="designerForm.photo_url" alt="Student" (error)="designerForm.photo_url = ''" />
+                          </div>
+                        }
                       </div>
 
                       <!-- TABLE SECTION BANNER -->
@@ -882,16 +876,12 @@
                           <div class="sig-role-en">Training Teacher</div>
                         </div>
                         <div class="sig-box">
-                          <div class="sig-space">
-                            <span class="sig-handwritten sec">U.S. Raja</span>
-                          </div>
+                          <div class="sig-space"></div>
                           <div class="sig-role-ta">செயலாளர்</div>
                           <div class="sig-role-en">Secretary</div>
                         </div>
                         <div class="sig-box">
-                          <div class="sig-space">
-                            <span class="sig-handwritten founder">K. Hari</span>
-                          </div>
+                          <div class="sig-space"></div>
                           <div class="sig-role-ta">நிறுவனர்</div>
                           <div class="sig-role-en">Founder</div>
                         </div>

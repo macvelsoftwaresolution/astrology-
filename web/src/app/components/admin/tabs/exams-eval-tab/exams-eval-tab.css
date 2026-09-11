@@ -2349,3 +2349,1125 @@
   transform: translateY(-1px);
 }
 
+/* ========================================================================= */
+/* QUICK DOCUMENT PREVIEW MODAL (CERTIFICATE & MARKSHEET)                   */
+/* ========================================================================= */
+
+.designer-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.designer-modal-container {
+  width: 100%;
+  max-width: 980px;
+  height: 94vh;
+  max-height: 94vh;
+  background: #1e293b;
+  border-radius: 14px;
+  border: 2px solid #D4AF37;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+.designer-topbar {
+  background: #4A0E17;
+  color: #fff;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #D4AF37;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.d-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gold-icon {
+  font-size: 22px;
+  color: #D4AF37;
+}
+
+.d-title-group h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ECC876;
+}
+
+.d-title-group span {
+  font-size: 11px;
+  color: #fcd34d;
+  opacity: 0.9;
+}
+
+.level-switch-group {
+  display: flex;
+  background: rgba(0,0,0,0.35);
+  padding: 3px;
+  border-radius: 8px;
+  gap: 4px;
+}
+
+.lvl-btn {
+  background: transparent;
+  border: none;
+  color: #fef3c7;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lvl-btn.active {
+  background: #D4AF37;
+  color: #4A0E17;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.preview-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.p-tab {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 11.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+
+.p-tab:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.p-tab.active {
+  background: #D4AF37;
+  color: #4A0E17;
+  border-color: #D4AF37;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.preview-status-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zoom-btn-group {
+  display: flex;
+  background: rgba(0,0,0,0.35);
+  padding: 2px;
+  border-radius: 6px;
+  gap: 2px;
+}
+
+.zoom-btn-group button {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.zoom-btn-group button.active {
+  background: #475569;
+  color: #fef3c7;
+}
+
+.badge-live {
+  color: #4ade80;
+  font-size: 10.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.d-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-print {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
+  border: 1px solid #93c5fd;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-save {
+  background: #D4AF37;
+  color: #4A0E17;
+  border: 1px solid #fef08a;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+
+/* THE A4 STAGE WRAPPER */
+.a4-stage-wrapper {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #334155;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #334155;
+}
+
+.a4-stage-wrapper::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+.a4-stage-wrapper::-webkit-scrollbar-track {
+  background: #334155;
+}
+
+.a4-stage-wrapper::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 4px;
+}
+
+.a4-stage-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* The A4 Sheet Box */
+.a4-page-sheet {
+  width: 210mm;
+  height: 297mm;
+  min-height: 297mm;
+  max-height: 297mm;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+  padding: 6mm;
+  color: #000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  transform-origin: top center;
+  transition: transform 0.2s ease-out;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================================================= */
+/* OFFICIAL AUTHENTIC SRI AARUTHRAA CERTIFICATE (A4 LAYOUT)                  */
+/* ========================================================================= */
+
+.official-cert-layout {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.ornate-outer-border {
+  border: 10px double #C48E2E;
+  padding: 5px;
+  box-sizing: border-box;
+  background: #fffdf9;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ornate-inner-border {
+  border: 2px solid #8e2a37;
+  padding: 18px 24px 16px 24px;
+  box-sizing: border-box;
+  position: relative;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cert-header-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 26px;
+}
+
+.top-invocation {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  letter-spacing: 3px;
+}
+
+.inst-header-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.inst-logo-wrap {
+  width: 98px;
+  height: 98px;
+  position: absolute;
+  left: 8px;
+  top: 4px;
+}
+
+.inst-seal-img {
+  width: 98px;
+  height: 98px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 3px solid #D4AF37;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+  background: #ffffff;
+}
+
+.inst-text-wrap {
+  text-align: center;
+}
+
+.inst-main-title {
+  margin: 0;
+  font-size: 37px;
+  font-weight: 900;
+  color: #dc2626;
+  line-height: 1.35;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.06);
+}
+
+.inst-sub-title {
+  margin: 4px 0 0 0;
+  font-size: 25px;
+  font-weight: 900;
+  color: #854d0e;
+  line-height: 1.35;
+}
+
+.inst-trust-reg {
+  font-size: 13px;
+  font-weight: 800;
+  color: #dc2626;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.inst-address {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+.inst-email {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d4ed8;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* Ribbon */
+.ribbon-banner-wrap {
+  text-align: center;
+  margin-top: 14px;
+}
+
+.ribbon-pill {
+  display: inline-block;
+  background: linear-gradient(180deg, #1e3a8a, #0f172a);
+  color: #fef08a;
+  font-size: 17px;
+  font-weight: 900;
+  padding: 7px 42px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  border: 1.5px solid #facc15;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.pg-merit-title {
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #b91c1c;
+  font-style: italic;
+  font-family: 'Playfair Display', Georgia, serif;
+  text-decoration: underline;
+  margin-top: 5px;
+}
+
+/* Main Body Flow with Floating Photo */
+.cert-body-flow {
+  position: relative;
+  clear: both;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.passport-photo-floating {
+  float: right;
+  width: 86px;
+  height: 106px;
+  border: 2px solid #8e2a37;
+  padding: 2px;
+  background: #fff;
+  margin: 0 0 8px 16px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+  border-radius: 4px;
+}
+
+.passport-photo-floating img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reg-no-line {
+  font-size: 15px;
+  font-weight: 800;
+  color: #047857;
+  margin-bottom: 8px;
+}
+
+.val-reg {
+  color: #047857;
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.tamil-flow-para {
+  font-size: 15.5px;
+  line-height: 2.15;
+  color: #0f172a;
+  text-align: justify;
+  text-justify: inter-word;
+  letter-spacing: 0.15px;
+  text-indent: 35px;
+}
+
+.fill-line {
+  font-weight: 800;
+  color: #b91c1c;
+  border-bottom: 1.5px dotted #334155;
+  padding: 0 5px;
+}
+
+.fill-line.name {
+  font-size: 16.5px;
+}
+
+/* Title box */
+.awarded-title-box {
+  text-align: center;
+  clear: both;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.title-tamil {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  color: #dc2626;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(220, 38, 38, 0.15);
+}
+
+.title-sub-ta {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.cert-statement-english {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.eng-para {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 2.0;
+  color: #0f172a;
+  text-align: justify;
+  text-justify: inter-word;
+  text-indent: 35px;
+}
+
+.eng-sub-statement {
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: #334155;
+  text-align: justify;
+  text-justify: inter-word;
+  margin-top: 6px;
+  font-style: italic;
+  text-indent: 35px;
+}
+
+.eng-title-highlight {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  color: #dc2626;
+  margin: 12px 0 4px 0;
+  letter-spacing: 0.5px;
+}
+
+.eng-congrats {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #15803d;
+  font-style: italic;
+  font-family: 'Playfair Display', Georgia, serif;
+  margin-bottom: 4px;
+}
+
+/* Bottom Signatures */
+.cert-bottom-section {
+  margin-top: auto;
+  border-top: 1.5px dashed #cbd5e1;
+  padding-top: 16px;
+  width: 100%;
+}
+
+.date-place-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.dp-item {
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.signatures-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+
+.sig-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sig-space {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sig-handwritten {
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  font-size: 22px;
+  color: #dc2626;
+}
+
+.sig-handwritten.sec {
+  color: #2563eb;
+}
+
+.sig-handwritten.teacher {
+  color: #1e40af;
+}
+
+.sig-handwritten.founder {
+  color: #059669;
+}
+
+.sig-role-ta {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+}
+
+.sig-role-en {
+  font-size: 11px;
+  color: #475569;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ========================================================================= */
+/* SPECIFIC OVERRIDES FOR MUTHUNILAI (PG - ஜோதிட கலாநிதி) CERTIFICATE        */
+/* ========================================================================= */
+.pg-cert .ornate-inner-border {
+  padding: 16px 22px 14px 22px;
+}
+
+.pg-cert .cert-header-section {
+  margin-bottom: 20px;
+}
+
+.pg-cert .top-invocation {
+  font-size: 15px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  letter-spacing: 3px;
+}
+
+.pg-cert .inst-header-block {
+  margin-bottom: 6px;
+}
+
+.pg-cert .inst-seal-img {
+  width: 94px;
+  height: 94px;
+}
+
+.pg-cert .inst-logo-wrap {
+  width: 94px;
+  height: 94px;
+  left: 8px;
+  top: 4px;
+}
+
+.pg-cert .inst-main-title {
+  font-size: 35px;
+  line-height: 1.35;
+  letter-spacing: 1px;
+}
+
+.pg-cert .inst-sub-title {
+  font-size: 24px;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+.pg-cert .inst-trust-reg {
+  font-size: 12.5px;
+  margin-top: 5px;
+}
+
+.pg-cert .inst-address,
+.pg-cert .inst-email {
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.pg-cert .ribbon-banner-wrap {
+  margin-top: 10px;
+}
+
+.pg-cert .ribbon-pill {
+  font-size: 16px;
+  padding: 6px 36px;
+}
+
+.pg-cert .pg-merit-title {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.pg-cert .cert-body-flow {
+  margin-bottom: 20px;
+}
+
+.pg-cert .passport-photo-floating {
+  width: 84px;
+  height: 104px;
+  margin: 0 0 6px 14px;
+}
+
+.pg-cert .reg-no-line {
+  font-size: 14.5px;
+  margin-bottom: 6px;
+}
+
+.pg-cert .tamil-flow-para {
+  font-size: 15px;
+  line-height: 2.0;
+  text-indent: 32px;
+}
+
+.pg-cert .awarded-title-box {
+  margin-bottom: 20px;
+}
+
+.pg-cert .title-tamil {
+  font-size: 33px;
+}
+
+.pg-cert .title-sub-ta {
+  font-size: 13.5px;
+  margin-top: 3px;
+}
+
+.pg-cert .cert-statement-english {
+  margin-bottom: 18px;
+}
+
+.pg-cert .eng-para {
+  font-size: 14px;
+  line-height: 1.85;
+  text-indent: 32px;
+}
+
+.pg-cert .eng-sub-statement {
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 5px;
+  text-indent: 32px;
+}
+
+.pg-cert .eng-title-highlight {
+  font-size: 26px;
+  margin: 10px 0 3px 0;
+}
+
+.pg-cert .eng-congrats {
+  font-size: 15.5px;
+  margin-bottom: 4px;
+}
+
+.pg-cert .cert-bottom-section {
+  padding-top: 14px;
+}
+
+.pg-cert .date-place-row {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.pg-cert .signatures-grid-4 {
+  gap: 10px;
+}
+
+.pg-cert .sig-space {
+  height: 40px;
+}
+
+.pg-cert .sig-handwritten {
+  font-size: 21px;
+}
+
+.pg-cert .sig-role-ta {
+  font-size: 12px;
+}
+
+.pg-cert .sig-role-en {
+  font-size: 10.5px;
+}
+
+/* ========================================================================= */
+/* OFFICIAL AUTHENTIC SRI AARUTHRAA MARKSHEET (A4 LAYOUT)                    */
+/* ========================================================================= */
+
+.official-marksheet-layout {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.marksheet-outer-border {
+  border: 6px solid #b45309;
+  padding: 4px;
+  background: #ffffff;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.marksheet-inner-border {
+  border: 1.5px solid #451a03;
+  padding: 16px 20px;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.official-marksheet-layout .top-invocation {
+  line-height: 1.2;
+  margin-bottom: 0px;
+}
+
+.marksheet-header-block {
+  position: relative;
+  text-align: center;
+  margin-bottom: 6px;
+  min-height: 105px;
+}
+
+.ms-logo-wrap {
+  width: 110px;
+  height: 125px;
+  position: absolute;
+  left: 6px;
+  top: -20px;
+  margin-bottom: 0;
+}
+
+.ms-logo-wrap .inst-seal-img {
+  width: 110px;
+  height: 125px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 2px solid #D4AF37;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  background: #ffffff;
+}
+
+.official-marksheet-layout .ms-text-wrap {
+  margin-top: -12px;
+}
+
+.official-marksheet-layout .inst-main-title {
+  line-height: 1.1;
+  margin: 0;
+}
+
+.official-marksheet-layout .inst-sub-title {
+  line-height: 1.5;
+  margin: 0;
+}
+
+.official-marksheet-layout .inst-trust-reg {
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ms-heading-ta {
+  font-size: 13px;
+  font-weight: 900;
+  color: #000;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ms-heading-en {
+  font-size: 11px;
+  font-weight: 800;
+  color: #000;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ms-auth-line {
+  font-size: 10px;
+  color: #1e293b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.student-meta-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  border: 1px solid #000;
+  margin: 8px 0;
+  background: #fffdf5;
+}
+
+.meta-item {
+  padding: 6px 10px;
+  border-bottom: 1px solid #cbd5e1;
+  font-size: 13px;
+}
+
+.meta-item:nth-child(even) {
+  border-left: 1px solid #cbd5e1;
+}
+
+.m-lbl {
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.m-val-ta {
+  font-weight: 800;
+  color: #b91c1c;
+}
+
+.m-val {
+  font-weight: 700;
+}
+
+.m-val.code {
+  font-family: monospace;
+  font-weight: 800;
+}
+
+.m-sub {
+  font-size: 11.5px;
+  color: #334155;
+}
+
+.marks-table-banner {
+  text-align: center;
+  background: transparent;
+  border: none;
+  padding: 4px 0 6px 0;
+}
+
+.t-banner-ta {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #000;
+}
+
+.t-banner-en {
+  font-size: 11.5px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.marks-official-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border: 1px solid #000;
+}
+
+.marks-official-table th {
+  border: 1px solid #000;
+  background: #f1f5f9;
+  padding: 6px 8px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.marks-official-table td {
+  border: 1px solid #000;
+  padding: 7px 8px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mark-val {
+  font-weight: 800;
+}
+
+.pass-tag {
+  font-weight: 800;
+  color: #15803d;
+}
+
+.section-row td {
+  background: #fafaf9;
+  font-weight: 800;
+  padding: 3px 6px;
+}
+
+.summary-total-row td, .summary-pct-row td, .summary-award-row td {
+  background: #fffdf5;
+  font-weight: 800;
+}
+
+.total-val {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.pct-val {
+  font-size: 14px;
+  color: #15803d;
+}
+
+.grade-val {
+  font-size: 11px;
+  color: #1e3a8a;
+}
+
+.award-val {
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.pass-criteria-notes {
+  margin: 10px 0 12px 0;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pass-crit-line {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
+}
+
+.marksheet-signatures-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  text-align: center;
+  margin-top: 14px;
+}
+
+/* ========================================================================= */
+/* PRINT STYLESHEET (OPTIMIZED FOR CLEAN A4 PRINTS)                          */
+/* ========================================================================= */
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .designer-modal-backdrop,
+  .designer-modal-container,
+  .a4-stage-wrapper,
+  #printDocumentArea,
+  #printDocumentArea * {
+    visibility: visible;
+  }
+
+  .designer-modal-backdrop {
+    position: static;
+    width: 100%;
+    height: auto;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .designer-modal-container {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .designer-topbar,
+  .preview-status-zoom,
+  .level-switch-group,
+  .preview-tabs,
+  .d-actions-group {
+    display: none !important;
+  }
+
+  .a4-stage-wrapper {
+    padding: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .a4-page-sheet {
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    transform: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 6mm;
+  }
+}
+
+

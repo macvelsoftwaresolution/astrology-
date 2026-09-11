@@ -42,7 +42,27 @@ export class LearnCertificateComponent implements OnInit {
     this.http.get<any>(`${environment.apiUrl}/user/certificates`, headers).subscribe({
       next: (res) => {
         if (res && res.certificates && Array.isArray(res.certificates)) {
-          this.certificates = res.certificates;
+          // Strictly keep only certificates published by admin
+          this.certificates = res.certificates.filter((c: any) => c.is_published == 1 || c.is_published === true || c.published == 1);
+          this.certificates.forEach((c: any) => {
+            if (c.custom_data) {
+              try {
+                const cd = typeof c.custom_data === 'string' ? JSON.parse(c.custom_data) : c.custom_data;
+                c.has_mcq2 = cd.has_mcq2 ?? false;
+                c.has_practicals = cd.has_practicals ?? false;
+                c.has_practical2 = cd.has_practical2 ?? false;
+                c.has_practical3 = cd.has_practical3 ?? false;
+                c.pass_criteria_theory = cd.pass_criteria_theory || c.pass_criteria_theory;
+                c.pass_criteria_practical = cd.pass_criteria_practical || c.pass_criteria_practical;
+              } catch (e) {}
+            } else {
+              c.has_mcq2 = false;
+              c.has_practicals = false;
+              c.has_practical2 = false;
+              c.has_practical3 = false;
+            }
+          });
+
           if (this.certificates.length > 0) {
             this.selectedCert = this.certificates[0];
           } else {
@@ -64,6 +84,22 @@ export class LearnCertificateComponent implements OnInit {
 
   selectCertificate(cert: any) {
     this.selectedCert = cert;
+    this.enrichCertFlags(this.selectedCert);
+  }
+
+  private enrichCertFlags(c: any) {
+    if (!c) return;
+    if (c.custom_data) {
+      try {
+        const cd = typeof c.custom_data === 'string' ? JSON.parse(c.custom_data) : c.custom_data;
+        c.has_mcq2 = cd.has_mcq2 ?? false;
+        c.has_practicals = cd.has_practicals ?? false;
+        c.has_practical2 = cd.has_practical2 ?? false;
+        c.has_practical3 = cd.has_practical3 ?? false;
+        c.pass_criteria_theory = cd.pass_criteria_theory || c.pass_criteria_theory;
+        c.pass_criteria_practical = cd.pass_criteria_practical || c.pass_criteria_practical;
+      } catch (e) {}
+    }
   }
 
   get studentName(): string {
@@ -73,41 +109,59 @@ export class LearnCertificateComponent implements OnInit {
   get hasCertificateDoc(): boolean {
     if (!this.selectedCert) return false;
     const cert = this.selectedCert;
+    const isPub = (cert.is_published == 1 || cert.is_published === true || cert.published == 1);
+    if (!isPub) return false;
     return !!(cert.pdf_download_url || cert.cert_pdf_url || cert.pdf_url || cert.file_url || cert.url || cert.certificate_number);
   }
 
   get hasMarksheetDoc(): boolean {
     if (!this.selectedCert) return false;
     const cert = this.selectedCert;
+    const isPub = (cert.is_published == 1 || cert.is_published === true || cert.published == 1);
+    if (!isPub) return false;
     return !!(cert.marksheet_download_url || cert.marksheet_url || cert.marksheet_number);
   }
 
-  downloadCertificate(cert?: any) {
+  getCertificateDownloadUrl(cert?: any): string {
     const target = cert || this.selectedCert;
-    const fileUrl = target?.pdf_download_url || target?.cert_pdf_url || target?.pdf_url || target?.file_url || target?.url || '';
-    const name = target?.course_title || '';
-    this.downloadDocument(fileUrl, name);
+    if (!target) return '';
+    const certId = target.id || target.certificate_number || target.registration_number;
+    return `${environment.apiUrl}/certificates/${certId}/download?type=certificate`;
+  }
+
+  getMarksheetDownloadUrl(cert?: any): string {
+    const target = cert || this.selectedCert;
+    if (!target) return '';
+    const certId = target.id || target.marksheet_number || target.certificate_number || target.registration_number;
+    return `${environment.apiUrl}/marksheets/${certId}/download?type=marksheet`;
+  }
+
+  downloadCertificate(cert?: any) {
+    const url = this.getCertificateDownloadUrl(cert);
+    const target = cert || this.selectedCert;
+    const name = target?.award_title_ta || target?.course_title || 'சான்றிதழ் (Certificate)';
+    this.downloadDocument(url, name);
   }
 
   shareCertificate(cert?: any) {
+    const url = this.getCertificateDownloadUrl(cert);
     const target = cert || this.selectedCert;
-    const fileUrl = target?.pdf_download_url || target?.cert_pdf_url || target?.pdf_url || target?.file_url || target?.url || '';
-    const name = target?.course_title || '';
-    this.shareDocument(fileUrl, name);
+    const name = `ஸ்ரீ ஆருத்ரா ஜோதிட சாஸ்திர வித்யாலயம் - ${target?.award_title_ta || 'சான்றிதழ்'}`;
+    this.shareDocument(url, name);
   }
 
   downloadMarksheet(cert?: any) {
+    const url = this.getMarksheetDownloadUrl(cert);
     const target = cert || this.selectedCert;
-    const fileUrl = target?.marksheet_download_url || target?.marksheet_url || '';
-    const name = target?.course_title ? `${target.course_title} Marksheet` : '';
-    this.downloadDocument(fileUrl, name);
+    const name = target?.course_title ? `${target.course_title} Marksheet` : 'மதிப்பெண் பட்டியல் (Marksheet)';
+    this.downloadDocument(url, name);
   }
 
   shareMarksheet(cert?: any) {
+    const url = this.getMarksheetDownloadUrl(cert);
     const target = cert || this.selectedCert;
-    const fileUrl = target?.marksheet_download_url || target?.marksheet_url || '';
-    const name = target?.course_title ? `${target.course_title} Marksheet` : '';
-    this.shareDocument(fileUrl, name);
+    const name = `ஸ்ரீ ஆருத்ரா ஜோதிட தேர்வு மதிப்பெண் பட்டியல் - ${target?.registration_number || ''}`;
+    this.shareDocument(url, name);
   }
 
   downloadDocument(docUrl: string, docName: string) {

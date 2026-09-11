@@ -117,7 +117,7 @@
       <div class="form-row-dob-age">
         <div class="simple-field-group">
           <label class="simple-label">{{ 'learn.dob' | translate }} <span class="req">*</span></label>
-          <div class="dob-segmented-container">
+          <div class="dob-segmented-container" [class.has-error]="!!dobError">
             <div class="dob-segments-group">
               <input #dayInput
                      type="tel"
@@ -125,6 +125,7 @@
                      placeholder="DD"
                      [(ngModel)]="dobDay"
                      (input)="onDayInput($event, monthInput)"
+                     (blur)="onDayBlur()"
                      class="dob-seg-input seg-day">
               <span class="dob-sep">/</span>
               <input #monthInput
@@ -134,6 +135,7 @@
                      [(ngModel)]="dobMonth"
                      (input)="onMonthInput($event, yearInput)"
                      (keydown)="onMonthKeydown($event, dayInput)"
+                     (blur)="onMonthBlur()"
                      class="dob-seg-input seg-month">
               <span class="dob-sep">/</span>
               <input #yearInput
@@ -143,15 +145,22 @@
                      [(ngModel)]="dobYear"
                      (input)="onYearInput($event)"
                      (keydown)="onYearKeydown($event, monthInput)"
+                     (blur)="onYearBlur()"
                      class="dob-seg-input seg-year">
             </div>
           </div>
+          @if (dobError) {
+            <div class="dob-inline-error">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>{{ dobError }}</span>
+            </div>
+          }
         </div>
 
         <div class="simple-field-group">
           <label class="simple-label">{{ 'learn.age' | translate }}</label>
-          <div class="simple-read-box">
-            {{ localForm.age ? localForm.age : '-' }}
+          <div class="simple-read-box" [class.has-age]="!!localForm.age">
+            {{ localForm.age ? (localForm.age + (translationService.currentLanguage() === 'ta' ? ' வயது' : ' Yrs')) : '-' }}
           </div>
         </div>
       </div>
