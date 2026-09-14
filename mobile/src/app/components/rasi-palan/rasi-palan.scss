@@ -9,10 +9,10 @@ $color-white: #FFFFFF;
 
 .overlay-panel.rasi-palan-page {
   position: fixed;
-  top: 70px;
+  top: calc(var(--ion-safe-area-top, env(safe-area-inset-top, 12px)) + 74px);
   left: 0;
   width: 100%;
-  height: calc(100% - 70px);
+  height: calc(100% - (var(--ion-safe-area-top, env(safe-area-inset-top, 12px)) + 74px));
   background-color: $color-bg;
   z-index: 980;
   display: flex;
@@ -36,7 +36,7 @@ $color-white: #FFFFFF;
 }
 
 .rasi-content-scroll {
-  padding: 1.25rem 1.25rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 7.5rem) 1.25rem;
+  padding: 1.5rem 1.25rem calc(var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 20px)) + 7.5rem) 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -44,17 +44,18 @@ $color-white: #FFFFFF;
 
 /* Title Section */
 .title-section {
-  padding-top: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
 
   .page-title {
     font-family: 'Noto Serif Tamil', 'Mukta Malar', serif;
     font-size: 1.55rem;
     font-weight: 800;
     color: $color-maroon;
-    margin: 0 0 0.35rem 0;
-    line-height: 1.45;
-    padding-top: 4px;
-    padding-bottom: 2px;
+    margin: 0 0 0.4rem 0;
+    line-height: 1.5;
+    padding-top: 8px;
+    padding-bottom: 4px;
     overflow: visible;
   }
   .page-subtitle {
