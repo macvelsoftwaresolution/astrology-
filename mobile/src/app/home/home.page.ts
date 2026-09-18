@@ -233,6 +233,10 @@ export class HomePage implements OnInit {
     this.router.navigate(['/jathagam-writing']);
   }
 
+  goToConsulting() {
+    this.selectTab('services');
+  }
+
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(0);
