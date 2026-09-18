@@ -391,12 +391,19 @@ export class LearnEnrollComponent implements OnInit {
       next: (res: any) => {
         if (res && res.success && res.batches && res.batches.length > 0) {
           this.availableBatches = res.batches;
-          // Auto select first active batch or default quarter batch
-          const active = res.batches.find((b: any) => b.status === 'active') || res.batches[0];
-          if (active && !this.localForm.batch_id) {
-            this.localForm.batch_id = active.id;
-            this.localForm.batch_name = active.name;
-            this.activeBatchName = active.name;
+          // Use recommended_batch_id from backend (same batch assigned on registration)
+          // Fallback: first active batch, then first batch in list
+          let selected = null;
+          if (res.recommended_batch_id) {
+            selected = res.batches.find((b: any) => b.id === res.recommended_batch_id);
+          }
+          if (!selected) {
+            selected = res.batches.find((b: any) => b.status === 'active') || res.batches[0];
+          }
+          if (selected && !this.localForm.batch_id) {
+            this.localForm.batch_id = selected.id;
+            this.localForm.batch_name = selected.name;
+            this.activeBatchName = selected.name;
           }
         }
       },

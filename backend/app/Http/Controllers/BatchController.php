@@ -85,7 +85,15 @@ class BatchController extends Controller
     }
 
     /**
-     * Determine auto batch for a given registration date
+     * Determine auto batch for a given registration date.
+     *
+     * Rule: Only the FIRST month of each quarter joins the current batch.
+     * From the 2nd month onwards (batch already running), assign to the NEXT batch.
+     *
+     * Quarter 1 (B1): Jan-Mar  → Jan only → B1 | Feb, Mar → B2
+     * Quarter 2 (B2): Apr-Jun  → Apr only → B2 | May, Jun → B3
+     * Quarter 3 (B3): Jul-Sep  → Jul only → B3 | Aug, Sep → B4
+     * Quarter 4 (B4): Oct-Dec  → Oct only → B4 | Nov, Dec → next year B1
      */
     public static function getAutoBatchForDate($date = null, $courseLevel = 'all')
     {
@@ -95,14 +103,27 @@ class BatchController extends Controller
 
         self::ensureDefaultBatches($year);
 
-        if ($month <= 3) {
-            $code = "{$year}-B1";
+        // Only first month of quarter → current batch. 2nd & 3rd month → next batch.
+        if ($month === 1) {
+            $code = "{$year}-B1";                   // Jan → B1
+        } elseif ($month <= 3) {
+            $code = "{$year}-B2";                   // Feb, Mar → B2
+            self::ensureDefaultBatches($year);
+        } elseif ($month === 4) {
+            $code = "{$year}-B2";                   // Apr → B2
         } elseif ($month <= 6) {
-            $code = "{$year}-B2";
+            $code = "{$year}-B3";                   // May, Jun → B3
+        } elseif ($month === 7) {
+            $code = "{$year}-B3";                   // Jul → B3
         } elseif ($month <= 9) {
-            $code = "{$year}-B3";
+            $code = "{$year}-B4";                   // Aug, Sep → B4
+        } elseif ($month === 10) {
+            $code = "{$year}-B4";                   // Oct → B4
         } else {
-            $code = "{$year}-B4";
+            // Nov, Dec → next year B1
+            $nextYear = $year + 1;
+            self::ensureDefaultBatches($nextYear);
+            $code = "{$nextYear}-B1";
         }
 
         $batch = DB::table('batches')->where('batch_code', $code)->first();
@@ -110,21 +131,30 @@ class BatchController extends Controller
     }
 
     /**
-     * Public API: Get Active / Upcoming Batches for enrollment (Active first, then Upcoming)
+     * Public API: Get Active / Upcoming Batches for enrollment.
+     * Returns the recommended batch (same one that will be auto-assigned on registration) first.
      */
     public function getPublicBatches()
     {
         self::ensureDefaultBatches();
 
+        // Determine the batch that will actually be assigned when registering today
+        $recommendedBatch = self::getAutoBatchForDate(now());
+
         $batches = DB::table('batches')
             ->whereIn('status', ['active', 'upcoming'])
-            ->orderByRaw("CASE WHEN status = 'active' THEN 1 WHEN status = 'upcoming' THEN 2 ELSE 3 END")
             ->orderBy('start_date', 'asc')
-            ->get();
+            ->get()
+            ->sortBy(function ($b) use ($recommendedBatch) {
+                // Recommended batch always comes first
+                return ($recommendedBatch && $b->id === $recommendedBatch->id) ? 0 : 1;
+            })
+            ->values();
 
         return response()->json([
-            'success' => true,
-            'batches' => $batches
+            'success'              => true,
+            'batches'              => $batches,
+            'recommended_batch_id' => $recommendedBatch ? $recommendedBatch->id : null,
         ]);
     }
 
