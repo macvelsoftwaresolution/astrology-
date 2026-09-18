@@ -134,7 +134,7 @@ export class LmsTabComponent implements OnInit {
         this.batches = cached;
         const targetBatch = (this.selectedBatchId && this.batches.find(b => b.id === this.selectedBatchId))
           ? this.selectedBatchId
-          : this.batches[0].id;
+          : (this.batches.find(b => b.status === 'active') || this.batches[0]).id;
         this.selectBatch(targetBatch);
       }
     }
@@ -147,7 +147,7 @@ export class LmsTabComponent implements OnInit {
           this.batches = res.batches;
           const targetBatch = (this.selectedBatchId && this.batches.find(b => b.id === this.selectedBatchId))
             ? this.selectedBatchId
-            : this.batches[0].id;
+            : (this.batches.find(b => b.status === 'active') || this.batches[0]).id;
           this.selectBatch(targetBatch);
         }
         this.cdr.detectChanges();
@@ -537,16 +537,38 @@ export class LmsTabComponent implements OnInit {
   }
 
   async submitCopyBatch(): Promise<void> {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (!this.copyFromBatchId || !this.selectedBatchId) {
-      this.toastService.warning('தயவுசெய்து நகலெடுக்க வேண்டிய மூலப் பிரிவைத் தேர்வு செய்யவும்.', 'எச்சரிக்கை');
+      this.toastService.warning(
+        isTa ? 'தயவுசெய்து நகலெடுக்க வேண்டிய மூலப் பிரிவைத் தேர்வு செய்யவும்.' : 'Please select a source batch to copy from.',
+        isTa ? 'எச்சரிக்கை' : 'Warning'
+      );
       return;
     }
+    const count = (this.curriculumDays || []).filter((d: any) =>
+      d.title && !d.title.includes('அமைக்கப்படவில்லை') && !d.title.includes('Not Set')
+    ).length;
+    const batchName = this.selectedBatch ? this.getBatchDisplayName(this.selectedBatch) : '';
+
+    const title = isTa ? 'பாடத்திட்டத்தை நகலெடுக்கவா?' : 'Copy Curriculum Lessons?';
+    const message = isTa
+      ? (count > 0
+          ? `"${batchName}"-ல் ஏற்கனவே ${count} பாடங்கள் உள்ளன. Copy பண்ணினால் அவை overwrite ஆகும்! தொடர விரும்புகிறீர்களா?`
+          : 'மூலப் பிரிவின் பாடங்கள் நகலெடுக்கப்படும். தொடர விரும்புகிறீர்களா?')
+      : (count > 0
+          ? `"${batchName}" already contains ${count} lesson(s). Copying will overwrite them! Do you want to continue?`
+          : 'Curriculum lessons will be copied from the source batch. Do you want to continue?');
+
+    const confirmText = isTa ? 'ஆம், நகலெடு' : 'Yes, Copy';
+    const cancelText = isTa ? 'ரத்து' : 'Cancel';
+
     const ok = await this.confirmService.confirm({
-      title: 'பாடத்திட்டத்தை நகலெடுக்கவா?',
-      message: 'இந்த பிரிவில் உள்ள தற்போதைய பாடங்கள் மூலப் பிரிவின் பாடங்களால் மாற்றியமைக்கப்படும். தொடர விரும்புகிறீர்களா?',
-      confirmText: 'ஆம், நகலெடு',
-      type: 'warning',
-      icon: 'bi bi-copy'
+      title,
+      message,
+      confirmText,
+      cancelText,
+      type: count > 0 ? 'warning' : 'primary',
+      icon: count > 0 ? 'bi bi-exclamation-triangle' : 'bi bi-copy'
     });
     if (!ok) return;
 
@@ -556,11 +578,17 @@ export class LmsTabComponent implements OnInit {
       to_batch_id: this.selectedBatchId
     }, headers).subscribe({
       next: (res) => {
-        this.toastService.success(res.message || 'பாடத்திட்டம் வெற்றிகரமாக நகலெடுக்கப்பட்டது!');
+        this.toastService.success(
+          isTa ? 'பாடத்திட்டம் வெற்றிகரமாக நகலெடுக்கப்பட்டது!' : (res.message || 'Curriculum copied successfully!')
+        );
         this.openCopyBatchModal = false;
         this.loadCurriculum();
       },
-      error: (err) => this.toastService.error(err.error?.message || 'பாடத்திட்டத்தை நகலெடுப்பதில் பிழை.')
+      error: (err) => {
+        this.toastService.error(
+          isTa ? (err.error?.message || 'பாடத்திட்டத்தை நகலெடுப்பதில் பிழை.') : (err.error?.message || 'Error copying curriculum.')
+        );
+      }
     });
   }
 

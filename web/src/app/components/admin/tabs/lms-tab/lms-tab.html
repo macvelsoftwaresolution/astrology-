@@ -1594,29 +1594,43 @@
     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
     <div
       style="background: #fff; border-radius: 20px; width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #e2e8f0;">
-      <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center;"><i class="bi bi-clipboard-check-fill me-2" style="color: #4f46e5;"></i> 1-Click Copy Curriculum</h3>
-      <p style="font-size: 13px; color: #64748b; margin: 0 0 20px 0;">ஒரு Batch-ன் 60 நாள் பாடங்களை அப்படியே தற்போதைய
-        Batch-க்கு நகல் எடுக்க கீழே உள்ள மூல Batch-ஐத் தேர்வு செய்யவும்.</p>
+      <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; display: flex; align-items: center;">
+        <i class="bi bi-copy me-2" style="color: #4f46e5;"></i>
+        {{ translationService.currentLanguage() === 'ta' ? 'பாடத்திட்டத்தை நகலெடு (Copy Curriculum)' : '1-Click Copy Curriculum' }}
+      </h3>
+      <p style="font-size: 13px; color: #64748b; margin: 0 0 20px 0;">
+        {{ translationService.currentLanguage() === 'ta' 
+            ? 'ஒரு பிரிவின் (Batch) 60 நாள் பாடங்களை அப்படியே தற்போதைய பிரிவுக்கு நகல் எடுக்க கீழே உள்ள மூலப் பிரிவைத் தேர்வு செய்யவும்.' 
+            : 'Select a source batch below to copy all 60 days of curriculum lessons directly into the current batch.' }}
+      </p>
 
       <div style="margin-bottom: 20px;">
-        <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">எந்த
-          Batch-லிருந்து Copy செய்ய வேண்டும்?</label>
+        <label style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+          {{ translationService.currentLanguage() === 'ta' ? 'எந்தப் பிரிவிலிருந்து (Source Batch) நகலெடுக்க வேண்டும்?' : 'Select Source Batch to copy from:' }}
+        </label>
         <select [(ngModel)]="copyFromBatchId" class="ctrl" style="width: 100%; font-weight: 600;">
-          <option [value]="null">Select Source Batch...</option>
+          <option [value]="null">
+            {{ translationService.currentLanguage() === 'ta' ? 'மூலப் பிரிவைத் தேர்வு செய்யவும்...' : 'Select Source Batch...' }}
+          </option>
           @for (b of batches; track b.id) {
-          @if (b.id !== selectedBatchId) {
-          <option [value]="b.id">{{ b.name }} ({{ b.quarter }})</option>
-          }
+            @if (b.id !== selectedBatchId) {
+              <option [value]="b.id">{{ getBatchDisplayName(b) }}</option>
+            }
           }
         </select>
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 12px;">
         <button (click)="openCopyBatchModal = false"
-          style="background: #f1f5f9; color: #475569; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer;">ரத்து</button>
+          style="background: #f1f5f9; color: #475569; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <i class="bi bi-x-lg"></i>
+          {{ translationService.currentLanguage() === 'ta' ? 'ரத்து' : 'Cancel' }}
+        </button>
         <button (click)="submitCopyBatch()"
-          style="background: #4f46e5; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">Copy
-          60 Days Now</button>
+          style="background: #4f46e5; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <i class="bi bi-copy"></i>
+          {{ translationService.currentLanguage() === 'ta' ? 'பாடங்களை நகலெடு' : 'Copy 60 Days Now' }}
+        </button>
       </div>
     </div>
   </div>
