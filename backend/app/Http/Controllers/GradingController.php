@@ -962,14 +962,26 @@ class GradingController extends Controller
     public function adminUploadCertificate(Request $request)
     {
         $request->validate([
-            'student_id' => 'required|exists:users,id',
+            'student_id' => 'required',
             'pdf_download_url' => 'nullable|string',
             'course_id' => 'nullable',
             'score' => 'nullable|integer',
             'grade' => 'nullable|string',
             'issue_date' => 'nullable|date',
             'certificate_number' => 'nullable|string',
+            'submission_id' => 'nullable|integer',
         ]);
+
+        $rawStudentId = $request->input('student_id');
+        $studentUser = DB::table('users')->where('id', $rawStudentId)->first();
+        if (!$studentUser) {
+            $studentFromTable = DB::table('students')->where('id', $rawStudentId)->first();
+            if ($studentFromTable && !empty($studentFromTable->email)) {
+                $studentUser = DB::table('users')->where('email', $studentFromTable->email)->first();
+            }
+        }
+        $studentId = $studentUser ? $studentUser->id : $rawStudentId;
+        $regNumber = $studentUser ? ($studentUser->student_id ?? null) : null;
 
         $courseId = $request->course_id ?: (DB::table('courses')->value('id') ?: 1);
         $certNum = $request->certificate_number ?: ('ASTRO-CERT-' . date('Y') . '-' . strtoupper(Str::random(6)));
@@ -978,7 +990,12 @@ class GradingController extends Controller
 
         // Check if student already has certificate record for this course
         $existing = DB::table('certificates')
-            ->where('student_id', $request->student_id)
+            ->where(function($q) use ($studentId, $regNumber) {
+                $q->where('student_id', $studentId);
+                if (!empty($regNumber)) {
+                    $q->orWhere('registration_number', $regNumber);
+                }
+            })
             ->where('course_id', $courseId)
             ->first();
 
@@ -989,29 +1006,36 @@ class GradingController extends Controller
                 'score'              => $request->score ?: $existing->score,
                 'grade'              => $request->grade ?: ($existing->grade ?? 'First Class'),
                 'issue_date'         => $request->issue_date ?: $existing->issue_date,
+                'is_published'       => 1,
                 'updated_at'         => now(),
             ]);
             $certId = $existing->id;
         } else {
             $certId = DB::table('certificates')->insertGetId([
-                'certificate_number' => strtoupper($certNum),
-                'student_id'         => $request->student_id,
-                'course_id'          => $courseId,
-                'score'              => $request->score ?: 100,
-                'grade'              => $request->grade ?: 'First Class',
-                'issue_date'         => $request->issue_date ?: now()->toDateString(),
-                'verification_code'  => $verifyCode,
-                'pdf_download_url'   => $pdfUrl,
-                'created_at'         => now(),
-                'updated_at'         => now(),
+                'certificate_number'  => strtoupper($certNum),
+                'registration_number' => $regNumber ?: $certNum,
+                'student_id'          => $studentId,
+                'course_id'           => $courseId,
+                'score'               => $request->score ?: 100,
+                'grade'               => $request->grade ?: 'First Class',
+                'issue_date'          => $request->issue_date ?: now()->toDateString(),
+                'verification_code'   => $verifyCode,
+                'pdf_download_url'    => $pdfUrl,
+                'is_published'        => 1,
+                'created_at'          => now(),
+                'updated_at'          => now(),
             ]);
+        }
+
+        if ($request->submission_id) {
+            DB::table('student_submissions')->where('id', $request->submission_id)->update(['is_published' => 1]);
         }
 
         $certificate = DB::table('certificates')->where('id', $certId)->first();
 
         return response()->json([
             'success'     => true,
-            'message'     => 'Certificate issued successfully.',
+            'message'     => 'Certificate uploaded and published successfully.',
             'certificate' => $certificate
         ]);
     }
@@ -1022,14 +1046,26 @@ class GradingController extends Controller
     public function adminUploadMarksheet(Request $request)
     {
         $request->validate([
-            'student_id' => 'required|exists:users,id',
+            'student_id' => 'required',
             'marksheet_download_url' => 'nullable|string',
             'course_id' => 'nullable',
             'score' => 'nullable|integer',
             'grade' => 'nullable|string',
             'issue_date' => 'nullable|date',
             'marksheet_number' => 'nullable|string',
+            'submission_id' => 'nullable|integer',
         ]);
+
+        $rawStudentId = $request->input('student_id');
+        $studentUser = DB::table('users')->where('id', $rawStudentId)->first();
+        if (!$studentUser) {
+            $studentFromTable = DB::table('students')->where('id', $rawStudentId)->first();
+            if ($studentFromTable && !empty($studentFromTable->email)) {
+                $studentUser = DB::table('users')->where('email', $studentFromTable->email)->first();
+            }
+        }
+        $studentId = $studentUser ? $studentUser->id : $rawStudentId;
+        $regNumber = $studentUser ? ($studentUser->student_id ?? null) : null;
 
         $courseId = $request->course_id ?: (DB::table('courses')->value('id') ?: 1);
         $marksheetNum = $request->marksheet_number ?: ('ASTRO-MARK-' . date('Y') . '-' . strtoupper(Str::random(6)));
@@ -1037,7 +1073,12 @@ class GradingController extends Controller
 
         // Update or insert certificate record with marksheet
         $existing = DB::table('certificates')
-            ->where('student_id', $request->student_id)
+            ->where(function($q) use ($studentId, $regNumber) {
+                $q->where('student_id', $studentId);
+                if (!empty($regNumber)) {
+                    $q->orWhere('registration_number', $regNumber);
+                }
+            })
             ->where('course_id', $courseId)
             ->first();
 
@@ -1047,6 +1088,7 @@ class GradingController extends Controller
                 'marksheet_download_url' => $marksheetUrl,
                 'score'                  => $request->score ?: $existing->score,
                 'grade'                  => $request->grade ?: ($existing->grade ?? 'First Class'),
+                'is_published'           => 1,
                 'updated_at'             => now(),
             ]);
             $certId = $existing->id;
@@ -1056,8 +1098,9 @@ class GradingController extends Controller
 
             $certId = DB::table('certificates')->insertGetId([
                 'certificate_number'     => strtoupper($dummyCertNum),
+                'registration_number'    => $regNumber ?: $dummyCertNum,
                 'marksheet_number'       => strtoupper($marksheetNum),
-                'student_id'             => $request->student_id,
+                'student_id'             => $studentId,
                 'course_id'              => $courseId,
                 'score'                  => $request->score ?: 85,
                 'grade'                  => $request->grade ?: 'First Class',
@@ -1065,16 +1108,21 @@ class GradingController extends Controller
                 'verification_code'      => $verifyCode,
                 'pdf_download_url'       => "/api/certificates/{$dummyCertNum}/download",
                 'marksheet_download_url' => $marksheetUrl,
+                'is_published'           => 1,
                 'created_at'             => now(),
                 'updated_at'             => now(),
             ]);
+        }
+
+        if ($request->submission_id) {
+            DB::table('student_submissions')->where('id', $request->submission_id)->update(['is_published' => 1]);
         }
 
         $certificate = DB::table('certificates')->where('id', $certId)->first();
 
         return response()->json([
             'success'     => true,
-            'message'     => 'Mark Sheet issued and uploaded successfully.',
+            'message'     => 'Mark Sheet uploaded and published successfully.',
             'certificate' => $certificate
         ]);
     }
@@ -1261,6 +1309,14 @@ class GradingController extends Controller
             $type = 'marksheet';
         } else {
             $type = 'certificate';
+        }
+
+        // If admin uploaded a direct PDF / Image file, redirect to it directly
+        if ($type === 'certificate' && !empty($cert->pdf_download_url) && !str_contains($cert->pdf_download_url, '/download')) {
+            return redirect($cert->pdf_download_url);
+        }
+        if ($type === 'marksheet' && !empty($cert->marksheet_download_url) && !str_contains($cert->marksheet_download_url, '/download')) {
+            return redirect($cert->marksheet_download_url);
         }
 
         // Parse custom_data

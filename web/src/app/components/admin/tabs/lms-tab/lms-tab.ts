@@ -317,38 +317,86 @@ export class LmsTabComponent implements OnInit {
     const file = event.target?.files?.[0];
     if (!file || !this.editingDayLesson) return;
 
-    // Audio max limit: 10 MB
-    const maxAudioSize = 10 * 1024 * 1024;
+    const inputEl = event.target;
+
+    // Audio max limit: 100 MB (comfortably accommodates 30+ minutes high quality audio)
+    const maxAudioSize = 100 * 1024 * 1024;
     if (file.size > maxAudioSize) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      this.toastService.warning(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`, 'கோப்பு அளவு அதிகம்');
+      this.toastService.warning(`தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 100 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`, 'கோப்பு அளவு அதிகம்');
+      if (inputEl) inputEl.value = '';
       return;
     }
 
-    this.isUploadingDayAudio = true;
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'lms_audio');
+    const performUpload = () => {
+      this.isUploadingDayAudio = true;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'lms_audio');
 
-    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
-      next: (res) => {
-        if (res && res.url && this.editingDayLesson.audios_json[index]) {
-          this.editingDayLesson.audios_json[index].url = res.url;
-          this.toastService.success('ஆடியோ வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
+      this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+        next: (res) => {
+          if (res && res.url && this.editingDayLesson.audios_json[index]) {
+            this.editingDayLesson.audios_json[index].url = res.url;
+            this.toastService.success('ஆடியோ வெற்றிகரமாக பதிவேற்றப்பட்டது!', 'வெற்றி');
+          }
+          this.isUploadingDayAudio = false;
+          if (inputEl) inputEl.value = '';
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          if (err?.status === 413) {
+            this.toastService.error('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு அதிகமாக உள்ளது!', 'பதிவேற்றப் பிழை');
+          } else {
+            this.toastService.error('Audio upload failed.', 'பதிவேற்றப் பிழை');
+          }
+          this.isUploadingDayAudio = false;
+          if (inputEl) inputEl.value = '';
+          this.cdr.detectChanges();
         }
-        this.isUploadingDayAudio = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        if (err?.status === 413) {
-          this.toastService.error('413 Request Entity Too Large: ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!', 'பதிவேற்றப் பிழை');
-        } else {
-          this.toastService.error('Audio upload failed.', 'பதிவேற்றப் பிழை');
-        }
-        this.isUploadingDayAudio = false;
-        this.cdr.detectChanges();
+      });
+    };
+
+    // Check Audio Duration: Maximum 30 minutes (1800 seconds + 15s grace period)
+    const audioObj = new Audio();
+    const objectUrl = URL.createObjectURL(file);
+    audioObj.src = objectUrl;
+
+    let hasExecuted = false;
+    audioObj.onloadedmetadata = () => {
+      if (hasExecuted) return;
+      hasExecuted = true;
+      URL.revokeObjectURL(objectUrl);
+      const durationSec = Math.round(audioObj.duration || 0);
+      const maxDurationSec = 30 * 60 + 15; // 30 mins (1800s) + 15s tolerance
+      if (durationSec > maxDurationSec) {
+        const mins = Math.floor(durationSec / 60);
+        const secs = durationSec % 60;
+        this.toastService.warning(
+          `ஆடியோ கால அளவு ${mins} நிமிடம் ${secs} வினாடிகள் உள்ளது! அதிகபட்சம் 30 நிமிடங்களுக்குள் (30 minutes) இருக்கும் ஆடியோவை மட்டுமே சேர்க்க முடியும்.`,
+          'கால அளவு அதிகம் (Max 30 Mins)'
+        );
+        if (inputEl) inputEl.value = '';
+        return;
       }
-    });
+      performUpload();
+    };
+
+    audioObj.onerror = () => {
+      if (hasExecuted) return;
+      hasExecuted = true;
+      URL.revokeObjectURL(objectUrl);
+      performUpload();
+    };
+
+    // Fallback if metadata cannot be decoded within 2.5 seconds
+    setTimeout(() => {
+      if (!hasExecuted) {
+        hasExecuted = true;
+        URL.revokeObjectURL(objectUrl);
+        performUpload();
+      }
+    }, 2500);
   }
 
   // --- MULTIPLE PDFS HELPERS ---

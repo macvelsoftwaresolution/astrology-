@@ -125,7 +125,15 @@
     "bookingSuccessTitle": "Booking Confirmed Successfully!",
     "bookingRefBadge": "Ref. Code:",
     "notifTitle": "Confirmation Notification",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "learningInstituteBadge": "Online Institute • Admissions Open",
+    "learningInstituteTitle": "Sri Aaruthraa Astrology Institute",
+    "learningInstituteDesc": "We provide structured astrology training courses. Click here to view institute guidelines and syllabus details.",
+    "viewRulesAndDetails": "Rules & Details",
+    "learningRulesTitle": "Institute Rules & Regulations",
+    "learningLogoutNoticeTitle": "Important Notice",
+    "learningLogoutNoticeDesc": "To access the Astrology Learning Portal, you must log out of your current Astrology account before you can proceed to the Student Portal.",
+    "logoutAndProceedToLearn": "Logout & Proceed to Learning"
   },
   "profile": {
     "title": "Profile",

@@ -14,9 +14,10 @@ class FileUploadController extends Controller
      */
     public function upload(Request $request)
     {
-        @ini_set('upload_max_filesize', '40M');
-        @ini_set('post_max_size', '40M');
-        @ini_set('memory_limit', '256M');
+        @ini_set('upload_max_filesize', '128M');
+        @ini_set('post_max_size', '128M');
+        @ini_set('memory_limit', '512M');
+        @ini_set('max_execution_time', '300');
 
         $file = $request->file('file');
         if (!$file) {
@@ -27,17 +28,17 @@ class FileUploadController extends Controller
         $ext = strtolower($file->getClientOriginalExtension() ?: '');
 
         // Dynamic file size limits according to requirements:
-        // Audio: Max 10MB (10240 KB)
-        // Video: Max 25MB (25600 KB)
-        // PDF: Max 15MB (15360 KB)
-        // Others: Max 10MB (10240 KB)
-        $maxKb = 10240; // Default 10MB
-        if (str_starts_with($mime, 'audio/') || in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg'])) {
-            $maxKb = 10240; // 10 MB for Audio
+        // Audio: Max 100MB (102400 KB) - Supports up to 30+ minutes high quality audio
+        // Video: Max 50MB (51200 KB)
+        // PDF: Max 25MB (25600 KB)
+        // Others: Max 25MB (25600 KB)
+        $maxKb = 25600;
+        if (str_starts_with($mime, 'audio/') || in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'weba', 'opus'])) {
+            $maxKb = 102400; // 100 MB for Audio (supports up to 30+ minutes)
         } elseif (str_starts_with($mime, 'video/') || in_array($ext, ['mp4', 'mkv', 'avi', 'mov', 'webm'])) {
-            $maxKb = 25600; // 25 MB for Video
+            $maxKb = 51200; // 50 MB for Video
         } elseif ($mime === 'application/pdf' || $ext === 'pdf') {
-            $maxKb = 15360; // 15 MB for PDF
+            $maxKb = 25600; // 25 MB for PDF
         }
 
         $request->validate([

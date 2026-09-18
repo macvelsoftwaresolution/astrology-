@@ -126,6 +126,26 @@
         <span>{{ 'home.viewAll' | translate }}</span>
       </div>
     </div>
+
+    <!-- Astrology Learning Institute Promo Card (Under the 4 Key Services) -->
+    <div class="learning-promo-card" (click)="openLearningRules()">
+      <div class="learning-promo-inner">
+        <div class="learning-promo-left">
+          <h3 class="promo-title">{{ 'home.learningInstituteTitle' | translate }}</h3>
+          <div class="promo-cta-btn">
+            <span>{{ 'home.viewRulesAndDetails' | translate }}</span>
+            <i class="bi bi-arrow-right-short ms-1"></i>
+          </div>
+        </div>
+        <div class="learning-promo-right">
+          <div class="promo-icon-emblem">
+            <i class="bi bi-journal-richtext"></i>
+            <span class="emblem-sparkle"><i class="bi bi-stars"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Panchangam Widget Component -->
     <app-panchangam-widget [panchangam]="panchangam"></app-panchangam-widget>
   </div>
@@ -521,6 +541,92 @@
       <button class="btn-app-gold" (click)="closeServiceFlow()">{{ 'home.backToHome' | translate }}</button>
     </div>
     }
+
+  </div>
+  }
+
+  <!-- 5. LEARNING RULES & REGULATIONS SUB-VIEW -->
+  @if (activeServiceFlow === 'learning-rules') {
+  <div class="tab-content learning-rules-container">
+
+    <!-- STATIC LOGOUT INSTRUCTION NOTICE CARD - As explicitly requested by user -->
+    <div class="lr-static-notice-card">
+      <div class="notice-icon-box">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div class="notice-content">
+        <h4 class="notice-title">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          {{ 'home.learningLogoutNoticeTitle' | translate }}
+        </h4>
+        <p class="notice-desc" style="margin-bottom: 0.75rem;">
+          {{ 'home.learningLogoutNoticeDesc' | translate }}
+        </p>
+        <button type="button" class="btn-lr-logout" (click)="logoutAndGoToLearn()">
+          <i class="bi bi-box-arrow-right me-2"></i>
+          <span>{{ 'home.logoutAndProceedToLearn' | translate }}</span>
+          <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Course Explanation (Vilakkavurai) if configured by Admin -->
+    @if (lmsVilakaurai) {
+    <div class="lr-section-card">
+      <div class="section-badge-header">
+        <i class="bi bi-file-earmark-text-fill text-gold me-1"></i>
+        <span>பாடநெறி விளக்கவுரை / Course Overview</span>
+      </div>
+      <div class="section-body-text" style="white-space: pre-line;">
+        {{ lmsVilakaurai }}
+      </div>
+    </div>
+    }
+
+    <!-- Dynamic Rules & Regulations from Admin (Only displayed if added in Admin) -->
+    @if (lmsRulesText) {
+    <div class="lr-section-card rules-card">
+      <div class="section-badge-header">
+        <i class="bi bi-shield-check text-gold me-1"></i>
+        <span>பயிலக விதிமுறைகள் / Rules & Regulations</span>
+      </div>
+      <div class="section-body-text rules-text-display" style="white-space: pre-line;">
+        {{ lmsRulesText }}
+      </div>
+    </div>
+    } @else if (lmsRulesList && lmsRulesList.length > 0) {
+    <div class="lr-section-card rules-card">
+      <div class="section-badge-header">
+        <i class="bi bi-shield-check text-gold me-1"></i>
+        <span>பயிலக விதிமுறைகள் / Rules & Regulations</span>
+      </div>
+      <div class="rules-items-list">
+        @for (item of lmsRulesList; track item; let i = $index) {
+        <div class="rule-single-item">
+          <div class="item-num">{{ i + 1 }}</div>
+          <div class="item-text">
+            @if (item.title) { <strong class="item-title">{{ item.title }}</strong> }
+            <p class="item-desc">{{ item.desc }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Bottom Actions -->
+    <div class="lr-footer-actions">
+      <button type="button" class="btn-lr-logout-main" (click)="logoutAndGoToLearn()">
+        <i class="bi bi-box-arrow-right me-2"></i>
+        <span>{{ 'home.logoutAndProceedToLearn' | translate }}</span>
+        <i class="bi bi-arrow-right ms-2"></i>
+      </button>
+
+      <button type="button" class="btn-lr-back" (click)="closeServiceFlow()">
+        <i class="bi bi-arrow-left me-1"></i>
+        <span>{{ 'home.backToHome' | translate }}</span>
+      </button>
+    </div>
 
   </div>
   }

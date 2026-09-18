@@ -334,11 +334,9 @@ $color-white: #FFFFFF;
     background-position: center;
     z-index: 1;
     
+    // Bottom dark shadow overlay removed per user requirement
     &::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(to top, rgba($color-maroon-dark, 0.9) 0%, rgba($color-maroon, 0.4) 50%, rgba(0,0,0,0) 100%);
+      display: none;
     }
   }
 
@@ -357,6 +355,7 @@ $color-white: #FFFFFF;
     font-size: 0.7rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   }
 
   .hero-title {
@@ -364,12 +363,14 @@ $color-white: #FFFFFF;
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75);
   }
 
   .hero-subtitle {
     font-size: 0.75rem;
-    color: rgba($color-white, 0.85);
+    color: rgba($color-white, 0.95);
     margin: 0 0 1rem 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
   }
 
   .hero-dots {
@@ -461,6 +462,105 @@ $color-white: #FFFFFF;
   span {
     font-size: 0.65rem;
     color: #8C6A5A;
+  }
+}
+
+/* Learning Institute Promo Card (Under Key Services Grid) */
+.learning-promo-card {
+  position: relative;
+  background: linear-gradient(135deg, #FFFDF8 0%, #FDF4E3 60%, #F7E9CA 100%);
+  border: 1.5px solid rgba($color-gold, 0.45);
+  border-radius: 18px;
+  padding: 1.05rem 1.15rem;
+  box-shadow: 0 6px 18px rgba($color-maroon, 0.08);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  margin-top: 0.25rem;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, $color-maroon, $color-gold);
+    border-radius: 18px 0 0 18px;
+  }
+
+  .learning-promo-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .learning-promo-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .promo-title {
+    font-family: 'Noto Serif Tamil', serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $color-maroon;
+    margin: 0 0 0.65rem 0;
+    line-height: 1.35;
+  }
+
+  .promo-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, $color-maroon 0%, #30080E 100%);
+    color: #FFFFFF;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba($color-maroon, 0.2);
+
+    i {
+      font-size: 1.05rem;
+      vertical-align: middle;
+    }
+  }
+
+  .learning-promo-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .promo-icon-emblem {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #F9ECCB, #EED598);
+    border: 1.5px solid rgba($color-gold, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-maroon;
+    font-size: 1.8rem;
+    box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.6), 0 4px 10px rgba($color-gold, 0.2);
+
+    .emblem-sparkle {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      color: #E6A700;
+      font-size: 0.95rem;
+    }
   }
 }
 
@@ -2996,6 +3096,291 @@ $color-white: #FFFFFF;
   }
 }
 
+/* ================= LEARNING RULES & GUIDELINES SUB-VIEW ================= */
+.learning-rules-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
 
+  .lr-header-card {
+    background: linear-gradient(135deg, $color-maroon 0%, #2A080C 100%);
+    color: #FFFFFF;
+    padding: 1.4rem 1.25rem;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba($color-maroon, 0.22);
+    position: relative;
+    overflow: hidden;
 
+    &::after {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 110px;
+      height: 110px;
+      background: radial-gradient(circle, rgba($color-gold-light, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .lr-badge {
+      display: inline-flex;
+      align-items: center;
+      background: rgba($color-gold-light, 0.2);
+      border: 1px solid rgba($color-gold-light, 0.4);
+      color: $color-gold-light;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      margin-bottom: 0.6rem;
+    }
+
+    h2 {
+      font-family: 'Noto Serif Tamil', serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin: 0 0 0.35rem 0;
+      color: #FFFFFF;
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  /* STATIC LOGOUT NOTICE CARD - As explicitly requested */
+  .lr-static-notice-card {
+    background: linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%);
+    border: 1.5px solid #F59E0B;
+    border-radius: 16px;
+    padding: 1.15rem;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+
+    .notice-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background-color: #FDE68A;
+      border: 1px solid #F59E0B;
+      color: #B45309;
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notice-content {
+      flex: 1;
+      min-width: 0;
+
+      .notice-title {
+        color: #92400E;
+        font-family: 'Noto Serif Tamil', serif;
+        font-size: 1rem;
+        font-weight: 800;
+        margin: 0 0 0.35rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .notice-desc {
+        font-size: 0.82rem;
+        color: #78350F;
+        line-height: 1.5;
+        margin: 0 0 0.85rem 0;
+        font-weight: 500;
+      }
+
+      .btn-lr-logout {
+        width: 100%;
+        background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(180, 83, 9, 0.3);
+        cursor: pointer;
+        transition: transform 0.2s;
+
+        &:active {
+          transform: scale(0.97);
+        }
+      }
+    }
+  }
+
+  /* Section Cards for Overview & Rules */
+  .lr-section-card {
+    background: #FFFFFF;
+    border: 1px solid rgba($color-gold, 0.35);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 15px rgba($color-maroon, 0.05);
+
+    .section-badge-header {
+      display: flex;
+      align-items: center;
+      font-family: 'Noto Serif Tamil', serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: $color-maroon;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
+      border-bottom: 1px solid rgba($color-gold, 0.25);
+    }
+
+    .section-body-text {
+      font-size: 0.88rem;
+      color: #334155;
+      line-height: 1.65;
+      font-family: 'Noto Serif Tamil', serif;
+      text-align: justify;
+    }
+  }
+
+  .rules-card {
+    border-left: 4px solid $color-gold;
+
+    .rules-text-display {
+      background: #FAF8EE;
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px dashed rgba($color-gold, 0.4);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .rules-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .rule-single-item {
+        display: flex;
+        gap: 0.75rem;
+        background: #FAF8EE;
+        padding: 0.85rem;
+        border-radius: 12px;
+        border: 1px solid rgba($color-gold, 0.25);
+
+        .item-num {
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: $color-maroon;
+          color: #FFFFFF;
+          font-size: 0.75rem;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .item-text {
+          flex: 1;
+
+          .item-title {
+            display: block;
+            color: $color-maroon;
+            font-size: 0.88rem;
+            margin-bottom: 0.2rem;
+          }
+
+          .item-desc {
+            font-size: 0.82rem;
+            color: #475569;
+            line-height: 1.45;
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    .lr-loading-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 2rem 1rem;
+      color: $color-text-muted;
+      font-size: 0.85rem;
+    }
+
+    .empty-rules-box {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      color: $color-text-muted;
+      font-size: 0.85rem;
+    }
+  }
+
+  .lr-footer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    .btn-lr-logout-main {
+      width: 100%;
+      background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      font-size: 0.92rem;
+      font-weight: 800;
+      font-family: 'Noto Serif Tamil', serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 14px rgba(180, 83, 9, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:active {
+        transform: scale(0.98);
+        box-shadow: 0 2px 8px rgba(180, 83, 9, 0.25);
+      }
+    }
+
+    .btn-lr-back {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid rgba($color-gold, 0.45);
+      color: $color-maroon;
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: 'Noto Serif Tamil', serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+      &:active {
+        background: #FDF9EC;
+      }
+    }
+  }
+}
 

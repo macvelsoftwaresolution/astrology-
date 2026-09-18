@@ -1006,4 +1006,125 @@ export class ExamsEvalTabComponent implements OnInit {
   createCertificateFor(sub: any): void {
     this.router.navigate(['/admin/certificates'], { queryParams: { student_id: sub.student_id } });
   }
+
+  uploadStudentDoc(event: any, sub: any, type: 'certificate' | 'marksheet'): void {
+    const file = event.target?.files?.[0];
+    if (!file || !sub) return;
+
+    const inputEl = event.target;
+
+    // Max 50 MB
+    if (file.size > 50 * 1024 * 1024) {
+      this.toastService.warning('கோப்பின் அளவு 50 MB-க்குள் இருக்க வேண்டும்.', 'கோப்பு அளவு அதிகம்');
+      if (inputEl) inputEl.value = '';
+      return;
+    }
+
+    if (type === 'certificate') {
+      sub.isUploadingCert = true;
+    } else {
+      sub.isUploadingMarksheet = true;
+    }
+    this.cdr.markForCheck();
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', type === 'certificate' ? 'certificates' : 'marksheets');
+
+    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+      next: (uploadRes) => {
+        if (!uploadRes || !uploadRes.url) {
+          this.toastService.error('கோப்பு பதிவேற்றம் தோல்வியடைந்தது.', 'பிழை');
+          if (type === 'certificate') sub.isUploadingCert = false;
+          else sub.isUploadingMarksheet = false;
+          if (inputEl) inputEl.value = '';
+          this.cdr.markForCheck();
+          return;
+        }
+
+        const fileUrl = uploadRes.url;
+        const headers = this.authService.getAuthHeaders();
+
+        if (type === 'certificate') {
+          const payload = {
+            student_id: sub.student_id,
+            submission_id: sub.id,
+            course_id: sub.course_id || 1,
+            pdf_download_url: fileUrl,
+            score: sub.score || 100,
+            is_published: 1,
+            certificate_number: sub.certificate_number || sub.student_code || undefined
+          };
+
+          this.http.post<any>(`${environment.apiUrl}/admin/certificates`, payload, headers).subscribe({
+            next: (certRes) => {
+              sub.isUploadingCert = false;
+              sub.cert_pdf_url = fileUrl;
+              sub.is_published = true;
+              if (certRes?.certificate) {
+                sub.certificate = certRes.certificate;
+                sub.certificate_number = certRes.certificate.certificate_number;
+              }
+              if (inputEl) inputEl.value = '';
+              this.toastService.success(
+                `${sub.student_name} மாணவருக்கு சான்றிதழ் வெற்றிகரமாக பதிவேற்றப்பட்டது!`,
+                'சான்றிதழ் தயார்'
+              );
+              this.loadSubmissions();
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              sub.isUploadingCert = false;
+              if (inputEl) inputEl.value = '';
+              this.toastService.error(err?.error?.message || 'சான்றிதழ் சேமிப்பதில் பிழை ஏற்பட்டது.');
+              this.cdr.markForCheck();
+            }
+          });
+        } else {
+          // Marksheet
+          const payload = {
+            student_id: sub.student_id,
+            submission_id: sub.id,
+            course_id: sub.course_id || 1,
+            marksheet_download_url: fileUrl,
+            score: sub.score || 85,
+            is_published: 1,
+            marksheet_number: sub.marksheet_number || (`MRK-${sub.student_code || 'UG'}`)
+          };
+
+          this.http.post<any>(`${environment.apiUrl}/admin/marksheets`, payload, headers).subscribe({
+            next: (markRes) => {
+              sub.isUploadingMarksheet = false;
+              sub.marksheet_download_url = fileUrl;
+              sub.is_published = true;
+              if (markRes?.certificate) {
+                sub.certificate = markRes.certificate;
+                sub.marksheet_number = markRes.certificate.marksheet_number;
+              }
+              if (inputEl) inputEl.value = '';
+              this.toastService.success(
+                `${sub.student_name} மாணவருக்கு மதிப்பெண் பட்டியல் வெற்றிகரமாக பதிவேற்றப்பட்டது!`,
+                'மதிப்பெண் பட்டியல் தயார்'
+              );
+              this.loadSubmissions();
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              sub.isUploadingMarksheet = false;
+              if (inputEl) inputEl.value = '';
+              this.toastService.error(err?.error?.message || 'மதிப்பெண் பட்டியல் சேமிப்பதில் பிழை ஏற்பட்டது.');
+              this.cdr.markForCheck();
+            }
+          });
+        }
+      },
+      error: (err) => {
+        if (type === 'certificate') sub.isUploadingCert = false;
+        else sub.isUploadingMarksheet = false;
+        if (inputEl) inputEl.value = '';
+        this.toastService.error('கோப்பு பதிவேற்றம் தோல்வியடைந்தது: ' + (err?.error?.message || err?.message || ''));
+        this.cdr.markForCheck();
+      }
+    });
+  }
 }

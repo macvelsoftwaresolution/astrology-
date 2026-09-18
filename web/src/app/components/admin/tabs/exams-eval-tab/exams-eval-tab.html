@@ -413,8 +413,9 @@
               <th>{{ 'exams.mcqPracMarks' | translate }}</th>
               <th>{{ 'exams.totalScore' | translate }}</th>
               <th>{{ 'exams.passStatus' | translate }}</th>
-              <th style="min-width: 220px;">{{ 'exams.certMarksheetCol' | translate }}</th>
+              <th style="min-width: 200px;">{{ 'exams.certMarksheetCol' | translate }}</th>
               <th style="min-width: 150px; text-align: center;">{{ 'exams.actions' | translate }}</th>
+              <th style="min-width: 210px; text-align: center;">{{ 'exams.uploadDocsCol' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -617,11 +618,78 @@
                   </div>
                 </td>
 
+                <!-- COLUMN 10: UPLOAD CERTIFICATE & MARKSHEET DIRECTLY -->
+                <td style="vertical-align: middle;">
+                  <div class="upload-docs-cell">
+                    <!-- Option 1: Certificate -->
+                    <div class="doc-upload-block">
+                      @if (s.cert_pdf_url) {
+                        <div class="doc-file-uploaded cert-border">
+                          <span class="file-label" [title]="s.cert_pdf_url">
+                            <i class="bi bi-award-fill text-gold me-1"></i>
+                            <strong>{{ 'exams.certificateBtn' | translate }}</strong>
+                          </span>
+                          <div class="file-actions">
+                            <a [href]="s.cert_pdf_url" target="_blank" class="btn-mini-action view-btn" [title]="'exams.viewPdf' | translate">
+                              <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <label class="btn-mini-action replace-btn" [title]="'exams.reuploadBtn' | translate">
+                              <i class="bi bi-cloud-arrow-up-fill"></i>
+                              <input type="file" accept=".pdf,image/*" (change)="uploadStudentDoc($event, s, 'certificate')" style="display:none;" [disabled]="s.isUploadingCert">
+                            </label>
+                          </div>
+                        </div>
+                      } @else {
+                        <label class="btn-doc-upload-trigger cert-theme" [class.loading]="s.isUploadingCert">
+                          @if (s.isUploadingCert) {
+                            <i class="bi bi-hourglass-split me-1"></i> <span>{{ 'common.saving' | translate }}...</span>
+                          } @else {
+                            <i class="bi bi-cloud-arrow-up-fill me-1 text-gold"></i>
+                            <span>1. {{ 'exams.uploadCertBtn' | translate }}</span>
+                          }
+                          <input type="file" accept=".pdf,image/*" (change)="uploadStudentDoc($event, s, 'certificate')" style="display:none;" [disabled]="s.isUploadingCert">
+                        </label>
+                      }
+                    </div>
+
+                    <!-- Option 2: Marksheet -->
+                    <div class="doc-upload-block mt-1">
+                      @if (s.marksheet_download_url) {
+                        <div class="doc-file-uploaded mark-border">
+                          <span class="file-label" [title]="s.marksheet_download_url">
+                            <i class="bi bi-file-earmark-spreadsheet-fill text-blue me-1"></i>
+                            <strong>{{ 'exams.certMarksheetCol' | translate }}</strong>
+                          </span>
+                          <div class="file-actions">
+                            <a [href]="s.marksheet_download_url" target="_blank" class="btn-mini-action view-btn" [title]="'exams.viewPdf' | translate">
+                              <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <label class="btn-mini-action replace-btn" [title]="'exams.reuploadBtn' | translate">
+                              <i class="bi bi-cloud-arrow-up-fill"></i>
+                              <input type="file" accept=".pdf,image/*" (change)="uploadStudentDoc($event, s, 'marksheet')" style="display:none;" [disabled]="s.isUploadingMarksheet">
+                            </label>
+                          </div>
+                        </div>
+                      } @else {
+                        <label class="btn-doc-upload-trigger mark-theme" [class.loading]="s.isUploadingMarksheet">
+                          @if (s.isUploadingMarksheet) {
+                            <i class="bi bi-hourglass-split me-1"></i> <span>{{ 'common.saving' | translate }}...</span>
+                          } @else {
+                            <i class="bi bi-cloud-arrow-up-fill me-1 text-blue"></i>
+                            <span>2. {{ 'exams.uploadMarksheetBtn' | translate }}</span>
+                          }
+                          <input type="file" accept=".pdf,image/*" (change)="uploadStudentDoc($event, s, 'marksheet')" style="display:none;" [disabled]="s.isUploadingMarksheet">
+                        </label>
+                      }
+                    </div>
+                  </div>
+                </td>
+
               </tr>
             }
             @if (submissions.length === 0) {
               <tr>
-                <td colspan="9">
+                <td colspan="10">
                   <div class="table-empty-box">
                     <i class="bi bi-file-earmark-excel text-slate-300" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;"></i>
                     <p style="font-weight: 700; color: #64748b; margin: 0; font-size: 14px;">{{ 'exams.noSubmissionsFound' | translate }}</p>

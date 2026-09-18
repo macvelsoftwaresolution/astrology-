@@ -39,12 +39,18 @@ export class HomePage implements OnInit {
   // Navigation Tabs State
   currentTab: 'home' | 'services' | 'matching' | 'profile' = 'home';
 
-  // Sub-view Screen flow states for consultation workflows
-  activeServiceFlow: null | 'horoscope' | 'vastu' | 'ramajayam' | 'srinivasan' | 'rasi-palan' | 'astrologer_consultation' = null;
+  // Sub-view Screen flow states for consultation workflows & learning rules
+  activeServiceFlow: null | 'horoscope' | 'vastu' | 'ramajayam' | 'srinivasan' | 'rasi-palan' | 'astrologer_consultation' | 'learning-rules' = null;
   serviceStep: number = 1; // 1: Info/List, 2: Form, 3: Payment, 4: Success
 
   selectedAstrologer: any = null;
   selectedCategory: any = null;
+
+  // Learning Rules & LMS Settings State (Loaded dynamically from Admin)
+  lmsRulesText: string = '';
+  lmsRulesList: any[] = [];
+  lmsVilakaurai: string = '';
+  isLoadingLmsRules: boolean = false;
 
   astrologerBookingForm = {
     name: '',
@@ -177,7 +183,15 @@ export class HomePage implements OnInit {
       return true;
     }
 
-    // 2. If in active consultation booking flow (Step 2 Payment -> Step 1 Form, or Step 1 Form -> Profile)
+    // 2. If in active learning rules flow
+    if (this.activeServiceFlow === 'learning-rules') {
+      this.activeServiceFlow = null;
+      this.serviceStep = 1;
+      this.syncQueryParams();
+      return true;
+    }
+
+    // 3. If in active consultation booking flow (Step 2 Payment -> Step 1 Form, or Step 1 Form -> Profile)
     if (this.activeServiceFlow) {
       if (this.serviceStep > 1 && this.serviceStep !== 3 && this.serviceStep !== 4) {
         this.serviceStep--;
@@ -274,6 +288,9 @@ export class HomePage implements OnInit {
     }
 
     // 2. Active Service Flows
+    if (this.activeServiceFlow === 'learning-rules') {
+      return this.translationService.translate('home.learningRulesTitle', 'பயிலக விதிமுறைகள்');
+    }
     if (this.activeServiceFlow === 'astrologer_consultation') {
       return this.selectedCategory ? this.selectedCategory.title : this.translationService.translate('astrology.services', 'ஜோதிட ஆலோசனை');
     }
@@ -458,6 +475,80 @@ export class HomePage implements OnInit {
     } else {
       this.selectTab('services');
     }
+  }
+
+  openLearningRules() {
+    this.activeServiceFlow = 'learning-rules';
+    this.loadLmsRulesFromAdmin();
+    this.scrollToTop();
+  }
+
+  loadLmsRulesFromAdmin() {
+    this.isLoadingLmsRules = true;
+    // 1. Fetch lms_rules_text from Admin System Settings
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_rules_text`).subscribe({
+      next: (res) => {
+        if (res && res.value && typeof res.value === 'string' && res.value.trim().length > 0) {
+          this.lmsRulesText = res.value.trim();
+          this.isLoadingLmsRules = false;
+        } else {
+          this.fetchLmsRulesFallback();
+        }
+      },
+      error: () => {
+        this.fetchLmsRulesFallback();
+      }
+    });
+
+    // 2. Also fetch lms_vilakaurai (Course Overview) if configured by Admin
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_vilakaurai`).subscribe({
+      next: (res) => {
+        if (res && res.value && typeof res.value === 'string') {
+          this.lmsVilakaurai = res.value.trim();
+        }
+      },
+      error: () => { }
+    });
+  }
+
+  private fetchLmsRulesFallback() {
+    this.http.get<any>(`${environment.apiUrl}/settings/lms_rules_list`).subscribe({
+      next: (listRes) => {
+        this.isLoadingLmsRules = false;
+        if (listRes && listRes.value) {
+          try {
+            const parsed = JSON.parse(listRes.value);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              if (parsed.length === 1 && !parsed[0].title && parsed[0].desc) {
+                this.lmsRulesText = parsed[0].desc;
+              } else {
+                this.lmsRulesList = parsed;
+              }
+            } else if (typeof listRes.value === 'string') {
+              this.lmsRulesText = listRes.value;
+            }
+          } catch (e) {
+            this.lmsRulesText = listRes.value;
+          }
+        }
+      },
+      error: () => {
+        this.isLoadingLmsRules = false;
+      }
+    });
+  }
+
+  logoutAndGoToLearn() {
+    this.authService.logout('astrology').subscribe({
+      next: () => {
+        this.activeServiceFlow = null;
+        this.router.navigate(['/learn'], { replaceUrl: true });
+      },
+      error: () => {
+        this.activeServiceFlow = null;
+        this.router.navigate(['/learn'], { replaceUrl: true });
+      }
+    });
   }
 
   loadPanchangam() {

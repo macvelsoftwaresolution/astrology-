@@ -129,10 +129,10 @@ export class LmsSettingsTabComponent implements OnInit {
 
     const pFee1 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_ilanilai_fee`, { value: String(this.ilanilaiFee || 2500) }, headers).toPromise();
     const pFee2 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_mudhunilai_fee`, { value: String(this.mudhunilaiFee || 3500) }, headers).toPromise();
-    const p1 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_vilakaurai`, { value: this.vilakaurai }, headers).toPromise();
-    const p2 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_topics`, { value: JSON.stringify(this.topics) }, headers).toPromise();
-    const p3 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_text`, { value: this.rulesText }, headers).toPromise();
-    const p4 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_list`, { value: JSON.stringify([{ title: '', desc: this.rulesText }]) }, headers).toPromise();
+    const p1 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_vilakaurai`, { value: this.vilakaurai || '' }, headers).toPromise();
+    const p2 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_topics`, { value: JSON.stringify(this.topics || []) }, headers).toPromise();
+    const p3 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_text`, { value: this.rulesText || '' }, headers).toPromise();
+    const p4 = this.http.post<any>(`${environment.apiUrl}/admin/settings/lms_rules_list`, { value: JSON.stringify([{ title: '', desc: this.rulesText || '' }]) }, headers).toPromise();
 
     Promise.all([pFee1, pFee2, p1, p2, p3, p4]).then(() => {
       this.isSaving = false;
@@ -143,9 +143,10 @@ export class LmsSettingsTabComponent implements OnInit {
         this.saveMsg = '';
         this.cdr.detectChanges();
       }, 3000);
-    }).catch(() => {
+    }).catch((err) => {
       this.isSaving = false;
-      this.toastService.error('Failed to save settings.', 'பிழை');
+      const errMsg = err?.error?.message || err?.message || 'Failed to save settings.';
+      this.toastService.error(errMsg, 'பிழை');
       this.cdr.detectChanges();
     });
   }

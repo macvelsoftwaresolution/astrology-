@@ -538,55 +538,105 @@ export class RasiEditorTabComponent implements OnInit {
     const file = event.target?.files?.[0];
     if (!file || index === null || !this.rasiPredictions[index]) return;
 
-    // Client-side file size check (Max 10 MB)
-    const maxAudioSize = 10 * 1024 * 1024; // 10 MB
+    const inputEl = event.target;
     const isTa = this.translationService.currentLanguage() === 'ta';
+
+    // Client-side file size check (Max 100 MB for 30+ minutes audio)
+    const maxAudioSize = 100 * 1024 * 1024;
     if (file.size > maxAudioSize) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
       this.toastService.warning(
         isTa
-          ? `தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 10 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`
-          : `Selected audio file is ${sizeMb} MB! Please select an audio file under 10 MB.`,
+          ? `தேர்ந்தெடுக்கப்பட்ட ஆடியோ கோப்பு ${sizeMb} MB உள்ளது! 100 MB-க்குள் இருக்கும் ஆடியோ கோப்பைத் தேர்ந்தெடுக்கவும்.`
+          : `Selected audio file is ${sizeMb} MB! Please select an audio file under 100 MB.`,
         isTa ? 'கோப்பு அளவு அதிகம்' : 'File Too Large'
       );
+      if (inputEl) inputEl.value = '';
       return;
     }
 
-    this.isUploadingRasiAudio = true;
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'audio');
+    const performUpload = () => {
+      this.isUploadingRasiAudio = true;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'audio');
 
-    this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
-      next: (res) => {
-        if (res && res.url && this.rasiPredictions[index]) {
-          this.rasiPredictions[index].audio_url = res.url;
-          this.toastService.success(
-            isTa ? 'ஆடியோ கோப்பு பதிவேற்றப்பட்டது!' : 'Audio file uploaded successfully!',
-            isTa ? 'வெற்றி' : 'Success'
-          );
+      this.http.post<any>(`${environment.apiUrl}/upload`, formData).subscribe({
+        next: (res) => {
+          if (res && res.url && this.rasiPredictions[index]) {
+            this.rasiPredictions[index].audio_url = res.url;
+            this.toastService.success(
+              isTa ? 'ஆடியோ கோப்பு பதிவேற்றப்பட்டது!' : 'Audio file uploaded successfully!',
+              isTa ? 'வெற்றி' : 'Success'
+            );
+          }
+          this.isUploadingRasiAudio = false;
+          if (inputEl) inputEl.value = '';
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          if (err?.status === 413) {
+            this.toastService.error(
+              isTa
+                ? 'ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு அதிகமாக உள்ளது!'
+                : 'Audio file exceeds server upload limit!',
+              isTa ? 'பதிவேற்றப் பிழை' : 'Upload Failed'
+            );
+          } else {
+            this.toastService.error(
+              isTa ? 'ஆடியோ பதிவேற்றம் தோல்வியடைந்தது.' : 'Audio upload failed.',
+              isTa ? 'பதிவேற்றப் பிழை' : 'Upload Failed'
+            );
+          }
+          this.isUploadingRasiAudio = false;
+          if (inputEl) inputEl.value = '';
+          this.cdr.detectChanges();
         }
-        this.isUploadingRasiAudio = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        if (err?.status === 413) {
-          this.toastService.error(
-            isTa
-              ? 'ஆடியோ கோப்பின் அளவு சேவையக எல்லைக்கு (10 MB) அதிகமாக உள்ளது!'
-              : 'Audio file exceeds server limit (10 MB)!',
-            isTa ? 'பதிவேற்றப் பிழை' : 'Upload Failed'
-          );
-        } else {
-          this.toastService.error(
-            isTa ? 'ஆடியோ பதிவேற்றம் தோல்வியடைந்தது.' : 'Audio upload failed.',
-            isTa ? 'பதிவேற்றப் பிழை' : 'Upload Failed'
-          );
-        }
-        this.isUploadingRasiAudio = false;
-        this.cdr.detectChanges();
+      });
+    };
+
+    // Check Audio Duration: Maximum 30 minutes (1800s + 15s tolerance)
+    const audioObj = new Audio();
+    const objectUrl = URL.createObjectURL(file);
+    audioObj.src = objectUrl;
+
+    let hasExecuted = false;
+    audioObj.onloadedmetadata = () => {
+      if (hasExecuted) return;
+      hasExecuted = true;
+      URL.revokeObjectURL(objectUrl);
+      const durationSec = Math.round(audioObj.duration || 0);
+      const maxDurationSec = 30 * 60 + 15; // 30 minutes + 15s grace
+      if (durationSec > maxDurationSec) {
+        const mins = Math.floor(durationSec / 60);
+        const secs = durationSec % 60;
+        this.toastService.warning(
+          isTa
+            ? `ஆடியோ கால அளவு ${mins} நிமிடம் ${secs} வினாடிகள் உள்ளது! அதிகபட்சம் 30 நிமிடங்களுக்குள் இருக்கும் ஆடியோவை மட்டுமே சேர்க்க முடியும்.`
+            : `Audio duration is ${mins}m ${secs}s! Maximum allowed audio duration is 30 minutes.`,
+          isTa ? 'கால அளவு அதிகம் (Max 30 Mins)' : 'Duration Exceeded'
+        );
+        if (inputEl) inputEl.value = '';
+        return;
       }
-    });
+      performUpload();
+    };
+
+    audioObj.onerror = () => {
+      if (hasExecuted) return;
+      hasExecuted = true;
+      URL.revokeObjectURL(objectUrl);
+      performUpload();
+    };
+
+    // Fallback if metadata cannot be decoded within 2.5s
+    setTimeout(() => {
+      if (!hasExecuted) {
+        hasExecuted = true;
+        URL.revokeObjectURL(objectUrl);
+        performUpload();
+      }
+    }, 2500);
   }
 
   uploadRasiVideo(event: any, index: number): void {

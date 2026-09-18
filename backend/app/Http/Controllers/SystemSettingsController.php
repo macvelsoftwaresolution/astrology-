@@ -54,12 +54,21 @@ class SystemSettingsController extends Controller
     public function saveSetting(Request $request, $key)
     {
         $request->validate([
-            'value' => 'nullable|string'
+            'value' => 'nullable'
         ]);
+
+        $val = $request->input('value');
+        if (is_array($val)) {
+            $val = json_encode($val, JSON_UNESCAPED_UNICODE);
+        } elseif ($val === null) {
+            $val = '';
+        } else {
+            $val = (string)$val;
+        }
 
         $setting = SystemSetting::updateOrCreate(
             ['key' => $key],
-            ['value' => $request->value]
+            ['value' => $val]
         );
 
         return response()->json([

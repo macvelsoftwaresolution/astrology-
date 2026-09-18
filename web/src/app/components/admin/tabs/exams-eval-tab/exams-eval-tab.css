@@ -3470,4 +3470,144 @@
   }
 }
 
+/* ================= UPLOAD CERTIFICATE & MARKSHEET COLUMN ================= */
+.upload-docs-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 195px;
+}
+
+.doc-upload-block {
+  width: 100%;
+}
+
+.btn-doc-upload-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px dashed #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  margin: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.btn-doc-upload-trigger:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.btn-doc-upload-trigger.cert-theme {
+  border-color: #fcd34d;
+  background: #fffdf5;
+  color: #78350f;
+}
+
+.btn-doc-upload-trigger.cert-theme:hover {
+  background: #fef3c7;
+  border-color: #d97706;
+}
+
+.btn-doc-upload-trigger.mark-theme {
+  border-color: #93c5fd;
+  background: #f8faff;
+  color: #1e40af;
+}
+
+.btn-doc-upload-trigger.mark-theme:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+.btn-doc-upload-trigger.loading {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.doc-file-uploaded {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.doc-file-uploaded.cert-border {
+  border-color: #a7f3d0;
+  background: #f0fdf4;
+}
+
+.doc-file-uploaded.mark-border {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.doc-file-uploaded .file-label {
+  display: flex;
+  align-items: center;
+  font-size: 11.5px;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 130px;
+}
+
+.doc-file-uploaded .file-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-mini-action {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  margin: 0;
+  transition: all 0.15s;
+}
+
+.btn-mini-action.view-btn {
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.btn-mini-action.view-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-mini-action.replace-btn {
+  background: #ffffff;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.btn-mini-action.replace-btn:hover {
+  background: #d97706;
+  color: #ffffff;
+}
+
+
 

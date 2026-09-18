@@ -127,6 +127,9 @@ export class LearnCertificateComponent implements OnInit {
   getCertificateDownloadUrl(cert?: any): string {
     const target = cert || this.selectedCert;
     if (!target) return '';
+    if (target?.pdf_download_url && (target.pdf_download_url.startsWith('http') || target.pdf_download_url.startsWith('/storage'))) {
+      return target.pdf_download_url;
+    }
     const certId = target.id || target.certificate_number || target.registration_number;
     return `${environment.apiUrl}/certificates/${certId}/download?type=certificate`;
   }
@@ -134,6 +137,9 @@ export class LearnCertificateComponent implements OnInit {
   getMarksheetDownloadUrl(cert?: any): string {
     const target = cert || this.selectedCert;
     if (!target) return '';
+    if (target?.marksheet_download_url && (target.marksheet_download_url.startsWith('http') || target.marksheet_download_url.startsWith('/storage'))) {
+      return target.marksheet_download_url;
+    }
     const certId = target.id || target.marksheet_number || target.certificate_number || target.registration_number;
     return `${environment.apiUrl}/marksheets/${certId}/download?type=marksheet`;
   }
