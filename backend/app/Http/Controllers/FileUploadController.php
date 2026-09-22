@@ -78,8 +78,9 @@ class FileUploadController extends Controller
             $signature = sha1($paramsToSign . $apiSecret);
 
             try {
-                $response = Http::withoutVerifying()->timeout(90)->attach(
-                    'file', file_get_contents($file->getRealPath()), $file->getClientOriginalName()
+                $fileHandle = fopen($file->getRealPath(), 'r');
+                $response = Http::withoutVerifying()->timeout(300)->attach(
+                    'file', $fileHandle, $file->getClientOriginalName()
                 )->post("https://api.cloudinary.com/v1_1/{$cloudName}/{$resourceType}/upload", [
                     'api_key'   => $apiKey,
                     'timestamp' => $timestamp,
@@ -87,6 +88,9 @@ class FileUploadController extends Controller
                     'public_id' => $safeName,
                     'signature' => $signature,
                 ]);
+                if (is_resource($fileHandle)) {
+                    fclose($fileHandle);
+                }
 
                 if ($response->successful()) {
                     $data = $response->json();
