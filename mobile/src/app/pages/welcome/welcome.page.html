@@ -1,15 +1,18 @@
 <ion-content [fullscreen]="true" class="welcome-content">
   <div class="welcome-container">
     <!-- Header title -->
-    <h1 class="brand-title">{{ 'welcome.brand' | translate }}</h1>
+    <h1 class="brand-title" style="font-size: 1.6rem; white-space: nowrap; width: 100%; text-align: center;">ஸ்ரீ ஆருத்ரா</h1>
 
     <!-- Guru profile block -->
     <div class="guru-profile-card">
       <div class="avatar-container">
-        <img src="assets/images/guru_mathivathanan.jpg" alt="கரு.மதிவதனன். B.A. D.ASTRO" class="guru-avatar">
+        <img src="assets/images/guru.jpeg" alt="கரு.மதிவதனன்" class="guru-avatar">
       </div>
       <div class="guru-info">
-        <h3 class="guru-name">கரு.மதிவதனன். B.A. D.ASTRO</h3>
+        <h3 class="guru-name" style="font-size: 1.1rem; line-height: 1.4;">
+          ஜோதிட பேராசிரியர் கும்பகுரு கரு.மதிவதனன் Ph.D Astro<br>
+          <span style="font-size: 0.85rem; font-weight: normal;">அனுபவ பாரம்பரிய வாக்கு ஜோதிட நிபுணர்</span>
+        </h3>
       </div>
     </div>
 
@@ -25,7 +28,7 @@
       <div class="path-card astrology-card" (click)="selectAstrologyServices()">
         <div class="card-content">
           <h3 class="card-title">{{ 'welcome.astrologyTitle' | translate }}</h3>
-          <p class="card-desc">{{ 'welcome.astrologyDesc' | translate }}</p>
+          <p class="card-desc">பாரம்பரிய நிபுணத்துவ ஜாதக துல்லியமான பலன்கள் மூலம் உங்கள் வாழ்க்கையை செழுமைப்படுத்த</p>
           <div class="action-btn">
             <span>{{ 'welcome.startBtn' | translate }}</span> <i class="bi bi-arrow-right"></i>
           </div>
@@ -35,8 +38,8 @@
       <!-- Spiritual Education -->
       <div class="path-card education-card" (click)="selectSpiritualEducation()">
         <div class="card-content">
-          <h3 class="card-title">{{ 'welcome.learnTitle' | translate }}</h3>
-          <p class="card-desc">{{ 'welcome.learnDesc' | translate }}</p>
+          <h3 class="card-title">ஜோதிட கல்வி பயிலகம்</h3>
+          <p class="card-desc">ஜோதிடம் கற்று கொள்ள</p>
           <div class="action-btn">
             <span>{{ 'welcome.exploreBtn' | translate }}</span> <i class="bi bi-arrow-right"></i>
           </div>

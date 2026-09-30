@@ -36,7 +36,7 @@
     "profile": "சுயவிவரம்"
   },
   "welcome": {
-    "brand": "ஆருத்ரா",
+    "brand": "ஸ்ரீ ஆருத்ரா",
     "guruName": "கரு.மதிவதனன். B.A. D.ASTRO",
     "guruTitle": "",
     "greeting": "வரவேற்கிறோம்",
@@ -49,7 +49,7 @@
     "exploreBtn": "ஆராய"
   },
   "login": {
-    "title": "ஆருத்ரா",
+    "title": "ஸ்ரீ ஆருத்ரா",
     "subtitle": "உள்நுழைவு",
     "usernamePlaceholder": "மின்னஞ்சல் / பயனர் பெயர்",
     "passwordPlaceholder": "கடவுச்சொல்",
@@ -61,7 +61,7 @@
     "netError": "சர்வர் தொடர்புகொள்ள முடியவில்லை. உங்கள் இணைய இணைப்பை சரிபார்க்கவும்."
   },
   "register": {
-    "title": "ஆருத்ரா",
+    "title": "ஸ்ரீ ஆருத்ரா",
     "subtitle": "பதிவு செய்தல்",
     "uploadPhoto": "படம் பதிவேற்றவும்",
     "namePlaceholder": "உங்கள் முழுப் பெயர்",
@@ -330,7 +330,7 @@
     "quizPassed": "தேர்வில் வெற்றி பெற்றுள்ளீர்கள்!",
     "quizFailed": "மீண்டும் முயற்சிக்கவும்!",
     "intro": "அறிமுகம்",
-    "vedicBasics": "வேத ஜோதிட அடிப்படைகள்",
+    "vedicBasics": "ஜோதிடத்தின் அடிப்படை நிலைகள்",
     "vilakkavuraiTitle": "விளக்கவுரை",
     "whatYouWillLearn": "நீங்கள் கற்கவிருப்பது",
     "newEnrollment": "புதிய சேர்க்கை",

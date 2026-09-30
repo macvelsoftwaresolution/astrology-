@@ -102,28 +102,41 @@
         translate }}</h3>
     </div>
     <div class="quick-services-grid">
-      <div class="quick-service-box" (click)="startServiceFlow('rasi-palan')">
-        <div class="box-icon-wrapper"><span class="box-icon"><i
-              class="bi bi-brightness-high-fill text-warning"></i></span></div>
-        <strong>{{ 'home.dailyRasiPalan' | translate }}</strong>
-        <span>{{ 'home.dailyCalc' | translate }}</span>
-      </div>
-      <div class="quick-service-box" (click)="goToConsulting()">
-        <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-person-lines-fill text-danger"></i></span></div>
-        <strong>{{ 'home.viewHoroscope' | translate }}</strong>
-        <span>{{ 'home.consultation' | translate }}</span>
-      </div>
-      <div class="quick-service-box" (click)="goToJathagamWriting()">
-        <div class="box-icon-wrapper"><span class="box-icon"><i
-              class="bi bi-journal-bookmark-fill text-primary"></i></span></div>
-        <strong>{{ 'home.writeHoroscope' | translate }}</strong>
-        <span>{{ 'home.newHoroscope' | translate }}</span>
-      </div>
-      <div class="quick-service-box" (click)="selectTab('services')">
-        <div class="box-icon-wrapper"><span class="box-icon"><i class="bi bi-grid-3x3-gap-fill text-info"></i></span>
+      <div class="quick-service-box" style="padding: 0; overflow: hidden; justify-content: flex-start; gap: 4px;" (click)="startServiceFlow('rasi-palan')">
+        <div style="width: 100%; height: 75px;">
+          <img src="assets/images/rasipalan_icon.jpg" alt="Rasi Palan" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
         </div>
-        <strong>{{ 'home.allServices' | translate }}</strong>
-        <span>{{ 'home.viewAll' | translate }}</span>
+        <div style="padding: 0.3rem 0.5rem 0.75rem 0.5rem; display: flex; flex-direction: column; align-items: center; width: 100%;">
+          <strong style="font-size: 0.75rem; line-height: 1.2;">{{ 'home.dailyRasiPalan' | translate }}</strong>
+          <span style="font-size: 0.6rem; line-height: 1.2; margin-top: 2px;">{{ 'home.dailyCalc' | translate }}</span>
+        </div>
+      </div>
+      <div class="quick-service-box" style="padding: 0; overflow: hidden; justify-content: flex-start; gap: 4px;" (click)="goToConsulting()">
+        <div style="width: 100%; height: 75px;">
+          <img src="assets/images/jathagam_icon.jpg" alt="Jathagam" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+        </div>
+        <div style="padding: 0.3rem 0.5rem 0.75rem 0.5rem; display: flex; flex-direction: column; align-items: center; width: 100%;">
+          <strong style="font-size: 0.75rem; line-height: 1.2;">ஜாதக பலன்கள் பார்க்க</strong>
+          <span style="font-size: 0.6rem; line-height: 1.2; margin-top: 2px;">{{ 'home.consultation' | translate }}</span>
+        </div>
+      </div>
+      <div class="quick-service-box" style="padding: 0; overflow: hidden; justify-content: flex-start; gap: 4px;" (click)="goToJathagamWriting()">
+        <div style="width: 100%; height: 75px;">
+          <img src="assets/images/write_jathagam_icon.jpg" alt="Write Horoscope" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+        </div>
+        <div style="padding: 0.3rem 0.5rem 0.75rem 0.5rem; display: flex; flex-direction: column; align-items: center; width: 100%;">
+          <strong style="font-size: 0.75rem; line-height: 1.2;">{{ 'home.writeHoroscope' | translate }}</strong>
+          <span style="font-size: 0.6rem; line-height: 1.2; margin-top: 2px;">வாக்கிய பஞ்சாங்கம்</span>
+        </div>
+      </div>
+      <div class="quick-service-box" style="padding: 0; overflow: hidden; justify-content: flex-start; gap: 4px;" (click)="selectTab('services')">
+        <div style="width: 100%; height: 75px;">
+          <img src="assets/images/services_icon.jpg" alt="All Services" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+        </div>
+        <div style="padding: 0.3rem 0.5rem 0.75rem 0.5rem; display: flex; flex-direction: column; align-items: center; width: 100%;">
+          <strong style="font-size: 0.75rem; line-height: 1.2;">ஜோதிட சேவைகள்</strong>
+          <span style="font-size: 0.6rem; line-height: 1.2; margin-top: 2px;">{{ 'home.viewAll' | translate }}</span>
+        </div>
       </div>
     </div>
 
@@ -131,7 +144,7 @@
     <div class="learning-promo-card" (click)="openLearningRules()">
       <div class="learning-promo-inner">
         <div class="learning-promo-left">
-          <h3 class="promo-title">{{ 'home.learningInstituteTitle' | translate }}</h3>
+          <h3 class="promo-title" style="font-size: 1.05rem; line-height: 1.3;">{{ 'home.learningInstituteTitle' | translate }}</h3>
           <div class="promo-cta-btn">
             <span>{{ 'home.viewRulesAndDetails' | translate }}</span>
             <i class="bi bi-arrow-right-short ms-1"></i>
