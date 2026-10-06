@@ -178,6 +178,56 @@ class SuperAdminController extends Controller
     }
 
     /**
+     * Update Admin / Team Member
+     */
+    public function updateAdmin(Request $request, $id)
+    {
+        $admin = User::where('id', $id)->first();
+        if (!$admin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'நிர்வாகி கணக்கு காணப்படவில்லை (Admin account not found).'
+            ], 404);
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6',
+            'phone'    => 'nullable|string',
+            'role'     => 'nullable|string',
+            'status'   => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        if ($request->has('phone')) {
+            $admin->phone = $request->phone;
+        }
+        $admin->role = 'admin';
+        if ($request->filled('status')) {
+            $admin->status = $request->status;
+        }
+        if ($request->filled('password')) {
+            $admin->password = Hash::make($request->password);
+        }
+        $admin->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'நிர்வாகி விவரங்கள் வெற்றிகரமாக புதுப்பிக்கப்பட்டன (Admin updated successfully).',
+            'admin' => $admin
+        ]);
+    }
+
+    /**
      * Toggle Admin Status (Active / Suspended)
      */
     public function toggleAdminStatus($id)

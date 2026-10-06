@@ -134,6 +134,7 @@ Route::middleware(['auth:sanctum', CheckRole::class . ':admin'])->prefix('admin'
     Route::get('/team',              [SuperAdminController::class, 'listAdmins']);
     Route::post('/team',             [SuperAdminController::class, 'createAdmin']);
     Route::post('/create-admin',     [SuperAdminController::class, 'createAdmin']);
+    Route::put('/team/{id}',         [SuperAdminController::class, 'updateAdmin']);
     Route::put('/team/{id}/toggle',  [SuperAdminController::class, 'toggleAdminStatus']);
     Route::delete('/team/{id}',      [SuperAdminController::class, 'deleteAdmin']);
 

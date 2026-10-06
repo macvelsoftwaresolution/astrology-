@@ -41,9 +41,11 @@ export class TeamTabComponent implements OnInit {
   isLoading = false;
   openAddAdminModal = false;
   isCreatingNewMember = false;
+  isEditingMember = false;
+  editingMemberId: number | null = null;
   showPasswordToggle = false;
   isSubmittingNewMember = false;
-  newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin' };
+  newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin', status: 'active' };
 
   astrologersList: any[] = [];
   isAstrologersLoading = false;
@@ -88,7 +90,27 @@ export class TeamTabComponent implements OnInit {
   }
 
   openCreateMemberView(): void {
-    this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin' };
+    this.isEditingMember = false;
+    this.editingMemberId = null;
+    this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin', status: 'active' };
+    this.showPasswordToggle = false;
+    this.isSubmittingNewMember = false;
+    this.isCreatingNewMember = true;
+    this.selectedAstrologerForManage = null;
+    this.cdr.detectChanges();
+  }
+
+  openEditMemberView(member: any): void {
+    this.isEditingMember = true;
+    this.editingMemberId = member.id;
+    this.newAdmin = {
+      name: member.name || '',
+      email: member.email || '',
+      password: '',
+      phone: member.phone || '',
+      role: member.role || 'admin',
+      status: member.status || 'active'
+    };
     this.showPasswordToggle = false;
     this.isSubmittingNewMember = false;
     this.isCreatingNewMember = true;
@@ -98,6 +120,8 @@ export class TeamTabComponent implements OnInit {
 
   cancelCreateMember(): void {
     this.isCreatingNewMember = false;
+    this.isEditingMember = false;
+    this.editingMemberId = null;
     this.cdr.detectChanges();
   }
 
@@ -118,6 +142,14 @@ export class TeamTabComponent implements OnInit {
     });
   }
 
+  saveAdmin(): void {
+    if (this.isEditingMember) {
+      this.updateAdmin();
+    } else {
+      this.createAdmin();
+    }
+  }
+
   createAdmin(): void {
     if (!this.newAdmin.name || !this.newAdmin.email || !this.newAdmin.password) {
       this.showToast('Please fill all required fields (Name, Email, and Password).', 'error', 'விவரங்கள் தேவை');
@@ -131,8 +163,10 @@ export class TeamTabComponent implements OnInit {
         this.isSubmittingNewMember = false;
         this.showToast(res.message || 'Administrator account created successfully!', 'success', 'கணக்கு உருவாக்கப்பட்டது');
         this.isCreatingNewMember = false;
+        this.isEditingMember = false;
+        this.editingMemberId = null;
         this.openAddAdminModal = false;
-        this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin' };
+        this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin', status: 'active' };
         this.loadTeam();
         this.loadAstrologers();
         this.cdr.detectChanges();
@@ -140,6 +174,45 @@ export class TeamTabComponent implements OnInit {
       error: (err) => {
         this.isSubmittingNewMember = false;
         this.showToast(err.error?.message || 'Failed to create account.', 'error', 'பிழை ஏற்பட்டது');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  updateAdmin(): void {
+    if (!this.newAdmin.name || !this.newAdmin.email) {
+      this.showToast('Please enter Name and Email.', 'error', 'விவரங்கள் தேவை');
+      return;
+    }
+    if (!this.editingMemberId) return;
+
+    this.isSubmittingNewMember = true;
+    const headers = this.authService.getAuthHeaders();
+    const payload: any = {
+      name: this.newAdmin.name,
+      email: this.newAdmin.email,
+      phone: this.newAdmin.phone,
+      role: this.newAdmin.role || 'admin',
+      status: this.newAdmin.status || 'active'
+    };
+    if (this.newAdmin.password && this.newAdmin.password.trim().length > 0) {
+      payload.password = this.newAdmin.password.trim();
+    }
+
+    this.http.put<any>(`${environment.apiUrl}/admin/team/${this.editingMemberId}`, payload, headers).subscribe({
+      next: (res) => {
+        this.isSubmittingNewMember = false;
+        this.showToast(res.message || 'Administrator account updated successfully!', 'success', 'வெற்றிகரமாக மாற்றப்பட்டது');
+        this.isCreatingNewMember = false;
+        this.isEditingMember = false;
+        this.editingMemberId = null;
+        this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin', status: 'active' };
+        this.loadTeam();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isSubmittingNewMember = false;
+        this.showToast(err.error?.message || 'Failed to update administrator account.', 'error', 'பிழை ஏற்பட்டது');
         this.cdr.detectChanges();
       }
     });

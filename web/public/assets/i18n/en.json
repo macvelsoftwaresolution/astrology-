@@ -497,7 +497,11 @@
     "astrologyCategory": "Astrology Category *",
     "addNewCategory": "+ Add New Category",
     "enterNewCategory": "Enter new category name...",
-    "callOptions": "Call Options"
+    "callOptions": "Call Options",
+    "editMember": "Edit Administrator Account",
+    "editSubtitle": "Modify and update administrator account details.",
+    "passwordOptional": "Change only if needed",
+    "leaveBlankPassword": "Leave blank to keep existing password"
   },
   "lms": {
     "title": "Vedic Astrology Learning Academy & Course Studio",

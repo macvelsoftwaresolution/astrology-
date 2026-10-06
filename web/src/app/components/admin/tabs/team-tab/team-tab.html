@@ -67,12 +67,21 @@
             <td style="color: #475569; font-size: 13px;">{{ member.email }}</td>
             <td style="color: #475569; font-size: 13px;">{{ member.phone || '-' }}</td>
             <td><span class="badge-role">{{ member.role | uppercase }}</span></td>
-            <td><span class="status active"><i class="bi bi-check-circle-fill"></i> {{ 'common.active' | translate
-                }}</span></td>
+            <td>
+              <span class="status" [ngClass]="member.status === 'suspended' ? 'inactive' : 'active'">
+                <i class="bi" [ngClass]="member.status === 'suspended' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'"></i>
+                {{ member.status === 'suspended' ? ('common.inactive' | translate) : ('common.active' | translate) }}
+              </span>
+            </td>
             <td style="text-align: center;">
-              <button class="btn-sm danger" (click)="deleteTeamMember(member.id)" [title]="'common.delete' | translate">
-                <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
-              </button>
+              <div style="display: inline-flex; gap: 8px; justify-content: center; align-items: center;">
+                <button class="btn-sm edit" (click)="openEditMemberView(member)" [title]="'common.edit' | translate">
+                  <i class="bi bi-pencil-square"></i> {{ 'common.edit' | translate }}
+                </button>
+                <button class="btn-sm danger" (click)="deleteTeamMember(member.id)" [title]="'common.delete' | translate">
+                  <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
+                </button>
+              </div>
             </td>
           </tr>
           }
@@ -662,7 +671,7 @@
   }
 
   <!-- =========================================================
-       SIMPLE & CLEAN FULL-PAGE: CREATE NEW ADMINISTRATOR
+       SIMPLE & CLEAN FULL-PAGE: CREATE / EDIT ADMINISTRATOR
        ========================================================= -->
   @if (isCreatingNewMember) {
   <div class="simple-create-studio">
@@ -675,21 +684,23 @@
         <div>
           <h2 class="simple-title">
             <i class="bi bi-shield-lock-fill" style="color: #d97706; margin-right: 8px;"></i>
-            Create New Administrator Account
+            {{ isEditingMember ? ('team.editMember' | translate) : ('team.modalTitle' | translate) }}
           </h2>
-          <p class="simple-desc">புதிய நிர்வாகி கணக்கை உருவாக்கத் தேவையான விவரங்களை உள்ளிடவும்.</p>
+          <p class="simple-desc">
+            {{ isEditingMember ? ('team.editSubtitle' | translate) : 'புதிய நிர்வாகி கணக்கை உருவாக்கத் தேவையான விவரங்களை உள்ளிடவும்.' }}
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Clean Single Unified Form Card -->
     <div class="card-box simple-form-card">
-      <form (ngSubmit)="createAdmin()">
+      <form (ngSubmit)="saveAdmin()">
         
         <!-- Row 1: Name & Phone -->
         <div class="form-row-2">
           <div class="field-item">
-            <label class="clean-label">{{ 'team.fullName' | translate }}</label>
+            <label class="clean-label">{{ 'team.fullName' | translate }} *</label>
             <div class="clean-input-wrap">
               <i class="bi bi-person"></i>
               <input
@@ -737,17 +748,26 @@
           </div>
 
           <div class="field-item">
-            <label class="clean-label">{{ 'team.securePass' | translate }}</label>
+            <label class="clean-label">
+              {{ 'team.securePass' | translate }}
+              @if (isEditingMember) {
+                <span style="font-size: 11px; font-weight: 500; color: #64748b; margin-left: 6px;">
+                  ({{ 'team.passwordOptional' | translate }})
+                </span>
+              } @else {
+                *
+              }
+            </label>
             <div class="clean-input-wrap pass-wrap">
               <i class="bi bi-lock"></i>
               <input
                 [type]="showPasswordToggle ? 'text' : 'password'"
                 [(ngModel)]="newAdmin.password"
                 name="password"
-                required
+                [required]="!isEditingMember"
                 autocomplete="new-password"
                 class="clean-input"
-                placeholder="Minimum 6 characters"
+                [placeholder]="isEditingMember ? ('team.leaveBlankPassword' | translate) : 'Minimum 6 characters'"
               />
               <button
                 type="button"
@@ -762,6 +782,30 @@
           </div>
         </div>
 
+        <!-- Row 3: Role & Status -->
+        <div class="form-row-2" style="margin-top: 20px;">
+          <div class="field-item">
+            <label class="clean-label">{{ 'team.role' | translate }}</label>
+            <div class="clean-input-wrap">
+              <i class="bi bi-shield-check"></i>
+              <select [(ngModel)]="newAdmin.role" name="role" class="clean-input" style="padding-left: 40px; cursor: pointer;">
+                <option value="admin">ADMIN (நிர்வாகி)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label class="clean-label">{{ 'team.status' | translate }}</label>
+            <div class="clean-input-wrap">
+              <i class="bi bi-toggle-on"></i>
+              <select [(ngModel)]="newAdmin.status" name="status" class="clean-input" style="padding-left: 40px; cursor: pointer;">
+                <option value="active">{{ 'common.active' | translate }}</option>
+                <option value="suspended">{{ 'common.inactive' | translate }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- Actions Row -->
         <div class="form-actions-row">
           <button type="button" class="btn-cancel-clean" (click)="cancelCreateMember()">
@@ -771,7 +815,7 @@
             @if (isSubmittingNewMember) {
               <i class="bi bi-hourglass-split"></i> {{ 'common.saving' | translate }}...
             } @else {
-              <i class="bi bi-check2"></i> {{ 'team.createAccount' | translate }}
+              <i class="bi bi-check2"></i> {{ isEditingMember ? ('common.saveChanges' | translate) : ('team.createAccount' | translate) }}
             }
           </button>
         </div>
