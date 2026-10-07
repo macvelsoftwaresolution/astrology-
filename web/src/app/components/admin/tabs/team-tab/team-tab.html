@@ -35,10 +35,12 @@
         </div>
       </div>
 
+      @if (isSuperAdmin) {
       <button class="btn-primary" (click)="openCreateMemberView()"
         style="padding: 8px 18px; font-size: 13px; border-radius: 9px;">
         <i class="bi bi-person-plus-fill"></i> {{ 'team.addMember' | translate }}
       </button>
+      }
     </div>
 
     @if (isLoading) {
@@ -66,7 +68,14 @@
             </td>
             <td style="color: #475569; font-size: 13px;">{{ member.email }}</td>
             <td style="color: #475569; font-size: 13px;">{{ member.phone || '-' }}</td>
-            <td><span class="badge-role">{{ member.role | uppercase }}</span></td>
+            <td>
+              <span class="badge-role" [ngClass]="{'badge-super-admin': member.role === 'super_admin'}">
+                @if (member.role === 'super_admin') {
+                  <i class="bi bi-shield-fill-check me-1"></i>
+                }
+                {{ (member.role === 'super_admin' ? 'team.superAdminOption' : 'team.adminOption') | translate | uppercase }}
+              </span>
+            </td>
             <td>
               <span class="status" [ngClass]="member.status === 'suspended' ? 'inactive' : 'active'">
                 <i class="bi" [ngClass]="member.status === 'suspended' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'"></i>
@@ -78,9 +87,11 @@
                 <button class="btn-sm edit" (click)="openEditMemberView(member)" [title]="'common.edit' | translate">
                   <i class="bi bi-pencil-square"></i> {{ 'common.edit' | translate }}
                 </button>
+                @if (isSuperAdmin && member.role !== 'super_admin') {
                 <button class="btn-sm danger" (click)="deleteTeamMember(member.id)" [title]="'common.delete' | translate">
                   <i class="bi bi-trash3-fill"></i> {{ 'common.delete' | translate }}
                 </button>
+                }
               </div>
             </td>
           </tr>
@@ -687,7 +698,7 @@
             {{ isEditingMember ? ('team.editMember' | translate) : ('team.modalTitle' | translate) }}
           </h2>
           <p class="simple-desc">
-            {{ isEditingMember ? ('team.editSubtitle' | translate) : 'புதிய நிர்வாகி கணக்கை உருவாக்கத் தேவையான விவரங்களை உள்ளிடவும்.' }}
+            {{ isEditingMember ? ('team.editSubtitle' | translate) : ('team.createSubtitle' | translate) }}
           </p>
         </div>
       </div>
@@ -709,7 +720,7 @@
                 name="name"
                 required
                 class="clean-input"
-                placeholder="எ.கா: Guru Sri"
+                [placeholder]="translationService.currentLanguage() === 'ta' ? 'எ.கா: குரு ஸ்ரீ' : 'e.g., Guru Sri'"
               />
             </div>
           </div>
@@ -788,8 +799,9 @@
             <label class="clean-label">{{ 'team.role' | translate }}</label>
             <div class="clean-input-wrap">
               <i class="bi bi-shield-check"></i>
-              <select [(ngModel)]="newAdmin.role" name="role" class="clean-input" style="padding-left: 40px; cursor: pointer;">
-                <option value="admin">ADMIN (நிர்வாகி)</option>
+              <select [(ngModel)]="newAdmin.role" name="role" class="clean-input" style="padding-left: 40px; cursor: pointer;" [disabled]="!isSuperAdmin">
+                <option value="admin">{{ 'team.adminOption' | translate }}</option>
+                <option value="super_admin">{{ 'team.superAdminOption' | translate }}</option>
               </select>
             </div>
           </div>

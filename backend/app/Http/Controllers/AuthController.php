@@ -34,12 +34,12 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Web portal restriction check: ONLY admin role is permitted
-        if ($user->role !== 'admin') {
+        // Web portal restriction check: BOTH admin and super_admin roles are permitted
+        if (!in_array($user->role, ['admin', 'super_admin'])) {
             return response()->json([
                 'success'    => false,
                 'is_student' => ($user->role === 'user'),
-                'message'    => 'நிர்வாகி கணக்குகள் மட்டுமே இந்த போர்ட்டலில் உள்நுழைய முடியும். (Only Admin accounts can log in to the Web Portal.)'
+                'message'    => 'நிர்வாகி கணக்குகள் மட்டுமே இந்த போர்ட்டலில் உள்நுழைய முடியும். (Only Admin / Super Admin accounts can log in to the Web Portal.)'
             ], 403);
         }
 

@@ -1297,3 +1297,13 @@
   transform: translateY(-1px);
 }
 
+.badge-role.badge-super-admin {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+

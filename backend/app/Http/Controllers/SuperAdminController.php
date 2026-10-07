@@ -113,9 +113,19 @@ class SuperAdminController extends Controller
     /**
      * Get All Admins
      */
-    public function listAdmins()
+    public function listAdmins(Request $request)
     {
-        $admins = User::whereIn('role', ['admin', 'super_admin'])->get();
+        $currentUser = $request->user();
+        if ($currentUser && $currentUser->role !== 'super_admin') {
+            // Normal admin only sees their own account details (single admin)
+            $admins = User::where('id', $currentUser->id)->get();
+        } else {
+            // Super Admin sees all admins and super_admins (super_admin listed first)
+            $admins = User::whereIn('role', ['admin', 'super_admin'])
+                ->orderByRaw("CASE WHEN role = 'super_admin' THEN 0 ELSE 1 END")
+                ->orderBy('name')
+                ->get();
+        }
 
         return response()->json([
             'success' => true,
@@ -128,12 +138,20 @@ class SuperAdminController extends Controller
      */
     public function createAdmin(Request $request)
     {
+        $currentUser = $request->user();
+        if ($currentUser && $currentUser->role !== 'super_admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'புதிய நிர்வாகிகளைச் சேர்க்க Super Admin அனுமதி மட்டுமே உண்டு (Only Super Admin can create admin accounts).'
+            ], 403);
+        }
+
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'password' => 'required|string|min:6',
             'phone' => 'nullable|string',
-            'role' => 'nullable|string',
+            'role' => 'nullable|string|in:admin,super_admin',
         ]);
 
         if ($validator->fails()) {
@@ -143,9 +161,11 @@ class SuperAdminController extends Controller
             ], 422);
         }
 
+        $roleToSet = in_array($request->role, ['admin', 'super_admin']) ? $request->role : 'admin';
+
         $existingUser = User::where('email', $request->email)->first();
         if ($existingUser) {
-            $existingUser->role = $request->role ?: 'admin';
+            $existingUser->role = $roleToSet;
             $existingUser->status = 'active';
             $existingUser->name = $request->name;
             $existingUser->password = Hash::make($request->password);
@@ -156,7 +176,7 @@ class SuperAdminController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Account updated to Admin role successfully.',
+                'message' => 'Account updated to ' . ($roleToSet === 'super_admin' ? 'Super Admin' : 'Admin') . ' successfully.',
                 'admin' => $existingUser
             ]);
         }
@@ -165,14 +185,14 @@ class SuperAdminController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?: 'admin',
+            'role' => $roleToSet,
             'phone' => $request->phone,
             'status' => 'active'
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Admin account created successfully.',
+            'message' => ($roleToSet === 'super_admin' ? 'Super Admin' : 'Admin') . ' account created successfully.',
             'admin' => $admin
         ]);
     }
@@ -182,6 +202,14 @@ class SuperAdminController extends Controller
      */
     public function updateAdmin(Request $request, $id)
     {
+        $currentUser = $request->user();
+        if ($currentUser && $currentUser->role !== 'super_admin' && $currentUser->id != $id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'மற்ற நிர்வாகிகளின் கணக்கை திருத்த அனுமதி இல்லை (You cannot edit other admin accounts).'
+            ], 403);
+        }
+
         $admin = User::where('id', $id)->first();
         if (!$admin) {
             return response()->json([
@@ -211,7 +239,14 @@ class SuperAdminController extends Controller
         if ($request->has('phone')) {
             $admin->phone = $request->phone;
         }
-        $admin->role = 'admin';
+
+        // Only super_admin can change user roles
+        if ($currentUser && $currentUser->role === 'super_admin' && $request->filled('role')) {
+            if (in_array($request->role, ['admin', 'super_admin'])) {
+                $admin->role = $request->role;
+            }
+        }
+
         if ($request->filled('status')) {
             $admin->status = $request->status;
         }
@@ -249,6 +284,13 @@ class SuperAdminController extends Controller
     public function deleteAdmin(Request $request, $id)
     {
         $currentUser = $request->user();
+        if ($currentUser && $currentUser->role !== 'super_admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'நிர்வாகிகளை நீக்குவதற்கு Super Admin அனுமதி மட்டுமே உண்டு (Only Super Admin can delete admin accounts).'
+            ], 403);
+        }
+
         if ($currentUser && $currentUser->id == $id) {
             return response()->json([
                 'success' => false,
@@ -262,6 +304,14 @@ class SuperAdminController extends Controller
                 'success' => false,
                 'message' => 'நிர்வாகி கணக்கு காணப்படவில்லை (Account not found).'
             ], 404);
+        }
+
+        // Super Admin accounts cannot be deleted
+        if ($admin->role === 'super_admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'முதன்மை நிர்வாகி (Super Admin) கணக்கை நீக்க முடியாது (Super Admin accounts cannot be deleted).'
+            ], 403);
         }
 
         // Clean up user notifications and delete user

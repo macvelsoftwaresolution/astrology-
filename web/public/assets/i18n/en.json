@@ -500,6 +500,9 @@
     "callOptions": "Call Options",
     "editMember": "Edit Administrator Account",
     "editSubtitle": "Modify and update administrator account details.",
+    "createSubtitle": "Fill in the required credentials to create a new administrator account.",
+    "adminOption": "Admin",
+    "superAdminOption": "Super Admin",
     "passwordOptional": "Change only if needed",
     "leaveBlankPassword": "Leave blank to keep existing password"
   },

@@ -67,6 +67,12 @@ export class TeamTabComponent implements OnInit {
   customCategoryMode = false;
   customCategoryInput = '';
 
+  currentUser: any = null;
+
+  get isSuperAdmin(): boolean {
+    return this.currentUser?.role === 'super_admin';
+  }
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
@@ -78,6 +84,7 @@ export class TeamTabComponent implements OnInit {
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
+      this.currentUser = this.authService.getUser();
       this.loadTeam();
       this.loadAstrologers();
     }
@@ -90,6 +97,15 @@ export class TeamTabComponent implements OnInit {
   }
 
   openCreateMemberView(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    if (!this.isSuperAdmin) {
+      this.showToast(
+        isTa ? 'புதிய நிர்வாகிகளை சேர்க்க Super Admin அனுமதி மட்டுமே உண்டு.' : 'Only Super Admin can add new administrators.',
+        'error',
+        isTa ? 'அனுமதி இல்லை' : 'Access Denied'
+      );
+      return;
+    }
     this.isEditingMember = false;
     this.editingMemberId = null;
     this.newAdmin = { name: '', email: '', password: '', phone: '', role: 'admin', status: 'active' };
@@ -128,6 +144,7 @@ export class TeamTabComponent implements OnInit {
   // ================= ADMINS / TEAM CRUD =================
   loadTeam(): void {
     this.isLoading = true;
+    this.currentUser = this.authService.getUser();
     const headers = this.authService.getAuthHeaders();
     this.http.get<any>(`${environment.apiUrl}/admin/team`, headers).subscribe({
       next: (res) => {
@@ -151,8 +168,13 @@ export class TeamTabComponent implements OnInit {
   }
 
   createAdmin(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (!this.newAdmin.name || !this.newAdmin.email || !this.newAdmin.password) {
-      this.showToast('Please fill all required fields (Name, Email, and Password).', 'error', 'விவரங்கள் தேவை');
+      this.showToast(
+        isTa ? 'அனைத்து விவரங்களையும் உள்ளிடவும் (பெயர், மின்னஞ்சல் மற்றும் கடவுச்சொல்).' : 'Please fill all required fields (Name, Email, and Password).',
+        'error',
+        isTa ? 'விவரங்கள் தேவை' : 'Required Fields'
+      );
       return;
     }
 
@@ -161,7 +183,11 @@ export class TeamTabComponent implements OnInit {
     this.http.post<any>(`${environment.apiUrl}/admin/create-admin`, this.newAdmin, headers).subscribe({
       next: (res) => {
         this.isSubmittingNewMember = false;
-        this.showToast(res.message || 'Administrator account created successfully!', 'success', 'கணக்கு உருவாக்கப்பட்டது');
+        this.showToast(
+          isTa ? 'நிர்வாகி கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது!' : (res.message || 'Administrator account created successfully!'),
+          'success',
+          isTa ? 'கணக்கு உருவாக்கப்பட்டது' : 'Account Created'
+        );
         this.isCreatingNewMember = false;
         this.isEditingMember = false;
         this.editingMemberId = null;
@@ -173,15 +199,24 @@ export class TeamTabComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmittingNewMember = false;
-        this.showToast(err.error?.message || 'Failed to create account.', 'error', 'பிழை ஏற்பட்டது');
+        this.showToast(
+          err.error?.message || (isTa ? 'கணக்கு உருவாக்குவதில் பிழை ஏற்பட்டது.' : 'Failed to create account.'),
+          'error',
+          isTa ? 'பிழை ஏற்பட்டது' : 'Error'
+        );
         this.cdr.detectChanges();
       }
     });
   }
 
   updateAdmin(): void {
+    const isTa = this.translationService.currentLanguage() === 'ta';
     if (!this.newAdmin.name || !this.newAdmin.email) {
-      this.showToast('Please enter Name and Email.', 'error', 'விவரங்கள் தேவை');
+      this.showToast(
+        isTa ? 'பெயர் மற்றும் மின்னஞ்சலை உள்ளிடவும்.' : 'Please enter Name and Email.',
+        'error',
+        isTa ? 'விவரங்கள் தேவை' : 'Required Fields'
+      );
       return;
     }
     if (!this.editingMemberId) return;
@@ -202,7 +237,11 @@ export class TeamTabComponent implements OnInit {
     this.http.put<any>(`${environment.apiUrl}/admin/team/${this.editingMemberId}`, payload, headers).subscribe({
       next: (res) => {
         this.isSubmittingNewMember = false;
-        this.showToast(res.message || 'Administrator account updated successfully!', 'success', 'வெற்றிகரமாக மாற்றப்பட்டது');
+        this.showToast(
+          isTa ? 'நிர்வாகி விவரங்கள் வெற்றிகரமாக புதுப்பிக்கப்பட்டன!' : (res.message || 'Administrator account updated successfully!'),
+          'success',
+          isTa ? 'வெற்றிகரமாக மாற்றப்பட்டது' : 'Updated Successfully'
+        );
         this.isCreatingNewMember = false;
         this.isEditingMember = false;
         this.editingMemberId = null;
@@ -212,17 +251,32 @@ export class TeamTabComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmittingNewMember = false;
-        this.showToast(err.error?.message || 'Failed to update administrator account.', 'error', 'பிழை ஏற்பட்டது');
+        this.showToast(
+          err.error?.message || (isTa ? 'கணக்கை புதுப்பிப்பதில் பிழை ஏற்பட்டது.' : 'Failed to update administrator account.'),
+          'error',
+          isTa ? 'பிழை ஏற்பட்டது' : 'Error'
+        );
         this.cdr.detectChanges();
       }
     });
   }
 
   async deleteTeamMember(id: number): Promise<void> {
+    const isTa = this.translationService.currentLanguage() === 'ta';
+    if (!this.isSuperAdmin) {
+      this.showToast(
+        isTa ? 'நிர்வாகிகளை நீக்குவதற்கு Super Admin அனுமதி மட்டுமே உண்டு.' : 'Only Super Admin can delete administrators.',
+        'error',
+        isTa ? 'அனுமதி இல்லை' : 'Access Denied'
+      );
+      return;
+    }
+
     const ok = await this.confirmService.confirm({
-      title: 'கணக்கை நீக்கவா?',
-      message: 'இந்த நிர்வாகி / ஜோதிடர் கணக்கு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?',
-      confirmText: 'ஆம், நீக்குக',
+      title: isTa ? 'கணக்கை நீக்கவா?' : 'Delete Account?',
+      message: isTa ? 'இந்த நிர்வாகி கணக்கு நிரந்தரமாக நீக்கப்படும். நிச்சயமாக நீக்க வேண்டுமா?' : 'This administrator account will be permanently deleted. Are you sure?',
+      confirmText: isTa ? 'ஆம், நீக்குக' : 'Yes, Delete',
+      cancelText: isTa ? 'ரத்து' : 'Cancel',
       type: 'danger',
       icon: 'bi bi-trash3-fill'
     });
@@ -230,11 +284,19 @@ export class TeamTabComponent implements OnInit {
 
     const headers = this.authService.getAuthHeaders();
     this.http.delete<any>(`${environment.apiUrl}/admin/team/${id}`, headers).subscribe({
-      next: () => {
-        this.showToast('நிர்வாகக் கணக்கு வெற்றிகரமாக நீக்கப்பட்டது.', 'success', 'கணக்கு நீக்கப்பட்டது');
+      next: (res: any) => {
+        this.showToast(
+          isTa ? 'நிர்வாகக் கணக்கு வெற்றிகரமாக நீக்கப்பட்டது.' : (res?.message || 'Administrator account deleted successfully.'),
+          'success',
+          isTa ? 'கணக்கு நீக்கப்பட்டது' : 'Account Deleted'
+        );
         this.loadTeam();
       },
-      error: () => this.showToast('கணக்கை நீக்குவதில் பிழை ஏற்பட்டது.', 'error', 'பிழை ஏற்பட்டது')
+      error: (err: any) => this.showToast(
+        err.error?.message || (isTa ? 'கணக்கை நீக்குவதில் பிழை ஏற்பட்டது.' : 'Failed to delete account.'),
+        'error',
+        isTa ? 'பிழை ஏற்பட்டது' : 'Error'
+      )
     });
   }
 
