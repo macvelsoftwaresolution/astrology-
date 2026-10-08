@@ -701,6 +701,16 @@ export class HomePage implements OnInit {
     });
   }
 
+  getAstrologerSpecialty(astro: any): string {
+    if (!astro) return '';
+    const s = (astro.specialty || '').trim();
+    const b = (astro.bio || '').trim();
+    if (s && b && s !== b) {
+      return `${s}\n\n${b}`;
+    }
+    return s || b || '';
+  }
+
   // Open Service Screen Flow
   startServiceFlow(flowName: 'rasi-palan') {
     this.activeServiceFlow = flowName;

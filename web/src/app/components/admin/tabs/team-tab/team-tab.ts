@@ -386,9 +386,17 @@ export class TeamTabComponent implements OnInit {
     this.isCreatingNewAstrologer = false;
     this.customCategoryMode = !!(astro.category && !this.predefinedCategories.includes(astro.category));
     this.customCategoryInput = this.customCategoryMode ? astro.category : '';
+    const currentSpecialty = (astro.specialty || '').trim();
+    const currentBio = (astro.bio || '').trim();
+    let mergedSpecialty = currentSpecialty;
+    if (currentBio && currentBio !== currentSpecialty) {
+      mergedSpecialty = currentSpecialty ? `${currentSpecialty}\n\n${currentBio}` : currentBio;
+    }
+
     this.selectedAstrologerForManage = {
       ...astro,
       category: astro.category || 'ஜாதகம் பார்க்க',
+      specialty: mergedSpecialty,
       available_slots: Array.isArray(astro.available_slots) ? [...astro.available_slots] : [],
       blocked_dates: Array.isArray(astro.blocked_dates) ? [...astro.blocked_dates] : []
     };
@@ -657,6 +665,8 @@ export class TeamTabComponent implements OnInit {
     if (this.customCategoryMode && this.customCategoryInput.trim()) {
       this.selectedAstrologerForManage.category = this.customCategoryInput.trim();
     }
+    // Keep bio synchronized with specialty so any consumer gets the full text
+    this.selectedAstrologerForManage.bio = this.selectedAstrologerForManage.specialty || '';
     this.astrologerSaving = true;
     const headers = this.authService.getAuthHeaders();
 

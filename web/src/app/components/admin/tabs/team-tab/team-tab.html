@@ -483,20 +483,13 @@
           </div>
         </div>
 
-        <div class="field-group-lg">
+        <div class="field-group-lg" style="margin-bottom:0;">
           <label class="field-lbl-lg">
             <i class="bi bi-stars" style="color:#d97706;"></i> {{ 'services.specialty' | translate }}
           </label>
-          <input [(ngModel)]="selectedAstrologerForManage.specialty" class="field-input-lg"
-            placeholder="Vedic Horoscope Reading, Marriage Compatibility, Vastu" />
-        </div>
-
-        <div class="field-group-lg" style="margin-bottom:0;">
-          <label class="field-lbl-lg">
-            <i class="bi bi-journal-text" style="color:#d97706;"></i> {{ 'services.bio' | translate }}
-          </label>
-          <textarea [(ngModel)]="selectedAstrologerForManage.bio" rows="3" class="field-input-lg"
-            placeholder="Detailed heritage, education and achievements..."></textarea>
+          <textarea [(ngModel)]="selectedAstrologerForManage.specialty" rows="6" class="field-input-lg"
+            placeholder="துல்லிய ஜாதகக் கணிப்பு, திருமணப் பொருத்தம், பாரம்பரிய வேத ஜோதிட வழிகாட்டுதல் மற்றும் சிறப்புகள்..."
+            style="min-height: 140px; resize: vertical; line-height: 1.6;"></textarea>
         </div>
       </div>
       }

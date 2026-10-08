@@ -234,10 +234,16 @@
         </div>
       </div>
 
-      <!-- Simple Concise Bio Note -->
-      @if (astro.bio || astro.specialty) {
-      <div class="afp-section-box">
-        <p class="afp-bio-text">{{ astro.specialty || astro.bio }}</p>
+      <!-- Astrologer Specialization & Detailed Bio (Vilakkavurai & Rules Style) -->
+      @if (getAstrologerSpecialty(astro)) {
+      <div class="afp-specialty-card">
+        <div class="section-badge-header">
+          <i class="bi bi-stars text-gold me-1"></i>
+          <span>{{ 'home.specialtyTitle' | translate }}</span>
+        </div>
+        <div class="section-body-text" style="white-space: pre-line;">
+          {{ getAstrologerSpecialty(astro) }}
+        </div>
       </div>
       }
 
